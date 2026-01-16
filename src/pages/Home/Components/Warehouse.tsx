@@ -23,7 +23,6 @@ const Warehouse = () => {
     <section className="py-16 md:py-20 bg-white">
       <PageContainer>
 
-        {/* TITLE */}
         <h1
           className="
             font-oswald font-bold uppercase text-[#111111]
@@ -34,7 +33,6 @@ const Warehouse = () => {
           {t('home.warehouse.title')}
         </h1>
 
-        {/* STATS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 md:mb-12">
           {stats.map((item, index) => (
             <div key={index}>
@@ -59,8 +57,6 @@ const Warehouse = () => {
             </div>
           ))}
         </div>
-
-        {/* IMAGES */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {images.map((img, index) => (
             <div key={index} className="relative bg-black overflow-hidden">

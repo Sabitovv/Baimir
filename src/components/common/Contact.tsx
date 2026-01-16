@@ -7,7 +7,6 @@ const Contact = () => {
   return (
     <div className="flex">
       
-      {/* WRAPPER */}
       <div className="w-full max-w-xl px-4">
         <form className="flex flex-col items-center gap-4">
 

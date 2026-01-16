@@ -8,15 +8,15 @@ import DemoPage from '@/pages/Demo/DemoPage'
 
 const AppRoutes = () => (
     <Routes>
-        <Route path="/Baimir" element={<Home />} />
-        
-        <Route path="/Baimir/Technology" element={<TechnologiesPage />} />
-        <Route path='/Baimir/Technology/:title' element={<InnerTechnologies/>}/>
+        <Route path="/" element={<Home />} />
 
-        <Route path='/Baimir/Blog' element={<Blog/>}/>
-        <Route path="/Baimir/Blog/:id" element={<InnerBlog />} />
+        <Route path="/Technology" element={<TechnologiesPage />} />
+            <Route path="/Technology/:title" element={<InnerTechnologies />} />
 
-        <Route path='Baimir/Demo' element={<DemoPage/>}/>
+        <Route path="/Blog" element={<Blog />} />
+            <Route path="/Blog/:id" element={<InnerBlog />} />
+
+        <Route path="/Demo" element={<DemoPage />} />
     </Routes>
 )
 

@@ -15,7 +15,7 @@ const CategoryCard = ({
   onClick
 }: CategoryCardProps) => {
   return (
-    <Link to={`/Baimir/Technology/${title}`}>
+    <Link to={`/Technology/${title}`}>
       <div
         onClick={onClick}
         className="

@@ -26,7 +26,7 @@ const Header = () => {
 
     <div className="hidden lg:flex h-full max-w-[1920px] mx-auto px-6 xl:px-[90px] items-center justify-between" >
 
-      <Link to="/Baimir" className="shrink-0">
+      <Link to="/" className="shrink-0">
         <img src={logo} alt="Baymir Logo" className="h-9"/>
       </Link>
 
@@ -46,7 +46,7 @@ const Header = () => {
           {navItems.map((key) => (
             <NavLink
               key={key.id}
-              to={`Baimir/${key.path}`}
+              to={`/${key.path}`}
               className={({ isActive }) =>
                 isActive
                   ? 'text-[#F05023]'
