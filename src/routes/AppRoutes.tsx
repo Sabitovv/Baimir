@@ -4,6 +4,7 @@ import TechnologiesPage from '@/pages/Technologies/TechnologiesPage'
 import Blog from '@/pages/Blogs/Blog'
 import InnerBlog from '@/pages/Blogs/InnerBlogs/InnerBlog'
 import InnerTechnologies from '@/pages/Technologies/InnerTechbologies/InnerTechnologies'
+import DemoPage from '@/pages/Demo/DemoPage'
 
 const AppRoutes = () => (
     <Routes>

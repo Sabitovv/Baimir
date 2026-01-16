@@ -6,6 +6,8 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import reviewImg from '@/assets/reviewImg.png'
 import 'swiper/css'
+import 'swiper/css/navigation'
+
 
 type ReviewItem = {
   name: string
@@ -62,18 +64,21 @@ const ReviewsSection = () => {
           {/* SLIDER */}
           <Swiper
             modules={[Navigation]}
+            navigation={{
+              prevEl: prevRef.current,
+              nextEl: nextRef.current,
+            }}
+
             spaceBetween={24}
             slidesPerView={1}
             loop
             onSwiper={(swiper) => {
               setTimeout(() => {
-                if (
-                  prevRef.current &&
-                  nextRef.current &&
-                  swiper.params.navigation
-                ) {
-                  swiper.params.navigation.prevEl = prevRef.current
-                  swiper.params.navigation.nextEl = nextRef.current
+                const navigation = swiper.params.navigation as any
+              
+                if (prevRef.current && nextRef.current) {
+                  navigation.prevEl = prevRef.current
+                  navigation.nextEl = nextRef.current
                 
                   swiper.navigation.destroy()
                   swiper.navigation.init()

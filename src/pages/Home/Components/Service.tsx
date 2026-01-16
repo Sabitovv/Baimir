@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
 import BgService from '@/assets/bg_service.png'
-import { SvgIcon } from '@mui/material';
+import { SvgIcon, type SvgIconProps } from '@mui/material'
+
+
 
 
 const Service = () => {
@@ -16,8 +18,9 @@ const Service = () => {
     'home.service.items.support'
   ]
 
-  const CheckCircleIconCustom = (props) => (
+  const CheckCircleIconCustom = (props: SvgIconProps) => (
     <SvgIcon {...props} viewBox="0 0 24 24">
+
       <circle cx="12" cy="12" r="10" fill="#EA571E" />
       <path
         d="M10.1 13.9L7.7 11.5L6.3 12.9L10.1 16.7L18 8.8L16.6 7.4Z"
