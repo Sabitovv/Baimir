@@ -1,4 +1,3 @@
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper/modules'
@@ -26,11 +25,10 @@ const CertificatesSection = () => {
 
         <div className="relative">
 
-          {/* PREV — используем CSS класс .cert-prev */}
           <button
             className="cert-prev hidden xl:flex absolute -left-16 top-1/2 -translate-y-1/2
-                       w-12 h-12 rounded-full border border-gray-400 items-center justify-center
-                       hover:bg-black hover:text-white transition z-20"
+                      w-12 h-12 rounded-full border border-gray-400 items-center justify-center
+                      hover:bg-black hover:text-white transition z-20"
             aria-label="Previous"
           >
             <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
@@ -40,7 +38,6 @@ const CertificatesSection = () => {
             modules={[Navigation]}
             spaceBetween={24}
             loop
-            /* передаём селектор строки, а не ref */
             navigation={{ prevEl: '.cert-prev', nextEl: '.cert-next' }}
             breakpoints={{
               320: { slidesPerView: 1 },
@@ -61,11 +58,10 @@ const CertificatesSection = () => {
             ))}
           </Swiper>
 
-          {/* NEXT — используем CSS класс .cert-next */}
           <button
             className="cert-next hidden xl:flex absolute -right-16 top-1/2 -translate-y-1/2
-                       w-12 h-12 rounded-full border border-gray-400 items-center justify-center
-                       hover:bg-black hover:text-white transition z-20"
+                      w-12 h-12 rounded-full border border-gray-400 items-center justify-center
+                      hover:bg-black hover:text-white transition z-20"
             aria-label="Next"
           >
             <ArrowForwardIosIcon sx={{ fontSize: 16 }} />

@@ -17,7 +17,7 @@ const TechnologiesPage = () => {
             <CategoriesMenu />
           </aside>
 
-          <section className='flex flex-col items-center text-center max-w-[1200px] mx-auto'>
+          <section className='flex flex-col  max-w-[1200px] mx-auto'>
             <h1 className="font-oswald text-3xl font-bold md:text-4xl xl:text-5xl uppercase">
               {t('technology.title')}
             </h1>
@@ -43,7 +43,7 @@ const TechnologiesPage = () => {
               <CategoryCard title='Машина' image={imgStanok} count={7}/>
               <CategoryCard title='Машина' image={imgStanok} count={7}/>
             </div>
-            <div className='my-45'>
+            <div className='my-45 items-center text-center'>
               <h2
                 className="
                   font-oswald font-semibold uppercase text-[#111111]
@@ -59,6 +59,7 @@ const TechnologiesPage = () => {
 
         </div>
       </PageContainer>
+
 
       {/* ===== CONTACT FORM (GLOBAL) ===== */}
       {/* <div className='text-center my-45'>

@@ -7,13 +7,15 @@ import InnerTechnologies from '@/pages/Technologies/InnerTechbologies/InnerTechn
 
 const AppRoutes = () => (
     <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/Baimir" element={<Home />} />
         
-        <Route path="/Technology" element={<TechnologiesPage />} />
-        <Route path='/Technology/:title' element={<InnerTechnologies/>}/>
+        <Route path="/Baimir/Technology" element={<TechnologiesPage />} />
+        <Route path='/Baimir/Technology/:title' element={<InnerTechnologies/>}/>
 
-        <Route path='/Blog' element={<Blog/>}/>
-        <Route path="/Blog/:id" element={<InnerBlog />} />
+        <Route path='/Baimir/Blog' element={<Blog/>}/>
+        <Route path="/Baimir/Blog/:id" element={<InnerBlog />} />
+
+        <Route path='Baimir/Demo' element={<DemoPage/>}/>
     </Routes>
 )
 
