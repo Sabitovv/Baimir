@@ -3,16 +3,16 @@ import './index.css'
 import App from './App.tsx'
 import './i18n'
 import { Provider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { store } from '@/app/store'
 
 
 
 createRoot(document.getElementById('root')!).render(
 <Provider store={store}>
-  <BrowserRouter>
+  <HashRouter>
       <App />
-  </BrowserRouter>
+  </HashRouter>
 </Provider>
 
 )
