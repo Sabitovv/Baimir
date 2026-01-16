@@ -46,7 +46,7 @@ const Header = () => {
           {navItems.map((key) => (
             <NavLink
               key={key.id}
-              to={`/${key.path}`}
+              to={`${key.path}`}
               className={({ isActive }) =>
                 isActive
                   ? 'text-[#F05023]'
