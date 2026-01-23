@@ -17,12 +17,12 @@ const TechnologiesPage = () => {
             <CategoriesMenu />
           </aside>
 
-          <section className='flex flex-col  max-w-[1200px] mx-auto'>
-            <h1 className="font-oswald text-3xl font-bold md:text-4xl xl:text-5xl uppercase">
+          <section className='flex flex-col mx-auto'>
+            <h1 className="font-oswald text-2xl font-bold md:text-3xl xl:text-4xl uppercase text-[#F05023]">
               {t('technology.title')}
             </h1>
 
-            <h3 className='font-oswald text-2xl font-bold mb-6'>{t('technology.subTitle')}</h3>
+            <h3 className='font-oswald text-xl font-bold my-4' style={{ whiteSpace: 'pre-line' }}>{t('technology.subTitle')}</h3>
 
             <p className="text-gray-600 max-w-3xl mb-10 text-sm md:text-base">
               {t('technology.text')}
@@ -43,20 +43,14 @@ const TechnologiesPage = () => {
               <CategoryCard title='Машина' image={imgStanok} count={7}/>
               <CategoryCard title='Машина' image={imgStanok} count={7}/>
             </div>
-            <div className='my-45 items-center text-center'>
-              <h2
-                className="
-                  font-oswald font-semibold uppercase text-[#111111]
-                  text-4xl md:text-5xl xl:text-6xl
-                  mb-8 md:mb-10
-                "
-              >
-                {t('home.contact.title')}
-              </h2>
-              <Contact />
-            </div>
           </section>
 
+        </div>
+        <div className="mt-24 text-center max-w-[600px] mx-auto mb-30">
+          <h2 className="font-oswald text-[42px] font-bold uppercase mb-8">
+            Оставьте заявку
+          </h2>
+          <Contact />
         </div>
       </PageContainer>
 

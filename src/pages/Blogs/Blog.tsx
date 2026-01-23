@@ -1,6 +1,7 @@
 import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
 import BlogCard from '@/components/common/BlogCardProps'
+import {Link} from 'react-router-dom'
 
 import img1 from '@/assets/lazerStanok.png'
 
@@ -49,12 +50,13 @@ const BlogPage = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.map(post => (
-                  <BlogCard
-                    key={post.id}
-                    id={post.id}
-                    image={post.image}
-                    text={post.text}
-                  />
+                  <Link to={`/Blog/${post.id}`} className="block">
+                    <BlogCard
+                      key={post.id}
+                      image={post.image}
+                      text={post.text}
+                    />
+                  </Link>
 
                 ))}
             </div>

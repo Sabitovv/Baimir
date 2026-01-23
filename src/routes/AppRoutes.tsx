@@ -5,6 +5,7 @@ import Blog from '@/pages/Blogs/Blog'
 import InnerBlog from '@/pages/Blogs/InnerBlogs/InnerBlog'
 import InnerTechnologies from '@/pages/Technologies/InnerTechbologies/InnerTechnologies'
 import DemoPage from '@/pages/Demo/DemoPage'
+import DemoInnerPage from '@/pages/Demo/DemoInner'
 
 const AppRoutes = () => (
     <Routes>
@@ -17,6 +18,7 @@ const AppRoutes = () => (
             <Route path="/Blog/:id" element={<InnerBlog />} />
 
         <Route path="/Demo" element={<DemoPage />} />
+            <Route path="/demo/:id" element={<DemoInnerPage />} />
     </Routes>
 )
 

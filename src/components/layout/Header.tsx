@@ -12,12 +12,12 @@ const Header = () => {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const navItems = [
-    { id: 'technologies', path: 'Technology' },
-    { id: 'demo', path: 'demo' },
+    { id: 'technologies', path: '/Technology' },
+    { id: 'demo', path: '/Demo' },
     { id: 'production', path: 'production' },
     { id: 'warehouse', path: 'warehouse' },
     { id: 'service', path: 'service' },
-    { id: 'blog', path: 'Blog' },
+    { id: 'blog', path: '/Blog' },
     { id: 'contacts', path: 'contacts' },
 ]
 
@@ -46,7 +46,7 @@ const Header = () => {
           {navItems.map((key) => (
             <NavLink
               key={key.id}
-              to={`${key.path}`}
+              to={key.path}
               className={({ isActive }) =>
                 isActive
                   ? 'text-[#F05023]'
@@ -96,23 +96,15 @@ const Header = () => {
             </div>
 
             <nav className="flex flex-col gap-6 text-xl uppercase font-oswald font-600">
-              {[
-                'technologies',
-                'demo',
-                'production',
-                'warehouse',
-                'service',
-                'about',
-                'contacts'
-              ].map((key) => (
-                <Link
-                  key={key}
-                  to={`/${key}`}
+              {navItems.map((key) => (
+                <NavLink
+                  key={key.id}
+                  to={key.path}
                   onClick={() => setOpen(false)}
                   className="hover:text-[#F05023]"
                 >
-                  {t(`header.nav.${key}`)}
-                </Link>
+                  {t(`header.nav.${key.id}`)}
+                </NavLink>
               ))}
             </nav>
 

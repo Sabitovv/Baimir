@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
 import CardImg from '@/assets/card_img_1.png'
+import CardImg2 from '@/assets/bidImg.png'
+import { useState } from 'react'
 
 type StatItem = {
   value: string
@@ -11,39 +13,80 @@ type StatItem = {
 const Warehouse = () => {
   const { t } = useTranslation()
 
+  const [imgChange, setImgChange]= useState(0);
+
   const stats: StatItem[] = [
-    { value: '5 500', unit: 'm2', textKey: 'home.warehouse.stats.space' },
+    { value: '5 500', textKey: 'home.warehouse.stats.space' },
     { value: '120+', textKey: 'home.warehouse.stats.staff' },
     { value: '2012', textKey: 'home.warehouse.stats.since' }
   ]
 
-  const images = [CardImg, CardImg, CardImg]
+  const images = [CardImg, CardImg2, CardImg]
 
   return (
-    <section className="py-16 md:py-20 bg-white">
-      <PageContainer>
+  <section className="py-16 md:py-20 bg-white">
+    <PageContainer>
 
-        <h1
-          className="
-            font-oswald font-bold uppercase text-[#111111]
-            text-4xl md:text-5xl xl:text-6xl
-            mb-6 md:mb-8
-          "
-        >
-          {t('home.warehouse.title')}
-        </h1>
+      <h1
+        className="
+          font-oswald font-bold uppercase text-[#111111]
+          text-4xl md:text-5xl xl:text-6xl
+          mb-10
+        "
+      >
+        {t('home.warehouse.title')}
+      </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 md:mb-12">
+      <div className="flex flex-col lg:flex-row gap-10">
+
+        <div className="flex-1">
+
+          <div className="mb-4">
+            <img
+              src={images[imgChange]}
+              alt={t('home.warehouse.imageAlt')}
+              className="w-full h-[380px] object-cover"
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            {images.slice(0, 3).map((img, index) => (
+              <div
+                key={index}
+                className={`
+                  border-2
+                  ${imgChange==index ? 'border-[#F05023]': 'border-none'}
+                  transition
+                  cursor-pointer
+                `}
+              >
+                <img
+                  onClick={()=>setImgChange(index)}
+                  src={img}
+                  alt={t('home.warehouse.imageAlt')}
+                  className="w-full h-[110px] object-cover"
+                />
+              </div>
+            ))}
+          </div>
+
+        </div>
+
+        <div className="w-full lg:w-[420px] flex flex-col gap-8">
+
           {stats.map((item, index) => (
             <div key={index}>
+
               <div
                 className="
                   font-oswald font-bold text-[#F05023]
                   text-4xl md:text-5xl
-                  mb-2 leading-tight
+                  leading-none
+                  mb-2
                 "
               >
                 {item.value}
+
                 {item.unit && (
                   <span className="text-xl md:text-2xl ml-1">
                     {t(`home.warehouse.units.${item.unit}`)}
@@ -54,32 +97,18 @@ const Warehouse = () => {
               <p className="text-gray-600 font-manrope text-sm leading-relaxed">
                 {t(item.textKey)}
               </p>
+
             </div>
           ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {images.map((img, index) => (
-            <div key={index} className="relative bg-black overflow-hidden">
-              <img
-                src={img}
-                alt={t('home.warehouse.imageAlt')}
-                className="w-full h-[260px] md:h-[300px] xl:h-[340px] object-cover"
-              />
 
-              <div className="absolute bottom-0 left-0 right-0">
-                <div className="bg-gradient-to-t from-black/90 via-black/80 to-transparent p-4">
-                  <p className="text-white text-xs font-light leading-relaxed">
-                    {t('home.warehouse.imageText')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
 
-      </PageContainer>
-    </section>
-  )
+      </div>
+
+    </PageContainer>
+  </section>
+)
+
 }
 
 export default Warehouse

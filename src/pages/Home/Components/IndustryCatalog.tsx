@@ -10,7 +10,6 @@ const IndustryCatalog = () => {
     { title: t('home.catalog.laser'), image: imgStanok },
     { title: t('home.catalog.laser'), image: imgStanok },
     { title: t('home.catalog.laser'), image: imgStanok },
-    { title: t('home.catalog.laser'), image: imgStanok },
   ]
 
   return (

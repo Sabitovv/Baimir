@@ -1,14 +1,11 @@
-import { Link } from 'react-router-dom'
 
 type BlogCardProps = {
   image: string
   text: string
-  id: string
 }
 
-const BlogCard = ({ image, text, id }: BlogCardProps) => {
+const BlogCard = ({ image, text }: BlogCardProps) => {
   return (
-    <Link to={`/Blog/${id}`} className="block">
 
       <article className="bg-white shadow-sm hover:shadow-md transition flex flex-col cursor-pointer h-full">
 
@@ -25,7 +22,6 @@ const BlogCard = ({ image, text, id }: BlogCardProps) => {
 
       </article>
 
-    </Link>
   )
 }
 

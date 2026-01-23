@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # 1. База данных
+  postgres:
+    image: postgres:15-alpine
+    container_name: shop_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=shop_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Ваш Бэкенд
+  app:
+    image: ruslan2345/baymir-backend:latest
+    container_name: baymir-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shop_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      
+      # ВАЖНОЕ ИСПРАВЛЕНИЕ:
+      # validate = Hibernate только проверяет схему, но не меняет её.
+      # Созданием таблиц занимается Flyway. Это решит ошибку "relation already exists".
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      
+      JWT_SECRET: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
+      JWT_EXPIRATION: 31536000000
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

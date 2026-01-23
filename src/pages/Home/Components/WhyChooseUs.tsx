@@ -64,7 +64,7 @@ const WhyChooseUs = () => {
                 key={index}
                 className="bg-white p-8 shadow-sm hover:shadow-md transition group"
               >
-                <div className="text-[#F05023] mb-4 group-hover:scale-110 transition duration-300">
+                <div className="text-[#F05023] mb-4">
                   <img src={item.icon} alt="" />
                 </div>
 
