@@ -35,13 +35,13 @@ const TechnologiesPage = () => {
               lg:grid-cols-3
               gap-6
             ">
-              <CategoryCard title='Машина' image={imgStanok} count={7}/>
-              <CategoryCard title='Машина' image={imgStanok} count={7}/>
-              <CategoryCard title='Машина' image={imgStanok} count={7}/>
-              <CategoryCard title='Машина' image={imgStanok} count={7}/>
-              <CategoryCard title='Машина' image={imgStanok} count={7}/>
-              <CategoryCard title='Машина' image={imgStanok} count={7}/>
-              <CategoryCard title='Машина' image={imgStanok} count={7}/>
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
             </div>
           </section>
 

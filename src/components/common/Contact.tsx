@@ -8,7 +8,7 @@ const Contact = () => {
     <div className="flex">
       
       <div className="w-full max-w-xl px-4">
-        <form className="flex flex-col items-center gap-4">
+        <form className="flex flex-col gap-4">
 
           <TextField
             label={t('home.contact.fields.name')}

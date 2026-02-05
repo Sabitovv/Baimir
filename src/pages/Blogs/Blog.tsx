@@ -22,13 +22,13 @@ const BlogPage = () => {
           </aside>
 
           <section>
-            <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase">
+            <h1 className="font-[Oswald] font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F05023]">
               Блог компании
             </h1>
 
-            <h3 className='font-oswald font-bold mb-6'>Подберем станки под ваш бизнес</h3>
+            <h3 className='font-oswald font-extrabold mb-6 text-3xl'>Подберем станки под ваш бизнес</h3>
 
-            <p className=" max-w-3xl mb-6 text-sm font-Monaper">
+            <p className=" max-w-3xl mb-6 text-sm font-Monaper text-[#233337]">
                 Тут какой-то текст, в котором я фиг знает чо писать, потому что нам так и не предоставили никакой инфы. И кто вообще отвечает за это?
             </p>
 
@@ -37,11 +37,15 @@ const BlogPage = () => {
                 'Лазерные станки',
                 'Фрезерные станки',
                 'Токарные станки',
+                'Автоматизация',
+                'Лазерные станки',
+                'Фрезерные станки',
+                'Токарные станки',
                 'Автоматизация'
               ].map(tag => (
                 <span
                   key={tag}
-                  className="border px-5 py-2 text-xs rounded-xl hover:bg-black hover:text-white cursor-pointer"
+                  className="border px-5 py-2 text-xs rounded-xl cursor-pointer"
                 >
                   {tag}
                 </span>

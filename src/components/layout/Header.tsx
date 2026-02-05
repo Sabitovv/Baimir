@@ -14,11 +14,11 @@ const Header = () => {
   const navItems = [
     { id: 'technologies', path: '/Technology' },
     { id: 'demo', path: '/Demo' },
-    { id: 'production', path: 'production' },
-    { id: 'warehouse', path: 'warehouse' },
-    { id: 'service', path: 'service' },
+    { id: 'production', path: '/Production' },
+    { id: 'storage', path: '/Storage' },
+    { id: 'service', path: '/Service' },
     { id: 'blog', path: '/Blog' },
-    { id: 'contacts', path: 'contacts' },
+    { id: 'contacts', path: '/Contacts' },
 ]
 
   return (

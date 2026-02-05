@@ -1,5 +1,5 @@
 const PageContainer = ({ children }: { children: React.ReactNode }) => (
-    <div className="max-w-[1200px] mx-auto px-4">
+    <div className="max-w-[1400px] mx-auto px-4">
         {children}
     </div>
 )
