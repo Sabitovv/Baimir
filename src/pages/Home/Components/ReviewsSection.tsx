@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper/modules'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import reviewImg from '@/assets/reviewImg.png'
+import reviewImg from '@/assets/Home/reviewImg.webp'
 import 'swiper/css'
 import 'swiper/css/navigation'
 
@@ -32,7 +32,6 @@ const ReviewsSection = () => {
     <section className="py-16 md:py-20 xl:py-24 bg-[#F5F5F5] overflow-x-hidden">
       <div className="max-w-[1920px] mx-auto px-6 md:px-[80px] xl:px-[250px]">
 
-        {/* TITLE */}
         <h2
           className="
             font-oswald font-bold uppercase text-[#111111]
@@ -46,7 +45,6 @@ const ReviewsSection = () => {
 
         <div className="relative">
 
-          {/* PREV */}
           <button
             ref={prevRef}
             className="
@@ -61,7 +59,6 @@ const ReviewsSection = () => {
             <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
           </button>
 
-          {/* SLIDER */}
           <Swiper
             modules={[Navigation]}
             navigation={{
@@ -75,11 +72,11 @@ const ReviewsSection = () => {
             onSwiper={(swiper) => {
               setTimeout(() => {
                 const navigation = swiper.params.navigation as any
-              
+
                 if (prevRef.current && nextRef.current) {
                   navigation.prevEl = prevRef.current
                   navigation.nextEl = nextRef.current
-                
+
                   swiper.navigation.destroy()
                   swiper.navigation.init()
                   swiper.navigation.update()
@@ -110,16 +107,16 @@ const ReviewsSection = () => {
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div>
-                      <h4 className="font-bold text-sm text-[#111111] font-manrope mb-1">
+                      <h4 className="font-bold text-sm text-[#111111]  mb-1">
                         {review.name}
                       </h4>
-                      <p className="text-gray-400 text-[11px] font-manrope">
+                      <p className="text-gray-400 text-[11px] ">
                         {review.location}
                       </p>
                     </div>
                   </div>
 
-                  <p className="text-[#444444] text-sm leading-relaxed font-manrope">
+                  <p className="text-[#444444] text-sm leading-relaxed ">
                     {t(review.textKey)}
                   </p>
                 </div>
@@ -127,7 +124,6 @@ const ReviewsSection = () => {
             ))}
           </Swiper>
 
-          {/* NEXT */}
           <button
             ref={nextRef}
             className="

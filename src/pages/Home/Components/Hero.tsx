@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import bgMain from '@/assets/background_main.png'
+import bgMain from '@/assets/Home/background_main.webp'
 
 const Hero = () => {
   const { t } = useTranslation()
@@ -45,7 +45,7 @@ const Hero = () => {
               mt-6 md:mt-8
               text-gray-300 uppercase tracking-widest
               text-[11px] md:text-sm
-              font-manrope font-600
+              font-600
             "
           >
             <span>{t('hero.tags.laser')}</span>
@@ -60,7 +60,7 @@ const Hero = () => {
               mt-8 md:mt-12
               bg-[#F05023] hover:bg-[#d1401b]
               px-8 md:px-10 py-3 md:py-4
-              font-manrope font-700 uppercase tracking-widest
+              font-700 uppercase tracking-widest
               transition
               text-xs md:text-sm
             "
@@ -90,8 +90,7 @@ const Hero = () => {
             <p
               className="
                 max-w-[800px]
-                text-white
-                font-manrope font-400
+                text-white font-400
                 text-xs md:text-sm
                 leading-7 md:leading-8
               "

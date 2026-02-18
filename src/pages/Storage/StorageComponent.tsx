@@ -1,4 +1,4 @@
-import Photo from '@/assets/storage/PhotoCat.png'
+import Photo from '@/assets/storage/PhotoCat.webp'
 const StorageComponent = () => {
     return (
         <>

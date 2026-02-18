@@ -2,7 +2,7 @@ import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
 import CategoryCard from '@/components/common/CategoryCard'
 import Contact from '@/components/common/Contact'
-import imgStanok from '@/assets/lazerStanok.png'
+import imgStanok from '@/assets/Home/lazerStanok.webp'
 import { useTranslation } from 'react-i18next'
 
 
@@ -22,9 +22,9 @@ const TechnologiesPage = () => {
               {t('technology.title')}
             </h1>
 
-            <h3 className='font-oswald text-xl font-bold my-4' style={{ whiteSpace: 'pre-line' }}>{t('technology.subTitle')}</h3>
+            <h3 className='font-oswald text-xl font-bold mb-4 mt-1' style={{ whiteSpace: 'pre-line' }}>{t('technology.subTitle')}</h3>
 
-            <p className="text-gray-600 max-w-3xl mb-10 text-sm md:text-base">
+            <p className="text-gray-600 max-w-3xl mb-6 text-sm md:text-base">
               {t('technology.text')}
             </p>
 
@@ -35,13 +35,13 @@ const TechnologiesPage = () => {
               lg:grid-cols-3
               gap-6
             ">
-              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
-              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
-              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
-              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
-              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
-              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
-              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok}/>
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok} />
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok} />
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok} />
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok} />
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok} />
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok} />
+              <CategoryCard title='Технология производства металлоконструкций для мостов и зданий' image={imgStanok} />
             </div>
           </section>
 

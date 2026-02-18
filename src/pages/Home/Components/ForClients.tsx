@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
 
-import Discount from '@/assets/handDiscount.png'
-import Money from '@/assets/handMoney.png'
-import Heart from '@/assets/handHeart.png'
+import Discount from '@/assets/Home/handDiscount.webp'
+import Money from '@/assets/Home/handMoney.webp'
+import Heart from '@/assets/Home/handHeart.webp'
 
 type BenefitItem = {
   titleKey: string
@@ -53,7 +53,7 @@ const ForClients = () => {
                 <img src={item.image} className='w-14 h-14' alt="" />
               </div>
 
-              <p className="mt-6 md:mt-8 xl:mt-12 font-['Manrope'] text-base md:text-lg leading-relaxed">
+              <p className="mt-6 md:mt-8 xl:mt-12 text-base md:text-lg leading-relaxed">
                 {t(item.textKey)}
               </p>
             </div>

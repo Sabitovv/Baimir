@@ -6,7 +6,7 @@ const Contact = () => {
 
   return (
     <div className="flex">
-      
+
       <div className="w-full max-w-xl px-4">
         <form className="flex flex-col gap-4">
 
@@ -42,7 +42,7 @@ const Contact = () => {
               />
             }
             label={
-              <span className="text-xs md:text-sm text-gray-600 font-manrope">
+              <span className="text-xs md:text-sm text-gray-600">
                 {t('home.contact.consent')}
               </span>
             }

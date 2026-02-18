@@ -1,25 +1,25 @@
 import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
-import MainPhoto from '@/assets/Storage/MainPhoto.png'
-import Photo from '@/assets/Storage/Photo.png'
-import Photo2 from '@/assets/Storage/Photo1.png'
-import Photo3 from '@/assets/Storage/Photo2.png'
+import MainPhoto from '@/assets/Storage/MainPhoto.webp'
+import Photo from '@/assets/Storage/Photo.webp'
+import Photo2 from '@/assets/Storage/Photo1.webp'
+import Photo3 from '@/assets/Storage/Photo2.webp'
 import Component from '@/pages/Storage/StorageComponent'
 import Cart from '@/components/common/CategoryCard'
 import Contact from '@/components/common/Contact'
-import bidImg from '@/assets/storage/bidImg.png'
+import bidImg from '@/assets/storage/bidImg.webp'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const StoragePage = () => {
 
   const [choose, setChoose] = useState(1)
-  const [t]= useTranslation()
+  const [t] = useTranslation()
 
   return (
     <PageContainer>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-10 md:mt-14 font-manrope">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-10 md:mt-14">
 
         {/* SIDEBAR */}
         <aside className="hidden lg:block">
@@ -36,18 +36,18 @@ const StoragePage = () => {
               {t('storage.title')}
             </h1>
 
-            <p className="text-base sm:text-lg mt-4 sm:mt-6 font-extrabold">
+            <h3 className="text-base sm:text-lg mt-1 sm:mt-1 font-bold font-oswald">
               {t('storage.subTitle')}
-            </p>
+            </h3>
 
-            <p className="font-extrabold text-base sm:text-lg">
+            <h3 className="font-bold text-base sm:text-lg mt-1 font-oswald">
               {t('storage.subTitle2')}
-            </p>
+            </h3>
 
           </section>
 
           {/* GALLERY */}
-          <section className="mt-8 sm:mt-12">
+          <section className="mt-4 sm:mt-6">
 
             <img
               src={MainPhoto}
@@ -65,11 +65,10 @@ const StoragePage = () => {
                   <div
                     key={i}
                     onClick={() => setChoose(index)}
-                    className={`cursor-pointer text-center transition ${
-                      choose === index
-                        ? 'border-2 border-[#F05023] rounded-lg p-1'
-                        : ''
-                    }`}
+                    className={`cursor-pointer text-center transition ${choose === index
+                      ? 'border-2 border-[#F05023] rounded-lg p-1'
+                      : ''
+                      }`}
                   >
 
                     <img
@@ -77,7 +76,7 @@ const StoragePage = () => {
                       className="mx-auto"
                     />
 
-                    <p className="text-xs sm:text-sm mt-2">{t(`storage.imageSubText.text${i+1}`)}</p>
+                    <p className="text-xs sm:text-sm mt-2">{t(`storage.imageSubText.text${i + 1}`)}</p>
                   </div>
                 )
               })}

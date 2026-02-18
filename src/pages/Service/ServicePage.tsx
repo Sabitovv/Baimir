@@ -3,8 +3,8 @@ import CategoriesMenu from '@/components/common/CategoriesMenu'
 import Contact from '@/components/common/Contact'
 import Card from '@/components/common/CategoryCard'
 
-import teamPhoto from '@/assets/Service/groupImg.png'
-import real2 from '@/assets/Service/TwoImg.png'
+import teamPhoto from '@/assets/Service/groupImg.webp'
+import real2 from '@/assets/Service/TwoImg.webp'
 
 import { useTranslation } from 'react-i18next'
 
@@ -24,7 +24,7 @@ const ServicePage = () => {
   return (
     <PageContainer>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-8 mt-8 md:mt-12 font-manrope">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-8 mt-8 md:mt-12 ">
 
         <aside className="hidden lg:block">
           <CategoriesMenu />
@@ -38,13 +38,13 @@ const ServicePage = () => {
               {t('service.title')}
             </h1>
 
-            <p className="text-sm sm:text-base md:text-lg mt-3 sm:mt-4 font-bold">
+            <h3 className="text-sm sm:text-base md:text-lg mt-1 sm:mt-1 font-bold font-oswald">
               {t('service.subTitle')}
-            </p>
+            </h3>
 
           </section>
 
-          <section className="mt-6 sm:mt-8">
+          <section className="mt-3 sm:mt-4">
 
             <img
               src={teamPhoto}

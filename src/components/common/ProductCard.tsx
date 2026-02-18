@@ -6,7 +6,7 @@
 //     onBuy?: () => void
 // }
 
-const ProductCard = ({ title, price, image }: { title: string; price: string; image: string }) => {
+const ProductCard = ({ title, price, image }: { title: string; price: string; image: string; code?:string }) => {
   return (
     <div className="min-w-[220px] sm:min-w-[240px] lg:min-w-[260px] bg-white rounded-md shadow-sm p-4 flex flex-col">
       <div className="flex-1 flex items-center justify-center">
@@ -14,13 +14,13 @@ const ProductCard = ({ title, price, image }: { title: string; price: string; im
       </div>
 
       <div className="mt-3">
-        <p className="text-sm font-semibold leading-tight">{title}</p>
-        <p className="text-xs text-gray-500 mt-1">Код: 123-456</p>
+        <p className="text-sm leading-tight font-extrabold">{title}</p>
+        <p className="text-xs text-gray-500 mt-1 font-medium">Код: 123-456</p>
       </div>
 
       <div className="mt-4 flex items-center justify-between">
         <div>
-          <div className="text-sm font-bold">{price}</div>
+          <div className="text-sm font-extrabold">{price}</div>
         </div>
 
         <button className="bg-[#EA571E] text-white px-3 py-1 rounded text-sm hover:bg-[#d9481f] transition">

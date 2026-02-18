@@ -4,7 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 
 import ruCommon from '@/locales/ru/common.json'
 // import enCommon from '@/locales/en/common.json'
-// import kkCommon from '@/locales/kk/common.json'
+import kkCommon from '@/locales/kz/common.json'
 
 i18n
   .use(LanguageDetector)
@@ -12,15 +12,18 @@ i18n
   .init({
     resources: {
       ru: { common: ruCommon },
-    //   en: { common: enCommon },
-    //   kk: { common: kkCommon }
+      kk: { common: kkCommon }
+      // en: { common: enCommon },
     },
+    lng: 'ru',
     fallbackLng: 'ru',
     defaultNS: 'common',
     ns: ['common'],
     interpolation: {
       escapeValue: false
+    },
+    detection: {
+      order: ['localStorage', 'cookie', 'navigator'],
+      caches: ['localStorage', 'cookie'],
     }
   })
-
-export default i18n

@@ -1,9 +1,9 @@
 import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
 import BlogCard from '@/components/common/BlogCardProps'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
-import img1 from '@/assets/lazerStanok.png'
+import img1 from '@/assets/Home/lazerStanok.webp'
 
 
 const BlogPage = () => {
@@ -26,10 +26,10 @@ const BlogPage = () => {
               Блог компании
             </h1>
 
-            <h3 className='font-oswald font-extrabold mb-6 text-3xl'>Подберем станки под ваш бизнес</h3>
+            <h3 className='font-oswald font-bold mb-6 text-2xl'>Подберем станки под ваш бизнес</h3>
 
             <p className=" max-w-3xl mb-6 text-sm font-Monaper text-[#233337]">
-                Тут какой-то текст, в котором я фиг знает чо писать, потому что нам так и не предоставили никакой инфы. И кто вообще отвечает за это?
+              Тут какой-то текст, в котором я фиг знает чо писать, потому что нам так и не предоставили никакой инфы. И кто вообще отвечает за это?
             </p>
 
             <div className="flex flex-wrap gap-2 mb-8">
@@ -53,16 +53,16 @@ const BlogPage = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map(post => (
-                  <Link to={`/Blog/${post.id}`} className="block">
-                    <BlogCard
-                      key={post.id}
-                      image={post.image}
-                      text={post.text}
-                    />
-                  </Link>
+              {posts.map(post => (
+                <Link to={`/Blog/${post.id}`} className="block">
+                  <BlogCard
+                    key={post.id}
+                    image={post.image}
+                    text={post.text}
+                  />
+                </Link>
 
-                ))}
+              ))}
             </div>
 
             {/* PAGINATION */}

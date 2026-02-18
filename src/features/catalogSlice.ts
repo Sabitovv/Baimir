@@ -1,8 +1,14 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { Category } from "@/api/categoriesApi"
+
+export interface BreadcrumbItem {
+    id?: string | number; 
+    name: string;
+    slug?: string;
+    path: string;
+}
 
 type CatalogState = {
-    breadcrumbs: Category[]
+    breadcrumbs: BreadcrumbItem[]
 }
 
 const initialState: CatalogState = {
@@ -14,7 +20,7 @@ const catalogSlice = createSlice({
     initialState,
 
     reducers: {
-        setBreadcrumbs(state, action: PayloadAction<Category[]>) {
+        setBreadcrumbs(state, action: PayloadAction<BreadcrumbItem[]>) {
             state.breadcrumbs = action.payload
         },
         clearBreadcrumbs(state) {

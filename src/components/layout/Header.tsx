@@ -6,66 +6,89 @@ import { useTranslation } from 'react-i18next'
 import SearchIcon from '@mui/icons-material/Search'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
-import logo from '@/assets/log.png'
+import logo from '@/assets/Header/log.png'
 
 const Header = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
+
   const navItems = [
+    { id: 'catalog', path: '/Catalog' },
     { id: 'technologies', path: '/Technology' },
     { id: 'demo', path: '/Demo' },
     { id: 'production', path: '/Production' },
     { id: 'storage', path: '/Storage' },
     { id: 'service', path: '/Service' },
     { id: 'blog', path: '/Blog' },
-    { id: 'contacts', path: '/Contacts' },
-]
+  ]
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng)
+  }
+
+  const getLangClass = (lng: string) => {
+    return i18n.language === lng
+      ? 'text-[#F05023] font-bold border-b border-[#F05023]'
+      : 'text-white hover:text-[#F05023] transition-colors'
+  }
 
   return (
-    <header className="w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414]" >
+    <header className="w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414]">
+      <div className="hidden lg:flex h-full max-w-[1920px] mx-auto px-6 xl:px-[90px] items-center justify-between">
+        <Link to="/" className="shrink-0">
+          <img src={logo} alt="Baymir Logo" className="h-9" />
+        </Link>
 
-    <div className="hidden lg:flex h-full max-w-[1920px] mx-auto px-6 xl:px-[90px] items-center justify-between" >
+        <div className="flex items-center gap-8">
+          <div className="hidden xl:flex items-center w-[300px] h-10 border border-white/70 bg-black/30">
+            <input
+              placeholder={t('header.search')}
+              className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
+            />
+            <button className="px-4 border-l border-white/70">
+              <SearchIcon sx={{ color: 'white', fontSize: 20 }} />
+            </button>
+          </div>
 
-      <Link to="/" className="shrink-0">
-        <img src={logo} alt="Baymir Logo" className="h-9"/>
-      </Link>
-
-      <div className="flex items-center gap-8" >
-
-        <div className="hidden xl:flex items-center w-[300px] h-10 border border-white/70 bg-black/30" >
-          <input
-            placeholder={t('header.search')}
-            className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none font-manrope"
-          />
-          <button className="px-4 border-l border-white/70">
-            <SearchIcon sx={{ color: 'white', fontSize: 20 }} />
-          </button>
+          <nav className="flex gap-4 text-xs uppercase  font-700 tracking-widest whitespace-nowrap">
+            {navItems.map((key) => (
+              <NavLink
+                key={key.id}
+                to={key.path}
+                className={({ isActive }) =>
+                  isActive ? 'text-[#F05023]' : 'hover:text-[#F05023]'
+                }
+              >
+                {t(`header.nav.${key.id}`)}
+              </NavLink>
+            ))}
+          </nav>
         </div>
 
-        <nav className="flex gap-4 text-xs uppercase font-manrope font-700 tracking-widest whitespace-nowrap">
-          {navItems.map((key) => (
-            <NavLink
-              key={key.id}
-              to={key.path}
-              className={({ isActive }) =>
-                isActive
-                  ? 'text-[#F05023]'
-                  : 'hover:text-[#F05023]'
-              }
+        <div className="flex items-center gap-6 shrink-0">
+          <button className="border border-white px-3 py-2.5 text-xs  font-700 uppercase tracking-widest hover:bg-[#F05023] transition">
+            {t('header.cta')}
+          </button>
+
+          <div className="flex items-center gap-2 text-sm font-bold uppercase">
+            <button
+              onClick={() => changeLanguage('ru')}
+              className={getLangClass('ru')}
             >
-              {t(`header.nav.${key.id}`)}
-            </NavLink>
-          ))}
-        </nav>
+              RU
+            </button>
+            <span className="text-gray-500">|</span>
+            <button
+              onClick={() => changeLanguage('kk')}
+              className={getLangClass('kk')}
+            >
+              KZ
+            </button>
+          </div>
+        </div>
       </div>
-        
-      <button className="border border-white px-3 py-2.5 text-xs font-manrope font-700 uppercase tracking-widest hover:bg-[#F05023] transition shrink-0">
-        {t('header.cta')}
-      </button>
-    </div>
 
       <div className="lg:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
-
         <Link to="/">
           <img src={logo} alt="Baymir Logo" className="h-8" />
         </Link>
@@ -76,23 +99,21 @@ const Header = () => {
       </div>
 
       {open && (
-        <div className="fixed inset-0 bg-black text-white z-50">
-
+        <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">
           <div className="flex items-center justify-between h-[88px] px-4 border-b border-white/10">
-            <img src={logo} className="h-8" />
+            <img src={logo} className="h-8" alt="Logo" />
             <button onClick={() => setOpen(false)}>
               <CloseIcon sx={{ fontSize: 28 }} />
             </button>
           </div>
 
           <div className="p-6 flex flex-col gap-8">
-
             <div className="flex items-center h-12 border border-white/30">
               <input
                 placeholder={t('header.search')}
-                className="flex-1 bg-transparent px-4 outline-none font-manrope"
+                className="flex-1 bg-transparent px-4 outline-none"
               />
-              <SearchIcon sx={{ marginRight: 12 }} />
+              <SearchIcon sx={{ marginRight: 2 }} />
             </div>
 
             <nav className="flex flex-col gap-6 text-xl uppercase font-oswald font-600">
@@ -112,10 +133,23 @@ const Header = () => {
               {t('header.cta')}
             </button>
 
+            <div className="flex items-center justify-center gap-6 mt-4 pt-6 border-t border-white/10">
+              <button
+                onClick={() => { changeLanguage('ru'); setOpen(false); }}
+                className={`text-lg font-oswald ${getLangClass('ru')}`}
+              >
+                Русский
+              </button>
+              <button
+                onClick={() => { changeLanguage('kk'); setOpen(false); }}
+                className={`text-lg font-oswald ${getLangClass('kk')}`}
+              >
+                Қазақша
+              </button>
+            </div>
           </div>
         </div>
       )}
-
     </header>
   )
 }

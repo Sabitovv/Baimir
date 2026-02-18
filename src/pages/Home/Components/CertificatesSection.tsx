@@ -5,9 +5,9 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import 'swiper/css'
 
-import cert1 from '@/assets/image 137.png'
-import cert2 from '@/assets/image 139.png'
-import cert3 from '@/assets/image 140.png'
+import cert1 from '@/assets/Home/image 137.webp'
+import cert2 from '@/assets/Home/image 139.webp'
+import cert3 from '@/assets/Home/image 140.webp'
 
 const CertificatesSection = () => {
   const { t } = useTranslation()

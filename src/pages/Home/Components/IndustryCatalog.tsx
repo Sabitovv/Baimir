@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
-import imgStanok from '@/assets/lazerStanok.png'
+import imgStanok from '@/assets/Home/lazerStanok.webp'
 
 const IndustryCatalog = () => {
   const { t } = useTranslation()
@@ -21,7 +21,7 @@ const IndustryCatalog = () => {
             {t('home.catalog.title')}
           </h1>
 
-          <p className="text-gray-500 font-manrope mt-2
+          <p className="text-gray-500 mt-2
                         text-lg md:text-xl xl:text-2xl">
             {t('home.catalog.subtitle')}
           </p>

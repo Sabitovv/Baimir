@@ -1,8 +1,8 @@
 import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
-import photo from '@/assets/Production/photo_stanok.png'
-import photo2 from '@/assets/Production/photoStanok2.png'
-import photo3 from '@/assets/Production/photoStanok3.png'
+import photo from '@/assets/Production/photo_stanok.webp'
+import photo2 from '@/assets/Production/photoStanok2.webp'
+import photo3 from '@/assets/Production/photoStanok3.webp'
 import one from '@/assets/demoZal/one.svg'
 import two from '@/assets/demoZal/two.svg'
 import three from '@/assets/demoZal/three.svg'
@@ -17,7 +17,7 @@ const ProductionPage = () => {
   return (
     <PageContainer>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-14 font-manrope">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-14">
 
         <aside className="hidden lg:block">
           <CategoriesMenu />
@@ -30,11 +30,11 @@ const ProductionPage = () => {
               {t('production.title')}
             </h1>
 
-            <p className="text-xl mt-6 font-extrabold">
+            <h3 className="text-xl mt-1 font-bold font-oswald">
               {t('production.subTitle')}
-            </p>
+            </h3>
 
-            <p className="text-gray-600 mt-4 max-w-3xl font-light text-sm">
+            <p className="text-gray-600 mt-3 max-w-3xl font-light text-sm">
               {t('production.text')}
             </p>
 
@@ -127,9 +127,8 @@ const ProductionPage = () => {
                 return (
                   <div
                     key={i}
-                    className={`flex items-center gap-6 ${
-                      i !== 3 && 'border-b border-[#EA571E]'
-                    }`}
+                    className={`flex items-center gap-6 ${i !== 3 && 'border-b border-[#EA571E]'
+                      }`}
                   >
 
                     <img

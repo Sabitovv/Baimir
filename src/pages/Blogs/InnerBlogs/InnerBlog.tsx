@@ -1,6 +1,6 @@
 import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
-import img from '@/assets/lazerStanok.png'
+import img from '@/assets/Home/lazerStanok.webp'
 import { useParams } from 'react-router-dom'
 
 // type BlogInnerProps = {

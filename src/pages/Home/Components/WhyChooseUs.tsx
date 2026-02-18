@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
 
-import Experience from '@/assets/experience_icon.png'
-import Deliver from '@/assets/deliver_icon.png'
-import Garant from '@/assets/garant_icon.png'
-import Sklad from '@/assets/sklad_icon.png'
-import ServiceIcon from '@/assets/service_icon.png'
+import Experience from '@/assets/Home/experience_icon.webp'
+import Deliver from '@/assets/Home/deliver_icon.webp'
+import Garant from '@/assets/Home/garant_icon.webp'
+import Sklad from '@/assets/Home/sklad_icon.webp'
+import ServiceIcon from '@/assets/Home/service_icon.webp'
 
 type FeatureItem = {
   icon: string
@@ -72,7 +72,7 @@ const WhyChooseUs = () => {
                   {t(item.titleKey)}
                 </h3>
 
-                <p className="text-gray-600 text-sm leading-relaxed font-['Manrope']">
+                <p className="text-gray-600 text-sm leading-relaxed">
                   {t(item.textKey)}
                 </p>
               </div>

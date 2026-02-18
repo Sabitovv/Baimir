@@ -7,20 +7,20 @@ type BlogCardProps = {
 const BlogCard = ({ image, text }: BlogCardProps) => {
   return (
 
-      <article className="bg-white shadow-sm hover:shadow-md transition flex flex-col cursor-pointer h-full">
+    <article className="bg-white shadow-sm hover:shadow-md transition flex flex-col cursor-pointer h-full">
 
-        <img
-          src={image}
-          className="w-full h-[200px] object-cover"
-        />
+      <img
+        src={image}
+        className="w-full h-[200px] object-cover"
+      />
 
-        <div className="p-4 flex flex-col flex-grow">
-          <p className="leading-relaxed line-clamp-3 flex-grow font-Manrope font-extrabold text-sm">
-            {text}
-          </p>
-        </div>
+      <div className="p-4 flex flex-col flex-grow">
+        <p className="leading-relaxed line-clamp-3 flex-grow font-extrabold text-sm">
+          {text}
+        </p>
+      </div>
 
-      </article>
+    </article>
 
   )
 }
