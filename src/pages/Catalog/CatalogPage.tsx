@@ -9,7 +9,6 @@ import CategoriesMenu from '@/components/common/CategoriesMenu'
 import Contact from '@/components/common/Contact'
 import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
 
-// import prodImg from '@/assets/catalog/prod_sample.png'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import { PopularProduct } from './components/PopularProduct'
 
@@ -20,7 +19,6 @@ const CatalogPage = () => {
   const dispatch = useAppDispatch()
   const location = useLocation()
 
-  // 1. Оптимизация: Вычисляем текущий слаг и категорию только при изменении URL или данных
   const currentCategory = useMemo(() => {
     if (!data) return null
     const pathSegments = location.pathname
@@ -33,7 +31,6 @@ const CatalogPage = () => {
     return currentSlug ? data.find((i) => i.slug === currentSlug) ?? null : null
   }, [location.pathname, data])
 
-  // 2. Эффект для хлебных крошек
   useEffect(() => {
     if (!data) return
 
@@ -42,10 +39,8 @@ const CatalogPage = () => {
       return
     }
 
-    // Начальная точка
     const breadcrumbsList = [{ name: 'Каталог', path: '/catalog' }]
 
-    // Строим путь от текущей категории вверх к родителям
     const stack: typeof data = []
     let temp: typeof currentCategory | undefined | null = currentCategory
 
