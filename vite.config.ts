@@ -5,7 +5,7 @@ import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
-  base: '/Baimir/',
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
