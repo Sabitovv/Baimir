@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper/modules'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import reviewImg from '@/assets/Home/reviewImg.webp'
+import reviewImg from '@/assets/home/reviewImg.webp'
 import 'swiper/css'
 import 'swiper/css/navigation'
 

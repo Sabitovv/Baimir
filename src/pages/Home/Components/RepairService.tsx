@@ -1,6 +1,6 @@
 import PageContainer from '@/components/ui/PageContainer'
-import leftImg from '@/assets/Home/worker1.webp'
-import rightImg from '@/assets/Home/worker2.webp'
+import leftImg from '@/assets/home/worker1.webp'
+import rightImg from '@/assets/home/worker2.webp'
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
 
 const RepairService = () => {

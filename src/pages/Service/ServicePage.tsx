@@ -3,8 +3,8 @@ import CategoriesMenu from '@/components/common/CategoriesMenu'
 import Contact from '@/components/common/Contact'
 import Card from '@/components/common/CategoryCard'
 
-import teamPhoto from '@/assets/Service/groupImg.webp'
-import real2 from '@/assets/Service/TwoImg.webp'
+import teamPhoto from '@/assets/service/groupImg.webp'
+import real2 from '@/assets/service/TwoImg.webp'
 
 import { useTranslation } from 'react-i18next'
 

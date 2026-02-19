@@ -2,7 +2,7 @@ import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
 import CategoryCard from '@/components/common/CategoryCard'
 import Contact from '@/components/common/Contact'
-import imgStanok from '@/assets/Home/lazerStanok.webp'
+import imgStanok from '@/assets/home/lazerStanok.webp'
 import { useTranslation } from 'react-i18next'
 
 

@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
-import CardImg from '@/assets/Home/sklad1.webp'
-import CardImg2 from '@/assets/Home/sklad2.webp'
-import CardImg3 from '@/assets/Home/sklad3.webp'
+import CardImg from '@/assets/home/sklad1.webp'
+import CardImg2 from '@/assets/home/sklad2.webp'
+import CardImg3 from '@/assets/home/sklad3.webp'
 import { useState } from 'react'
 
 type StatItem = {

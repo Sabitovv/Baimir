@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
 
-import Experience from '@/assets/Home/experience_icon.webp'
-import Deliver from '@/assets/Home/deliver_icon.webp'
-import Garant from '@/assets/Home/garant_icon.webp'
-import Sklad from '@/assets/Home/sklad_icon.webp'
-import ServiceIcon from '@/assets/Home/service_icon.webp'
+import Experience from '@/assets/home/experience_icon.webp'
+import Deliver from '@/assets/home/deliver_icon.webp'
+import Garant from '@/assets/home/garant_icon.webp'
+import Sklad from '@/assets/home/sklad_icon.webp'
+import ServiceIcon from '@/assets/home/service_icon.webp'
 
 type FeatureItem = {
   icon: string

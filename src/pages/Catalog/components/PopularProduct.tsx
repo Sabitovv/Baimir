@@ -1,5 +1,5 @@
-import RightIcon from '@/assets/Catalog/right.svg'
-import LeftIcon from '@/assets/Catalog/left.svg'
+import RightIcon from '@/assets/catalog/right.svg'
+import LeftIcon from '@/assets/catalog/left.svg'
 import { useTranslation } from 'react-i18next'
 import { useRef, useEffect } from 'react'
 import ProductCard from '@/components/common/ProductCard'

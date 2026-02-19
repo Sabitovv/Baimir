@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import SearchIcon from '@mui/icons-material/Search'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
-import logo from '@/assets/Header/log.png'
+import logo from '@/assets/header/log.png'
 
 const Header = () => {
   const { t, i18n } = useTranslation()

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import bgMain from '@/assets/Home/background_main.webp'
+import bgMain from '@/assets/home/background_main.webp'
 
 const Hero = () => {
   const { t } = useTranslation()

@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
 
-import Discount from '@/assets/Home/handDiscount.webp'
-import Money from '@/assets/Home/handMoney.webp'
-import Heart from '@/assets/Home/handHeart.webp'
+import Discount from '@/assets/home/handDiscount.webp'
+import Money from '@/assets/home/handMoney.webp'
+import Heart from '@/assets/home/handHeart.webp'
 
 type BenefitItem = {
   titleKey: string

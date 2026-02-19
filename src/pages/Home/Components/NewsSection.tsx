@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import newsImg1 from '@/assets/Home/Rectangle 3366.webp'
-import newsImg2 from '@/assets/Home/Rectangle 3368.webp'
-import newsImg3 from '@/assets/Home/Rectangle 3370.webp'
+import newsImg1 from '@/assets/home/Rectangle 3366.webp'
+import newsImg2 from '@/assets/home/Rectangle 3368.webp'
+import newsImg3 from '@/assets/home/Rectangle 3370.webp'
 
 type NewsItem = {
   id: number

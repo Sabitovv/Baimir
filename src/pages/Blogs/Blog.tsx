@@ -3,7 +3,7 @@ import CategoriesMenu from '@/components/common/CategoriesMenu'
 import BlogCard from '@/components/common/BlogCardProps'
 import { Link } from 'react-router-dom'
 
-import img1 from '@/assets/Home/lazerStanok.webp'
+import img1 from '@/assets/home/lazerStanok.webp'
 
 
 const BlogPage = () => {

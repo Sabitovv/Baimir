@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
-import BgService from '@/assets/Home/bg_service.webp'
+import BgService from '@/assets/home/bg_service.webp'
 import { SvgIcon, type SvgIconProps } from '@mui/material'
 
 

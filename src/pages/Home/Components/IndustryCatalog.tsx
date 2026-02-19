@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
-import imgStanok from '@/assets/Home/lazerStanok.webp'
+import imgStanok from '@/assets/home/lazerStanok.webp'
 
 const IndustryCatalog = () => {
   const { t } = useTranslation()
