@@ -38,7 +38,6 @@ const StoragePage = () => {
               </h3>
             </ScrollReveal>
 
-            {/* Вы можете добавить здесь галерею, если она была в вашем коде, обернув её в <ScrollReveal delay={0.2}> */}
             <section className="mt-6 sm:mt-8">
               <ScrollReveal delay={0.2}>
                 <img
@@ -77,6 +76,10 @@ const StoragePage = () => {
             </section>
 
             <ScrollReveal delay={0.3} y={20}>
+              <Component />
+              <Component />
+              <Component />
+              <Component />
               <Component />
             </ScrollReveal>
 
