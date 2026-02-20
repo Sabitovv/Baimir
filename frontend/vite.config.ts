@@ -39,28 +39,28 @@ export default defineConfig({
 
     minify: 'esbuild',
 
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/react') ||
-            id.includes('node_modules/react-dom') ||
-            id.includes('node_modules/react-router-dom')) {
-            return 'react-core';
-          }
+    // rollupOptions: {
+    //   output: {
+    //     manualChunks(id) {
+    //       if (id.includes('node_modules/react') ||
+    //         id.includes('node_modules/react-dom') ||
+    //         id.includes('node_modules/react-router-dom')) {
+    //         return 'react-core';
+    //       }
 
-          if (id.includes('@mui/icons-material')) {
-            return 'mui-icons';
-          }
+    //       if (id.includes('@mui/icons-material')) {
+    //         return 'mui-icons';
+    //       }
 
-          if (id.includes('i18next')) {
-            return 'i18n';
-          }
+    //       if (id.includes('i18next')) {
+    //         return 'i18n';
+    //       }
 
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-        },
-      },
-    },
+    //       if (id.includes('node_modules')) {
+    //         return 'vendor';
+    //       }
+    //     },
+    //   },
+    // },
   },
 });
