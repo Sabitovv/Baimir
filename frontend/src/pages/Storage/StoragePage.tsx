@@ -36,7 +36,7 @@ const StoragePage = () => {
               <h3 className="text-lg sm:text-xl font-bold my-4 mb-8 whitespace-pre-line">
                 {t('storage.subTitle')}
               </h3>
-              <h3 className="text-lg sm:text-xl font-bold my-4 mb-8 whitespace-pre-line">
+              <h3 className="text-lg sm:text-xl font-bold mt-1 mb-8 whitespace-pre-line">
                 {t('storage.subTitle2')}
               </h3>
             </ScrollReveal>
