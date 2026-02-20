@@ -2,12 +2,12 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 const Home = lazy(() => import('@/pages/Home'))
-const TechnologiesPage = lazy(() => import('@/pages/Technologies/TechnologiesPage'))
-const InnerTechnologies = lazy(() => import('@/pages/Technologies/InnerTechbologies/InnerTechnologies'))
+// const TechnologiesPage = lazy(() => import('@/pages/Technologies/TechnologiesPage'))
+// const InnerTechnologies = lazy(() => import('@/pages/Technologies/InnerTechbologies/InnerTechnologies'))
 const Blog = lazy(() => import('@/pages/Blogs/Blog'))
 const InnerBlog = lazy(() => import('@/pages/Blogs/InnerBlogs/InnerBlog'))
-const DemoPage = lazy(() => import('@/pages/Demo/DemoPage'))
-const DemoInnerPage = lazy(() => import('@/pages/Demo/DemoInner'))
+// const DemoPage = lazy(() => import('@/pages/Demo/DemoPage'))
+// const DemoInnerPage = lazy(() => import('@/pages/Demo/DemoInner'))
 const ProductionPage = lazy(() => import('@/pages/Production/ProductionPage'))
 const StoragePage = lazy(() => import('@/pages/Storage/StoragePage'))
 const ServicePage = lazy(() => import('@/pages/Service/ServicePage'))
@@ -26,12 +26,12 @@ const AppRoutes = () => (
         <Routes>
             <Route path="/" element={<Home />} />
 
-            <Route path="/technology" element={<TechnologiesPage />} />
-            <Route path="/technology/:title" element={<InnerTechnologies />} />
+            {/* <Route path="/technology" element={<TechnologiesPage />} />
+            <Route path="/technology/:title" element={<InnerTechnologies />} /> */}
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<InnerBlog />} />
-            <Route path="/demo" element={<DemoPage />} />
-            <Route path="/demo/:id" element={<DemoInnerPage />} />
+            {/* <Route path="/demo" element={<DemoPage />} />
+            <Route path="/demo/:id" element={<DemoInnerPage />} /> */}
             <Route path="/production" element={<ProductionPage />} />
             <Route path="/storage" element={<StoragePage />} />
             <Route path="/service" element={<ServicePage />} />

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import SearchIcon from '@mui/icons-material/Search'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
-import logo from '@/assets/header/log.png'
+import logo from '@/assets/header/oldBg.svg'
 
 const Header = () => {
   const { t, i18n } = useTranslation()
@@ -14,8 +14,8 @@ const Header = () => {
 
   const navItems = [
     { id: 'catalog', path: '/Catalog' },
-    { id: 'technologies', path: '/Technology' },
-    { id: 'demo', path: '/Demo' },
+    // { id: 'technologies', path: '/Technology' },
+    // { id: 'demo', path: '/Demo' },
     { id: 'production', path: '/Production' },
     { id: 'storage', path: '/Storage' },
     { id: 'service', path: '/Service' },
@@ -35,17 +35,14 @@ const Header = () => {
   return (
     <header className="w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414] font-manrope">
 
-      {/* DESKTOP MENU (показывается только от 1280px и выше) */}
       <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
 
         <Link to="/" className="shrink-0 mr-4">
-          <img src={logo} alt="Baymir Logo" className="h-8 2xl:h-9" />
+          <img src={logo} alt="Baymir Logo" className="h-12 2xl:h-15" />
         </Link>
 
-        {/* Навигация и поиск */}
         <div className="flex items-center gap-4 2xl:gap-8">
 
-          {/* Поиск показываем только на очень больших экранах (от 1536px), чтобы не ломать верстку на 1280px */}
           <div className="hidden 2xl:flex items-center w-[260px] 3xl:w-[300px] h-10 border border-white/70 bg-black/30">
             <input
               placeholder={t('header.search')}
