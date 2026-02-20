@@ -34,13 +34,19 @@ const Header = () => {
 
   return (
     <header className="w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414] font-manrope">
-      <div className="hidden lg:flex h-full max-w-[1920px] mx-auto px-6 xl:px-[90px] items-center justify-between">
-        <Link to="/" className="shrink-0">
-          <img src={logo} alt="Baymir Logo" className="h-9" />
+
+      {/* DESKTOP MENU (показывается только от 1280px и выше) */}
+      <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
+
+        <Link to="/" className="shrink-0 mr-4">
+          <img src={logo} alt="Baymir Logo" className="h-8 2xl:h-9" />
         </Link>
 
-        <div className="flex items-center gap-8">
-          <div className="hidden xl:flex items-center w-[300px] h-10 border border-white/70 bg-black/30">
+        {/* Навигация и поиск */}
+        <div className="flex items-center gap-4 2xl:gap-8">
+
+          {/* Поиск показываем только на очень больших экранах (от 1536px), чтобы не ломать верстку на 1280px */}
+          <div className="hidden 2xl:flex items-center w-[260px] 3xl:w-[300px] h-10 border border-white/70 bg-black/30">
             <input
               placeholder={t('header.search')}
               className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
@@ -50,13 +56,13 @@ const Header = () => {
             </button>
           </div>
 
-          <nav className="flex gap-4 text-xs uppercase  font-bold tracking-widest whitespace-nowrap">
+          <nav className="flex gap-3 2xl:gap-4 text-[11px] 2xl:text-xs uppercase font-bold tracking-wider 2xl:tracking-widest whitespace-nowrap">
             {navItems.map((key) => (
               <NavLink
                 key={key.id}
                 to={key.path}
                 className={({ isActive }) =>
-                  isActive ? 'text-[#F05023]' : 'hover:text-[#F05023]'
+                  isActive ? 'text-[#F05023]' : 'hover:text-[#F05023] transition-colors'
                 }
               >
                 {t(`header.nav.${key.id}`)}
@@ -65,12 +71,12 @@ const Header = () => {
           </nav>
         </div>
 
-        <div className="flex items-center gap-6 shrink-0">
-          <button className="border border-white px-3 py-2.5 text-xs  font-700 uppercase tracking-widest hover:bg-[#F05023] transition">
+        <div className="flex items-center gap-4 2xl:gap-6 shrink-0 ml-4">
+          <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#F05023] transition-colors">
             {t('header.cta')}
           </button>
 
-          <div className="flex items-center gap-2 text-sm font-bold uppercase">
+          <div className="flex items-center gap-2 text-xs 2xl:text-sm font-bold uppercase shrink-0">
             <button
               onClick={() => changeLanguage('ru')}
               className={getLangClass('ru')}
@@ -88,7 +94,7 @@ const Header = () => {
         </div>
       </div>
 
-      <div className="lg:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
+      <div className="xl:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
         <Link to="/">
           <img src={logo} alt="Baymir Logo" className="h-8" />
         </Link>
@@ -122,14 +128,14 @@ const Header = () => {
                   key={key.id}
                   to={key.path}
                   onClick={() => setOpen(false)}
-                  className="hover:text-[#F05023]"
+                  className="hover:text-[#F05023] transition-colors"
                 >
                   {t(`header.nav.${key.id}`)}
                 </NavLink>
               ))}
             </nav>
 
-            <button className="mt-6 border border-white py-4 uppercase font-oswald font-600 tracking-widest hover:bg-[#F05023]">
+            <button className="mt-6 border border-white py-4 uppercase font-oswald font-600 tracking-widest hover:bg-[#F05023] transition-colors">
               {t('header.cta')}
             </button>
 

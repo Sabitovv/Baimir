@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
 import imgStanok from '@/assets/home/lazerStanok.webp'
+import ScrollReveal from '@/components/animations/ScrollReveal'
+import StaggerContainer from '@/components/animations/StaggerContainer'
+import StaggerItem from '@/components/animations/StaggerItem'
 
 const IndustryCatalog = () => {
   const { t } = useTranslation()
@@ -16,20 +19,22 @@ const IndustryCatalog = () => {
     <section className="py-16 md:py-20 bg-white">
       <PageContainer>
 
-        <div className="mb-8 md:mb-10">
-          <h1 className="font-oswald font-semibold uppercase text-[#111111] text-4xl md:text-5xl xl:text-6xl">
-            {t('home.catalog.title')}
-          </h1>
+        <ScrollReveal>
+          <div className="mb-8 md:mb-10">
+            <h1 className="font-oswald font-semibold uppercase text-[#111111] text-4xl md:text-5xl xl:text-6xl">
+              {t('home.catalog.title')}
+            </h1>
 
-          <p className="text-gray-500 mt-2
-                        text-lg md:text-xl xl:text-2xl">
-            {t('home.catalog.subtitle')}
-          </p>
-        </div>
+            <p className="text-gray-500 mt-2
+                          text-lg md:text-xl xl:text-2xl">
+              {t('home.catalog.subtitle')}
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {cards.map((card, index) => (
-            <div key={index} className="flex flex-col">
+            <StaggerItem key={index} className="flex flex-col">
 
               <div
                 className="
@@ -73,9 +78,9 @@ const IndustryCatalog = () => {
                 {t('home.catalog.link')} &gt;
               </a>
 
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
       </PageContainer>
     </section>

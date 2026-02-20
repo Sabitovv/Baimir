@@ -9,6 +9,11 @@ import four from '@/assets/demoZal/four.svg'
 import five from '@/assets/demoZal/five.svg'
 import Contact from '@/components/common/Contact'
 
+// Импорты компонентов анимации
+import ScrollReveal from '@/components/animations/ScrollReveal'
+import StaggerContainer from '@/components/animations/StaggerContainer'
+import StaggerItem from '@/components/animations/StaggerItem'
+
 const DemoPage = () => {
   const { t } = useTranslation()
   // const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -34,44 +39,50 @@ const DemoPage = () => {
 
           {/* HERO */}
           <section>
-            <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#F05023] leading-tight">
-              {t('demo.title')}
-            </h1>
+            <ScrollReveal>
+              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#F05023] leading-tight">
+                {t('demo.title')}
+              </h1>
 
-            <h3 className="font-oswald text-lg sm:text-xl lg:text-2xl font-bold mt-2 sm:mt-3 mb-4 sm:mb-6 whitespace-pre-line text-gray-900">
-              {t('demo.subTitle')}
-            </h3>
+              <h3 className="font-oswald text-lg sm:text-xl lg:text-2xl font-bold mt-2 sm:mt-3 mb-4 sm:mb-6 whitespace-pre-line text-gray-900">
+                {t('demo.subTitle')}
+              </h3>
 
-            <p className="text-gray-600 max-w-3xl mb-8 sm:mb-10 text-sm sm:text-base leading-relaxed">
-              {t('demo.text')}
-            </p>
+              <p className="text-gray-600 max-w-3xl mb-8 sm:mb-10 text-sm sm:text-base leading-relaxed">
+                {t('demo.text')}
+              </p>
+            </ScrollReveal>
 
             {/* VIDEO */}
-            <div className="relative max-w-4xl mx-auto rounded-lg overflow-hidden aspect-video shadow-md bg-black">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/APaLfGApE8A?rel=0"
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              ></iframe>
-            </div>
+            <ScrollReveal delay={0.2}>
+              <div className="relative max-w-4xl mx-auto rounded-lg overflow-hidden aspect-video shadow-md bg-black">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/APaLfGApE8A?rel=0"
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                ></iframe>
+              </div>
 
-            <p className="text-xs sm:text-sm text-gray-500 mt-3 font-light text-center sm:text-left">
-              {t('demo.videoSubText')}
-            </p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-3 font-light text-center sm:text-left">
+                {t('demo.videoSubText')}
+              </p>
+            </ScrollReveal>
           </section>
 
           {/* WHY */}
           <section className="max-w-3xl my-16 sm:my-20 lg:my-24">
-            <h3 className="font-extrabold text-xl sm:text-2xl lg:text-3xl mb-6 text-gray-900">
-              {t('demo.why')}
-            </h3>
+            <ScrollReveal>
+              <h3 className="font-extrabold text-xl sm:text-2xl lg:text-3xl mb-6 text-gray-900">
+                {t('demo.why')}
+              </h3>
+            </ScrollReveal>
 
-            <ul className="text-sm sm:text-base space-y-3 sm:space-y-4 text-gray-700">
+            <StaggerContainer className="text-sm sm:text-base space-y-3 sm:space-y-4 text-gray-700">
               {[1, 2, 3, 4].map((n) => (
-                <li key={n} className="leading-relaxed flex items-start">
+                <StaggerItem key={n} className="leading-relaxed flex items-start">
                   <span className="text-[#F05023] font-bold mr-2">•</span>
                   <span>
                     <span className="font-bold text-gray-900">
@@ -79,27 +90,28 @@ const DemoPage = () => {
                     </span>{' '}
                     {t(`demo.whytext${n}`)}
                   </span>
-                </li>
+                </StaggerItem>
               ))}
-            </ul>
+            </StaggerContainer>
           </section>
 
           {/* HOW IT WORKS */}
           <section className="max-w-4xl mx-auto mb-20 sm:mb-28">
-            <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-bold text-[#F05023] uppercase mb-8 sm:mb-10 text-center sm:text-left">
-              {t("demo.work")}
-            </h2>
+            <ScrollReveal>
+              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-bold text-[#F05023] uppercase mb-8 sm:mb-10 text-center sm:text-left">
+                {t("demo.work")}
+              </h2>
+            </ScrollReveal>
 
-            <div className="flex flex-col">
+            <StaggerContainer className="flex flex-col">
               {[one, two, three, four, five].map((icon, i) => {
                 const isLast = i === 4;
 
                 return (
-                  <div
+                  <StaggerItem
                     key={i}
-                    className={`flex items-start sm:items-center gap-4 sm:gap-6 py-6 sm:py-8 ${
-                      !isLast ? 'border-b border-gray-200' : ''
-                    }`}
+                    className={`flex items-start sm:items-center gap-4 sm:gap-6 py-6 sm:py-8 ${!isLast ? 'border-b border-gray-200' : ''
+                      }`}
                   >
                     <img
                       src={icon}
@@ -116,22 +128,24 @@ const DemoPage = () => {
                         {t(`demo.worktext${i + 1}`)}
                       </p>
                     </div>
-                  </div>
+                  </StaggerItem>
                 )
               })}
-            </div>
+            </StaggerContainer>
           </section>
 
           {/* FORM */}
-          <section className="mb-20 sm:mb-32 lg:mb-40 px-2 sm:px-0">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-oswald font-semibold mb-8 sm:mb-10 text-center sm:text-left text-gray-900 uppercase">
-              Записаться в демозал
-            </h2>
+          <ScrollReveal y={40} className="mb-20 sm:mb-32 lg:mb-40 px-2 sm:px-0">
+            <section>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-oswald font-semibold mb-8 sm:mb-10 text-center sm:text-left text-gray-900 uppercase">
+                Записаться в демозал
+              </h2>
 
-            <div className="max-w-xl mx-auto sm:mx-0">
-              <Contact />
-            </div>
-          </section>
+              <div className="max-w-xl mx-auto sm:mx-0">
+                <Contact />
+              </div>
+            </section>
+          </ScrollReveal>
 
         </main>
       </div>

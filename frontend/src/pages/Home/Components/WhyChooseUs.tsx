@@ -1,5 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
+import ScrollReveal from '@/components/animations/ScrollReveal'
+import StaggerContainer from '@/components/animations/StaggerContainer'
+import StaggerItem from '@/components/animations/StaggerItem'
 
 import Experience from '@/assets/home/experience_icon.webp'
 import Deliver from '@/assets/home/deliver_icon.webp'
@@ -54,30 +57,33 @@ const WhyChooseUs = () => {
       <PageContainer>
         <div className="px-6 md:px-0">
 
-          <h2 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase mb-8 md:mb-12 text-[#111111]">
-            {t('home.why.title')}
-          </h2>
+          <ScrollReveal>
+            <h2 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase mb-8 md:mb-12 text-[#111111]">
+              {t('home.why.title')}
+            </h2>
+          </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {features.map((item, index) => (
-              <div
-                key={index}
-                className="bg-white p-8 shadow-sm hover:shadow-md transition group"
-              >
-                <div className="text-[#F05023] mb-4">
-                  <img src={item.icon} alt="" />
+              <StaggerItem key={index}>
+                <div
+                  className="bg-white p-8 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group"
+                >
+                  <div className="text-[#F05023] mb-4">
+                    <img src={item.icon} alt="" />
+                  </div>
+
+                  <h3 className="text-base md:text-xl font-oswald font-bold uppercase mb-2">
+                    {t(item.titleKey)}
+                  </h3>
+
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {t(item.textKey)}
+                  </p>
                 </div>
-
-                <h3 className="text-base md:text-xl font-oswald font-bold uppercase mb-2">
-                  {t(item.titleKey)}
-                </h3>
-
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {t(item.textKey)}
-                </p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
 
         </div>
       </PageContainer>

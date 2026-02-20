@@ -1,5 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
+import ScrollReveal from '@/components/animations/ScrollReveal'
+import StaggerContainer from '@/components/animations/StaggerContainer'
+import StaggerItem from '@/components/animations/StaggerItem'
 
 import Discount from '@/assets/home/handDiscount.webp'
 import Money from '@/assets/home/handMoney.webp'
@@ -36,29 +39,32 @@ const ForClients = () => {
     <section className="mb-20 md:mb-32">
       <PageContainer>
 
-        <h1 className="font-oswald font-semibold text-4xl md:text-5xl xl:text-6xl uppercase mt-32">
-          {t('home.clients.title')}
-        </h1>
+        <ScrollReveal>
+          <h1 className="font-oswald font-semibold text-4xl md:text-5xl xl:text-6xl uppercase mt-32">
+            {t('home.clients.title')}
+          </h1>
+        </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-14">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-14">
           {benefits.map((item, index) => (
-            <div
-              key={index}
-              className="border-[#F05023] border-4 p-4 md:p-8"
-            >
-              <div className="flex justify-between items-center mb-6 md:mb-8 xl:mb-12">
-                <h3 className="font-oswald font-bold text-xl md:text-2xl xl:text-3xl uppercase">
-                  {t(item.titleKey)}
-                </h3>
-                <img src={item.image} className='w-14 h-14' alt="" />
-              </div>
+            <StaggerItem key={index} className="h-full">
+              <div
+                className="border-[#F05023] border-4 p-4 md:p-8 hover:-translate-y-1 transition-transform duration-300 h-full flex flex-col"
+              >
+                <div className="flex justify-between items-start mb-6 md:mb-8 xl:mb-12">
+                  <h3 className="font-oswald font-bold text-xl md:text-2xl xl:text-3xl uppercase pr-4">
+                    {t(item.titleKey)}
+                  </h3>
+                  <img src={item.image} className='w-14 h-14 shrink-0' alt="" />
+                </div>
 
-              <p className="mt-6 md:mt-8 xl:mt-12 text-base md:text-lg leading-relaxed">
-                {t(item.textKey)}
-              </p>
-            </div>
+                <p className="text-base md:text-lg leading-relaxed">
+                  {t(item.textKey)}
+                </p>
+              </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
       </PageContainer>
     </section>

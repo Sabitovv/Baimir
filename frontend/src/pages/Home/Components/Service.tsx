@@ -2,9 +2,9 @@ import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
 import BgService from '@/assets/home/bg_service.webp'
 import { SvgIcon, type SvgIconProps } from '@mui/material'
-
-
-
+import ScrollReveal from '@/components/animations/ScrollReveal'
+import StaggerContainer from '@/components/animations/StaggerContainer'
+import StaggerItem from '@/components/animations/StaggerItem'
 
 const Service = () => {
   const { t } = useTranslation()
@@ -37,23 +37,24 @@ const Service = () => {
     >
       <PageContainer>
         <div className="mb-10">
-          <h1 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase text-white">
-            {t('home.service.title')}
-          </h1>
+          <ScrollReveal>
+            <h1 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase text-white">
+              {t('home.service.title')}
+            </h1>
+          </ScrollReveal>
 
-          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-16">
+          <StaggerContainer staggerDelay={0.1} className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-16">
             {services.map((key) => (
-              <div
-                key={key}
-                className="flex gap-4 items-center"
-              >
-                <CheckCircleIconCustom fontSize="large" />
-                <p className="font-oswald font-bold text-base md:text-xl  text-white">
-                  {t(key)}
-                </p>
-              </div>
+              <StaggerItem key={key}>
+                <div className="flex gap-4 items-center">
+                  <CheckCircleIconCustom fontSize="large" />
+                  <p className="font-oswald font-bold text-base md:text-xl  text-white">
+                    {t(key)}
+                  </p>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </PageContainer>
     </section>

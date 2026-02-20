@@ -8,6 +8,9 @@ import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
 import Contact from '@/components/common/Contact'
 import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
+import ScrollReveal from '@/components/animations/ScrollReveal'
+import StaggerContainer from '@/components/animations/StaggerContainer'
+import StaggerItem from '@/components/animations/StaggerItem'
 
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import { PopularProduct } from './components/PopularProduct'
@@ -105,9 +108,11 @@ const CatalogPage = () => {
     <PageContainer>
       <div className="mt-12 px-4 md:px-6 lg:px-0">
         {/* TITLE */}
-        <h1 className="font-oswald text-3xl md:text-4xl font-bold uppercase mb-10">
-          Каталог товаров
-        </h1>
+        <ScrollReveal>
+          <h1 className="font-oswald text-3xl md:text-4xl font-bold uppercase mb-10">
+            Каталог товаров
+          </h1>
+        </ScrollReveal>
 
         <div className="my-4 text-sm text-gray-500">
           <Breadcrumbs />
@@ -122,36 +127,37 @@ const CatalogPage = () => {
           {/* CONTENT */}
           <main className="ml-0 lg:ml-5"> {/* ml-5 на мобилке может мешать, добавил lg: */}
             {/* GRID */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {visibleCategories.map((item) => (
-                <div
-                  onClick={() => {
-                    const isLeaf = !hasChildren(item.id)
-                    if (isLeaf) {
-                      navigate(`/catalog/${item.slug}/products/${item.id}?categoryId=${item.id}`)
-                    } else {
-                      navigate(`/catalog/${item.slug}?categoryId=${item.id}`)
-                    }
-                  }}
-                  key={item.id}
-                  className="bg-white p-6 shadow-sm hover:shadow-md transition rounded-lg cursor-pointer flex flex-col items-center group"
-                >
-                  {/* ИЗОБРАЖЕНИЕ: Добавил lazy и размеры для Lighthouse */}
-                  <div className="w-full h-[130px] flex items-center justify-center">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      loading="lazy"
-                      width="130"
-                      height="130"
-                      className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
-                    />
-                  </div>
+                <StaggerItem key={item.id}>
+                  <div
+                    onClick={() => {
+                      const isLeaf = !hasChildren(item.id)
+                      if (isLeaf) {
+                        navigate(`/catalog/${item.slug}/products/${item.id}?categoryId=${item.id}`)
+                      } else {
+                        navigate(`/catalog/${item.slug}?categoryId=${item.id}`)
+                      }
+                    }}
+                    className="bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 rounded-lg cursor-pointer flex flex-col items-center group"
+                  >
+                    {/* ИЗОБРАЖЕНИЕ: Добавил lazy и размеры для Lighthouse */}
+                    <div className="w-full h-[130px] flex items-center justify-center">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        loading="lazy"
+                        width="130"
+                        height="130"
+                        className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
+                      />
+                    </div>
 
-                  <p className="mt-4 font-semibold text-center text-gray-800">
-                    {item.name}
-                  </p>
-                </div>
+                    <p className="mt-4 font-semibold text-center text-gray-800">
+                      {item.name}
+                    </p>
+                  </div>
+                </StaggerItem>
               ))}
 
               {/* Показываем сообщение, если подкатегорий нет */}
@@ -160,7 +166,7 @@ const CatalogPage = () => {
                   В этой категории пока нет подкатегорий.
                 </div>
               )}
-            </div>
+            </StaggerContainer>
           </main>
         </div>
 
@@ -168,29 +174,31 @@ const CatalogPage = () => {
         <PopularProduct />
 
         {/* Leave request section */}
-        <section className="mb-16">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            {/* Left: form */}
-            <div className="px-2 md:px-0 order-2 md:order-1">
-              <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
-                ОСТАВЬТЕ ЗАЯВКУ
-              </h3>
-              <Contact />
-            </div>
+        <ScrollReveal>
+          <section className="mb-16">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              {/* Left: form */}
+              <div className="px-2 md:px-0 order-2 md:order-1">
+                <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
+                  ОСТАВЬТЕ ЗАЯВКУ
+                </h3>
+                <Contact />
+              </div>
 
-            {/* Right: big image */}
-            <div className="flex justify-center md:justify-end px-2 md:px-0 order-1 md:order-2">
-              <img
-                src={sampleImg}
-                alt="Лазерный станок - пример"
-                loading="lazy"
-                width="500"
-                height="400"
-                className="max-w-full w-72 sm:w-full object-contain"
-              />
+              {/* Right: big image */}
+              <div className="flex justify-center md:justify-end px-2 md:px-0 order-1 md:order-2">
+                <img
+                  src={sampleImg}
+                  alt="Лазерный станок - пример"
+                  loading="lazy"
+                  width="500"
+                  height="400"
+                  className="max-w-full w-72 sm:w-full object-contain"
+                />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </ScrollReveal>
       </div>
     </PageContainer>
   )

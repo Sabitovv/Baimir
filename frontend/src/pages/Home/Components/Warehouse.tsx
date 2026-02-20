@@ -4,6 +4,9 @@ import CardImg from '@/assets/home/sklad1.webp'
 import CardImg2 from '@/assets/home/sklad2.webp'
 import CardImg3 from '@/assets/home/sklad3.webp'
 import { useState } from 'react'
+import ScrollReveal from '@/components/animations/ScrollReveal'
+import StaggerContainer from '@/components/animations/StaggerContainer'
+import StaggerItem from '@/components/animations/StaggerItem'
 
 type StatItem = {
   value: string
@@ -28,19 +31,21 @@ const Warehouse = () => {
     <section className="py-16 md:py-20 bg-white">
       <PageContainer>
 
-        <h1
-          className="
-          font-oswald font-bold uppercase text-[#111111]
-          text-4xl md:text-5xl xl:text-6xl
-          mb-10
-        "
-        >
-          {t('home.warehouse.title')}
-        </h1>
+        <ScrollReveal>
+          <h1
+            className="
+            font-oswald font-bold uppercase text-[#111111]
+            text-4xl md:text-5xl xl:text-6xl
+            mb-10
+          "
+          >
+            {t('home.warehouse.title')}
+          </h1>
+        </ScrollReveal>
 
         <div className="flex flex-col lg:flex-row gap-10">
 
-          <div className="flex-1">
+          <ScrollReveal className="flex-1">
 
             <div className="mb-4">
               <img
@@ -71,38 +76,38 @@ const Warehouse = () => {
               ))}
             </div>
 
-          </div>
+          </ScrollReveal>
 
-          <div className="w-full lg:w-[420px] flex flex-col gap-8">
+          <StaggerContainer staggerDelay={0.15} className="w-full lg:w-[420px] flex flex-col gap-8">
 
             {stats.map((item, index) => (
-              <div key={index}>
+              <StaggerItem key={index}>
+                <div>
+                  <div
+                    className="
+                    font-oswald font-bold text-[#F05023]
+                    text-4xl md:text-5xl
+                    leading-none
+                    mb-2
+                  "
+                  >
+                    {item.value}
 
-                <div
-                  className="
-                  font-oswald font-bold text-[#F05023]
-                  text-4xl md:text-5xl
-                  leading-none
-                  mb-2
-                "
-                >
-                  {item.value}
+                    {item.unit && (
+                      <span className="text-xl md:text-2xl ml-1 font-oswald font-semibold">
+                        {t(`home.warehouse.units.${item.unit}`)}
+                      </span>
+                    )}
+                  </div>
 
-                  {item.unit && (
-                    <span className="text-xl md:text-2xl ml-1 font-oswald font-semibold">
-                      {t(`home.warehouse.units.${item.unit}`)}
-                    </span>
-                  )}
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {t(item.textKey)}
+                  </p>
                 </div>
-
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {t(item.textKey)}
-                </p>
-
-              </div>
+              </StaggerItem>
             ))}
 
-          </div>
+          </StaggerContainer>
 
         </div>
 
