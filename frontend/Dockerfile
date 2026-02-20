@@ -5,8 +5,7 @@ WORKDIR /app
 COPY package.json package.json
 RUN npm install
 COPY . . 
-ENV NODE_OPTIONS=--max-old-space-size=768
-RUN npm run build
+RUN npx vite build
 
 FROM nginx:stable-alpine
 
