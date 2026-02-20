@@ -7,7 +7,7 @@ const RepairService = () => {
   return (
     <section className="py-24 bg-[#F5F7F8]">
       <PageContainer>
-        <h1 className="font-['Oswald'] text-[#0E1621] text-6xl font-bold uppercase mb-4">
+        <h1 className="font-oswald text-[#0E1621] text-6xl font-bold uppercase mb-4">
           СЕРВИС ПО РЕМОНТУ СТАНКОВ
         </h1>
 
@@ -40,7 +40,7 @@ const RepairService = () => {
           <div className="relative z-20 flex w-full h-full justify-between">
 
             <div className="w-[40%] px-12 py-12 text-[#233337] mt-10">
-              <h3 className="font-['Oswald'] text-3xl uppercase mb-6 font-bold">
+              <h3 className="font-oswald text-3xl uppercase mb-6 font-bold">
                 ПЛЮСЫ ДЛЯ ИНЖЕНЕРА-РЕМОНТНИКА
               </h3>
 
@@ -61,7 +61,7 @@ const RepairService = () => {
 
             <div className="flex-1 px-16 py-12 text-white flex flex-col justify-between text-end mt-10">
               <div>
-                <h3 className="font-['Oswald'] text-3xl uppercase mb-6 font-bold">
+                <h3 className="font-oswald text-3xl uppercase mb-6 font-bold">
                   ПЛЮСЫ ДЛЯ ЗАКАЗЧИКА
                 </h3>
 

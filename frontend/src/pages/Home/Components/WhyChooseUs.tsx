@@ -54,7 +54,7 @@ const WhyChooseUs = () => {
       <PageContainer>
         <div className="px-6 md:px-0">
 
-          <h2 className="text-4xl md:text-5xl xl:text-6xl font-['Oswald'] font-bold uppercase mb-8 md:mb-12 text-[#111111]">
+          <h2 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase mb-8 md:mb-12 text-[#111111]">
             {t('home.why.title')}
           </h2>
 
@@ -68,7 +68,7 @@ const WhyChooseUs = () => {
                   <img src={item.icon} alt="" />
                 </div>
 
-                <h3 className="text-base md:text-xl font-['Oswald'] font-bold uppercase mb-2">
+                <h3 className="text-base md:text-xl font-oswald font-bold uppercase mb-2">
                   {t(item.titleKey)}
                 </h3>
 

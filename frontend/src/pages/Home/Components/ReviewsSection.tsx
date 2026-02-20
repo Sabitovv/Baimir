@@ -34,7 +34,7 @@ const ReviewsSection = () => {
 
         <h2
           className="
-            font-oswald font-bold uppercase text-[#111111]
+            font-oswald font-semibold uppercase text-[#111111]
             text-3xl md:text-4xl xl:text-[54px]
             mb-10 md:mb-12 xl:mb-16
             tracking-tight

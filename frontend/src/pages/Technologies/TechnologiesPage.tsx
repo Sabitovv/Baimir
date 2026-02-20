@@ -18,11 +18,11 @@ const TechnologiesPage = () => {
           </aside>
 
           <section className='flex flex-col mx-auto'>
-            <h1 className="font-oswald text-2xl font-bold md:text-3xl xl:text-4xl uppercase text-[#F05023]">
+            <h1 className="font-oswald font-semibold text-3xl font-bold md:text-4xl xl:text-[45px] uppercase text-[#F05023]">
               {t('technology.title')}
             </h1>
 
-            <h3 className='font-oswald text-xl font-bold mb-4 mt-1' style={{ whiteSpace: 'pre-line' }}>{t('technology.subTitle')}</h3>
+            <h3 className='text-xl font-bold mb-4 mt-1' style={{ whiteSpace: 'pre-line' }}>{t('technology.subTitle')}</h3>
 
             <p className="text-gray-600 max-w-3xl mb-6 text-sm md:text-base">
               {t('technology.text')}

@@ -36,7 +36,7 @@ const ForClients = () => {
     <section className="mb-20 md:mb-32">
       <PageContainer>
 
-        <h1 className="font-['Oswald'] font-semibold text-4xl md:text-5xl xl:text-6xl uppercase mt-32">
+        <h1 className="font-oswald font-semibold text-4xl md:text-5xl xl:text-6xl uppercase mt-32">
           {t('home.clients.title')}
         </h1>
 
@@ -44,10 +44,10 @@ const ForClients = () => {
           {benefits.map((item, index) => (
             <div
               key={index}
-              className="border-[#F05023] border-4 p-4 md:p-8 rounded-lg"
+              className="border-[#F05023] border-4 p-4 md:p-8"
             >
-              <div className="flex justify-between items-center gap-4 mb-6 md:mb-8 xl:mb-12">
-                <h3 className="font-['Oswald'] font-bold text-xl md:text-2xl xl:text-3xl uppercase">
+              <div className="flex justify-between items-center mb-6 md:mb-8 xl:mb-12">
+                <h3 className="font-oswald font-bold text-xl md:text-2xl xl:text-3xl uppercase">
                   {t(item.titleKey)}
                 </h3>
                 <img src={item.image} className='w-14 h-14' alt="" />

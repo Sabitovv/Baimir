@@ -37,7 +37,7 @@ const Service = () => {
     >
       <PageContainer>
         <div className="mb-10">
-          <h1 className="text-4xl md:text-5xl xl:text-6xl font-['Oswald'] font-bold uppercase text-white">
+          <h1 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase text-white">
             {t('home.service.title')}
           </h1>
 
@@ -48,7 +48,7 @@ const Service = () => {
                 className="flex gap-4 items-center"
               >
                 <CheckCircleIconCustom fontSize="large" />
-                <p className="font-['Oswald'] font-bold text-base md:text-xl  text-white">
+                <p className="font-oswald font-bold text-base md:text-xl  text-white">
                   {t(key)}
                 </p>
               </div>

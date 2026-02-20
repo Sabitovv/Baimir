@@ -33,7 +33,7 @@ const Hero = () => {
               lg:text-[64px]
               md:text-[52px]
               text-[38px]
-              font-600
+              font-semibold
             "
           >
             {t('hero.title')}
@@ -45,7 +45,7 @@ const Hero = () => {
               mt-6 md:mt-8
               text-gray-300 uppercase tracking-widest
               text-[11px] md:text-sm
-              font-600
+              font-semibold
             "
           >
             <span>{t('hero.tags.laser')}</span>
@@ -60,7 +60,7 @@ const Hero = () => {
               mt-8 md:mt-12
               bg-[#F05023] hover:bg-[#d1401b]
               px-8 md:px-10 py-3 md:py-4
-              font-700 uppercase tracking-widest
+              font-bold uppercase tracking-widest
               transition
               text-xs md:text-sm
             "
@@ -90,7 +90,7 @@ const Hero = () => {
             <p
               className="
                 max-w-[800px]
-                text-white font-400
+                text-white font-normal
                 text-xs md:text-sm
                 leading-7 md:leading-8
               "
@@ -106,6 +106,7 @@ const Hero = () => {
                 bg-black/30 hover:bg-[#F05023]
                 transition group
                 shrink-0
+                font-oswald
               "
             >
               <svg

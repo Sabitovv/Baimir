@@ -9,7 +9,6 @@ import real2 from '@/assets/service/TwoImg.webp'
 import { useTranslation } from 'react-i18next'
 
 const ServicePage = () => {
-
   const { t } = useTranslation()
 
   const services = [
@@ -23,188 +22,134 @@ const ServicePage = () => {
 
   return (
     <PageContainer>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-8 mt-8 md:mt-12 ">
-
-        <aside className="hidden lg:block">
+      {/* Главная сетка: 
+        Мобилки - 1 колонка. 
+        ПК (lg) - 2 колонки (Сайдбар 280px + Контент) 
+      */}
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+        
+        <aside className="hidden lg:block w-full">
           <CategoriesMenu />
         </aside>
 
-        <main className="w-full">
-
+        <main className="w-full min-w-0"> {/* min-w-0 предотвращает вылезание контента за пределы сетки */}
+          
           <section>
-
-            <h1 className="font-oswald text-lg sm:text-xl md:text-2xl xl:text-4xl font-semibold uppercase text-[#EA571E]">
+            <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#EA571E] leading-tight">
               {t('service.title')}
             </h1>
-
-            <h3 className="text-sm sm:text-base md:text-lg mt-1 sm:mt-1 font-bold font-oswald">
+            <h3 className="text-base sm:text-lg lg:text-xl mt-2 font-bold font-oswald text-gray-800">
               {t('service.subTitle')}
             </h3>
-
           </section>
 
-          <section className="mt-3 sm:mt-4">
-
+          <section className="mt-4 sm:mt-6">
             <img
               src={teamPhoto}
-              className="w-full object-cover"
+              className="w-full h-auto aspect-video sm:aspect-auto object-cover rounded-sm"
               alt="service team"
             />
-
-            <p className="text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3">
+            <p className="text-sm text-gray-500 mt-2 sm:mt-3 leading-relaxed">
               {t('service.team.imageText')}
             </p>
-
           </section>
 
-          <section className="mt-12 sm:mt-16">
-
-            <h2 className="font-oswald text-xl sm:text-2xl md:text-3xl font-semibold uppercase text-[#EA571E] mb-6 sm:mb-8">
+          <section className="mt-12 sm:mt-16 lg:mt-20">
+            <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#EA571E] mb-6 sm:mb-8">
               {t('service.services.title')}
             </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-
+            
+            {/* Сетка услуг: 1 кол. на мобилках, 2 на планшетах, 3 на широких экранах (xl) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {services.map((item, i) => (
                 <div
                   key={i}
-                  className="text-[#EA571E] bg-white py-8 sm:py-10 px-4 text-center font-bold hover:shadow-md transition cursor-pointer"
+                  className="flex items-center justify-center text-[#EA571E] bg-white p-6 sm:py-8 md:py-10 text-center font-bold hover:shadow-lg transition-shadow duration-300 cursor-pointer text-lg sm:text-xl rounded-sm border border-gray-100"
                 >
                   {item}
                 </div>
               ))}
-
             </div>
-
           </section>
 
-          <section className="mt-14 sm:mt-20">
-
-            <h2 className="font-oswald text-xl sm:text-2xl md:text-3xl font-semibold uppercase mb-5 sm:mb-6">
+          <section className="mt-16 sm:mt-20 lg:mt-24">
+            <h2 className="font-oswald text-2xl sm:text-3xl font-semibold uppercase mb-6 sm:mb-8 text-gray-900">
               {t('service.why.title')}
             </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6 sm:gap-8 items-start">
-
+            
+            <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-6 sm:gap-8 items-start">
               <img
                 src={teamPhoto}
-                className="mx-auto md:mx-0 max-w-[260px] md:max-w-full"
+                className="w-full max-w-[320px] mx-auto md:mx-0 object-cover rounded-sm"
                 alt="work"
               />
-
-              <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+              <p className="text-base text-gray-700 leading-relaxed">
                 {t('service.why.text1')}
                 <br /><br />
                 {t('service.why.text2')}
               </p>
-
             </div>
-
           </section>
 
-          <section className="mt-20 sm:mt-28 -mx-[calc(50vw-50%)] py-12 sm:py-16">
-
-            <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 sm:gap-10 items-end">
-
+          {/* Секция с инженерами. Отрицательные отступы сделаны безопаснее для мобилок */}
+          <section className="mt-16 sm:mt-24 -mx-4 sm:-mx-8 lg:-mx-[calc(50vw-50%)] px-4 sm:px-8 lg:px-[calc(50vw-50%)] py-12 sm:py-16">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(250px,400px)] gap-10 sm:gap-12 lg:gap-16 items-center">
               <div>
-
-                <h2 className="font-oswald text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold uppercase mb-6 sm:mb-10">
+                <h2 className="font-oswald text-xl sm:text-2xl font-semibold uppercase mb-8 sm:mb-10 text-gray-900">
                   {t('service.engineers.title')}
                 </h2>
-
                 <div className="space-y-6 sm:space-y-8">
-
-                  {[
-                    'certification',
-                    'experience',
-                    'coverage',
-                    'speed'
-                  ].map((item, i) => (
-
+                  {['certification', 'experience', 'coverage', 'speed'].map((item, i) => (
                     <div key={i}>
-
-                      <p className="text-[#EA571E] font-semibold mb-1 sm:mb-2">
+                      <p className="text-[#EA571E] font-bold text-lg mb-1 sm:mb-2">
                         {t(`service.engineers.${item}.title`)}
                       </p>
-
-                      <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
+                      <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
                         {t(`service.engineers.${item}.text`)}
                       </p>
-
                     </div>
-
                   ))}
-
                 </div>
-
               </div>
 
-              <div className="flex justify-center lg:justify-end">
-
+              <div className="flex justify-center lg:justify-end order-first lg:order-last">
                 <img
                   src={real2}
-                  className="max-w-[260px] sm:max-w-[320px] md:max-w-[380px]"
+                  className="w-full max-w-[280px] sm:max-w-[350px] lg:max-w-full object-contain"
                   alt="engineers"
                 />
-
               </div>
-
             </div>
-
           </section>
 
-          <section className="mt-20 sm:mt-32 max-w-3xl">
-
-            <h2 className="font-extrabold text-xl sm:text-2xl">
+          <section className="mt-16 sm:mt-24 max-w-5xl">
+            <h2 className="font-oswald text-2xl sm:text-3xl font-semibold uppercase text-gray-900">
               {t('service.realObjects.title')}
             </h2>
-
-            <p className="mt-2 text-sm sm:text-base">
+            <p className="mt-3 text-sm sm:text-base text-gray-600 leading-relaxed max-w-3xl">
               {t('service.realObjects.text')}
             </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-
-              <Card
-                title={t('service.realObjects.cardTitle')}
-                image={teamPhoto}
-              />
-
-              <Card
-                title={t('service.realObjects.cardTitle')}
-                image={teamPhoto}
-              />
-
-              <Card
-                title={t('service.realObjects.cardTitle')}
-                image={teamPhoto}
-              />
-
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 mt-8 sm:mt-10">
+              <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} />
+              <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} />
+              <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} />
             </div>
-
           </section>
 
-          <section className="my-16 sm:my-20 md:my-32 px-2 sm:px-4">
-
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-oswald font-semibold mb-6 sm:mb-8 uppercase text-center md:text-left">
+          <section className="mt-20 mb-16 sm:mt-28 sm:mb-20">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-oswald font-semibold mb-8 sm:mb-10 uppercase text-center md:text-left text-gray-900">
               {t('service.contact.title')}
             </h2>
-
-            <div className="flex justify-center md:justify-start">
-
-              <div className="w-full max-w-xl">
+            <div className="flex justify-center md:justify-start w-full">
+              <div className="w-full max-w-xl lg:max-w-2xl">
                 <Contact />
               </div>
-
             </div>
-
           </section>
 
         </main>
-
       </div>
-
     </PageContainer>
   )
 }

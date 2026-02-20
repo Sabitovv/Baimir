@@ -17,7 +17,7 @@ const IndustryCatalog = () => {
       <PageContainer>
 
         <div className="mb-8 md:mb-10">
-          <h1 className="font-oswald font-bold uppercase text-[#111111] text-4xl md:text-5xl xl:text-6xl">
+          <h1 className="font-oswald font-semibold uppercase text-[#111111] text-4xl md:text-5xl xl:text-6xl">
             {t('home.catalog.title')}
           </h1>
 
@@ -64,7 +64,7 @@ const IndustryCatalog = () => {
               <a
                 className="
                   text-[#F05023]
-                  text-[10px]
+                  text-xs
                   font-bold uppercase tracking-widest
                   self-end mt-3
                   hover:underline

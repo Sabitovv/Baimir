@@ -14,13 +14,13 @@ const ProductCard = ({ title, price, image }: { title: string; price: string; im
       </div>
 
       <div className="mt-3">
-        <p className="text-sm leading-tight font-extrabold">{title}</p>
+        <p className="text-sm leading-tight font-bold">{title}</p>
         <p className="text-xs text-gray-500 mt-1 font-medium">Код: 123-456</p>
       </div>
 
       <div className="mt-4 flex items-center justify-between">
         <div>
-          <div className="text-sm font-extrabold">{price}</div>
+          <div className="text-sm font-bold">{price}</div>
         </div>
 
         <button className="bg-[#EA571E] text-white px-3 py-1 rounded text-sm hover:bg-[#d9481f] transition">

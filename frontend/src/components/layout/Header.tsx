@@ -33,7 +33,7 @@ const Header = () => {
   }
 
   return (
-    <header className="w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414]">
+    <header className="w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414] font-manrope">
       <div className="hidden lg:flex h-full max-w-[1920px] mx-auto px-6 xl:px-[90px] items-center justify-between">
         <Link to="/" className="shrink-0">
           <img src={logo} alt="Baymir Logo" className="h-9" />
@@ -50,7 +50,7 @@ const Header = () => {
             </button>
           </div>
 
-          <nav className="flex gap-4 text-xs uppercase  font-700 tracking-widest whitespace-nowrap">
+          <nav className="flex gap-4 text-xs uppercase  font-bold tracking-widest whitespace-nowrap">
             {navItems.map((key) => (
               <NavLink
                 key={key.id}

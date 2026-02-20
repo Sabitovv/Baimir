@@ -22,11 +22,11 @@ const BlogPage = () => {
           </aside>
 
           <section>
-            <h1 className="font-[Oswald] font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F05023]">
+            <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F05023]">
               Блог компании
             </h1>
 
-            <h3 className='font-oswald font-bold mb-6 text-2xl'>Подберем станки под ваш бизнес</h3>
+            <h3 className='font-oswald font-bold mb-6 text-3xl'>Подберем станки под ваш бизнес</h3>
 
             <p className=" max-w-3xl mb-6 text-sm font-Monaper text-[#233337]">
               Тут какой-то текст, в котором я фиг знает чо писать, потому что нам так и не предоставили никакой инфы. И кто вообще отвечает за это?

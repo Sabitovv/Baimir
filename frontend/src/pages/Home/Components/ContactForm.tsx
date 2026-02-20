@@ -10,6 +10,7 @@ const ContactForm = () => {
     <section className="py-16 md:py-20 bg-[#F5F5F5]">
       <div className="max-w-[1920px] mx-auto px-6 md:px-[80px] xl:px-[250px] flex justify-between">
 
+
         <div>
           <h2 className="
               font-oswald font-semibold uppercase text-[#111111]

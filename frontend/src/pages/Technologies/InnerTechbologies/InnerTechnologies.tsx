@@ -23,7 +23,7 @@ const TechnologiesPage = () => {
           <h1 className="font-oswald text-xl sm:text-2xl md:text-3xl xl:text-4xl font-bold uppercase text-[#F05023]">
             {title}
           </h1>
-          <h3 className="font-oswald text-base sm:text-lg md:text-xl font-bold my-4 mb-4 md:mb-6 whitespace-pre-line">
+          <h3 className="text-base sm:text-lg md:text-xl font-bold my-4 mb-4 md:mb-6 whitespace-pre-line">
             Как выбрать технологию резки металла для нового производства
           </h3>
           <div className="max-w-4xl overflow-hidden">
