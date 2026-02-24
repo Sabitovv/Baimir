@@ -53,12 +53,10 @@ const ProductPage = () => {
   const [activeImage, setActiveImage] = useState(0)
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'order'>('desc')
 
-  // touch swipe support
   const touchStartX = useRef<number | null>(null)
   const touchEndX = useRef<number | null>(null)
   const SWIPE_THRESHOLD = 50
 
-  // ref for thumbnails container so we can scroll thumbnails into view
   const thumbsRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -122,7 +120,6 @@ const ProductPage = () => {
     dispatch(setBreadcrumbs(breadcrumbs))
   }, [product, categories, dispatch, searchParams])
 
-  // images from API (case-insensitive 'IMAGE'), keep order if sortOrder exists
   const images = useMemo(() => {
     if (!product?.media || product.media.length === 0) return [PLACEHOLDER_IMG]
 
@@ -138,17 +135,14 @@ const ProductPage = () => {
     return mapped.length > 0 ? mapped : [PLACEHOLDER_IMG]
   }, [product?.media])
 
-  // reset active image for new product
   useEffect(() => {
     setActiveImage(0)
-    // ensure first thumbnail visible after product change
     setTimeout(() => {
       const node = thumbsRef.current?.children?.[0] as HTMLElement | undefined
       node?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
     }, 80)
   }, [product?.id])
 
-  // keyboard navigation for images
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') {
@@ -181,7 +175,6 @@ const ProductPage = () => {
     node?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }
 
-  // touch handlers for main image
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.changedTouches[0].clientX
     touchEndX.current = null
@@ -200,7 +193,6 @@ const ProductPage = () => {
     touchEndX.current = null
   }
 
-  // helper to activate thumbnail & scroll it into view
   const goToIndex = (idx: number) => {
     const index = Math.max(0, Math.min(images.length - 1, idx))
     setActiveImage(index)
@@ -208,9 +200,6 @@ const ProductPage = () => {
     node?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }
 
-  // ------------ NEW: подготовка строк спецификаций ------------
-  // превращаем product.specifications в одномерный массив строк,
-  // потом считаем фон только по атрибутам (headers не влияют на счётчик)
   const specRows = useMemo(() => {
     const rows: Array<{ type: 'header' | 'attr'; name: string; value?: string }> = []
     if (!product?.specifications || product.specifications.length === 0) return rows
@@ -236,11 +225,9 @@ const ProductPage = () => {
         attrIndex++
         return { ...row, bg }
       }
-      // header bg (distinct)
       return { ...row, bg: 'bg-[#E6EDF5]' }
     })
   }, [specRows])
-  // -----------------------------------------------------------
 
   if (isLoading) {
     return (
@@ -262,7 +249,7 @@ const ProductPage = () => {
         <div className="max-w-7xl mx-auto px-4 py-12 text-center min-h-[50vh] flex flex-col justify-center items-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('productPage.notFoundTitle')}</h2>
           <p className="text-gray-600 mb-6">{t('productPage.error')}</p>
-          <Link to="/catalog" className="bg-[#F05023] text-white px-6 py-2 rounded hover:bg-[#d64018] transition">
+          <Link to="/catalog" className="bg-[#F58322] text-white px-6 py-2 rounded hover:bg-[#DB741F] transition">
             {t("productPage.errorBack")}
           </Link>
         </div>
@@ -282,7 +269,6 @@ const ProductPage = () => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
-          {/* LEFT: images */}
           <div>
             <div
               className="rounded-lg overflow-hidden mb-4 flex relative bg-white border border-gray-100 aspect-[4/3] items-center justify-center"
@@ -290,7 +276,6 @@ const ProductPage = () => {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              {/* main image (no arrows here now) */}
               <img
                 src={images[activeImage] || PLACEHOLDER_IMG}
                 alt={product.name || 'product image'}
@@ -304,7 +289,6 @@ const ProductPage = () => {
               )}
             </div>
 
-            {/* thumbnails row with arrows outside main image */}
             <div className="flex items-center justify-center gap-4">
               <button
                 onClick={() => goToIndex(activeImage - 1)}
@@ -329,7 +313,7 @@ const ProductPage = () => {
                       className={`
                         flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 focus:outline-none
                         ${activeImage === idx
-                          ? 'border-[#F05023] ring-2 ring-[#F05023] scale-105'
+                          ? 'border-[#F58322] ring-2 ring-[#DB741F] scale-105'
                           : 'border-transparent hover:border-gray-300'}
                       `}
                       aria-label={`Показать изображение ${idx + 1}`}
@@ -353,7 +337,6 @@ const ProductPage = () => {
             </div>
           </div>
 
-          {/* RIGHT: info */}
           <div>
             <div>
               <div className="flex flex-col sm:flex-row border-b gap-5 border-gray-100 pb-6">
@@ -381,13 +364,11 @@ const ProductPage = () => {
                   <button
                     disabled={!product.inStock}
                     className={`w-full px-10 py-3 text-white font-bold uppercase transition shadow-md 
-                      ${product.inStock ? 'bg-[#F05023] hover:bg-[#d64018] hover:shadow-lg' : 'bg-gray-400 cursor-not-allowed'}`}
+                      ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F] hover:shadow-lg' : 'bg-gray-400 cursor-not-allowed'}`}
                   >
                     {product.inStock ? t('productPage.buy') : t('productPage.notify')}
                   </button>
                 </div>
-
-                {/* компактный блок с парой ключевых спецификаций (показываем первые 4 атрибута, если есть) */}
                 <div className="space-y-3 text-sm pt-2 w-full sm:w-1/3">
                   {rowsWithBg.filter(r => r.type === 'attr').slice(0, 4).map((r, i) => (
                     <div key={`mini-${i}`} className="flex justify-between gap-2 border-b border-gray-100 pb-2">
@@ -400,7 +381,7 @@ const ProductPage = () => {
 
               <div className="mt-8 space-y-3">
                 <div className="p-4 bg-gray-50 rounded text-sm text-gray-600">
-                  <h5 className="text-[#EA571E] font-bold mb-1 text-xs uppercase">{t('productPage.conditionsReturn')}</h5>
+                  <h5 className="text-[#F58322] font-bold mb-1 text-xs uppercase">{t('productPage.conditionsReturn')}</h5>
                   <div className='flex justify-between flex-wrap gap-2'>
                     <p>
                       {t('productPage.conditions')}
@@ -410,17 +391,17 @@ const ProductPage = () => {
                 </div>
 
                 <div className="space-y-2 text-xs font-bold text-gray-500 uppercase mt-4">
-                  <div className="flex items-center gap-2 mb-4 text-[#EA571E]">
-                    <span className="text-[#F05023]"><img src={track} alt="" className="w-4 h-4" /></span> {t('productPage.delive')}
+                  <div className="flex items-center gap-2 mb-4 text-[#F58322]">
+                    <span className="text-[#F58322]"><img src={track} alt="" className="w-4 h-4" /></span> {t('productPage.delive')}
                   </div>
-                  <div className="flex items-center gap-2 mb-4 text-[#EA571E]">
-                    <span className="text-[#F05023]"><img src={delivery} alt="" className="w-4 h-4" /></span> {t('productPage.pay')}
+                  <div className="flex items-center gap-2 mb-4 text-[#F58322]">
+                    <span className="text-[#F58322]"><img src={delivery} alt="" className="w-4 h-4" /></span> {t('productPage.pay')}
                   </div>
-                  <div className="flex items-center gap-2 mb-4 text-[#EA571E]">
-                    <span className="text-[#F05023]"><img src={calendar} alt="" className="w-4 h-4" /></span> {t('productPage.work')}
+                  <div className="flex items-center gap-2 mb-4 text-[#F58322]">
+                    <span className="text-[#F58322]"><img src={calendar} alt="" className="w-4 h-4" /></span> {t('productPage.work')}
                   </div>
-                  <div className="flex items-center gap-2 mb-4 text-[#EA571E]">
-                    <span className="text-[#F05023]"><img src={address} alt="" className="w-4 h-4" /></span> {t('productPage.adress')}
+                  <div className="flex items-center gap-2 mb-4 text-[#F58322]">
+                    <span className="text-[#F58322]"><img src={address} alt="" className="w-4 h-4" /></span> {t('productPage.adress')}
                   </div>
                 </div>
               </div>
@@ -434,21 +415,21 @@ const ProductPage = () => {
             <button
               onClick={() => setActiveTab('desc')}
               className={`pb-4 px-2 font-bold uppercase text-sm transition whitespace-nowrap border-b-2 
-                  ${activeTab === 'desc' ? 'border-[#F05023] text-[#F05023]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+                  ${activeTab === 'desc' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
             >
               {t('productPage.descriprion')}
             </button>
             <button
               onClick={() => setActiveTab('specs')}
               className={`pb-4 px-2 font-bold uppercase text-sm transition whitespace-nowrap border-b-2 
-                  ${activeTab === 'specs' ? 'border-[#F05023] text-[#F05023]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+                  ${activeTab === 'specs' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
             >
               {t('productPage.certificate')}
             </button>
             <button
               onClick={() => setActiveTab('order')}
               className={`pb-4 px-2 font-bold uppercase text-sm transition whitespace-nowrap border-b-2 
-                  ${activeTab === 'order' ? 'border-[#F05023] text-[#F05023]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+                  ${activeTab === 'order' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
             >
               {t('productPage.information')}
             </button>
@@ -481,7 +462,7 @@ const ProductPage = () => {
                     {product.variants.map((variant: any) => (
                       <tr key={variant.id} className="border-b border-gray-300 last:border-0 hover:bg-gray-50">
                         <td className="p-3 border-r border-gray-300 text-left align-top">
-                          <div className="text-[#F05023] font-bold leading-tight">{variant.name}</div>
+                          <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
                           <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
                         </td>
                         <td className="p-3 border-r border-gray-300 font-medium text-gray-700 whitespace-nowrap">
@@ -558,8 +539,8 @@ const ProductPage = () => {
           <div className="animate-fade-in text-gray-800 py-4">
             <p className="mb-4">Для оформления заказа свяжитесь с нашими менеджерами:</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li>По телефону: <a href="tel:+77777777777" className="text-[#F05023] font-bold">+7 (777) 777-77-77</a></li>
-              <li>По электронной почте: <a href="mailto:sales@example.com" className="text-[#F05023] font-bold">sales@example.com</a></li>
+              <li>По телефону: <a href="tel:+77777777777" className="text-[#F58322] font-bold">+7 (777) 777-77-77</a></li>
+              <li>По электронной почте: <a href="mailto:sales@example.com" className="text-[#F58322] font-bold">sales@example.com</a></li>
             </ul>
             <p className="mt-4 text-sm text-gray-500">
               Укажите артикул товара: <span className="font-bold text-gray-900">{product.sku}</span>

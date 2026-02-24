@@ -30,7 +30,7 @@ const ProductionPage = () => {
 
           <ScrollReveal>
             <section>
-              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#EA571E] leading-tight">
+              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight">
                 {t('production.title')}
               </h1>
               <h3 className="text-lg sm:text-xl lg:text-2xl mt-2 font-bold font-oswald text-gray-800">
@@ -39,7 +39,7 @@ const ProductionPage = () => {
               <p className="text-gray-600 mt-3 sm:mt-4 max-w-3xl font-light text-sm sm:text-base leading-relaxed">
                 {t('production.text')}
               </p>
-              <button className="mt-8 sm:mt-10 bg-[#EA571E] w-full sm:w-auto px-8 py-3 text-white font-medium hover:bg-[#d9481f] transition-colors rounded-sm shadow-sm">
+              <button className="mt-8 sm:mt-10 bg-[#F58322] w-full sm:w-auto px-8 py-3 text-white font-medium hover:bg-[#DB741F] transition-colors rounded-sm shadow-sm">
                 {t('production.signUpDemo')}
               </button>
             </section>
@@ -63,7 +63,7 @@ const ProductionPage = () => {
                         setActiveImage(img)
                       }}
                       className={`cursor-pointer transition-all duration-300 rounded-lg p-1 ${choose === index
-                        ? 'border-2 border-[#EA571E] shadow-sm'
+                        ? 'border-2 border-[#F58322] shadow-sm'
                         : 'border-2 border-transparent hover:border-gray-200'
                         }`}
                     >
@@ -110,7 +110,7 @@ const ProductionPage = () => {
 
           <section className="mt-20 sm:mt-24 mb-16 sm:mb-20 px-2 sm:px-0">
             <ScrollReveal>
-              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#EA571E] uppercase mb-8 sm:mb-10 text-center sm:text-left">
+              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#F58322] uppercase mb-8 sm:mb-10 text-center sm:text-left">
                 {t('production.howItWork.title')}
               </h2>
             </ScrollReveal>
@@ -156,7 +156,7 @@ const ProductionPage = () => {
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {['risk', 'training', 'process'].map((item, i) => (
                 <StaggerItem key={i} className="p-6 sm:p-8 bg-gray-50 rounded-sm border border-gray-100 hover:shadow-md transition-shadow">
-                  <p className="text-[#EA571E] font-bold text-lg mb-3 sm:mb-4">
+                  <p className="text-[#F58322] font-bold text-lg mb-3 sm:mb-4">
                     {t(`production.benefits.${item}.title`)}
                   </p>
                   <p className="font-light text-sm sm:text-base text-gray-700 leading-relaxed">
@@ -172,7 +172,7 @@ const ProductionPage = () => {
 
       <section className="mt-20 sm:mt-28 border-t border-gray-200 pt-16 sm:pt-20">
         <ScrollReveal>
-          <h2 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#EA571E] mb-4 sm:mb-6 text-center lg:text-left">
+          <h2 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#F58322] mb-4 sm:mb-6 text-center lg:text-left">
             {t('production.platformsTitle')}
           </h2>
           <p className="mb-10 sm:mb-12 font-bold text-base sm:text-lg lg:text-xl text-gray-800 text-center lg:text-left max-w-4xl">

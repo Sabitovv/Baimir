@@ -54,7 +54,7 @@ const NewsSection = () => {
                     {item.text}
                   </p>
 
-                  <button className="mt-auto text-[#F05023] text-xs uppercase tracking-widest font-bold self-start hover:underline">
+                  <button className="mt-auto text-[#F58322] text-xs uppercase tracking-widest font-bold self-start hover:underline">
                     {t('home.news.readmore')} →
                   </button>
                 </div>

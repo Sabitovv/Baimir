@@ -23,7 +23,7 @@ const ProductCard = ({ title, price, image }: { title: string; price: string; im
           <div className="text-sm font-bold">{price}</div>
         </div>
 
-        <button className="bg-[#EA571E] text-white px-3 py-1 rounded text-sm hover:bg-[#d9481f] transition">
+        <button className="bg-[#F58322] text-white px-3 py-1 rounded text-sm hover:bg-[#DB741F] transition">
           Купить
         </button>
       </div>

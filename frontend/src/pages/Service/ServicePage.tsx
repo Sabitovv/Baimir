@@ -27,21 +27,17 @@ const ServicePage = () => {
 
   return (
     <PageContainer>
-      {/* Главная сетка: 
-        Мобилки - 1 колонка. 
-        ПК (lg) - 2 колонки (Сайдбар 280px + Контент) 
-      */}
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
 
         <aside className="hidden lg:block w-full">
           <CategoriesMenu />
         </aside>
 
-        <main className="w-full min-w-0"> {/* min-w-0 предотвращает вылезание контента за пределы сетки */}
+        <main className="w-full min-w-0"> 
 
           <ScrollReveal>
             <section>
-              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#EA571E] leading-tight">
+              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight">
                 {t('service.title')}
               </h1>
               <h3 className="text-base sm:text-lg lg:text-xl mt-2 font-bold font-oswald text-gray-800">
@@ -65,17 +61,16 @@ const ServicePage = () => {
 
           <section className="mt-12 sm:mt-16 lg:mt-20">
             <ScrollReveal>
-              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#EA571E] mb-6 sm:mb-8">
+              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#F58322] mb-6 sm:mb-8">
                 {t('service.services.title')}
               </h2>
             </ScrollReveal>
 
-            {/* Сетка услуг: 1 кол. на мобилках, 2 на планшетах, 3 на широких экранах (xl) */}
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {services.map((item, i) => (
                 <StaggerItem
                   key={i}
-                  className="flex items-center justify-center text-[#EA571E] bg-white p-6 sm:py-8 md:py-10 text-center font-bold hover:shadow-lg transition-shadow duration-300 cursor-pointer text-lg sm:text-xl rounded-sm border border-gray-100"
+                  className="flex items-center justify-center text-[#F58322] bg-white p-6 sm:py-8 md:py-10 text-center font-bold hover:shadow-lg transition-shadow duration-300 cursor-pointer text-lg sm:text-xl rounded-sm border border-gray-100"
                 >
                   {item}
                 </StaggerItem>
@@ -117,7 +112,7 @@ const ServicePage = () => {
                 <StaggerContainer className="space-y-6 sm:space-y-8">
                   {['certification', 'experience', 'coverage', 'speed'].map((item, i) => (
                     <StaggerItem key={i}>
-                      <p className="text-[#EA571E] font-bold text-lg mb-1 sm:mb-2">
+                      <p className="text-[#F58322] font-bold text-lg mb-1 sm:mb-2">
                         {t(`service.engineers.${item}.title`)}
                       </p>
                       <p className="text-gray-700 text-sm sm:text-base leading-relaxed">

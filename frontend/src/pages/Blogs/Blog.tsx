@@ -32,7 +32,7 @@ const BlogPage = () => {
           <section>
             {/* Анимация заголовков и описания */}
             <ScrollReveal>
-              <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F05023]">
+              <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F58322]">
                 Блог компании
               </h1>
 

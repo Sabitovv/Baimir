@@ -36,11 +36,11 @@ const Breadcrumbs = () => {
                         {index > 0 && <span className="mx-2">›</span>}
 
                         {isLast ? (
-                            <span className="text-orange-600 font-medium">
+                            <span className="text-[#F58322] font-medium">
                                 {item.name}
                             </span>
                         ) : (
-                            <Link to={toPath} className="hover:text-orange-600">
+                            <Link to={toPath} className="hover:text-[#DB741F]">
                                 {item.name}
                             </Link>
                         )}

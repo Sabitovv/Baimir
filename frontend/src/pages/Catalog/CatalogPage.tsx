@@ -17,7 +17,6 @@ import { PopularProduct } from './components/PopularProduct'
 
 const CatalogPage = () => {
   const { data } = useGetCategoriesTreeQuery()
-  // const scrollerRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const location = useLocation()
@@ -49,17 +48,13 @@ const CatalogPage = () => {
 
     while (temp) {
       stack.push(temp)
-      // Ищем родителя
-      // eslint-disable-next-line no-loop-func
       const parent = data.find((i) => Number(i.id) === Number(temp?.parentId)) || null
       temp = parent
     }
 
-    // Разворачиваем стек и формируем путь
     stack.reverse().forEach((cat) => {
       const hasChildren = data.some((i) => Number(i.parentId) === Number(cat.id))
 
-      // ИСПРАВЛЕНИЕ TS: Передаем только те поля, которые ожидает Slice (name, path)
       breadcrumbsList.push({
         name: cat.name,
         path: hasChildren
@@ -71,7 +66,6 @@ const CatalogPage = () => {
     dispatch(setBreadcrumbs(breadcrumbsList))
   }, [currentCategory, data, dispatch])
 
-  // 3. Оптимизация: Фильтруем категории только при необходимости
   const visibleCategories = useMemo(() => {
     if (!data) return []
     return currentCategory
@@ -79,7 +73,6 @@ const CatalogPage = () => {
       : data.filter((item) => item.parentId === null)
   }, [data, currentCategory])
 
-  // Заглушка товаров (можно заменить на реальный API запрос)
   // const products = useMemo(() => Array.from({ length: 8 }).map((_, i) => ({
   //   id: i + 1,
   //   title: `Лазерный станок модель ${i + 1}`,
@@ -101,13 +94,11 @@ const CatalogPage = () => {
     return data?.some((item) => item.parentId === id)
   }
 
-  // Если данные еще грузятся, можно вернуть спиннер, но пока вернем null или скелетон
   if (!data) return null
 
   return (
     <PageContainer>
       <div className="mt-12 px-4 md:px-6 lg:px-0">
-        {/* TITLE */}
         <ScrollReveal>
           <h1 className="font-oswald text-3xl md:text-4xl font-bold uppercase mb-10">
             Каталог товаров
@@ -119,15 +110,12 @@ const CatalogPage = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
-          {/* SIDEBAR */}
           <aside className="hidden lg:block">
             <CategoriesMenu />
           </aside>
 
-          {/* CONTENT */}
-          <main className="ml-0 lg:ml-5"> {/* ml-5 на мобилке может мешать, добавил lg: */}
-            {/* GRID */}
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          <main className="ml-0 lg:ml-5"> 
+            <StaggerContainer key={location.pathname} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {visibleCategories.map((item) => (
                 <StaggerItem key={item.id}>
                   <div
@@ -141,7 +129,6 @@ const CatalogPage = () => {
                     }}
                     className="bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 rounded-lg cursor-pointer flex flex-col items-center group"
                   >
-                    {/* ИЗОБРАЖЕНИЕ: Добавил lazy и размеры для Lighthouse */}
                     <div className="w-full h-[130px] flex items-center justify-center">
                       <img
                         src={item.imageUrl}
@@ -159,8 +146,6 @@ const CatalogPage = () => {
                   </div>
                 </StaggerItem>
               ))}
-
-              {/* Показываем сообщение, если подкатегорий нет */}
               {visibleCategories.length === 0 && (
                 <div className="col-span-full text-center py-10 text-gray-500">
                   В этой категории пока нет подкатегорий.
@@ -169,23 +154,16 @@ const CatalogPage = () => {
             </StaggerContainer>
           </main>
         </div>
-
-        {/* Popular products */}
         <PopularProduct />
-
-        {/* Leave request section */}
         <ScrollReveal>
           <section className="mb-16">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              {/* Left: form */}
               <div className="px-2 md:px-0 order-2 md:order-1">
                 <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
                   ОСТАВЬТЕ ЗАЯВКУ
                 </h3>
                 <Contact />
               </div>
-
-              {/* Right: big image */}
               <div className="flex justify-center md:justify-end px-2 md:px-0 order-1 md:order-2">
                 <img
                   src={sampleImg}

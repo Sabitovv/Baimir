@@ -8,6 +8,10 @@ import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import logo from '@/assets/header/oldBg.svg'
 
+//#F58322
+//#DB741F
+
+
 const Header = () => {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
@@ -28,8 +32,8 @@ const Header = () => {
 
   const getLangClass = (lng: string) => {
     return i18n.language === lng
-      ? 'text-[#F05023] font-bold border-b border-[#F05023]'
-      : 'text-white hover:text-[#F05023] transition-colors'
+      ? 'text-[#F58322] font-bold border-b border-[#F58322]'
+      : 'text-white hover:text-[#F58322] transition-colors'
   }
 
   return (
@@ -59,7 +63,7 @@ const Header = () => {
                 key={key.id}
                 to={key.path}
                 className={({ isActive }) =>
-                  isActive ? 'text-[#F05023]' : 'hover:text-[#F05023] transition-colors'
+                  isActive ? 'text-[#F58322]' : 'hover:text-[#DB741F] transition-colors'
                 }
               >
                 {t(`header.nav.${key.id}`)}
@@ -69,7 +73,7 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-4 2xl:gap-6 shrink-0 ml-4">
-          <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#F05023] transition-colors">
+          <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors">
             {t('header.cta')}
           </button>
 
@@ -125,14 +129,14 @@ const Header = () => {
                   key={key.id}
                   to={key.path}
                   onClick={() => setOpen(false)}
-                  className="hover:text-[#F05023] transition-colors"
+                  className="hover:text-[#DB741F] transition-colors"
                 >
                   {t(`header.nav.${key.id}`)}
                 </NavLink>
               ))}
             </nav>
 
-            <button className="mt-6 border border-white py-4 uppercase font-oswald font-600 tracking-widest hover:bg-[#F05023] transition-colors">
+            <button className="mt-6 border border-white py-4 uppercase font-oswald font-600 tracking-widest hover:bg-[#DB741F] transition-colors">
               {t('header.cta')}
             </button>
 

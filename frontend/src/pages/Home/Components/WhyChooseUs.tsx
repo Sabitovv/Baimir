@@ -69,7 +69,7 @@ const WhyChooseUs = () => {
                 <div
                   className="bg-white p-8 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group"
                 >
-                  <div className="text-[#F05023] mb-4">
+                  <div className="text-[#F58322] mb-4">
                     <img src={item.icon} alt="" />
                   </div>
 

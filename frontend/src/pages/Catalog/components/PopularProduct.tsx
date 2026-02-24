@@ -53,11 +53,7 @@ export const PopularProduct = () => {
       <h2 className="font-oswald text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6 ml-2 sm:ml-4">
         {t('catalogPage.popular')}
       </h2>
-
-      {/* Контейнер: flex с gap, чтобы стрелки были по краям от списка */}
       <div className="flex items-center gap-1 sm:gap-3 w-full">
-
-        {/* Левая стрелка: shrink-0 не дает ей исчезнуть */}
         <button
           aria-label="scroll left"
           onClick={scrollLeft}
@@ -68,11 +64,8 @@ export const PopularProduct = () => {
             hover:scale-105 active:scale-95 transition-transform cursor-pointer
           "
         >
-          {/* Иконка меняет размер: w-6 на мобильном, w-10 на десктопе */}
           <img src={LeftIcon} alt="Left" className="w-6 h-6 sm:w-10 sm:h-10" />
         </button>
-
-        {/* Скролл-контейнер */}
         <div
           ref={scrollerRef}
           role="list"
@@ -101,8 +94,6 @@ export const PopularProduct = () => {
             </div>
           ))}
         </div>
-
-        {/* Правая стрелка */}
         <button
           aria-label="scroll right"
           onClick={scrollRight}

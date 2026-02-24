@@ -50,7 +50,7 @@ const IndustryCatalog = () => {
                   className="
                     font-oswald font-bold uppercase text-center
                     text-base md:text-lg
-                    group-hover:text-[#F05023]
+                    group-hover:text-[#DB741F]
                     mb-4
                   "
                 >
@@ -68,7 +68,7 @@ const IndustryCatalog = () => {
 
               <a
                 className="
-                  text-[#F05023]
+                  text-[#F58322]
                   text-xs
                   font-bold uppercase tracking-widest
                   self-end mt-3

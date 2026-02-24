@@ -30,7 +30,7 @@ const StoragePage = () => {
         <main className="w-full min-w-0">
           <section>
             <ScrollReveal>
-              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#EA571E] leading-tight">
+              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight">
                 {t('storage.title')}
               </h1>
               <h3 className="text-lg sm:text-xl font-bold my-4 mb-8 whitespace-pre-line">
@@ -59,7 +59,7 @@ const StoragePage = () => {
                           setActiveImage(img)
                         }}
                         className={`cursor-pointer text-center transition-all duration-300 p-1 sm:p-2 rounded-lg ${choose === index
-                          ? 'border-2 border-[#F05023] shadow-sm'
+                          ? 'border-2 border-[#F58322] shadow-sm'
                           : 'border-2 border-transparent hover:border-gray-200'
                           }`}
                       >
@@ -99,7 +99,7 @@ const StoragePage = () => {
             </StaggerContainer>
 
             <ScrollReveal className="flex justify-center sm:justify-end mt-8">
-              <button className="font-bold text-base sm:text-lg text-[#EA571E] flex items-center gap-2 hover:translate-x-1 transition-transform">
+              <button className="font-bold text-base sm:text-lg text-[#F58322] flex items-center gap-2 hover:translate-x-1 transition-transform">
                 {t('storage.other')}
                 <span className="text-xl leading-none">→</span>
               </button>

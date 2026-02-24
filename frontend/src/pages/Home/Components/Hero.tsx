@@ -2,6 +2,9 @@ import { useTranslation } from 'react-i18next'
 import bgMain from '@/assets/home/background_main.webp'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 
+//#F58322
+//#DB741F
+
 const Hero = () => {
   const { t } = useTranslation()
 
@@ -64,7 +67,7 @@ const Hero = () => {
             <button
               className="
                 mt-8 md:mt-12
-                bg-[#F05023] hover:bg-[#d1401b]
+                bg-[#F58322] hover:bg-[#DB741F]
                 px-8 md:px-10 py-3 md:py-4
                 font-bold uppercase tracking-widest
                 transition
@@ -110,9 +113,9 @@ const Hero = () => {
               <button
                 className="
                   flex items-center gap-4
-                  border border-[#F05023]
+                  border border-[#F58322]
                   px-6 py-3
-                  bg-black/30 hover:bg-[#F05023]
+                  bg-black/30 hover:bg-[#DB741F]
                   transition group
                   shrink-0
                   font-oswald
@@ -125,7 +128,7 @@ const Hero = () => {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="text-[#F05023] group-hover:text-white transition"
+                  className="text-[#F58322] group-hover:text-white transition"
                 >
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <path d="M15 3h6v6" />

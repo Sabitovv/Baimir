@@ -13,20 +13,48 @@ const Contact = () => {
           <TextField
             label={t('home.contact.fields.name')}
             variant="outlined"
-            className="bg-white w-full text-[#939393]"
-          />
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '&.Mui-focused fieldset': {
+                  borderColor: '#F58322', 
+                },
+              },
+              '& label.Mui-focused': {
+                color: '#F58322',
+              },
+            }}/>
 
           <TextField
             label={t('home.contact.fields.email')}
             variant="outlined"
             className="bg-white w-full text-[#939393]"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '&.Mui-focused fieldset': {
+                  borderColor: '#F58322', 
+                },
+              },
+              '& label.Mui-focused': {
+                color: '#F58322',
+              },
+            }}
           />
 
           <TextField
             label={t('home.contact.fields.phone')}
             variant="outlined"
             className="bg-white w-full text-[#939393]"
-          />
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '&.Mui-focused fieldset': {
+                  borderColor: '#F58322', 
+                },
+              },
+              '& label.Mui-focused': {
+                color: '#F58322',
+              },
+            }}
+/>
 
           <FormControlLabel
             className="self-start"
@@ -34,9 +62,9 @@ const Contact = () => {
               <Checkbox
                 defaultChecked
                 sx={{
-                  color: '#F05023',
+                  color: '#F58322',
                   '&.Mui-checked': {
-                    color: '#F05023',
+                    color: '#F58322',
                   },
                 }}
               />
@@ -51,7 +79,7 @@ const Contact = () => {
           <button
             type="submit"
             className="
-              bg-[#F05023] hover:bg-[#d1401b]
+              bg-[#F58322] hover:bg-[#DB741F]
               text-white font-bold uppercase
               py-3 px-8
               w-full md:w-1/2

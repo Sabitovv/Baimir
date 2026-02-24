@@ -101,7 +101,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
         />
       </div>
 
-      <h3 className="text-sm font-extrabold text-gray-800 leading-tight mb-3 group-hover:text-orange-600 transition-colors line-clamp-2">
+      <h3 className="text-sm font-extrabold text-gray-800 leading-tight mb-3 group-hover:text-[#DB741F] transition-colors line-clamp-2">
         {product.name}
       </h3>
 
@@ -135,7 +135,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
           className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
             product.inStock === false
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-              : "bg-[#E3541C] text-white hover:bg-orange-700"
+              : "bg-[#F58322] text-white hover:bg-[#DB741F]"
           }`}
           disabled={product.inStock === false}
         >

@@ -27,7 +27,7 @@ const CategoryCard = ({
         "
       >
         <div className="p-4">
-          <h3 className="text-sm text-center font-bold uppercase leading-snug group-hover:text-[#F05023] transition">
+          <h3 className="text-sm text-center font-bold uppercase leading-snug group-hover:text-[#DB741F] transition">
             {title}
           </h3>
         </div>

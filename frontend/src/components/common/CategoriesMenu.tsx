@@ -143,7 +143,7 @@ const CategoriesMenu = () => {
                                 <Link
                                     to={getCategoryLink(cat)}
                                     onClick={() => toggleCategory(Number(cat.id), rootCategories)}
-                                    className={`flex-1 font-semibold text-lg transition ${isActive ? 'text-[#F05023]' : 'text-gray-700'}`}
+                                    className={`flex-1 font-semibold text-lg transition ${isActive ? 'text-[#F58322]' : 'text-gray-700'}`}
                                 >
                                     {cat.name}
                                 </Link>
@@ -172,7 +172,7 @@ const CategoriesMenu = () => {
                                                                 toggleCategory(Number(child.id), cat.children)
                                                             }
                                                         }}
-                                                        className={`flex-1 text-xs transition ${isChildActive ? 'text-[#F05023] font-bold' : 'hover:text-[#F05023]'}`}
+                                                        className={`flex-1 text-xs transition ${isChildActive ? 'text-[#F58322] font-bold' : 'hover:text-[#DB741F]'}`}
                                                     >
                                                         {child.name}
                                                     </Link>

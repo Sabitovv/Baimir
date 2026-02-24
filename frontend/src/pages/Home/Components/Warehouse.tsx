@@ -61,7 +61,7 @@ const Warehouse = () => {
                   key={index}
                   className={`
                   border-2
-                  ${imgChange == index ? 'border-[#F05023]' : 'border-none'}
+                  ${imgChange == index ? 'border-[#F58322]' : 'border-none'}
                   transition
                   cursor-pointer
                 `}
@@ -85,7 +85,7 @@ const Warehouse = () => {
                 <div>
                   <div
                     className="
-                    font-oswald font-bold text-[#F05023]
+                    font-oswald font-bold text-[#F58322]
                     text-4xl md:text-5xl
                     leading-none
                     mb-2

@@ -22,7 +22,7 @@ const RepairService = () => {
         </ScrollReveal>
 
         <ScrollReveal delay={0.15}>
-          <div className="relative w-full min-h-[420px] rounded-xl overflow-hidden shadow-xl bg-[#EA571E]">
+          <div className="relative w-full min-h-[420px] rounded-xl overflow-hidden shadow-xl bg-[#F58322]">
 
             <img
               src={leftImg}

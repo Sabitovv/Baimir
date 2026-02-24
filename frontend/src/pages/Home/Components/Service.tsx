@@ -21,7 +21,7 @@ const Service = () => {
   const CheckCircleIconCustom = (props: SvgIconProps) => (
     <SvgIcon {...props} viewBox="0 0 24 24">
 
-      <circle cx="12" cy="12" r="10" fill="#EA571E" />
+      <circle cx="12" cy="12" r="10" fill="#F58322" />
       <path
         d="M10.1 13.9L7.7 11.5L6.3 12.9L10.1 16.7L18 8.8L16.6 7.4Z"
         fill="#fff"
@@ -47,7 +47,7 @@ const Service = () => {
             {services.map((key) => (
               <StaggerItem key={key}>
                 <div className="flex gap-4 items-center">
-                  <CheckCircleIconCustom fontSize="large" />
+                  <CheckCircleIconCustom fontSize="large"/>
                   <p className="font-oswald font-bold text-base md:text-xl  text-white">
                     {t(key)}
                   </p>
