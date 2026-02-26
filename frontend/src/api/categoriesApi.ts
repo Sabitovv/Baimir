@@ -73,7 +73,7 @@ export type ProductInner = {
 export const categoriesApi = createApi({
   reducerPath: 'categoriesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8080/api/v1',
+    baseUrl: 'http://89.207.255.17/api/v1',
     prepareHeaders: (headers) => {
       const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBiYXltaXIuY29tIiwiaWF0IjoxNzY5OTM2ODM0LCJleHAiOjE4MDE0NzI4MzR9.JJTbaaimIAl8Tf9RVF-jbM5IgB3F1aH-od76Nit9Hp0s8ffxe9QsW6_x879Y9DqP41m3HYmSc23Ul8hyK0O1Sw';
       if (token) headers.set('Authorization', `Bearer ${token}`);
