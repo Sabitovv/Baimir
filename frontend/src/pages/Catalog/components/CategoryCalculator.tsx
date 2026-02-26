@@ -6,7 +6,7 @@ type Props = {
 
 const V_ARRAY = [4, 6, 8, 10, 12, 14, 16, 20, 24, 32, 40, 50, 63, 80, 100, 125, 160, 200]
 
-const CategoryCalculator: React.FC<Props> = ({ onClose }) => {
+const CategoryCalculator: React.FC<Props> = () => {
   const [material, setMaterial] = useState('') 
   const [thickness, setThickness] = useState('') 
   const [angle, setAngle] = useState('')

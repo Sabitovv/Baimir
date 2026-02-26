@@ -17,7 +17,7 @@ const CatalogFilters = ({ onClose, filters, bounds }: CatalogFiltersProps) => {
   const [ranges, setRanges] = useState<Record<string, RangeValues>>({})
   const { t } = useTranslation()
 
-  const inStock = searchParams.get('is_stock') === 'true'
+  // const inStock = searchParams.get('is_stock') === 'true'
 
   const getLimits = (f: any) => {
     if (bounds && bounds[f.code]) return bounds[f.code]
@@ -26,6 +26,7 @@ const CatalogFilters = ({ onClose, filters, bounds }: CatalogFiltersProps) => {
     return { min: Math.floor(Number(rawMin)), max: Math.ceil(Number(rawMax)) }
   }
 
+  /*
   const toggleStock = () => {
     const params = new URLSearchParams(searchParams.toString())
     if (!inStock) {
@@ -35,7 +36,7 @@ const CatalogFilters = ({ onClose, filters, bounds }: CatalogFiltersProps) => {
     }
     params.set('page', '1')
     setSearchParams(params, { replace: false })
-  }
+  } */
 
   useEffect(() => {
     const rangeFilters = (filters ?? []).filter((f) => f.uiType === 'RANGE_SLIDER')
@@ -102,6 +103,7 @@ const CatalogFilters = ({ onClose, filters, bounds }: CatalogFiltersProps) => {
     onClose()
   }
 
+  /*
   const descendingOrder = () => {
     const params = new URLSearchParams(searchParams)
     const currentSort = params.get('sort')
@@ -109,6 +111,7 @@ const CatalogFilters = ({ onClose, filters, bounds }: CatalogFiltersProps) => {
     params.set('page', '1')
     setSearchParams(params, { replace: false })
   }
+  */
 
   const toggleCheckbox = (filterCode: string, valueId: string) => {
     const params = new URLSearchParams(searchParams)
