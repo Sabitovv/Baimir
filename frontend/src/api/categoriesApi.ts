@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import i18n from 'i18next'
 
 export type Category = {
   id: number | string
@@ -7,14 +8,10 @@ export type Category = {
   parentId?: number | null
   children?: Category[]
   isActive?: boolean
-  imageUrl?: string;
+  imageUrl?: string
 }
 
-export type ProductCategoryShort = {
-  id: number
-  slug: string
-  name: string
-}
+export type ProductCategoryShort = { id: number; slug: string; name: string }
 
 export type Product = {
   id: number
@@ -53,10 +50,12 @@ export type ProductsResponse = {
   products: Product[]
 }
 
+// добавили lang? явно
 export type ProductsQueryParams = {
   categoryId: number
   page: number
   limit: number
+  lang?: string
 } & Record<string, any>
 
 export type Specifications = {
@@ -67,63 +66,68 @@ export type Specifications = {
 export type ProductInner = {
   products: Product[]
   specifications: Specifications[]
-
 }
 
 export const categoriesApi = createApi({
   reducerPath: 'categoriesApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://89.207.255.17/api/v1',
+
     prepareHeaders: (headers) => {
-      const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBiYXltaXIuY29tIiwiaWF0IjoxNzY5OTM2ODM0LCJleHAiOjE4MDE0NzI4MzR9.JJTbaaimIAl8Tf9RVF-jbM5IgB3F1aH-od76Nit9Hp0s8ffxe9QsW6_x879Y9DqP41m3HYmSc23Ul8hyK0O1Sw';
-      if (token) headers.set('Authorization', `Bearer ${token}`);
-      return headers;
+      const lang = i18n.language || 'ru'
+      headers.set('Accept-Language', lang)
+      return headers
     },
   }),
   tagTypes: ['Category', 'Product'],
   endpoints: (builder) => ({
-    getCategoriesTree: builder.query<Category[], void>({
-      query: () => '/categories/tree',
+    getCategoriesTree: builder.query<Category[], { lang?: string } | void>({
+      query: (arg) => {
+        const lang = (arg as { lang?: string })?.lang
+        return {
+          url: '/categories/tree',
+          headers: lang ? { 'Accept-Language': lang } : undefined,
+        }
+      },
       providesTags: (result) =>
         result
           ? [
-            ...result.map((cat) => ({ type: 'Category' as const, id: cat.id })),
-            { type: 'Category' as const, id: 'LIST' },
-          ]
+              ...result.map((cat) => ({ type: 'Category' as const, id: cat.id })),
+              { type: 'Category' as const, id: 'LIST' },
+            ]
           : [{ type: 'Category' as const, id: 'LIST' }],
     }),
 
     getCategoriesRoot: builder.query<Category[], void>({
       query: () => '/categories/roots',
+
       providesTags: (result) =>
         result
           ? [
-            ...result.map((cat) => ({ type: 'Category' as const, id: cat.id })),
-            { type: 'Category' as const, id: 'LIST' },
-          ]
+              ...result.map((cat) => ({ type: 'Category' as const, id: cat.id })),
+              { type: 'Category' as const, id: 'LIST' },
+            ]
           : [{ type: 'Category' as const, id: 'LIST' }],
     }),
 
     getProducts: builder.query<ProductsResponse, ProductsQueryParams>({
-      query: ({ categoryId, ...params }) => ({
+      query: ({ categoryId, lang, ...params }) => ({
         url: `/products/category/${categoryId}`,
-        params
+        params,
+        headers: lang ? { 'Accept-Language': lang } : undefined,
       }),
       providesTags: (result) =>
         result
           ? [
-            ...result.products.map((prod) => ({
-              type: 'Product' as const,
-              id: prod.id,
-            })),
-            { type: 'Product', id: 'LIST' },
-          ]
-          : [{ type: 'Product', id: 'LIST' }],
+              ...result.products.map((prod) => ({ type: 'Product' as const, id: prod.id })),
+              { type: 'Product' as const, id: 'LIST' },
+            ]
+          : [{ type: 'Product' as const, id: 'LIST' }],
     }),
 
     getProductById: builder.query<Product, number>({
       query: (id) => `/products/${id}`,
-      providesTags: (_result, _error, id) => [{ type: 'Product', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Product' as const, id }],
     }),
   }),
 })

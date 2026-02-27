@@ -14,9 +14,11 @@ import StaggerItem from '@/components/animations/StaggerItem'
 
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import { PopularProduct } from './components/PopularProduct'
+import { useTranslation } from 'react-i18next'
 
 const CatalogPage = () => {
-  const { data } = useGetCategoriesTreeQuery()
+  const { i18n } = useTranslation()
+  const { data } = useGetCategoriesTreeQuery({lang: i18n.language})
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const location = useLocation()

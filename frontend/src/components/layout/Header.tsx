@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { NavLink } from 'react-router-dom'
-
+import { Link, NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import SearchIcon from '@mui/icons-material/Search'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -10,7 +8,6 @@ import logo from '@/assets/header/oldBg.svg'
 
 //#F58322
 //#DB741F
-
 
 const Header = () => {
   const { t, i18n } = useTranslation()
@@ -38,16 +35,19 @@ const Header = () => {
 
   return (
     <header className="w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414] font-manrope">
-
+      
+      {/* DESKTOP HEADER */}
+      {/* justify-between здесь гарантирует абсолютно равные отступы между тремя блоками */}
       <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
 
-        <Link to="/" className="shrink-0 mr-4">
-          <img src={logo} alt="Baymir Logo" className="h-12 2xl:h-15" />
-        </Link>
-
+        {/* ЛЕВАЯ ЧАСТЬ (Логотип + Поиск) - Убрали flex-1, чтобы блок занимал только ширину своего контента */}
         <div className="flex items-center gap-4 2xl:gap-8">
+          <Link to="/" className="shrink-0">
+            <img src={logo} alt="Baymir Logo" className="h-12 2xl:h-15" />
+          </Link>
 
-          <div className="hidden 2xl:flex items-center w-[260px] 3xl:w-[300px] h-10 border border-white/70 bg-black/30">
+          {/* Поиск - Широкий */}
+          <div className="hidden 2xl:flex items-center w-[320px] 2xl:w-[400px] 3xl:w-[450px] h-10 border border-white/70 bg-black/30">
             <input
               placeholder={t('header.search')}
               className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
@@ -56,27 +56,27 @@ const Header = () => {
               <SearchIcon sx={{ color: 'white', fontSize: 20 }} />
             </button>
           </div>
-
-          <nav className="flex gap-3 2xl:gap-4 text-[11px] 2xl:text-xs uppercase font-bold tracking-wider 2xl:tracking-widest whitespace-nowrap">
-            {navItems.map((key) => (
-              <NavLink
-                key={key.id}
-                to={key.path}
-                className={({ isActive }) =>
-                  isActive ? 'text-[#F58322]' : 'hover:text-[#DB741F] transition-colors'
-                }
-              >
-                {t(`header.nav.${key.id}`)}
-              </NavLink>
-            ))}
-          </nav>
         </div>
 
-        <div className="flex items-center gap-4 2xl:gap-6 shrink-0 ml-4">
-          <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors">
-            {t('header.cta')}
-          </button>
+        {/* ЦЕНТРАЛЬНАЯ ЧАСТЬ (Меню) - Теперь отступы по краям от него будут строго равны */}
+        <nav className="flex items-center gap-3 2xl:gap-5 text-[11px] 2xl:text-xs uppercase font-bold tracking-wider 2xl:tracking-widest whitespace-nowrap shrink-0">
+          {navItems.map((key) => (
+            <NavLink
+              key={key.id}
+              to={key.path}
+              className={({ isActive }) =>
+                isActive ? 'text-[#F58322]' : 'hover:text-[#DB741F] transition-colors'
+              }
+            >
+              {t(`header.nav.${key.id}`)}
+            </NavLink>
+          ))}
+        </nav>
 
+        {/* ПРАВАЯ ЧАСТЬ (Языки + Кнопка) - Убрали flex-1 */}
+        <div className="flex items-center gap-4 2xl:gap-6 shrink-0">
+          
+          {/* Языки */}
           <div className="flex items-center gap-2 text-xs 2xl:text-sm font-bold uppercase shrink-0">
             <button
               onClick={() => changeLanguage('ru')}
@@ -92,9 +92,15 @@ const Header = () => {
               KZ
             </button>
           </div>
+
+          {/* Кнопка заявки */}
+          <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
+            {t('header.cta')}
+          </button>
         </div>
       </div>
 
+      {/* MOBILE HEADER */}
       <div className="xl:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
         <Link to="/">
           <img src={logo} alt="Baymir Logo" className="h-8" />
@@ -105,6 +111,7 @@ const Header = () => {
         </button>
       </div>
 
+      {/* MOBILE MENU OVERLAY */}
       {open && (
         <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">
           <div className="flex items-center justify-between h-[88px] px-4 border-b border-white/10">

@@ -1,4 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import i18n from 'i18next'
+
 export type ProductCategory = {
     id: number
     slug: string
@@ -160,126 +162,92 @@ export type ProductsResponse = {
     products: Product[]
 }
 
-/**
- * Query parameters for fetching products
- */
 export type ProductsQueryParams = {
-    categoryId: number
-    page?: number
-    limit?: number
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
+  categoryId: number
+  page?: number
+  limit?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+  lang?: string    // <- добавлено
 } & Record<string, any>
 
-// ============================================================================
-// API DEFINITION
-// ============================================================================
-
 export const productsApi = createApi({
-    reducerPath: 'productsApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: 'http://89.207.255.17/api/v1',
-        prepareHeaders: (headers) => {
-            // TODO: Replace with dynamic token from auth store
-            const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBiYXltaXIuY29tIiwiaWF0IjoxNzY5OTM2ODM0LCJleHAiOjE4MDE0NzI4MzR9.JJTbaaimIAl8Tf9RVF-jbM5IgB3F1aH-od76Nit9Hp0s8ffxe9QsW6_x879Y9DqP41m3HYmSc23Ul8hyK0O1Sw'
-            if (token) {
-                headers.set('Authorization', `Bearer ${token}`)
-            }
-            return headers
+  reducerPath: 'productsApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'http://89.207.255.17/api/v1',
+    prepareHeaders: (headers) => {
+      const lang = i18n.language || 'ru'
+      headers.set('Accept-Language', lang)
+      // если нужен токен, тут же можно его подставлять:
+      // const token = localStorage.getItem('token') || undefined
+      // if (token) headers.set('Authorization', `Bearer ${token}`)
+      return headers
+    },
+  }),
+  tagTypes: ['Product'],
+  endpoints: (builder) => ({
+    getProducts: builder.query<ProductsResponse, ProductsQueryParams>({
+      query: ({ categoryId, lang, page, limit, ...params }) => ({
+        url: `/products/category/${categoryId}`,
+        params: {
+          page: page ?? 1,
+          limit: limit ?? 20,
+          ...params,
         },
+        // если передали lang в аргументе — переопределим заголовок для этого запроса
+        headers: lang ? { 'Accept-Language': lang } : undefined,
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.products.map((prod) => ({ type: 'Product' as const, id: prod.id })),
+              { type: 'Product', id: 'LIST' },
+            ]
+          : [{ type: 'Product', id: 'LIST' }],
     }),
-    tagTypes: ['Product'],
-    endpoints: (builder) => ({
-        /**
-         * Get products by category with filtering and pagination
-         */
-        getProducts: builder.query<ProductsResponse, ProductsQueryParams>({
-            query: ({ categoryId, ...params }) => ({
-                url: `/products/category/${categoryId}`,
-                params: {
-                    page: params.page || 1,
-                    limit: params.limit || 20,
-                    ...params,
-                },
-            }),
-            providesTags: (result) =>
-                result
-                    ? [
-                        ...result.products.map((prod) => ({
-                            type: 'Product' as const,
-                            id: prod.id,
-                        })),
-                        { type: 'Product', id: 'LIST' },
-                    ]
-                    : [{ type: 'Product', id: 'LIST' }],
-        }),
 
-        /**
-         * Get product by ID
-         */
-        getProductById: builder.query<ProductDetail, number>({
-            query: (id) => `/products/${id}`,
-            providesTags: (_result, _error, id) => [{ type: 'Product', id }],
-        }),
-
-        /**
-         * Get product by slug
-         */
-        getProductBySlug: builder.query<ProductDetail, string>({
-            query: (slug) => `/products/${slug}`,
-            providesTags: (result) =>
-                result ? [{ type: 'Product', id: result.id }] : [],
-        }),
-
-        /**
-         * Search products
-         */
-        searchProducts: builder.query<ProductsResponse, {
-            query: string
-            page?: number
-            limit?: number
-        }>({
-            query: ({ query, page = 1, limit = 20 }) => ({
-                url: '/products/search',
-                params: { q: query, page, limit },
-            }),
-            providesTags: (result) =>
-                result
-                    ? [
-                        ...result.products.map((prod) => ({
-                            type: 'Product' as const,
-                            id: prod.id,
-                        })),
-                        { type: 'Product', id: 'SEARCH' },
-                    ]
-                    : [{ type: 'Product', id: 'SEARCH' }],
-        }),
-
-
-        getFeaturedProducts: builder.query<Product[], { limit?: number }>({
-            query: ({ limit = 10 }) => ({
-                url: '/products/featured',
-                params: { limit },
-            }),
-            providesTags: (result) =>
-                result
-                    ? [
-                        ...result.map((prod) => ({
-                            type: 'Product' as const,
-                            id: prod.id,
-                        })),
-                        { type: 'Product', id: 'FEATURED' },
-                    ]
-                    : [{ type: 'Product', id: 'FEATURED' }],
-        }),
+    getProductById: builder.query<ProductDetail, number>({
+      query: (id) => `/products/${id}`,
+      providesTags: (_result, _error, id) => [{ type: 'Product' as const, id }],
     }),
+
+    // Сделаем slug-эндпоинт, принимающий объект { slug, lang? } — чтобы можно было автоперезапросить при смене языка
+    getProductBySlug: builder.query<ProductDetail, { slug: string; lang?: string }>({
+      query: ({ slug, lang }) => ({
+        url: `/products/${slug}`,
+        headers: lang ? { 'Accept-Language': lang } : undefined,
+      }),
+      providesTags: (result) => (result ? [{ type: 'Product' as const, id: result.id }] : []),
+    }),
+
+    searchProducts: builder.query<ProductsResponse, { query: string; page?: number; limit?: number }>({
+      query: ({ query, page = 0, limit = 20 }) => ({
+        url: '/products/search',
+        params: { q: query, page, limit },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.products.map((prod) => ({ type: 'Product' as const, id: prod.id })),
+              { type: 'Product', id: 'SEARCH' },
+            ]
+          : [{ type: 'Product', id: 'SEARCH' }],
+    }),
+
+    getFeaturedProducts: builder.query<Product[], { limit?: number }>({
+      query: ({ limit = 10 }) => ({ url: '/products/featured', params: { limit } }),
+      providesTags: (result) =>
+        result
+          ? [...result.map((prod) => ({ type: 'Product' as const, id: prod.id })), { type: 'Product', id: 'FEATURED' }]
+          : [{ type: 'Product', id: 'FEATURED' }],
+    }),
+  }),
 })
 
-
 export const {
-    useGetProductsQuery,
-    useGetProductByIdQuery,
-    useGetProductBySlugQuery,
-    useSearchProductsQuery,
-    useGetFeaturedProductsQuery,
+  useGetProductsQuery,
+  useGetProductByIdQuery,
+  useGetProductBySlugQuery,
+  useSearchProductsQuery,
+  useGetFeaturedProductsQuery,
 } = productsApi

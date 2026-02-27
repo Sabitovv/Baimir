@@ -44,11 +44,12 @@ const ProductPage = () => {
   const dispatch = useAppDispatch()
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
+  const { i18n } = useTranslation()
 
   const { data: product, isLoading, isError } = useGetProductBySlugQuery(
-    productSlug ?? skipToken
+    productSlug ? { slug: productSlug, lang: i18n.language } : skipToken
   )
-  const { data: categories = [] } = useGetCategoriesTreeQuery()
+  const { data: categories = [] } = useGetCategoriesTreeQuery({ lang: i18n.language })
 
   const [activeImage, setActiveImage] = useState(0)
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'order'>('desc')

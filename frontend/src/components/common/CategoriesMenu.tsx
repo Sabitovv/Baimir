@@ -3,13 +3,15 @@ import { Link, useParams, useSearchParams, useLocation } from 'react-router-dom'
 import OpenButton from '@/assets/button1_for_sideBar.svg'
 import CloseButton from '@/assets/button2_for_sideBar.svg'
 import { useGetCategoriesTreeQuery, type Category } from '@/api/categoriesApi'
+import { useTranslation } from 'react-i18next'
 
 type TreeCategory = Category & {
     children: TreeCategory[]
 }
 
 const CategoriesMenu = () => {
-    const { data: categories = [] } = useGetCategoriesTreeQuery()
+    const { i18n } = useTranslation()
+    const { data: categories = [] } = useGetCategoriesTreeQuery({lang: i18n.language})
     const { categoryId } = useParams<{ categoryId: string }>()
     const [searchParams] = useSearchParams()
     const location = useLocation()

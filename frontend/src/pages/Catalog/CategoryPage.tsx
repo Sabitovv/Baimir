@@ -58,6 +58,7 @@ const CategoryPage = () => {
   }
 
   const { t } = useTranslation()
+  const { i18n } = useTranslation()
   const { categoryId } = useParams<{ categorySlug: string; categoryId: string }>()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -81,7 +82,7 @@ const CategoryPage = () => {
     data: categories = [],
     isLoading: isLoadingCategories,
     isError: isErrorCategories,
-  } = useGetCategoriesTreeQuery()
+  } = useGetCategoriesTreeQuery({lang: i18n.language})
 
   const activeId = categoryId ? Number(categoryId) : Number(searchParams.get('categoryId'))
 
@@ -99,10 +100,14 @@ const CategoryPage = () => {
 
   const queryArg = activeId ? { categoryId: activeId, page, limit, ...filters } : skipToken
 
-  const {
-    data: productsResponse,
-    isLoading: isLoadingProducts,
-  } = useGetProductsQuery(queryArg)
+
+    const {
+      data: productsResponse,
+      isLoading: isLoadingProducts,
+    } = useGetProductsQuery(
+      queryArg === skipToken
+        ? skipToken
+        : { ...queryArg, lang: i18n.language })
 
   const products = productsResponse?.products ?? []
   const total = productsResponse?.meta?.totalPages
