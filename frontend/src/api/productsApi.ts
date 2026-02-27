@@ -190,7 +190,7 @@ export const productsApi = createApi({
       query: ({ categoryId, lang, page, limit, ...params }) => ({
         url: `/products/category/${categoryId}`,
         params: {
-          page: page ?? 1,
+          page: page ?? 0,
           limit: limit ?? 20,
           ...params,
         },
