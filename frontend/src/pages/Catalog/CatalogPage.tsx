@@ -129,22 +129,30 @@ const CatalogPage = () => {
                         navigate(`/catalog/${item.slug}?categoryId=${item.id}`)
                       }
                     }}
-                    className="bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 rounded-lg cursor-pointer flex flex-col items-center group"
+                    className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 
+                              transition-all duration-300 rounded-lg cursor-pointer 
+                              flex flex-col items-center p-6 h-[240px] overflow-hidden group"
                   >
-                    <div className="w-full h-[130px] flex items-center justify-center">
+                    {/* фиксированная зона изображения */}
+                    <div className="w-full h-[130px] flex items-center justify-center 
+                                    overflow-hidden shrink-0">
                       <img
                         src={item.imageUrl}
                         alt={item.name}
                         loading="lazy"
-                        width="130"
-                        height="130"
-                        className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
+                        width={130}
+                        height={130}
+                        className="w-full h-full object-contain transition-transform 
+                                  group-hover:scale-105"
                       />
                     </div>
 
-                    <p className="mt-4 font-semibold text-center text-gray-800">
-                      {item.name}
-                    </p>
+                    {/* текстовая часть фиксированной высоты */}
+                    <div className="mt-4 text-center h-[48px] flex items-center justify-center overflow-hidden">
+                      <p className="font-semibold text-gray-800 line-clamp-2">
+                        {item.name}
+                      </p>
+                    </div>
                   </div>
                 </StaggerItem>
               ))}
