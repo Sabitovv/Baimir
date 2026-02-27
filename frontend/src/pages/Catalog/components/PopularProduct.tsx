@@ -46,11 +46,6 @@ export const PopularProduct = () => {
 
   const products = data?.content ?? []
 
-  const formatPrice = (price: number | null | undefined) =>
-    typeof price === 'number'
-      ? `${price.toLocaleString('ru-RU')} ₸`
-      : '—'
-
   return (
     <section className="mb-24 mt-12 px-2 sm:px-0">
       <h2 className="font-oswald text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6 ml-2 sm:ml-4">
