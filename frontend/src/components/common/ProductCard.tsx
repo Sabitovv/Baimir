@@ -1,33 +1,73 @@
-// type ProductCardProps = {
-//     image: string
-//     title: string
-//     code: string
-//     price: string
-//     onBuy?: () => void
-// }
+import React from "react"
+import { Link } from "react-router-dom"
 
-const ProductCard = ({ title, price, image }: { title: string; price: string; image: string; code?:string }) => {
+type ProductCardProps = {
+  id: number
+  slug: string
+  name: string
+  coverImage?: string | null
+  price?: number | string | null
+  inStock?: boolean
+}
+
+const PLACEHOLDER_IMG = "https://via.placeholder.com/400x300?text=No+image"
+
+const ProductCard: React.FC<ProductCardProps> = ({
+  slug,
+  name,
+  coverImage,
+  price,
+  inStock,
+}) => {
+  const imgSrc = coverImage ?? PLACEHOLDER_IMG
+
+  const priceNumber =
+    typeof price === "number"
+      ? price
+      : typeof price === "string"
+      ? Number(price)
+      : NaN
+
+  const formattedPrice = Number.isFinite(priceNumber)
+    ? `${priceNumber.toLocaleString("ru-RU")} ₸`
+    : "—"
+
   return (
-    <div className="min-w-[220px] sm:min-w-[240px] lg:min-w-[260px] bg-white rounded-md shadow-sm p-4 flex flex-col">
-      <div className="flex-1 flex items-center justify-center">
-        <img src={image} alt={title} className="max-h-28 object-contain" />
+    <Link
+      to={`/catalog/product/${slug}`}
+      className="bg-white border border-gray-200 p-4 rounded-sm hover:shadow-lg transition flex flex-col h-full group"
+    >
+      <div className="h-40 flex items-center justify-center mb-4">
+        <img
+          src={imgSrc}
+          alt={name}
+          className="max-h-full object-contain"
+          loading="lazy"
+        />
       </div>
 
-      <div className="mt-3">
-        <p className="text-sm leading-tight font-bold">{title}</p>
-        <p className="text-xs text-gray-500 mt-1 font-medium">Код: 123-456</p>
-      </div>
+      <h3 className="text-sm font-extrabold text-gray-800 leading-tight mb-3 group-hover:text-[#DB741F] transition-colors line-clamp-2">
+        {name}
+      </h3>
+      <div className="mt-auto">
+        <p className="text-lg font-bold text-gray-900 mb-3">
+          {formattedPrice}
+        </p>
 
-      <div className="mt-4 flex items-center justify-between">
-        <div>
-          <div className="text-sm font-bold">{price}</div>
-        </div>
-
-        <button className="bg-[#F58322] text-white px-3 py-1 rounded text-sm hover:bg-[#DB741F] transition">
-          Купить
+        <button
+          type="button"
+          className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
+            inStock === false
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#F58322] text-white hover:bg-[#DB741F]"
+          }`}
+          disabled={inStock === false}
+          onClick={(e) => e.preventDefault()} 
+        >
+          {inStock === false ? "Нет в наличии" : "Купить"}
         </button>
       </div>
-    </div>
+    </Link>
   )
 }
 

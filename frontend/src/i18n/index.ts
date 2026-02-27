@@ -12,7 +12,7 @@ i18n
   .init({
     resources: {
       ru: { common: ruCommon },
-      kk: { common: kkCommon }
+      kz: { common: kkCommon }
       // en: { common: enCommon },
     },
     lng: 'ru',

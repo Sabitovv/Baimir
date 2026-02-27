@@ -171,6 +171,14 @@ export type ProductsQueryParams = {
   lang?: string    // <- добавлено
 } & Record<string, any>
 
+interface PageResponse<T> {
+  content: T[]
+  totalPages: number
+  totalElements: number
+  size: number
+  number: number
+}
+
 export const productsApi = createApi({
   reducerPath: 'productsApi',
   baseQuery: fetchBaseQuery({
@@ -241,13 +249,21 @@ export const productsApi = createApi({
           ? [...result.map((prod) => ({ type: 'Product' as const, id: prod.id })), { type: 'Product', id: 'FEATURED' }]
           : [{ type: 'Product', id: 'FEATURED' }],
     }),
+    getPopularProducts: builder.query<PageResponse<Product>, {page?: number, size?:number}>({
+        query:({page=0, size=10})=>({url: "products/random", params: {page, size}}),
+        providesTags: (result) =>
+            result
+                ? [...result.content.map((prod) => ({ type: 'Product' as const, id: prod.id })), { type: 'Product', id: 'POPULAR' }]
+                : [{ type: 'Product', id: 'POPULAR' }],
+    })
   }),
 })
 
 export const {
-  useGetProductsQuery,
-  useGetProductByIdQuery,
-  useGetProductBySlugQuery,
-  useSearchProductsQuery,
-  useGetFeaturedProductsQuery,
+    useGetProductsQuery,
+    useGetProductByIdQuery,
+    useGetProductBySlugQuery,
+    useSearchProductsQuery,
+    useGetFeaturedProductsQuery,
+    useGetPopularProductsQuery,
 } = productsApi
