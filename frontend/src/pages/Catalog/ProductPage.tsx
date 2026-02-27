@@ -522,6 +522,8 @@ const ProductPage = () => {
                               <div className="text-gray-600">• {atr.name}</div>
                               <div className="font-medium text-gray-900 text-right max-w-[60%] whitespace-pre-wrap">
                                 {atr.value ?? '—'}
+                                {" "}
+                                {atr.unit}
                               </div>
                             </div>
                           )
