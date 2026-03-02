@@ -4,16 +4,22 @@ import imgStanok from '@/assets/home/lazerStanok.webp'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { useGetCategoriesTreeQuery } from '@/api/categoriesApi'
+import { Link } from 'react-router-dom'
 
 const IndustryCatalog = () => {
   const { t } = useTranslation()
+  const { i18n } = useTranslation()
 
-  const cards = [
-    { title: t('home.catalog.laser'), image: imgStanok },
-    { title: t('home.catalog.laser'), image: imgStanok },
-    { title: t('home.catalog.laser'), image: imgStanok },
-    { title: t('home.catalog.laser'), image: imgStanok },
-  ]
+  const { data } = useGetCategoriesTreeQuery({lang: i18n.language})
+  const cards = data
+  ? [
+      { title: data[0].name, image: data[0].imageUrl, path: "catalog/metalworking?categoryId=19"},
+      { title: data[1].name, image: data[1].imageUrl, path: "catalog/metalworking?categoryId=8"},
+      { title: data[2].name, image: data[2].imageUrl, path: "catalog/metalworking?categoryId=20"},
+      { title: data[3].name, image: data[3].imageUrl, path: "catalog/metalworking?categoryId=21"}
+    ]
+  : []
 
   return (
     <section className="py-16 md:py-20 bg-white">
@@ -46,7 +52,8 @@ const IndustryCatalog = () => {
                   group
                 "
               >
-                <h3
+                <Link
+                to={card.path}
                   className="
                     font-oswald font-bold uppercase text-center
                     text-base md:text-lg
@@ -55,18 +62,18 @@ const IndustryCatalog = () => {
                   "
                 >
                   {card.title}
-                </h3>
+                </Link>
 
                 <div className="flex-grow flex items-center justify-center">
                   <img
                     src={card.image}
-                    alt={card.title}
                     className="max-h-40 md:max-h-44 xl:max-h-48 object-contain"
                   />
                 </div>
               </div>
 
-              <a
+              <Link
+                to={card.path}
                 className="
                   text-[#F58322]
                   text-xs
@@ -75,8 +82,9 @@ const IndustryCatalog = () => {
                   hover:underline
                 "
               >
+              
                 {t('home.catalog.link')} &gt;
-              </a>
+              </Link>
 
             </StaggerItem>
           ))}

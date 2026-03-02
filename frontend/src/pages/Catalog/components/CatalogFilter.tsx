@@ -20,7 +20,7 @@ const CatalogFilters = ({ onClose, filters, bounds }: CatalogFiltersProps) => {
   // const inStock = searchParams.get('is_stock') === 'true'
 
   const getLimits = (f: any) => {
-    if (bounds && bounds[f.code]) return bounds[f.code]
+    console.log(f)
     const rawMin = f.range?.min ?? 0
     const rawMax = f.range?.max ?? 0
     return { min: Math.floor(Number(rawMin)), max: Math.ceil(Number(rawMax)) }
