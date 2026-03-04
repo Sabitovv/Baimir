@@ -20,36 +20,12 @@ const WhyChooseUs = () => {
   const { t } = useTranslation()
 
   const features: FeatureItem[] = [
-    {
-      icon: Experience,
-      titleKey: 'home.why.experience.title',
-      textKey: 'home.why.experience.text'
-    },
-    {
-      icon: Deliver,
-      titleKey: 'home.why.delivery.title',
-      textKey: 'home.why.delivery.text'
-    },
-    {
-      icon: Garant,
-      titleKey: 'home.why.guarantee.title',
-      textKey: 'home.why.guarantee.text'
-    },
-    {
-      icon: Sklad,
-      titleKey: 'home.why.stock.title',
-      textKey: 'home.why.stock.text'
-    },
-    {
-      icon: ServiceIcon,
-      titleKey: 'home.why.service.title',
-      textKey: 'home.why.service.text'
-    },
-    {
-      icon: Experience,
-      titleKey: 'home.why.price.title',
-      textKey: 'home.why.price.text'
-    }
+    { icon: Experience, titleKey: 'home.why.experience.title', textKey: 'home.why.experience.text' },
+    { icon: Deliver, titleKey: 'home.why.delivery.title', textKey: 'home.why.delivery.text' },
+    { icon: Garant, titleKey: 'home.why.guarantee.title', textKey: 'home.why.guarantee.text' },
+    { icon: Sklad, titleKey: 'home.why.stock.title', textKey: 'home.why.stock.text' },
+    { icon: ServiceIcon, titleKey: 'home.why.service.title', textKey: 'home.why.service.text' },
+    { icon: Experience, titleKey: 'home.why.price.title', textKey: 'home.why.price.text' }
   ]
 
   return (
@@ -62,22 +38,17 @@ const WhyChooseUs = () => {
               {t('home.why.title')}
             </h2>
           </ScrollReveal>
-
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-12 auto-rows-fr">
             {features.map((item, index) => (
               <StaggerItem key={index}>
-                <div
-                  className="bg-white p-8 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group"
-                >
+                <div className="bg-white p-8 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group h-full flex flex-col">
                   <div className="text-[#F58322] mb-4">
-                    <img src={item.icon} alt="" />
+                    <img src={item.icon} alt="" className="w-12 h-12 object-contain" />
                   </div>
-
                   <h3 className="text-base md:text-xl font-oswald font-bold uppercase mb-2">
                     {t(item.titleKey)}
                   </h3>
-
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-gray-600 text-sm leading-relaxed flex-1">
                     {t(item.textKey)}
                   </p>
                 </div>

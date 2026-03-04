@@ -86,8 +86,8 @@ const Header = () => {
             </button>
             <span className="text-gray-500">|</span>
             <button
-              onClick={() => changeLanguage('kk')}
-              className={getLangClass('kk')}
+              onClick={() => changeLanguage('kz')}
+              className={getLangClass('kz')}
             >
               KZ
             </button>

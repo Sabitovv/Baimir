@@ -20,7 +20,7 @@ const Warehouse = () => {
   const [imgChange, setImgChange] = useState(0);
 
   const stats: StatItem[] = [
-    { value: '5 500 м', textKey: 'home.warehouse.stats.space' },
+    { value: '5 500 м²', textKey: 'home.warehouse.stats.space' },
     { value: '120+', textKey: 'home.warehouse.stats.staff' },
     { value: '2012', textKey: 'home.warehouse.stats.since' }
   ]

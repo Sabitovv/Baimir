@@ -96,7 +96,7 @@ const Hero = () => {
                 items-start lg:items-end
                 justify-between
                 gap-6
-                px-6 md:px-[64px] lg:px-[120px] xl:px-[245px]
+                md:px-[50px] lg:px-[100px] xl:px-[220px]
               "
             >
               <p
