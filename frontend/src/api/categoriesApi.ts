@@ -68,6 +68,20 @@ export type ProductInner = {
   specifications: Specifications[]
 }
 
+export type InquiryRequest = {
+  name: string
+  email?: string | null
+  phone?: string | null
+  message?: string
+  productId?: number | null
+  sourceUrl?: string
+}
+
+export type InquiryResponse = {
+  id?: number
+  message?: string
+}
+
 export const categoriesApi = createApi({
   reducerPath: 'categoriesApi',
   baseQuery: fetchBaseQuery({
@@ -129,6 +143,14 @@ export const categoriesApi = createApi({
       query: (id) => `/products/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Product' as const, id }],
     }),
+
+    createInquiry: builder.mutation<InquiryResponse, InquiryRequest>({
+      query: (body) => ({
+        url: '/inquiries',
+        method: 'POST',
+        body,
+      }),
+    })
   }),
 })
 
@@ -137,4 +159,5 @@ export const {
   useGetCategoriesRootQuery,
   useGetProductsQuery,
   useGetProductByIdQuery,
+  useCreateInquiryMutation
 } = categoriesApi
