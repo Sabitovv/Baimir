@@ -174,7 +174,7 @@ const CatalogPage = () => {
                 </h3>
                 <Contact />
               </div>
-              <div className="flex justify-center md:justify-end px-2 md:px-0 order-1 md:order-2">
+              <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0 order-1 md:order-2">
                 <img
                   src={sampleImg}
                   alt="Лазерный станок - пример"

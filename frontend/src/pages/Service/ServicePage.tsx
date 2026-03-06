@@ -123,7 +123,7 @@ const ServicePage = () => {
                 </StaggerContainer>
               </div>
 
-              <ScrollReveal className="flex justify-center lg:justify-end order-first lg:order-last">
+              <ScrollReveal className="hidden lg:flex justify-center lg:justify-end order-first lg:order-last">
                 <img
                   src={real2}
                   className="w-full max-w-[280px] sm:max-w-[350px] lg:max-w-full object-contain"

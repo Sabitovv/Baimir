@@ -45,7 +45,11 @@ type SnackState = {
 const emailRegex = /^\S+@\S+\.\S+$/
 const phoneRegex = /^[0-9+()\-\s]*$/ // allows digits, plus, parentheses, dash and spaces
 
-const Contact: React.FC = () => {
+type ContactProps = {
+  productId?: number | null
+}
+
+const Contact: React.FC<ContactProps> = ({ productId }) => {
   const { t } = useTranslation()
 
   const [form, setForm] = useState<FormState>({
@@ -142,7 +146,7 @@ const Contact: React.FC = () => {
       email: form.email?.trim() || undefined,
       message: form.message?.trim() || undefined,
       sourceUrl: typeof window !== 'undefined' ? window.location.href.slice(0, LIMITS.SOURCE_URL) : undefined,
-      productId: null,
+      ...(typeof productId === 'number' ? { productId } : {}),
     }
 
     try {
@@ -155,10 +159,22 @@ const Contact: React.FC = () => {
       setSnack({ open: true, message: successMessage, severity: 'success' })
       setForm({ name: '', phone: '', email: '', message: '' })
       setConsent(true)
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = (err && typeof err === 'object' ? err : null) as
+        | { data?: { message?: string } | unknown; error?: string }
+        | null
+
       const errorMessage =
-        (err?.data && (err.data.message || JSON.stringify(err.data))) ||
-        err?.error ||
+        (errorObj?.data &&
+          typeof errorObj.data === 'object' &&
+          errorObj.data !== null &&
+          'message' in errorObj.data &&
+          typeof (errorObj.data as { message?: unknown }).message === 'string'
+          ? (errorObj.data as { message: string }).message
+          : errorObj?.data
+            ? JSON.stringify(errorObj.data)
+            : undefined) ||
+        errorObj?.error ||
         t('home.contact.errors.network', { defaultValue: 'Сетевая ошибка — проверьте подключение' })
 
       setSnack({ open: true, message: String(errorMessage), severity: 'error' })

@@ -558,9 +558,9 @@ const ProductPage = () => {
               <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
                 {t("catalogPage.bid")}
               </h3>
-              <Contact />
+              <Contact productId={product.id} />
             </div>
-            <div className="flex justify-center md:justify-end px-2 md:px-0">
+            <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0">
               <img src={sampleImg} alt="machine" className="max-w-full w-72 sm:w-full object-contain" />
             </div>
           </div>

@@ -49,13 +49,17 @@ const ForClients = () => {
           {benefits.map((item, index) => (
             <StaggerItem key={index} className="h-full">
               <div
-                className="border-[#F58322] border-4 p-4 md:p-8 hover:-translate-y-1 transition-transform duration-300 h-full flex flex-col"
+                className="border-[#F58322] border-4 p-4 md:p-8 hover:-translate-y-1 transition-transform duration-300 h-full flex flex-col overflow-hidden"
               >
-                <div className="flex justify-between items-start mb-6 md:mb-8 xl:mb-12">
-                  <h3 className="font-oswald font-bold text-xl md:text-2xl xl:text-3xl uppercase pr-4">
+                <div className="flex justify-between items-start gap-3 mb-6 md:mb-8 xl:mb-12">
+                  <h3 className="font-oswald font-bold text-xl md:text-2xl xl:text-3xl uppercase pr-2 min-w-0 break-words leading-tight">
                     {t(item.titleKey)}
                   </h3>
-                  <img src={item.image} className='w-14 h-14 shrink-0' alt="" />
+                  <img
+                    src={item.image}
+                    className="w-10 h-10 md:w-14 md:h-14 max-w-full object-contain shrink-0"
+                    alt=""
+                  />
                 </div>
 
                 <p className="text-base md:text-lg leading-relaxed">

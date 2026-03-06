@@ -401,7 +401,7 @@ const CategoryPage = () => {
               </h3>
               <Contact />
             </div>
-            <div className="flex justify-center md:justify-end px-2 md:px-0">
+            <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0">
               <img src={sampleImg} alt="machine" className="max-w-full w-72 sm:w-full object-contain" />
             </div>
           </div>

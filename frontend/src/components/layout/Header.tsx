@@ -53,7 +53,7 @@ const Header = () => {
           </div>
         </div>
 
-        <nav className="flex items-center gap-3 2xl:gap-5 text-[11px] 2xl:text-xs uppercase font-bold tracking-wider 2xl:tracking-widest whitespace-nowrap shrink-0">
+        <nav className="flex items-center gap-3 2xl:gap-5 text-[13px] 2xl:text-xs uppercase font-bold tracking-wider 2xl:tracking-widest whitespace-nowrap shrink-0">
           {navItems.map((key) => (
             <NavLink
               key={key.id}
@@ -68,7 +68,7 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4 2xl:gap-6 shrink-0">
-          
+
           <div className="flex items-center gap-2 text-xs 2xl:text-sm font-bold uppercase shrink-0">
             <button
               onClick={() => changeLanguage('ru')}
