@@ -39,6 +39,89 @@ const findCategoryById = (categories: Category[], id: number): Category | null =
 
 const PLACEHOLDER_IMG = 'https://placehold.co/600x400?text=No+Image'
 
+type GalleryItem = {
+  kind: 'image' | 'videoExternal' | 'videoFile'
+  url: string
+  preview: string
+  embedUrl?: string
+}
+
+const toYouTubeId = (url: string): string | null => {
+  try {
+    const parsed = new URL(url)
+    const host = parsed.hostname.replace('www.', '')
+
+    if (host === 'youtu.be') {
+      const id = parsed.pathname.replace('/', '')
+      return id || null
+    }
+
+    if (host === 'youtube.com' || host === 'm.youtube.com') {
+      if (parsed.pathname === '/watch') return parsed.searchParams.get('v')
+      if (parsed.pathname.startsWith('/shorts/')) return parsed.pathname.split('/')[2] || null
+      if (parsed.pathname.startsWith('/embed/')) return parsed.pathname.split('/')[2] || null
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
+const toYouTubeEmbedUrl = (url: string): string | null => {
+  const id = toYouTubeId(url)
+  return id ? `https://www.youtube.com/embed/${id}` : null
+}
+
+const isVideoFileUrl = (url: string): boolean => /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url)
+
+const normalizeGallery = (
+  media: Array<{ url?: string | null; type?: string | null; sortOrder?: number | null }> | null | undefined,
+): GalleryItem[] => {
+  if (!media || media.length === 0) {
+    return [{ kind: 'image', url: PLACEHOLDER_IMG, preview: PLACEHOLDER_IMG }]
+  }
+
+  const sorted = [...media].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+
+  const mapped: GalleryItem[] = sorted
+    .map((item) => {
+      const url = String(item.url ?? '').trim()
+      if (!url) return null
+
+      const rawType = String(item.type ?? '').toUpperCase()
+      const youtubeEmbed = toYouTubeEmbedUrl(url)
+
+      if (rawType.includes('IMAGE')) {
+        return { kind: 'image', url, preview: url }
+      }
+
+      if (rawType === 'VIDEO_EXTERNAL') {
+        if (youtubeEmbed) {
+          const id = toYouTubeId(url)
+          const preview = id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : PLACEHOLDER_IMG
+          return { kind: 'videoExternal', url, preview, embedUrl: youtubeEmbed }
+        }
+        return { kind: 'videoExternal', url, preview: PLACEHOLDER_IMG, embedUrl: url }
+      }
+
+      if (rawType.includes('VIDEO')) {
+        if (youtubeEmbed) {
+          const id = toYouTubeId(url)
+          const preview = id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : PLACEHOLDER_IMG
+          return { kind: 'videoExternal', url, preview, embedUrl: youtubeEmbed }
+        }
+        return { kind: 'videoFile', url, preview: PLACEHOLDER_IMG }
+      }
+
+      if (isVideoFileUrl(url)) return { kind: 'videoFile', url, preview: PLACEHOLDER_IMG }
+      return { kind: 'image', url, preview: url }
+    })
+    .filter((item): item is GalleryItem => item !== null)
+
+  return mapped.length > 0 ? mapped : [{ kind: 'image', url: PLACEHOLDER_IMG, preview: PLACEHOLDER_IMG }]
+}
+
 const ProductPage = () => {
   const { productSlug } = useParams()
   const dispatch = useAppDispatch()
@@ -121,20 +204,8 @@ const ProductPage = () => {
     dispatch(setBreadcrumbs(breadcrumbs))
   }, [product, categories, dispatch, searchParams])
 
-  const images = useMemo(() => {
-    if (!product?.media || product.media.length === 0) return [PLACEHOLDER_IMG]
-
-    const imgs = product.media
-      .filter((m: any) => m?.url && String(m.type ?? '').toUpperCase() === 'IMAGE')
-      .slice()
-
-    if (imgs.some((i: any) => typeof i.sortOrder === 'number')) {
-      imgs.sort((a: any, b: any) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-    }
-
-    const mapped = imgs.map((m: any) => m.url)
-    return mapped.length > 0 ? mapped : [PLACEHOLDER_IMG]
-  }, [product?.media])
+  const gallery = useMemo(() => normalizeGallery(product?.media), [product?.media])
+  const activeMedia = gallery[activeImage] ?? gallery[0]
 
   useEffect(() => {
     setActiveImage(0)
@@ -153,7 +224,7 @@ const ProductPage = () => {
         node?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
       }
       if (e.key === 'ArrowRight') {
-        const ni = Math.min(images.length - 1, activeImage + 1)
+        const ni = Math.min(gallery.length - 1, activeImage + 1)
         setActiveImage(ni)
         const node = thumbsRef.current?.children?.[ni] as HTMLElement | undefined
         node?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
@@ -161,7 +232,7 @@ const ProductPage = () => {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [activeImage, images.length])
+  }, [activeImage, gallery.length])
 
   const prevImage = () => {
     const ni = Math.max(0, activeImage - 1)
@@ -170,7 +241,7 @@ const ProductPage = () => {
     node?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }
   const nextImage = () => {
-    const ni = Math.min(images.length - 1, activeImage + 1)
+    const ni = Math.min(gallery.length - 1, activeImage + 1)
     setActiveImage(ni)
     const node = thumbsRef.current?.children?.[ni] as HTMLElement | undefined
     node?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
@@ -195,7 +266,7 @@ const ProductPage = () => {
   }
 
   const goToIndex = (idx: number) => {
-    const index = Math.max(0, Math.min(images.length - 1, idx))
+    const index = Math.max(0, Math.min(gallery.length - 1, idx))
     setActiveImage(index)
     const node = thumbsRef.current?.children?.[index] as HTMLElement | undefined
     node?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
@@ -278,11 +349,34 @@ const ProductPage = () => {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              <img
-                src={images[activeImage] || PLACEHOLDER_IMG}
-                alt={product.name || 'product image'}
-                className="object-contain w-full h-full max-h-[520px]"
-              />
+              {activeMedia?.kind === 'image' && (
+                <img
+                  src={activeMedia.url || PLACEHOLDER_IMG}
+                  alt={product.name || 'product image'}
+                  className="object-contain w-full h-full max-h-[520px]"
+                />
+              )}
+
+              {activeMedia?.kind === 'videoExternal' && (
+                <iframe
+                  src={activeMedia.embedUrl || activeMedia.url}
+                  title={product.name || 'product video'}
+                  className="w-full h-full min-h-[240px] md:min-h-[360px] bg-black"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              )}
+
+              {activeMedia?.kind === 'videoFile' && (
+                <video
+                  src={activeMedia.url}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full max-h-[520px] bg-black"
+                />
+              )}
 
               {product.discountPercent && (
                 <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-sm font-bold rounded">
@@ -308,7 +402,7 @@ const ProductPage = () => {
                   ref={thumbsRef}
                   className="flex gap-3 overflow-x-auto px-2 py-1 scrollbar-thin"
                 >
-                  {images.map((img, idx) => (
+                  {gallery.map((item, idx) => (
                     <button
                       key={idx}
                       onClick={() => goToIndex(idx)}
@@ -320,7 +414,18 @@ const ProductPage = () => {
                       `}
                       aria-label={`Показать изображение ${idx + 1}`}
                     >
-                      <img src={img} alt={`${product.name}-${idx}`} className="w-full h-full object-cover" />
+                      {item.kind === 'image' ? (
+                        <img src={item.preview} alt={`${product.name}-${idx}`} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-black/80 text-white flex items-center justify-center relative">
+                          <img src={item.preview} alt={`${product.name}-${idx}`} className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                          <span className="relative z-10 w-8 h-8 rounded-full bg-black/65 border border-white/40 flex items-center justify-center">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </span>
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -329,7 +434,7 @@ const ProductPage = () => {
               <button
                 onClick={() => goToIndex(activeImage + 1)}
                 aria-label="Next thumbnail"
-                className={`p-2 rounded-full bg-white/90 hover:bg-white shadow transition ${activeImage === images.length - 1 ? 'opacity-40 pointer-events-none' : ''
+                className={`p-2 rounded-full bg-white/90 hover:bg-white shadow transition ${activeImage === gallery.length - 1 ? 'opacity-40 pointer-events-none' : ''
                   }`}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

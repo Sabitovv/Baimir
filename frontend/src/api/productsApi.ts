@@ -55,12 +55,13 @@ export type ProductVariant = {
  * Media item for product (images/videos)
  */
 export type ProductMedia = {
-    id: number
+    id?: number
     url: string
-    type: 'image' | 'video'
-    alt?: string
-    sortOrder: number
-    isPrimary: boolean
+    type: 'image' | 'video' | 'IMAGE' | 'VIDEO' | 'VIDEO_EXTERNAL'
+    alt?: string | null
+    altText?: string | null
+    sortOrder?: number
+    isPrimary?: boolean
 }
 
 /**
