@@ -28,6 +28,7 @@ const Header = () => {
   }
 
   const getLangClass = (lng: string) => {
+    console.log(i18n.language)
     return i18n.language === lng
       ? 'text-[#F58322] font-bold border-b border-[#F58322]'
       : 'text-white hover:text-[#F58322] transition-colors'
@@ -77,7 +78,7 @@ const Header = () => {
             </button>
             <span className="text-gray-500">|</span>
             <button
-              onClick={() => changeLanguage('kz ')}
+              onClick={() =>changeLanguage('kz')}
               className={getLangClass('kz')}
             >
               KZ
