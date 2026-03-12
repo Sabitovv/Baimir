@@ -153,12 +153,185 @@ const imageRatioClassMap: Record<'video' | 'square' | 'portrait', string> = {
   portrait: 'aspect-[3/4]',
 }
 
+const toRecord = (value: unknown): Record<string, unknown> | null => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  return value as Record<string, unknown>
+}
+
+const toStringValue = (value: unknown, fallback = ''): string => {
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  return fallback
+}
+
+const toStringArray = (value: unknown): string[] => {
+  if (!Array.isArray(value)) return []
+  return value.map((item) => toStringValue(item).trim()).filter(Boolean)
+}
+
+const toRows = (value: unknown): string[][] => {
+  if (!Array.isArray(value)) return []
+  return value
+    .map((row) => (Array.isArray(row) ? row.map((cell) => toStringValue(cell, '')) : []))
+    .filter((row) => row.length > 0)
+}
+
+const normalizeContentBlocks = (value: unknown): ProductContentBlock[] => {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((rawBlock, idx): ProductContentBlock | null => {
+      const block = toRecord(rawBlock)
+      if (!block) return null
+
+      const type = toStringValue(block.type)
+      const data = toRecord(block.data) ?? {}
+      const id = toStringValue(block.id, `block-${idx}`)
+
+      if (type === 'heading') {
+        const levelRaw = Number(block?.data && toRecord(block.data)?.level)
+        const level = levelRaw === 1 || levelRaw === 2 || levelRaw === 3 ? levelRaw : 2
+        return {
+          id,
+          type: 'heading',
+          data: {
+            text: toStringValue(data.text),
+            level,
+            subtitle: toStringValue(data.subtitle) || undefined,
+          },
+        }
+      }
+
+      if (type === 'paragraph') {
+        return {
+          id,
+          type: 'paragraph',
+          data: { text: toStringValue(data.text) },
+        }
+      }
+
+      if (type === 'imageCard') {
+        const position = toStringValue(data.position)
+        const imageWidth = toStringValue(data.imageWidth)
+        const imageRatio = toStringValue(data.imageRatio)
+        const verticalAlign = toStringValue(data.verticalAlign)
+
+        return {
+          id,
+          type: 'imageCard',
+          data: {
+            imageUrl: toStringValue(data.imageUrl),
+            title: toStringValue(data.title),
+            description: toStringValue(data.description),
+            position: position === 'left' || position === 'right' || position === 'top' || position === 'bottom' ? position : 'left',
+            imageWidth: imageWidth === '1/3' || imageWidth === '1/2' || imageWidth === '2/3' || imageWidth === 'full' ? imageWidth : '1/2',
+            imageRatio: imageRatio === 'video' || imageRatio === 'square' || imageRatio === 'portrait' ? imageRatio : 'video',
+            verticalAlign: verticalAlign === 'start' || verticalAlign === 'center' ? verticalAlign : 'start',
+          },
+        }
+      }
+
+      if (type === 'youtube') {
+        return {
+          id,
+          type: 'youtube',
+          data: {
+            videoId: toStringValue(data.videoId),
+            videoUrl: toStringValue(data.videoUrl) || undefined,
+          },
+        }
+      }
+
+      if (type === 'table') {
+        return {
+          id,
+          type: 'table',
+          data: { rows: toRows(data.rows) },
+        }
+      }
+
+      if (type === 'gallery') {
+        const layout = toStringValue(data.layout)
+        return {
+          id,
+          type: 'gallery',
+          data: {
+            urls: toStringArray(data.urls),
+            layout: layout === 'single' || layout === 'grid' || layout === 'carousel' || layout === 'featured' || layout === 'masonry'
+              ? layout
+              : 'grid',
+          },
+        }
+      }
+
+      if (type === 'list') {
+        const styleRaw = toStringValue(data.style)
+        const styleFromOrdered = data.ordered === true ? 'number' : 'bullet'
+        const style = styleRaw || styleFromOrdered
+        return {
+          id,
+          type: 'list',
+          data: {
+            items: toStringArray(data.items),
+            style: style === 'bullet' || style === 'number' || style === 'check' || style === 'dash' || style === 'arrow' ? style : 'bullet',
+          },
+        }
+      }
+
+      if (type === 'cardGrid') {
+        const columnsRaw = Number(data.columns)
+        const columns = columnsRaw === 2 || columnsRaw === 3 || columnsRaw === 4 ? columnsRaw : 3
+        const imageRatioRaw = toStringValue(data.imageRatio)
+        const cardsRaw = Array.isArray(data.cards) ? data.cards : []
+
+        const cards = cardsRaw
+          .map((item) => toRecord(item))
+          .filter((item): item is Record<string, unknown> => item !== null)
+          .map((item) => ({
+            imageUrl: toStringValue(item.imageUrl),
+            title: toStringValue(item.title),
+            description: toStringValue(item.description),
+          }))
+
+        return {
+          id,
+          type: 'cardGrid',
+          data: {
+            columns,
+            imageRatio: imageRatioRaw === 'square' || imageRatioRaw === 'video' || imageRatioRaw === 'portrait' ? imageRatioRaw : 'video',
+            cards,
+          },
+        }
+      }
+
+      if (type === 'productLink') {
+        const layout = toStringValue(data.layout)
+        return {
+          id,
+          type: 'productLink',
+          data: {
+            productIds: toStringArray(data.productIds),
+            layout: layout === 'card' || layout === 'grid' || layout === 'carousel' ? layout : 'card',
+          },
+        }
+      }
+
+      return null
+    })
+    .filter((item): item is ProductContentBlock => item !== null)
+}
+
 const renderCardItem = (card: GridCardItem, idx: number, ratio: 'square' | 'video' | 'portrait') => (
-  <article key={`${card.title}-${idx}`} className="rounded-lg border border-gray-200 bg-white overflow-hidden">
-    <div className={`${imageRatioClassMap[ratio]} bg-gray-100`}>
-      <img src={card.imageUrl || PLACEHOLDER_IMG} alt={card.title} className="w-full h-full object-cover" loading="lazy" />
+  <article key={`${card.title}-${idx}`} className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm transition hover:shadow-md">
+    <div className={`${imageRatioClassMap[ratio]} bg-gray-100 overflow-hidden`}>
+      <img
+        src={card.imageUrl || PLACEHOLDER_IMG}
+        alt={card.title}
+        className="w-full h-full object-cover transition duration-500 hover:scale-[1.03]"
+        loading="lazy"
+      />
     </div>
-    <div className="p-4 space-y-2">
+    <div className="p-5 space-y-2">
       <h4 className="font-semibold text-gray-900">{card.title}</h4>
       <p className="text-sm text-gray-600 whitespace-pre-line">{card.description}</p>
     </div>
@@ -276,17 +449,19 @@ const ProductLinksBlock = ({
 const renderContentBlock = (block: ProductContentBlock) => {
   switch (block.type) {
     case 'heading': {
+      if (!block.data.text?.trim()) return null
       const HeadingTag = block.data.level === 1 ? 'h2' : block.data.level === 2 ? 'h3' : 'h4'
       return (
-        <div key={block.id} className="space-y-1">
-          <HeadingTag className="font-bold text-gray-900 text-xl md:text-2xl">{block.data.text}</HeadingTag>
-          {block.data.subtitle && <p className="text-sm text-gray-500">{block.data.subtitle}</p>}
+        <div key={block.id} className="space-y-2 border-l-4 border-[#F58322] pl-4 md:pl-5">
+          <HeadingTag className="font-bold text-gray-900 text-xl md:text-2xl leading-tight">{block.data.text}</HeadingTag>
+          {block.data.subtitle && <p className="text-sm text-gray-500 md:text-base">{block.data.subtitle}</p>}
         </div>
       )
     }
     case 'paragraph':
+      if (!block.data.text?.trim()) return null
       return (
-        <p key={block.id} className="text-gray-700 leading-relaxed whitespace-pre-line">
+        <p key={block.id} className="text-gray-700 leading-relaxed whitespace-pre-line text-[15px] md:text-base">
           {block.data.text}
         </p>
       )
@@ -296,18 +471,30 @@ const renderContentBlock = (block: ProductContentBlock) => {
       const directionClass = isHorizontal ? 'lg:flex-row' : 'flex-col'
       const reverseClass = reverse ? (isHorizontal ? 'lg:flex-row-reverse' : 'flex-col-reverse') : ''
       const alignClass = block.data.verticalAlign === 'center' ? 'items-center' : 'items-start'
+      const hasTitle = Boolean(block.data.title?.trim())
+      const hasDescription = Boolean(block.data.description?.trim())
 
       return (
-        <section key={block.id} className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-5 rounded-lg border border-gray-200 p-4`}>
+        <section
+          key={block.id}
+          className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-5 rounded-xl border border-gray-200 p-4 md:p-5 bg-gradient-to-b from-white to-gray-50/70 shadow-sm`}
+        >
           <div className={`w-full ${imageWidthClassMap[block.data.imageWidth]}`}>
-            <div className={`${imageRatioClassMap[block.data.imageRatio]} rounded-md overflow-hidden bg-gray-100`}>
-              <img src={block.data.imageUrl || PLACEHOLDER_IMG} alt={block.data.title} className="w-full h-full object-cover" loading="lazy" />
+            <div className={`${imageRatioClassMap[block.data.imageRatio]} rounded-lg overflow-hidden bg-gray-100`}>
+              <img
+                src={block.data.imageUrl || PLACEHOLDER_IMG}
+                alt={block.data.title || 'content-image'}
+                className="w-full h-full object-cover transition duration-500 hover:scale-[1.02]"
+                loading="lazy"
+              />
             </div>
           </div>
-          <div className="flex-1 space-y-2">
-            <h3 className="font-semibold text-lg text-gray-900">{block.data.title}</h3>
-            <p className="text-sm text-gray-600 whitespace-pre-line">{block.data.description}</p>
-          </div>
+          {(hasTitle || hasDescription) && (
+            <div className="flex-1 space-y-2">
+              {hasTitle && <h3 className="font-semibold text-lg text-gray-900 md:text-xl">{block.data.title}</h3>}
+              {hasDescription && <p className="text-sm text-gray-600 whitespace-pre-line md:text-base">{block.data.description}</p>}
+            </div>
+          )}
         </section>
       )
     }
@@ -320,7 +507,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
       if (!embedUrl) return null
 
       return (
-        <div key={block.id} className="aspect-video rounded-lg overflow-hidden bg-black">
+        <div key={block.id} className="aspect-video rounded-xl overflow-hidden bg-black border border-gray-200 shadow-sm">
           <iframe
             src={embedUrl}
             title="product-content-video"
@@ -336,12 +523,12 @@ const renderContentBlock = (block: ProductContentBlock) => {
       if (!block.data.rows?.length) return null
       const [header, ...body] = block.data.rows
       return (
-        <div key={block.id} className="overflow-x-auto border border-gray-200 rounded-lg">
+        <div key={block.id} className="overflow-x-auto border border-gray-200 rounded-xl shadow-sm bg-white">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 {header.map((cell, idx) => (
-                  <th key={idx} className="px-4 py-3 text-left font-semibold border-b border-gray-200">{cell}</th>
+                  <th key={idx} className="px-4 py-3 text-left font-semibold border-b border-gray-200 whitespace-nowrap">{cell}</th>
                 ))}
               </tr>
             </thead>
@@ -360,18 +547,75 @@ const renderContentBlock = (block: ProductContentBlock) => {
     }
     case 'gallery': {
       if (!block.data.urls?.length) return null
-      const single = block.data.layout === 'single'
-      const gridClass = single
-        ? 'grid-cols-1'
-        : block.data.layout === 'featured'
-          ? 'grid-cols-1 md:grid-cols-2'
-          : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+      if (block.data.layout === 'carousel') {
+        return (
+          <div key={block.id} className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
+            {block.data.urls.map((url, idx) => (
+              <div
+                key={`${url}-${idx}`}
+                className="group snap-start min-w-[78%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-sm"
+              >
+                <img
+                  src={url || PLACEHOLDER_IMG}
+                  alt={`gallery-${idx + 1}`}
+                  className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-[1.03]"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        )
+      }
+
+      if (block.data.layout === 'masonry') {
+        return (
+          <div key={block.id} className="columns-1 sm:columns-2 lg:columns-3 gap-4">
+            {block.data.urls.map((url, idx) => (
+              <div key={`${url}-${idx}`} className="mb-4 break-inside-avoid rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-sm">
+                <img
+                  src={url || PLACEHOLDER_IMG}
+                  alt={`gallery-${idx + 1}`}
+                  className="w-full h-auto object-cover transition duration-500 hover:scale-[1.02]"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        )
+      }
+
+      if (block.data.layout === 'featured') {
+        return (
+          <div key={block.id} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {block.data.urls.map((url, idx) => (
+              <div
+                key={`${url}-${idx}`}
+                className={`group rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-sm ${idx === 0 ? 'md:col-span-2' : ''}`}
+              >
+                <img
+                  src={url || PLACEHOLDER_IMG}
+                  alt={`gallery-${idx + 1}`}
+                  className={`w-full h-full object-cover transition duration-500 group-hover:scale-[1.03] ${idx === 0 ? 'aspect-[16/7]' : 'aspect-[4/3]'}`}
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        )
+      }
+
+      const gridClass = block.data.layout === 'single' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
 
       return (
-        <div key={block.id} className={`grid ${gridClass} gap-3`}>
+        <div key={block.id} className={`grid ${gridClass} gap-4`}>
           {block.data.urls.map((url, idx) => (
-            <div key={`${url}-${idx}`} className="rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-              <img src={url || PLACEHOLDER_IMG} alt={`gallery-${idx + 1}`} className="w-full h-full object-cover" loading="lazy" />
+            <div key={`${url}-${idx}`} className="group rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-sm">
+              <img
+                src={url || PLACEHOLDER_IMG}
+                alt={`gallery-${idx + 1}`}
+                className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-[1.03]"
+                loading="lazy"
+              />
             </div>
           ))}
         </div>
@@ -381,7 +625,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
       if (!block.data.items?.length) return null
       if (block.data.style === 'number') {
         return (
-          <ol key={block.id} className="list-decimal pl-6 space-y-2 text-gray-700">
+          <ol key={block.id} className="list-decimal pl-6 space-y-2 text-gray-700 marker:font-semibold marker:text-[#F58322]">
             {block.data.items.map((item, idx) => <li key={idx}>{item}</li>)}
           </ol>
         )
@@ -398,9 +642,9 @@ const renderContentBlock = (block: ProductContentBlock) => {
       return (
         <ul key={block.id} className="space-y-2 text-gray-700">
           {block.data.items.map((item, idx) => (
-            <li key={idx} className="flex gap-2">
-              <span className="text-[#F58322]">{marker}</span>
-              <span>{item}</span>
+            <li key={idx} className="flex gap-2 rounded-md px-2 py-1 hover:bg-gray-50 transition">
+              <span className="text-[#F58322] font-semibold">{marker}</span>
+              <span className="flex-1">{item}</span>
             </li>
           ))}
         </ul>
@@ -414,7 +658,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
       }
 
       return (
-        <div key={block.id} className={`grid grid-cols-1 ${colsMap[block.data.columns]} gap-4`}>
+        <div key={block.id} className={`grid grid-cols-1 ${colsMap[block.data.columns]} gap-5`}>
           {block.data.cards.map((card, idx) => renderCardItem(card, idx, block.data.imageRatio))}
         </div>
       )
@@ -600,6 +844,11 @@ const ProductPage = () => {
       return { ...row, bg: 'bg-[#E6EDF5]' }
     })
   }, [specRows])
+
+  const normalizedContentBlocks = useMemo(
+    () => normalizeContentBlocks(product?.contentBlocks),
+    [product?.contentBlocks],
+  )
 
   const safeDescriptionHtml = useMemo(
     () => DOMPurify.sanitize(product?.description || '', {
@@ -853,9 +1102,9 @@ const ProductPage = () => {
 
         {activeTab === 'desc' && (
           <div className="animate-fade-in text-gray-800 product-content-adaptive">
-            {product.contentBlocks && product.contentBlocks.length > 0 ? (
+            {normalizedContentBlocks.length > 0 ? (
               <div className="space-y-6 mb-8">
-                {product.contentBlocks.map((block) => renderContentBlock(block))}
+                {normalizedContentBlocks.map((block) => renderContentBlock(block))}
               </div>
             ) : (
               <div className="mb-8">
