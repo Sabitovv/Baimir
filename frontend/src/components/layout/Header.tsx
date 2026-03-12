@@ -20,7 +20,7 @@ const Header = () => {
     { id: 'production', path: '/Production' },
     { id: 'storage', path: '/Storage' },
     { id: 'service', path: '/Service' },
-    { id: 'blog', path: '/Blog' },
+    { id: 'blog', path: '/blog' },
   ]
 
   const changeLanguage = (lng: string) => {

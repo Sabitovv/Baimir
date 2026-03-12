@@ -95,7 +95,6 @@ const CatalogPage = () => {
   const hasChildren = (id: number | string) => {
     return data?.some((item) => item.parentId === id)
   }
-
   if (!data) return null
 
   return (

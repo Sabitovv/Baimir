@@ -6,7 +6,8 @@ import PageContainer from '@/components/ui/PageContainer'
 import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
 import { useAppDispatch } from '@/app/hooks'
 import { setBreadcrumbs } from '@/features/catalogSlice'
-import { useGetProductBySlugQuery } from '@/api/productsApi'
+import { productsApi, useGetProductBySlugQuery } from '@/api/productsApi'
+import type { ProductContentBlock, GridCardItem, ProductDetail } from '@/api/productsApi'
 import { useGetCategoriesTreeQuery } from '@/api/categoriesApi'
 import type { Category } from '@/api/categoriesApi'
 
@@ -120,6 +121,294 @@ const normalizeGallery = (
     .filter((item): item is GalleryItem => item !== null)
 
   return mapped.length > 0 ? mapped : [{ kind: 'image', url: PLACEHOLDER_IMG, preview: PLACEHOLDER_IMG }]
+}
+
+const imageWidthClassMap: Record<'1/3' | '1/2' | '2/3' | 'full', string> = {
+  '1/3': 'lg:w-1/3',
+  '1/2': 'lg:w-1/2',
+  '2/3': 'lg:w-2/3',
+  full: 'w-full',
+}
+
+const imageRatioClassMap: Record<'video' | 'square' | 'portrait', string> = {
+  video: 'aspect-video',
+  square: 'aspect-square',
+  portrait: 'aspect-[3/4]',
+}
+
+const renderCardItem = (card: GridCardItem, idx: number, ratio: 'square' | 'video' | 'portrait') => (
+  <article key={`${card.title}-${idx}`} className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+    <div className={`${imageRatioClassMap[ratio]} bg-gray-100`}>
+      <img src={card.imageUrl || PLACEHOLDER_IMG} alt={card.title} className="w-full h-full object-cover" loading="lazy" />
+    </div>
+    <div className="p-4 space-y-2">
+      <h4 className="font-semibold text-gray-900">{card.title}</h4>
+      <p className="text-sm text-gray-600 whitespace-pre-line">{card.description}</p>
+    </div>
+  </article>
+)
+
+type LinkedProductCard = Pick<ProductDetail, 'id' | 'slug' | 'name' | 'price' | 'oldPrice' | 'media' | 'inStock' | 'category'>
+
+const getPrimaryImage = (media: LinkedProductCard['media']): string => {
+  if (!media || media.length === 0) return PLACEHOLDER_IMG
+  const firstImage = media.find((item) => String(item.type).toUpperCase().includes('IMAGE'))
+  return firstImage?.url || media[0]?.url || PLACEHOLDER_IMG
+}
+
+const ProductLinksBlock = ({
+  block,
+}: {
+  block: Extract<ProductContentBlock, { type: 'productLink' }>
+}) => {
+  const dispatch = useAppDispatch()
+  const { i18n } = useTranslation()
+  const [items, setItems] = useState<LinkedProductCard[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!block.data.productIds?.length) {
+      setItems([])
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+
+    const requests = block.data.productIds.map((value) => {
+      const token = String(value).trim()
+      if (/^\d+$/.test(token)) {
+        return dispatch(productsApi.endpoints.getProductById.initiate(Number(token)))
+      }
+      return dispatch(productsApi.endpoints.getProductBySlug.initiate({ slug: token, lang: i18n.language }))
+    })
+
+    Promise.allSettled(requests.map((req) => req.unwrap()))
+      .then((results) => {
+        if (cancelled) return
+        const loaded = results
+          .filter((res): res is PromiseFulfilledResult<ProductDetail> => res.status === 'fulfilled')
+          .map((res) => res.value)
+          .map((prod) => ({
+            id: prod.id,
+            slug: prod.slug,
+            name: prod.name,
+            price: prod.price,
+            oldPrice: prod.oldPrice,
+            media: prod.media,
+            inStock: prod.inStock,
+            category: prod.category,
+          }))
+        setItems(loaded)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+      requests.forEach((req) => req.unsubscribe())
+    }
+  }, [block.data.productIds, dispatch, i18n.language])
+
+  const layoutClass =
+    block.data.layout === 'grid'
+      ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+      : block.data.layout === 'carousel'
+        ? 'flex gap-4 overflow-x-auto pb-2 snap-x'
+        : 'grid grid-cols-1 gap-4'
+
+  return (
+    <section className="space-y-3">
+      <h3 className="text-lg font-semibold text-gray-900">Связанные товары</h3>
+
+      {loading && <p className="text-sm text-gray-500">Загрузка товаров...</p>}
+
+      {!loading && items.length === 0 && (
+        <p className="text-sm text-gray-500">Товары для блока не найдены</p>
+      )}
+
+      {items.length > 0 && (
+        <div className={layoutClass}>
+          {items.map((item) => (
+            <Link
+              key={item.id}
+              to={item.category?.id && item.category?.slug
+                ? `/catalog/${item.category.slug}/products/${item.category.id}/${item.slug}`
+                : `/catalog/products/${item.slug}`}
+              className={`group rounded-lg border border-gray-200 bg-white overflow-hidden transition hover:shadow-md ${
+                block.data.layout === 'carousel' ? 'min-w-[260px] snap-start' : ''
+              }`}
+            >
+              <div className="aspect-[4/3] bg-gray-100">
+                <img src={getPrimaryImage(item.media)} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+              </div>
+              <div className="p-4 space-y-2">
+                <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-[#F58322]">{item.name}</h4>
+                <div className="text-[#F58322] font-semibold">{formatPrice(item.price)}</div>
+                {!item.inStock && <div className="text-xs text-gray-500">Нет в наличии</div>}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
+const renderContentBlock = (block: ProductContentBlock) => {
+  switch (block.type) {
+    case 'heading': {
+      const HeadingTag = block.data.level === 1 ? 'h2' : block.data.level === 2 ? 'h3' : 'h4'
+      return (
+        <div key={block.id} className="space-y-1">
+          <HeadingTag className="font-bold text-gray-900 text-xl md:text-2xl">{block.data.text}</HeadingTag>
+          {block.data.subtitle && <p className="text-sm text-gray-500">{block.data.subtitle}</p>}
+        </div>
+      )
+    }
+    case 'paragraph':
+      return (
+        <p key={block.id} className="text-gray-700 leading-relaxed whitespace-pre-line">
+          {block.data.text}
+        </p>
+      )
+    case 'imageCard': {
+      const isHorizontal = block.data.position === 'left' || block.data.position === 'right'
+      const reverse = block.data.position === 'right' || block.data.position === 'bottom'
+      const directionClass = isHorizontal ? 'lg:flex-row' : 'flex-col'
+      const reverseClass = reverse ? (isHorizontal ? 'lg:flex-row-reverse' : 'flex-col-reverse') : ''
+      const alignClass = block.data.verticalAlign === 'center' ? 'items-center' : 'items-start'
+
+      return (
+        <section key={block.id} className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-5 rounded-lg border border-gray-200 p-4`}>
+          <div className={`w-full ${imageWidthClassMap[block.data.imageWidth]}`}>
+            <div className={`${imageRatioClassMap[block.data.imageRatio]} rounded-md overflow-hidden bg-gray-100`}>
+              <img src={block.data.imageUrl || PLACEHOLDER_IMG} alt={block.data.title} className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          </div>
+          <div className="flex-1 space-y-2">
+            <h3 className="font-semibold text-lg text-gray-900">{block.data.title}</h3>
+            <p className="text-sm text-gray-600 whitespace-pre-line">{block.data.description}</p>
+          </div>
+        </section>
+      )
+    }
+    case 'youtube': {
+      const embedUrl = block.data.videoId
+        ? `https://www.youtube.com/embed/${block.data.videoId}`
+        : block.data.videoUrl
+          ? toYouTubeEmbedUrl(block.data.videoUrl)
+          : null
+      if (!embedUrl) return null
+
+      return (
+        <div key={block.id} className="aspect-video rounded-lg overflow-hidden bg-black">
+          <iframe
+            src={embedUrl}
+            title="product-content-video"
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
+      )
+    }
+    case 'table': {
+      if (!block.data.rows?.length) return null
+      const [header, ...body] = block.data.rows
+      return (
+        <div key={block.id} className="overflow-x-auto border border-gray-200 rounded-lg">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-700">
+              <tr>
+                {header.map((cell, idx) => (
+                  <th key={idx} className="px-4 py-3 text-left font-semibold border-b border-gray-200">{cell}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {body.map((row, rowIdx) => (
+                <tr key={rowIdx} className="border-b border-gray-100 last:border-b-0">
+                  {row.map((cell, cellIdx) => (
+                    <td key={cellIdx} className="px-4 py-3 text-gray-700">{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+    case 'gallery': {
+      if (!block.data.urls?.length) return null
+      const single = block.data.layout === 'single'
+      const gridClass = single
+        ? 'grid-cols-1'
+        : block.data.layout === 'featured'
+          ? 'grid-cols-1 md:grid-cols-2'
+          : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+
+      return (
+        <div key={block.id} className={`grid ${gridClass} gap-3`}>
+          {block.data.urls.map((url, idx) => (
+            <div key={`${url}-${idx}`} className="rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+              <img src={url || PLACEHOLDER_IMG} alt={`gallery-${idx + 1}`} className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          ))}
+        </div>
+      )
+    }
+    case 'list': {
+      if (!block.data.items?.length) return null
+      if (block.data.style === 'number') {
+        return (
+          <ol key={block.id} className="list-decimal pl-6 space-y-2 text-gray-700">
+            {block.data.items.map((item, idx) => <li key={idx}>{item}</li>)}
+          </ol>
+        )
+      }
+
+      const markerByStyle: Record<'bullet' | 'check' | 'dash' | 'arrow', string> = {
+        bullet: '•',
+        check: '✓',
+        dash: '—',
+        arrow: '→',
+      }
+      const marker = markerByStyle[block.data.style]
+
+      return (
+        <ul key={block.id} className="space-y-2 text-gray-700">
+          {block.data.items.map((item, idx) => (
+            <li key={idx} className="flex gap-2">
+              <span className="text-[#F58322]">{marker}</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    case 'cardGrid': {
+      const colsMap: Record<2 | 3 | 4, string> = {
+        2: 'md:grid-cols-2',
+        3: 'md:grid-cols-2 lg:grid-cols-3',
+        4: 'md:grid-cols-2 lg:grid-cols-4',
+      }
+
+      return (
+        <div key={block.id} className={`grid grid-cols-1 ${colsMap[block.data.columns]} gap-4`}>
+          {block.data.cards.map((card, idx) => renderCardItem(card, idx, block.data.imageRatio))}
+        </div>
+      )
+    }
+    case 'productLink':
+      return (
+        <ProductLinksBlock key={block.id} block={block} />
+      )
+    default:
+      return null
+  }
 }
 
 const ProductPage = () => {
@@ -329,7 +618,6 @@ const ProductPage = () => {
     )
   }
 
-  console.log(product)
   return (
     <PageContainer>
       <div className="px-4 md:px-6 lg:px-0 mb-20">
@@ -544,18 +832,49 @@ const ProductPage = () => {
         </div>
 
         {activeTab === 'desc' && (
-          <div className="animate-fade-in text-gray-800">
-            <div className="mb-8">
-              <div
-                className="prose max-w-none text-sm leading-relaxed text-gray-700"
-                dangerouslySetInnerHTML={{ __html: product.description || '' }}
-              />
-            </div>
+          <div className="animate-fade-in text-gray-800 product-content-adaptive">
+            {product.contentBlocks && product.contentBlocks.length > 0 ? (
+              <div className="space-y-6 mb-8">
+                {product.contentBlocks.map((block) => renderContentBlock(block))}
+              </div>
+            ) : (
+              <div className="mb-8">
+                <div
+                  className="prose max-w-none text-sm leading-relaxed text-gray-700"
+                  dangerouslySetInnerHTML={{ __html: product.description || '' }}
+                />
+              </div>
+            )}
 
             {product.variants && product.variants.length > 0 && (
               <div className="mt-12 overflow-x-auto">
                 <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">Модельный ряд:</h4>
-                <table className="w-full min-w-[900px] border-collapse text-[13px] text-center border border-gray-300">
+                <div className="md:hidden space-y-3">
+                  {product.variants.map((variant: any) => (
+                    <article key={variant.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div>
+                          <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
+                          <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
+                        </div>
+                        <div className="text-right text-sm font-bold text-gray-900 whitespace-nowrap">
+                          {formatPrice(variant.price)}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        {Object.entries(variant.attributes ?? {}).map(([attrKey, attrValue]) => (
+                          <div key={`${variant.id}-${attrKey}`} className="flex justify-between items-start gap-4 border-t border-gray-100 pt-2 text-sm">
+                            <span className="text-gray-500 capitalize">{attrKey}</span>
+                            <span className="font-medium text-gray-900 text-right">{String(attrValue ?? '—')}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                <table className="hidden md:table w-full min-w-[900px] border-collapse text-[13px] text-center border border-gray-300">
                   <thead>
                     <tr className="bg-white text-gray-800 font-bold border-b border-gray-300">
                       <th className="p-3 border-r border-gray-300 text-left w-[180px]">Модель / SKU</th>

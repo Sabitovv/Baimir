@@ -7,12 +7,13 @@ type CatalogFiltersProps = {
   onClose: () => void
   filters?: Filter[]
   bounds: Record<string, { min: number; max: number }>
+  inDrawer?: boolean
 }
 
 type RangeValues = { from: string; to: string }
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v))
 
-const CatalogFilters = ({ onClose, filters, bounds }: CatalogFiltersProps) => {
+const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogFiltersProps) => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [ranges, setRanges] = useState<Record<string, RangeValues>>({})
   const { t } = useTranslation()
@@ -141,7 +142,7 @@ const CatalogFilters = ({ onClose, filters, bounds }: CatalogFiltersProps) => {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-md mb-6 shadow-sm">
+    <div className={inDrawer ? 'bg-white' : 'bg-white border border-gray-200 rounded-md mb-6 shadow-sm'}>
       <style>{`
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #F58322; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 50; }
         input[type=range]::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #F58322; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 50; border: none; }

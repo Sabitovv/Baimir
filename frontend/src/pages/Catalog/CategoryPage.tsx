@@ -8,6 +8,7 @@ import CategoriesMenu from '@/components/common/CategoriesMenu'
 import CatalogCard from '@/pages/Catalog/components/CatalogCard'
 import PageContainer from '@/components/ui/PageContainer'
 import CatalogFilters from '@/pages/Catalog/components/CatalogFilter'
+import Drawer from '@/components/common/Drawer'
 import { PopularProduct } from './components/PopularProduct'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 
@@ -41,6 +42,7 @@ const findCategoryById = (categories: Category[], id: number): Category | null =
 const CategoryPage = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false)
+  const [isMobileViewport, setIsMobileViewport] = useState(false)
 
   const toggleFilter = () => {
     setIsFilterOpen((prev) => !prev)
@@ -213,6 +215,16 @@ const CategoryPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, location.search])
 
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)')
+    const updateViewport = () => setIsMobileViewport(media.matches)
+
+    updateViewport()
+    media.addEventListener('change', updateViewport)
+
+    return () => media.removeEventListener('change', updateViewport)
+  }, [])
+
   const changePage = (newPage: number) => {
     const safePage = Math.max(1, Math.min(totalPages, newPage))
     const params = new URLSearchParams(searchParams)
@@ -325,7 +337,7 @@ const CategoryPage = () => {
                 </div>
 
                 {isFilterOpen && (
-                  <div className="mb-6 transition-all duration-300">
+                  <div className="hidden md:block mb-6 transition-all duration-300">
                     <CatalogFilters
                       onClose={closePanels}
                       filters={productsResponse?.filters?.filter((f: any) => f.code !== 'is_stock')} 
@@ -333,6 +345,23 @@ const CategoryPage = () => {
                     />
                   </div>
                 )}
+
+                <Drawer
+                  isOpen={isFilterOpen && isMobileViewport}
+                  onClose={closePanels}
+                  title={t('filters.showFilter')}
+                  mode="drop"
+                  heightClass="h-full"
+                >
+                  <div className="md:hidden">
+                    <CatalogFilters
+                      onClose={closePanels}
+                      filters={productsResponse?.filters?.filter((f: any) => f.code !== 'is_stock')}
+                      bounds={bounds}
+                      inDrawer
+                    />
+                  </div>
+                </Drawer>
 
                 {isCalculatorOpen && (
                   <div className="mb-6 bg-white border border-gray-200 rounded-md shadow-sm p-6 relative transition-all duration-300">

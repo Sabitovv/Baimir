@@ -13,32 +13,19 @@ export type ProductCategory = {
     sortOrder: number
 }
 
-/**
- * Breadcrumb item for product navigation
- */
 export type Breadcrumb = ProductCategory
 
-/**
- * Attribute within a specification group
- */
 export type SpecificationAttribute = {
     name: string
     value: string
     unit: string | null
     code: string
 }
-
-/**
- * Group of related specifications
- */
 export type SpecificationGroup = {
     name: string
     attributes: SpecificationAttribute[]
 }
 
-/**
- * Product variant (e.g., different colors/sizes)
- */
 export type ProductVariant = {
     id: number
     slug: string
@@ -51,9 +38,6 @@ export type ProductVariant = {
     attributes: Record<string, string>
 }
 
-/**
- * Media item for product (images/videos)
- */
 export type ProductMedia = {
     id?: number
     url: string
@@ -64,9 +48,105 @@ export type ProductMedia = {
     isPrimary?: boolean
 }
 
-/**
- * Complete product detail response
- */
+export type BlockType =
+  | 'heading'
+  | 'paragraph'
+  | 'imageCard'
+  | 'youtube'
+  | 'table'
+  | 'gallery'
+  | 'list'
+  | 'cardGrid'
+  | 'productLink'
+
+export interface BaseBlock {
+  id: string
+  type: BlockType
+}
+
+export interface HeadingBlock extends BaseBlock {
+  type: 'heading'
+  data: { text: string; level: 1 | 2 | 3; subtitle?: string }
+}
+
+export interface ParagraphBlock extends BaseBlock {
+  type: 'paragraph'
+  data: { text: string }
+}
+
+export interface ImageCardBlock extends BaseBlock {
+  type: 'imageCard'
+  data: {
+    imageUrl: string
+    title: string
+    description: string
+    position: 'left' | 'right' | 'top' | 'bottom'
+    imageWidth: '1/3' | '1/2' | '2/3' | 'full'
+    imageRatio: 'video' | 'square' | 'portrait'
+    verticalAlign: 'start' | 'center'
+  }
+}
+
+export interface GridCardItem {
+  imageUrl: string
+  title: string
+  description: string
+}
+
+export interface CardGridBlock extends BaseBlock {
+  type: 'cardGrid'
+  data: {
+    columns: 2 | 3 | 4
+    imageRatio: 'square' | 'video' | 'portrait'
+    cards: GridCardItem[]
+  }
+}
+
+export interface YoutubeBlock extends BaseBlock {
+  type: 'youtube'
+  data: { videoId: string; videoUrl?: string }
+}
+
+export interface TableBlock extends BaseBlock {
+  type: 'table'
+  data: { rows: string[][] }
+}
+
+export interface GalleryBlock extends BaseBlock {
+  type: 'gallery'
+  data: {
+    urls: string[]
+    layout: 'single' | 'grid' | 'carousel' | 'featured' | 'masonry'
+  }
+}
+
+export interface ListBlock extends BaseBlock {
+  type: 'list'
+  data: {
+    items: string[]
+    style: 'bullet' | 'number' | 'check' | 'dash' | 'arrow'
+  }
+}
+
+export interface ProductLinkBlock extends BaseBlock {
+  type: 'productLink'
+  data: {
+    productIds: string[]
+    layout: 'card' | 'grid' | 'carousel'
+  }
+}
+
+export type ProductContentBlock =
+  | HeadingBlock
+  | ParagraphBlock
+  | ImageCardBlock
+  | YoutubeBlock
+  | TableBlock
+  | GalleryBlock
+  | ListBlock
+  | CardGridBlock
+  | ProductLinkBlock
+
 export type ProductDetail = {
     id: number
     slug: string
@@ -83,11 +163,9 @@ export type ProductDetail = {
     breadcrumbs: Breadcrumb[]
     specifications: SpecificationGroup[]
     variants: ProductVariant[]
+    contentBlocks?: ProductContentBlock[]
 }
 
-/**
- * Simplified product for lists/grids
- */
 export type Product = {
     id: number
     slug: string
@@ -123,9 +201,6 @@ export type Product = {
     discountPercent?: number
 }
 
-/**
- * Filter value option
- */
 export type FilterValue = {
     id: string
     label: string
@@ -133,9 +208,6 @@ export type FilterValue = {
     selected: boolean
 }
 
-/**
- * Filter configuration
- */
 export type Filter = {
     code: string
     name: string
@@ -144,9 +216,6 @@ export type Filter = {
     values?: FilterValue[] | null
 }
 
-/**
- * Pagination metadata
- */
 export type Meta = {
     currentPage: number
     pageSize: number
@@ -154,9 +223,6 @@ export type Meta = {
     totalPages: number
 }
 
-/**
- * Products list response with filters
- */
 export type ProductsResponse = {
     filters: Filter[]
     meta: Meta
@@ -169,7 +235,7 @@ export type ProductsQueryParams = {
   limit?: number
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
-  lang?: string    // <- добавлено
+  lang?: string   
 } & Record<string, any>
 
 interface PageResponse<T> {
@@ -203,7 +269,6 @@ export const productsApi = createApi({
           limit: limit ?? 20,
           ...params,
         },
-        // если передали lang в аргументе — переопределим заголовок для этого запроса
         headers: lang ? { 'Accept-Language': lang } : undefined,
       }),
       providesTags: (result) =>
@@ -220,7 +285,6 @@ export const productsApi = createApi({
       providesTags: (_result, _error, id) => [{ type: 'Product' as const, id }],
     }),
 
-    // Сделаем slug-эндпоинт, принимающий объект { slug, lang? } — чтобы можно было автоперезапросить при смене языка
     getProductBySlug: builder.query<ProductDetail, { slug: string; lang?: string }>({
       query: ({ slug, lang }) => ({
         url: `/products/${slug}`,

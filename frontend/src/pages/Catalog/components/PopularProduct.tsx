@@ -11,7 +11,6 @@ export const PopularProduct = () => {
   const scrollerRef = useRef<HTMLDivElement | null>(null)
 
   const { data, isLoading, error } = useGetPopularProductsQuery({})
-
   const SCROLL_STEP_PX = 320
 
   const scrollLeft = () => {
@@ -45,6 +44,7 @@ export const PopularProduct = () => {
   }, [])
 
   const products = data?.content ?? []
+  console.log(data)
 
   return (
     <section className="mb-24 mt-12 px-2 sm:px-0">

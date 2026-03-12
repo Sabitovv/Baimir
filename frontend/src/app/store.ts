@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 // import uiReducer from '@/features/uiSlice'
 import { categoriesApi } from '@/api/categoriesApi'
 import { productsApi } from '@/api/productsApi'
+import { blogsApi } from '@/api/blogsApi'
 import catalogReducer from "@/features/catalogSlice"
 
 
@@ -14,12 +15,14 @@ export const store = configureStore({
         // RTK Query reducers:
         [categoriesApi.reducerPath]: categoriesApi.reducer,
         [productsApi.reducerPath]: productsApi.reducer,
+        [blogsApi.reducerPath]: blogsApi.reducer,
         catalog: catalogReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
             categoriesApi.middleware,
-            productsApi.middleware
+            productsApi.middleware,
+            blogsApi.middleware
         ),
 });
 

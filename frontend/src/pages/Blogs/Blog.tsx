@@ -1,106 +1,161 @@
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+
 import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
 import BlogCard from '@/components/common/BlogCardProps'
-import { Link } from 'react-router-dom'
+import { useGetBlogsQuery, type BlogContentBlock } from '@/api/blogsApi'
 
 import img1 from '@/assets/home/lazerStanok.webp'
 
-// Импорты компонентов анимации
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
 
+type LocalizedText = {
+  ru?: string
+  en?: string
+  kz?: string
+  kk?: string
+}
+
+const pickLocalized = (value?: LocalizedText | string, lang?: string): string => {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+
+  const current = lang === 'kk' ? 'kz' : lang
+  const localized = current ? value[current as keyof LocalizedText] : undefined
+
+  return localized || value.ru || value.en || value.kz || value.kk || ''
+}
+
+const getBlockImage = (block?: BlogContentBlock): string | null => {
+  if (!block?.data) return null
+  const direct = typeof block.data.imageUrl === 'string' ? block.data.imageUrl : null
+  const url = typeof block.data.url === 'string' ? block.data.url : null
+  const candidate = direct || url
+  return candidate && candidate.trim() ? candidate : null
+}
+
+const getBlogImage = (value: {
+  imageUrl?: string | null
+  coverImage?: string | null
+  coverImageUrl?: string | null
+  thumbnailUrl?: string | null
+  contentBlocks?: BlogContentBlock[]
+}) => {
+  const direct = value.imageUrl || value.coverImage || value.coverImageUrl || value.thumbnailUrl
+  if (direct && direct.trim()) return direct
+  const fromBlocks = value.contentBlocks?.find((block) => Boolean(getBlockImage(block)))
+  return getBlockImage(fromBlocks) || img1
+}
+
 const BlogPage = () => {
-  const posts = [
-    { id: 'cnc', image: img1, text: 'Наши зарубежные склады — залог надежности...' },
-    { id: 'laser', image: img1, text: 'Наши зарубежные склады — залог надежности...' },
-    { id: 'cnc', image: img1, text: 'Наши зарубежные склады — залог надежности...' },
-    { id: 'laser', image: img1, text: 'Наши зарубежные склады — залог надежности...' },
-    { id: 'cnc', image: img1, text: 'Наши зарубежные склады — залог надежности...' },
-    { id: 'laser', image: img1, text: 'Наши зарубежные склады — залог надежности...' },
-  ]
+  const [page, setPage] = useState(0)
+  const pageSize = 12
+  const { i18n } = useTranslation()
+
+  const { data, isLoading, isError } = useGetBlogsQuery({
+    page,
+    size: pageSize,
+    sort: 'publishedAt,DESC',
+    lang: i18n.language,
+  })
+
+  const pages = useMemo(() => {
+    const totalPages = data?.totalPages ?? 0
+    return Array.from({ length: totalPages }, (_, idx) => idx)
+  }, [data?.totalPages])
 
   return (
-    <>
-      <PageContainer>
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-16">
+    <PageContainer>
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-16">
+        <aside className="hidden lg:block space-y-6">
+          <CategoriesMenu />
+        </aside>
 
-          <aside className="hidden lg:block space-y-6">
-            <CategoriesMenu />
-          </aside>
+        <section>
+          <ScrollReveal>
+            <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F58322]">
+              Блог компании
+            </h1>
 
-          <section>
-            {/* Анимация заголовков и описания */}
-            <ScrollReveal>
-              <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F58322]">
-                Блог компании
-              </h1>
+            <h3 className="font-oswald font-bold mt-4 mb-6 text-2xl md:text-3xl">
+              Подберем станки под ваш бизнес
+            </h3>
 
-              <h3 className='font-oswald font-bold mt-4 mb-6 text-2xl md:text-3xl'>
-                Подберем станки под ваш бизнес
-              </h3>
+            <p className="max-w-3xl mb-6 text-sm font-Monaper text-[#233337] leading-relaxed">
+              Публикуем полезные материалы о выборе оборудования, автоматизации производства и запуске цехов.
+            </p>
+          </ScrollReveal>
 
-              <p className="max-w-3xl mb-6 text-sm font-Monaper text-[#233337] leading-relaxed">
-                Тут какой-то текст, в котором я фиг знает чо писать, потому что нам так и не предоставили никакой инфы. И кто вообще отвечает за это?
-              </p>
-            </ScrollReveal>
+          {isLoading && <p className="text-gray-500 mb-6">Загрузка статей...</p>}
 
-            {/* Анимация блока с тегами */}
-            <ScrollReveal delay={0.2} y={15}>
-              <div className="flex flex-wrap gap-2 mb-8 mt-2">
-                {[
-                  'Лазерные станки',
-                  'Фрезерные станки',
-                  'Токарные станки',
-                  'Автоматизация',
-                  'Лазерные станки 2', // Изменил немного для уникальности или можно оставить как было
-                  'Фрезерные станки 2',
-                  'Токарные станки 2',
-                  'Автоматизация 2'
-                ].map((tag, index) => (
-                  <span
-                    key={index} // Используем index, чтобы не было конфликта одинаковых ключей
-                    className="border px-5 py-2 text-xs rounded-xl cursor-pointer hover:bg-black hover:text-white transition-colors duration-300"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </ScrollReveal>
+          {isError && (
+            <p className="text-red-600 mb-6">Не удалось загрузить ленту блога. Попробуйте обновить страницу.</p>
+          )}
 
-            {/* Каскадная анимация карточек блога */}
+          {!isLoading && !isError && data?.content?.length === 0 && (
+            <p className="text-gray-500 mb-6">Пока нет опубликованных статей.</p>
+          )}
+
+          {!isLoading && !isError && (data?.content?.length ?? 0) > 0 && (
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post, index) => (
-                <StaggerItem key={post.id || index}>
-                  <Link to={`/Blog/${post.id}`} className="block group">
-                    <BlogCard
-                      image={post.image}
-                      text={post.text}
-                    />
-                  </Link>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
+              {data?.content.map((post, index) => {
+                const title = pickLocalized(post.title, i18n.language) || 'Без названия'
+                const excerpt = pickLocalized(post.excerpt, i18n.language)
+                const image = getBlogImage(post)
 
-            {/* Анимация пагинации */}
+                return (
+                  <StaggerItem key={post.id || index}>
+                    <Link to={`/blog/${post.slug}`} className="block group">
+                      <BlogCard image={image} text={excerpt || title} />
+                    </Link>
+                  </StaggerItem>
+                )
+              })}
+            </StaggerContainer>
+          )}
+
+          {!isLoading && !isError && (data?.totalPages ?? 0) > 1 && (
             <ScrollReveal y={20}>
-              <div className="flex justify-center gap-2 mt-12 mb-12">
-                {[1, 2, 3, 4, '…', 10].map((p, i) => (
+              <div className="flex justify-center gap-2 mt-12 mb-12 flex-wrap">
+                <button
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                  disabled={data?.first}
+                  className="px-3 h-8 border text-xs rounded-sm disabled:opacity-40"
+                >
+                  Назад
+                </button>
+
+                {pages.map((pageIndex) => (
                   <button
-                    key={i}
-                    className="w-8 h-8 flex items-center justify-center border text-xs rounded-sm hover:bg-black hover:text-white transition-colors duration-300"
+                    key={pageIndex}
+                    onClick={() => setPage(pageIndex)}
+                    className={`w-8 h-8 flex items-center justify-center border text-xs rounded-sm transition-colors duration-300 ${
+                      pageIndex === (data?.number ?? 0)
+                        ? 'bg-black text-white'
+                        : 'hover:bg-black hover:text-white'
+                    }`}
                   >
-                    {p}
+                    {pageIndex + 1}
                   </button>
                 ))}
+
+                <button
+                  onClick={() => setPage((prev) => Math.min(prev + 1, (data?.totalPages ?? 1) - 1))}
+                  disabled={data?.last}
+                  className="px-3 h-8 border text-xs rounded-sm disabled:opacity-40"
+                >
+                  Вперед
+                </button>
               </div>
             </ScrollReveal>
-
-          </section>
-
-        </div>
-      </PageContainer>
-    </>
+          )}
+        </section>
+      </div>
+    </PageContainer>
   )
 }
 

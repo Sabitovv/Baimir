@@ -51,31 +51,29 @@ const IndustryCatalog = () => {
           >
             {cards.map((card, index) => (
               <SwiperSlide key={index} className="h-auto">
-                <div className="flex flex-col h-full">
+                <Link to={card.path} className="flex flex-col h-full">
                   <div className="bg-[#F9F9F9] p-6 flex flex-col items-center min-h-[360px] group">
-                    <Link
-                      to={card.path}
+                    <h1
+                      // to={card.path}
                       className="font-oswald font-bold uppercase text-center text-base group-hover:text-[#DB741F] mb-4"
                     >
                       {card.title}
-                    </Link>
+                    </h1>
 
                     <div className="flex-grow flex items-center justify-center w-full">
                       <img
                         src={card.image}
                         className="max-h-40 object-contain"
-                        alt={card.title}
                       />
                     </div>
+                    {/* <Link
+                      to={card.path}
+                      className="text-[#F58322] text-xs font-bold uppercase tracking-widest self-end mb-5 hover:underline"
+                    >
+                      {t('home.catalog.link')} &gt;
+                    </Link> */}
                   </div>
-
-                  <Link
-                    to={card.path}
-                    className="text-[#F58322] text-xs font-bold uppercase tracking-widest self-end mt-3 hover:underline"
-                  >
-                    {t('home.catalog.link')} &gt;
-                  </Link>
-                </div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>
