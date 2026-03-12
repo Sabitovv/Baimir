@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { skipToken } from '@reduxjs/toolkit/query'
+import DOMPurify from 'dompurify'
 
 import PageContainer from '@/components/ui/PageContainer'
 import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
@@ -8,6 +9,7 @@ import { useAppDispatch } from '@/app/hooks'
 import { setBreadcrumbs } from '@/features/catalogSlice'
 import { productsApi, useGetProductBySlugQuery } from '@/api/productsApi'
 import type { ProductContentBlock, GridCardItem, ProductDetail } from '@/api/productsApi'
+import type { ProductVariant, SpecificationAttribute, SpecificationGroup } from '@/api/productsApi'
 import { useGetCategoriesTreeQuery } from '@/api/categoriesApi'
 import type { Category } from '@/api/categoriesApi'
 
@@ -46,6 +48,21 @@ type GalleryItem = {
   preview: string
   embedUrl?: string
 }
+
+type BreadcrumbItem = {
+  id?: number | string
+  name: string
+  slug?: string
+  path: string
+}
+
+type HeaderSpecGroup = {
+  isHeader: true
+  name: string
+  attributes?: never
+}
+
+type SpecGroup = SpecificationGroup | HeaderSpecGroup
 
 const toYouTubeId = (url: string): string | null => {
   try {
@@ -168,12 +185,13 @@ const ProductLinksBlock = ({
 
   useEffect(() => {
     if (!block.data.productIds?.length) {
-      setItems([])
       return
     }
 
     let cancelled = false
-    setLoading(true)
+    const loadingTimer = window.setTimeout(() => {
+      if (!cancelled) setLoading(true)
+    }, 0)
 
     const requests = block.data.productIds.map((value) => {
       const token = String(value).trim()
@@ -207,6 +225,7 @@ const ProductLinksBlock = ({
 
     return () => {
       cancelled = true
+      window.clearTimeout(loadingTimer)
       requests.forEach((req) => req.unsubscribe())
     }
   }, [block.data.productIds, dispatch, i18n.language])
@@ -224,7 +243,7 @@ const ProductLinksBlock = ({
 
       {loading && <p className="text-sm text-gray-500">Загрузка товаров...</p>}
 
-      {!loading && items.length === 0 && (
+      {!loading && block.data.productIds?.length > 0 && items.length === 0 && (
         <p className="text-sm text-gray-500">Товары для блока не найдены</p>
       )}
 
@@ -233,9 +252,7 @@ const ProductLinksBlock = ({
           {items.map((item) => (
             <Link
               key={item.id}
-              to={item.category?.id && item.category?.slug
-                ? `/catalog/${item.category.slug}/products/${item.category.id}/${item.slug}`
-                : `/catalog/products/${item.slug}`}
+              to={`/catalog/product/${item.slug}`}
               className={`group rounded-lg border border-gray-200 bg-white overflow-hidden transition hover:shadow-md ${
                 block.data.layout === 'carousel' ? 'min-w-[260px] snap-start' : ''
               }`}
@@ -436,7 +453,7 @@ const ProductPage = () => {
     if (!categories || categories.length === 0) return
     if (!product) return
 
-    const breadcrumbs: any[] = [{ name: 'Каталог', path: '/catalog' }]
+    const breadcrumbs: BreadcrumbItem[] = [{ name: 'Каталог', path: '/catalog' }]
 
     const productCategoryId =
       product.category?.id ?? Number(searchParams.get('categoryId'))
@@ -454,16 +471,8 @@ const ProductPage = () => {
     }
 
     const hasChildren = (cat: Category) => {
-      if ((cat as any).children && (cat as any).children.length > 0) return true
-
-      const queue: any[] = Array.isArray(categories) ? [...(categories as any[])] : []
-      while (queue.length) {
-        const node = queue.shift()
-        if (!node) continue
-        if (Number(node.parentId) === Number(cat.id)) return true
-        if (node.children && node.children.length) queue.push(...node.children)
-      }
-      return false
+      if (cat.children && cat.children.length > 0) return true
+      return categories.some((node) => Number(node.parentId) === Number(cat.id))
     }
 
     const stack: Category[] = []
@@ -487,7 +496,7 @@ const ProductPage = () => {
     breadcrumbs.push({
       id: product.id,
       name: product.name,
-      path: `/catalog/${currentCategory.slug}/products/${currentCategory.id}/${product.slug}`
+      path: `/catalog/product/${product.slug}`
     })
 
     dispatch(setBreadcrumbs(breadcrumbs))
@@ -565,11 +574,13 @@ const ProductPage = () => {
     const rows: Array<{ type: 'header' | 'attr'; name: string; value?: string }> = []
     if (!product?.specifications || product.specifications.length === 0) return rows
 
-    product.specifications.forEach((item: any) => {
+    const specifications = product.specifications as SpecGroup[]
+
+    specifications.forEach((item) => {
       if ('isHeader' in item && item.isHeader) {
         rows.push({ type: 'header', name: item.name })
       } else {
-        item.attributes?.forEach((atr: any) => {
+        item.attributes?.forEach((atr: SpecificationAttribute) => {
           rows.push({ type: 'attr', name: atr.name, value: atr.value })
         })
       }
@@ -589,6 +600,15 @@ const ProductPage = () => {
       return { ...row, bg: 'bg-[#E6EDF5]' }
     })
   }, [specRows])
+
+  const safeDescriptionHtml = useMemo(
+    () => DOMPurify.sanitize(product?.description || '', {
+      ALLOWED_TAGS: ['p', 'br', 'ul', 'ol', 'li', 'strong', 'em', 'a', 'h2', 'h3', 'h4', 'blockquote'],
+      ALLOWED_ATTR: ['href', 'target', 'rel'],
+      ALLOW_DATA_ATTR: false,
+    }),
+    [product?.description],
+  )
 
   if (isLoading) {
     return (
@@ -674,7 +694,7 @@ const ProductPage = () => {
             </div>
 
             <div className="flex items-center justify-center gap-4">
-              <button
+              {/* <button
                 onClick={() => goToIndex(activeImage - 1)}
                 aria-label="Previous thumbnail"
                 className={`p-2 rounded-full bg-white/90 hover:bg-white shadow transition ${activeImage === 0 ? 'opacity-40 pointer-events-none' : ''
@@ -683,7 +703,7 @@ const ProductPage = () => {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M15 18L9 12L15 6" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </button>
+              </button> */}
 
               <div className="w-full max-w-[720px] flex justify-center">
                 <div
@@ -719,7 +739,7 @@ const ProductPage = () => {
                 </div>
               </div>
 
-              <button
+              {/* <button
                 onClick={() => goToIndex(activeImage + 1)}
                 aria-label="Next thumbnail"
                 className={`p-2 rounded-full bg-white/90 hover:bg-white shadow transition ${activeImage === gallery.length - 1 ? 'opacity-40 pointer-events-none' : ''
@@ -728,7 +748,7 @@ const ProductPage = () => {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 6L15 12L9 18" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -841,7 +861,7 @@ const ProductPage = () => {
               <div className="mb-8">
                 <div
                   className="prose max-w-none text-sm leading-relaxed text-gray-700"
-                  dangerouslySetInnerHTML={{ __html: product.description || '' }}
+                  dangerouslySetInnerHTML={{ __html: safeDescriptionHtml }}
                 />
               </div>
             )}
@@ -850,7 +870,7 @@ const ProductPage = () => {
               <div className="mt-12 overflow-x-auto">
                 <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">Модельный ряд:</h4>
                 <div className="md:hidden space-y-3">
-                  {product.variants.map((variant: any) => (
+                  {product.variants.map((variant: ProductVariant) => (
                     <article key={variant.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <div>
@@ -885,7 +905,7 @@ const ProductPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {product.variants.map((variant: any) => (
+                    {product.variants.map((variant: ProductVariant) => (
                       <tr key={variant.id} className="border-b border-gray-300 last:border-0 hover:bg-gray-50">
                         <td className="p-3 border-r border-gray-300 text-left align-top">
                           <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
@@ -912,7 +932,7 @@ const ProductPage = () => {
           <div className="mt-4">
             {product.specifications && product.specifications.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                {product.specifications.map((item: any, blockIdx: number) => {
+                {(product.specifications as SpecGroup[]).map((item, blockIdx: number) => {
                   if ('isHeader' in item && item.isHeader) {
                     return (
                       <div key={`header-${blockIdx}`} className="md:col-span-2 bg-[#E6EDF5] px-4 py-3 rounded">
@@ -935,7 +955,7 @@ const ProductPage = () => {
                         </div>
                       )}
                       <div>
-                        {item.attributes?.map((atr: any, aIdx: number) => {
+                        {item.attributes?.map((atr: SpecificationAttribute, aIdx: number) => {
                           const childIsGray = mainIsGray ? (aIdx % 2 === 1) : (aIdx % 2 === 0)
                           const childBg = childIsGray ? 'bg-[#F5F7FA]' : 'bg-white'
 

@@ -118,7 +118,7 @@ const StoragePage = () => {
           </div>
         </div>
 
-        <div className="w-full lg:w-1/2 flex justify-center">
+        <div className="w-full lg:w-1/2 hidden lg:flex justify-center">
           <img
             src={bidImg}
             alt="contact"

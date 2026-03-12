@@ -82,14 +82,12 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
   const validate = (): boolean => {
     const newErrors: ErrorsState = {}
 
-    // name required + length
     if (!form.name.trim()) {
       newErrors.name = t('home.contact.errors.name', { defaultValue: 'Введите имя' })
     } else if (form.name.length > LIMITS.NAME) {
       newErrors.name = t('home.contact.errors.name_too_long', { defaultValue: `Имя не должно превышать ${LIMITS.NAME} символов` })
     }
 
-    // phone required + pattern + length
     if (!form.phone.trim()) {
       newErrors.phone = t('home.contact.errors.phone', { defaultValue: 'Введите телефон' })
     } else if (form.phone.length > LIMITS.PHONE) {
@@ -98,7 +96,6 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
       newErrors.phone = t('home.contact.errors.phone_format', { defaultValue: 'Недопустимые символы в номере' })
     }
 
-    // email optional but if present validate
     if (form.email?.trim()) {
       if (form.email.length > LIMITS.EMAIL) {
         newErrors.email = t('home.contact.errors.email_too_long', { defaultValue: `Email не должен превышать ${LIMITS.EMAIL} символов` })
@@ -107,7 +104,6 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
       }
     }
 
-    // message optional but length limit
     if (form.message && form.message.length > LIMITS.MESSAGE) {
       newErrors.message = t('home.contact.errors.message_too_long', { defaultValue: `Сообщение не должно превышать ${LIMITS.MESSAGE} символов` })
     }
@@ -207,7 +203,6 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
           value={form.phone}
           onChange={handleChange('phone')}
           error={Boolean(errors.phone)}
-          helperText={errors.phone || t('home.contact.fields.phone_hint', { defaultValue: 'Например: +7 999 123 45 67' })}
           variant="outlined"
           inputProps={{ maxLength: LIMITS.PHONE, pattern: "[0-9+()\\-\\s]*" }}
           sx={{

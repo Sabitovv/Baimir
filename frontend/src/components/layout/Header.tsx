@@ -14,12 +14,12 @@ const Header = () => {
   const [open, setOpen] = useState(false)
 
   const navItems = [
-    { id: 'catalog', path: '/Catalog' },
-    // { id: 'technologies', path: '/Technology' },
-    // { id: 'demo', path: '/Demo' },
-    { id: 'production', path: '/Production' },
-    { id: 'storage', path: '/Storage' },
-    { id: 'service', path: '/Service' },
+    { id: 'catalog', path: '/catalog' },
+    // { id: 'technologies', path: '/technology' },
+    // { id: 'demo', path: '/demo' },
+    { id: 'production', path: '/production' },
+    { id: 'storage', path: '/storage' },
+    { id: 'service', path: '/service' },
     { id: 'blog', path: '/blog' },
   ]
 
@@ -28,7 +28,6 @@ const Header = () => {
   }
 
   const getLangClass = (lng: string) => {
-    console.log(i18n.language)
     return i18n.language === lng
       ? 'text-[#F58322] font-bold border-b border-[#F58322]'
       : 'text-white hover:text-[#F58322] transition-colors'
@@ -141,8 +140,8 @@ const Header = () => {
                 Русский
               </button>
               <button
-                onClick={() => { changeLanguage('kk'); setOpen(false); }}
-                className={`text-lg font-oswald ${getLangClass('kk')}`}
+                onClick={() => { changeLanguage('kz'); setOpen(false); }}
+                className={`text-lg font-oswald ${getLangClass('kz')}`}
               >
                 Қазақша
               </button>

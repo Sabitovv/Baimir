@@ -158,10 +158,10 @@ const ServicePage = () => {
 
           <ScrollReveal y={40} className="mt-20 mb-16 sm:mt-28 sm:mb-20">
             <section>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-oswald font-semibold mb-8 sm:mb-10 uppercase text-center md:text-left text-gray-900">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-oswald font-semibold mb-8 sm:mb-10 uppercase text-center  text-gray-900">
                 {t('service.contact.title')}
               </h2>
-              <div className="flex justify-center md:justify-start w-full">
+              <div className="flex justify-center  w-full">
                 <div className="w-full max-w-xl lg:max-w-2xl">
                   <Contact />
                 </div>

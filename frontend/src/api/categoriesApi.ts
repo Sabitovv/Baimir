@@ -56,7 +56,7 @@ export type ProductsQueryParams = {
   page: number
   limit: number
   lang?: string
-} & Record<string, any>
+} & Record<string, string | number | boolean | undefined>
 
 export type Specifications = {
   name: string
@@ -85,7 +85,7 @@ export type InquiryResponse = {
 export const categoriesApi = createApi({
   reducerPath: 'categoriesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://89.207.255.17/api/v1',
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
 
     prepareHeaders: (headers) => {
       const lang = i18n.language || 'ru'

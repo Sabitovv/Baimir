@@ -2,6 +2,8 @@ import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper/modules'
+import type { Swiper as SwiperType } from 'swiper'
+import type { NavigationOptions } from 'swiper/types'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import reviewImg from '@/assets/home/reviewImg.webp'
@@ -65,9 +67,11 @@ const ReviewsSection = () => {
 
             <Swiper
               modules={[Navigation]}
-              navigation={{
-                prevEl: prevRef.current,
-                nextEl: nextRef.current,
+              navigation
+              onBeforeInit={(swiper: SwiperType) => {
+                const navigation = swiper.params.navigation as NavigationOptions
+                navigation.prevEl = prevRef.current
+                navigation.nextEl = nextRef.current
               }}
 
               spaceBetween={24}
@@ -75,7 +79,7 @@ const ReviewsSection = () => {
               loop
               onSwiper={(swiper) => {
                 setTimeout(() => {
-                  const navigation = swiper.params.navigation as any
+                  const navigation = swiper.params.navigation as NavigationOptions
 
                   if (prevRef.current && nextRef.current) {
                     navigation.prevEl = prevRef.current

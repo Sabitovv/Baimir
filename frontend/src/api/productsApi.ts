@@ -170,6 +170,7 @@ export type Product = {
     id: number
     slug: string
     name: string
+    coverImage?: string | null
     price: number
     oldPrice?: number | null
     description: string
@@ -236,7 +237,7 @@ export type ProductsQueryParams = {
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
   lang?: string   
-} & Record<string, any>
+} & Record<string, string | number | boolean | undefined>
 
 interface PageResponse<T> {
   content: T[]
@@ -249,7 +250,7 @@ interface PageResponse<T> {
 export const productsApi = createApi({
   reducerPath: 'productsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://89.207.255.17/api/v1',
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
     prepareHeaders: (headers) => {
       const lang = i18n.language || 'ru'
       headers.set('Accept-Language', lang)

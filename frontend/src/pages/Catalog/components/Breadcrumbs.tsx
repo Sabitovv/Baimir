@@ -17,7 +17,6 @@ const Breadcrumbs = () => {
                 let toPath = item.path
 
                 if (!toPath) {
-                    console.log(item)
                     if (item.slug && item.id) {
                         toPath = `/catalog/${item.slug}?categoryId=${item.id}`
                     }

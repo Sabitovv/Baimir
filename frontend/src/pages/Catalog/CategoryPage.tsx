@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { skipToken } from '@reduxjs/toolkit/query'
 import { useTranslation } from 'react-i18next'
 
@@ -12,7 +12,7 @@ import Drawer from '@/components/common/Drawer'
 import { PopularProduct } from './components/PopularProduct'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 
-import { useGetCategoriesTreeQuery, useGetProductsQuery, type Category } from '@/api/categoriesApi'
+import { useGetCategoriesTreeQuery, useGetProductsQuery, type Category, type Filter } from '@/api/categoriesApi'
 import { setBreadcrumbs } from '@/features/catalogSlice'
 import { useAppDispatch } from '@/app/hooks'
 import Contact from '@/components/common/Contact'
@@ -26,6 +26,28 @@ type CatalogCardProduct = {
   code: string
   price: string
   slug: string
+}
+
+type BreadcrumbItem = {
+  id?: number | string
+  name: string
+  slug?: string
+  path: string
+}
+
+type ProductSpecAttribute = {
+  name?: string
+  value?: string | number | null
+}
+
+type ProductSpecGroup = {
+  attributes?: ProductSpecAttribute[]
+}
+
+type ProductForFilter = {
+  [key: string]: unknown
+  price?: string | number | null
+  specifications?: ProductSpecGroup[]
 }
 
 const findCategoryById = (categories: Category[], id: number): Category | null => {
@@ -64,7 +86,6 @@ const CategoryPage = () => {
   const { categoryId } = useParams<{ categorySlug: string; categoryId: string }>()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const inStock = searchParams.get('is_stock') === 'true'
@@ -98,7 +119,9 @@ const CategoryPage = () => {
   const limit = 12
 
   const allParams = Object.fromEntries(searchParams.entries())
-  const { page: _, categoryId: __, ...filters } = allParams
+  const filters = { ...allParams }
+  delete filters.page
+  delete filters.categoryId
 
   const queryArg = activeId ? { categoryId: activeId, page, limit, ...filters } : skipToken
 
@@ -111,11 +134,11 @@ const CategoryPage = () => {
         ? skipToken
         : { ...queryArg, lang: i18n.language })
 
-  const products = productsResponse?.products ?? []
+  const products = useMemo(() => productsResponse?.products ?? [], [productsResponse?.products])
   const total = productsResponse?.meta?.totalPages
   const totalPages = total ? total : 0
 
-  const extractNumericForFilter = (product: any, f: any): number | null => {
+  const extractNumericForFilter = (product: ProductForFilter, f: Filter): number | null => {
     const direct = product?.[f.code]
     if (direct != null) {
       const n = Number(String(direct).replace(/[^\d.-]/g, ''))
@@ -140,7 +163,7 @@ const CategoryPage = () => {
               const num = Number(val.replace(/[^\d.-]/g, ''))
               if (!Number.isNaN(num)) return num
             }
-          } catch (e) { /* noop */ }
+          } catch { /* noop */ }
         }
       }
     }
@@ -149,26 +172,26 @@ const CategoryPage = () => {
 
   const bounds = useMemo(() => {
     const result: Record<string, { min: number; max: number }> = {}
-    const rangeFilters = (productsResponse?.filters ?? []).filter((f: any) => f.uiType === 'RANGE_SLIDER')
+    const rangeFilters = (productsResponse?.filters ?? []).filter((f: Filter) => f.uiType === 'RANGE_SLIDER')
 
-    rangeFilters.forEach((f: any) => {
+    rangeFilters.forEach((f: Filter) => {
       const values: number[] = []
       for (const p of products) {
-        const n = extractNumericForFilter(p, f)
+        const n = extractNumericForFilter(p as ProductForFilter, f)
         if (n != null) values.push(n)
       }
       const minFromProducts = values.length ? Math.min(...values) : undefined
       const maxFromProducts = values.length ? Math.max(...values) : undefined
 
-      const minCandidate = Number(f.min ?? f.meta?.min ?? (minFromProducts ?? 0))
-      const maxCandidate = Number(f.max ?? f.meta?.max ?? (maxFromProducts ?? (minCandidate + 1)))
+      const minCandidate = Number(f.range?.min ?? (minFromProducts ?? 0))
+      const maxCandidate = Number(f.range?.max ?? (maxFromProducts ?? (minCandidate + 1)))
 
       const min = Math.floor(Math.min(minCandidate, maxCandidate))
       const max = Math.ceil(Math.max(maxCandidate, min + 1))
       result[f.code] = { min, max }
     })
     return result
-  }, [productsResponse?.filters, productsResponse?.products])
+  }, [productsResponse?.filters, products])
 
   const uiProducts: CatalogCardProduct[] = products.map((p) => ({
     id: p.id,
@@ -186,7 +209,7 @@ const CategoryPage = () => {
       return
     }
 
-    const breadcrumbs: any[] = [{ name: 'Каталог', path: '/catalog' }]
+    const breadcrumbs: BreadcrumbItem[] = [{ name: 'Каталог', path: '/catalog' }]
     const stack: Category[] = []
     let temp: Category | null = currentCategory
 
@@ -209,11 +232,6 @@ const CategoryPage = () => {
 
     dispatch(setBreadcrumbs(breadcrumbs))
   }, [currentCategory, categories, dispatch])
-
-  useEffect(() => {
-    closePanels()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, location.search])
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 767px)')
@@ -285,7 +303,7 @@ const CategoryPage = () => {
           <main>
             {!isLoadingProducts && !hasProducts && hasSubcategories ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {currentCategory?.children?.map((sub: any) => (
+                {currentCategory?.children?.map((sub: Category) => (
                   <div
                     key={sub.id}
                     onClick={() => navigate(`/catalog/${sub.slug}?categoryId=${sub.id}`)}
@@ -340,7 +358,7 @@ const CategoryPage = () => {
                   <div className="hidden md:block mb-6 transition-all duration-300">
                     <CatalogFilters
                       onClose={closePanels}
-                      filters={productsResponse?.filters?.filter((f: any) => f.code !== 'is_stock')} 
+                      filters={productsResponse?.filters?.filter((f: Filter) => f.code !== 'is_stock')}
                       bounds={bounds}
                     />
                   </div>
@@ -356,7 +374,7 @@ const CategoryPage = () => {
                   <div className="md:hidden">
                     <CatalogFilters
                       onClose={closePanels}
-                      filters={productsResponse?.filters?.filter((f: any) => f.code !== 'is_stock')}
+                      filters={productsResponse?.filters?.filter((f: Filter) => f.code !== 'is_stock')}
                       bounds={bounds}
                       inDrawer
                     />

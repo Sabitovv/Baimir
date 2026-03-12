@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Link, useParams, useSearchParams, useLocation } from 'react-router-dom'
 import OpenButton from '@/assets/button1_for_sideBar.svg'
 import CloseButton from '@/assets/button2_for_sideBar.svg'
@@ -43,20 +43,15 @@ const CategoriesMenu = () => {
         return roots
     }, [categories])
 
-    useEffect(() => {
-        if (isRootCatalog) {
-            setOpenCategories({})
-            return
-        }
-
-        if (!activeId || categories.length === 0) return
+    const activeParentsChain = useMemo(() => {
+        if (isRootCatalog || !activeId || categories.length === 0) return new Set<number>()
 
         const parentsChain = new Set<number>()
-
         const hasChildren = categories.some(c => Number(c.parentId) === activeId)
         if (hasChildren) {
             parentsChain.add(activeId)
         }
+
         let curr = categories.find(c => Number(c.id) === activeId)
         while (curr && curr.parentId) {
             const pid = Number(curr.parentId)
@@ -64,24 +59,27 @@ const CategoriesMenu = () => {
             curr = categories.find(c => Number(c.id) === pid)
         }
 
-        setOpenCategories(prev => {
-            const newState = { ...prev }
-
-            Object.keys(newState).forEach(key => {
-                const id = Number(key)
-                if (!parentsChain.has(id)) {
-                    newState[id] = false
-                }
-            })
-
-            parentsChain.forEach(id => {
-                newState[id] = true
-            })
-
-            return newState
-        })
-
+        return parentsChain
     }, [activeId, categories, isRootCatalog])
+
+    const effectiveOpenCategories = useMemo(() => {
+        if (isRootCatalog) return {}
+
+        const derivedState = { ...openCategories }
+        Object.keys(derivedState).forEach((key) => {
+            const id = Number(key)
+            if (!activeParentsChain.has(id) && !derivedState[id]) {
+                return
+            }
+            if (!activeParentsChain.has(id)) {
+                derivedState[id] = false
+            }
+        })
+        activeParentsChain.forEach((id) => {
+            derivedState[id] = true
+        })
+        return derivedState
+    }, [activeParentsChain, isRootCatalog, openCategories])
 
     const getAllDescendantIds = (parentId: number, allCats: Category[]) => {
         let ids: number[] = []
@@ -136,7 +134,7 @@ const CategoriesMenu = () => {
         <aside className="w-full bg-white rounded-lg shadow-sm border border-gray-100 p-4 ">
             <div className="space-y-1">
                 {rootCategories.map(cat => {
-                    const isOpen = openCategories[Number(cat.id)]
+                    const isOpen = effectiveOpenCategories[Number(cat.id)]
                     const isActive = Number(cat.id) === activeId
 
                     return (
@@ -161,7 +159,7 @@ const CategoriesMenu = () => {
                                 <div className="ml-4 pl-2 border-l border-gray-200 mt-1 space-y-1">
                                     {cat.children.map(child => {
                                         const isChildActive = Number(child.id) === activeId
-                                        const isChildOpen = openCategories[Number(child.id)]
+                                        const isChildOpen = effectiveOpenCategories[Number(child.id)]
                                         const hasGrandChildren = child.children && child.children.length > 0
 
                                         return (

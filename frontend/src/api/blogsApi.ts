@@ -77,11 +77,10 @@ export type BlogsQueryParams = {
   sort?: string
   lang?: string
 }
-
 export const blogsApi = createApi({
   reducerPath: 'blogsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://89.207.255.17/api/v1',
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
     prepareHeaders: (headers) => {
       const lang = i18n.language || 'ru'
       headers.set('Accept-Language', lang)

@@ -10,7 +10,7 @@ const ContactForm = () => {
 
   return (
     <PageContainer>
-      <section className="py-16 md:py-20 bg-[#F5F5F5]"> 
+      <section className="py-16 md:py-20"> 
         <div className="mx-auto px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
 
           <ScrollReveal>

@@ -13,7 +13,7 @@
 }
 @font-face {
     font-family: 'Manrope';
-    src: url('/fonts/manrope-400.woff2') format('woff2');
+    src: url('./assets/fonts/manrope-v20-latin-regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -21,7 +21,7 @@
 
 @font-face {
     font-family: 'Manrope';
-    src: url('/fonts/manrope-500.woff2') format('woff2');
+    src: url('./assets/fonts/manrope-v20-latin-500.woff2') format('woff2');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -29,7 +29,7 @@
 
 @font-face {
     font-family: 'Manrope';
-    src: url('/fonts/manrope-600.woff2') format('woff2');
+    src: url('./assets/fonts/manrope-v20-latin-600.woff2') format('woff2');
     font-weight: 600;
     font-style: normal;
     font-display: swap;
@@ -37,7 +37,7 @@
 
 @font-face {
     font-family: 'Manrope';
-    src: url('/fonts/manrope-700.woff2') format('woff2');
+    src: url('./assets/fonts/manrope-v20-latin-700.woff2') format('woff2');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -45,7 +45,7 @@
 
 @font-face {
     font-family: 'Manrope';
-    src: url('/fonts/manrope-800.woff2') format('woff2');
+    src: url('./assets/fonts/manrope-v20-latin-800.woff2') format('woff2');
     font-weight: 800;
     font-style: normal;
     font-display: swap;
@@ -53,7 +53,7 @@
 
 @font-face {
     font-family: 'Oswald';
-    src: url('/fonts/oswald-400.woff2') format('woff2');
+    src: url('./assets/fonts/oswald-v57-latin-regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -61,7 +61,7 @@
 
 @font-face {
     font-family: 'Oswald';
-    src: url('/fonts/oswald-500.woff2') format('woff2');
+    src: url('./assets/fonts/oswald-v57-latin-500.woff2') format('woff2');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -69,7 +69,7 @@
 
 @font-face {
     font-family: 'Oswald';
-    src: url('/fonts/oswald-600.woff2') format('woff2');
+    src: url('./assets/fonts/oswald-v57-latin-600.woff2') format('woff2');
     font-weight: 600;
     font-style: normal;
     font-display: swap;
@@ -77,7 +77,7 @@
 
 @font-face {
     font-family: 'Oswald';
-    src: url('/fonts/oswald-700.woff2') format('woff2');
+    src: url('./assets/fonts/oswald-v57-latin-700.woff2') format('woff2');
     font-weight: 700;
     font-style: normal;
     font-display: swap;

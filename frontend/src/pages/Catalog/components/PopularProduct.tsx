@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useRef, useEffect } from 'react'
 import ProductCard from '@/components/common/ProductCard'
 import { useGetPopularProductsQuery } from '@/api/productsApi'
+import type { Product } from '@/api/productsApi'
 
 
 export const PopularProduct = () => {
@@ -44,7 +45,6 @@ export const PopularProduct = () => {
   }, [])
 
   const products = data?.content ?? []
-  console.log(data)
 
   return (
     <section className="mb-24 mt-12 px-2 sm:px-0">
@@ -76,7 +76,7 @@ export const PopularProduct = () => {
           ) : products.length === 0 ? (
             <div className="text-gray-500 px-4">Нет популярных товаров</div>
           ) : (
-            products.map((product: any) => (
+            products.map((product: Product) => (
               <div
                 key={product.id}
                 role="listitem"
