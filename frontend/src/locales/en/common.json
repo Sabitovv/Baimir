@@ -1,0 +1,50 @@
+{
+  "header": {
+    "search": "Search",
+    "cta": "Leave a request",
+    "nav": {
+      "technologies": "Technologies",
+      "demo": "Demo halls",
+      "production": "Production",
+      "storage": "Warehouse",
+      "service": "Service",
+      "blog": "About company",
+      "catalog": "Catalog"
+    },
+    "languages": {
+      "ru": "Russian",
+      "kz": "Kazakh",
+      "en": "English"
+    }
+  },
+  "blogPage": {
+    "title": "Company blog",
+    "subtitle": "We will select machines for your business",
+    "description": "We publish useful materials about equipment selection, production automation, and workshop launch.",
+    "loading": "Loading articles...",
+    "error": "Failed to load blog feed. Please refresh the page.",
+    "empty": "No published articles yet.",
+    "untitled": "Untitled",
+    "prev": "Back",
+    "next": "Next"
+  },
+  "blogCard": {
+    "author": "Author",
+    "date": "Date",
+    "reading": "Reading",
+    "views": "Views",
+    "minutes": "min"
+  },
+  "innerBlog": {
+    "loading": "Loading article...",
+    "notFoundTitle": "Article not found",
+    "notFoundText": "Check the link or go back to the blog.",
+    "backToBlog": "Back to blog",
+    "untitled": "Untitled",
+    "author": "Author",
+    "date": "Date",
+    "reading": "min read",
+    "views": "views",
+    "emptyContent": "Article content is not filled in yet."
+  }
+}

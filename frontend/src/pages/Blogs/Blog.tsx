@@ -17,7 +17,6 @@ type LocalizedText = {
   ru?: string
   en?: string
   kz?: string
-  kk?: string
 }
 
 const pickLocalized = (value?: LocalizedText | string, lang?: string): string => {
@@ -27,7 +26,7 @@ const pickLocalized = (value?: LocalizedText | string, lang?: string): string =>
   const current = lang === 'kk' ? 'kz' : lang
   const localized = current ? value[current as keyof LocalizedText] : undefined
 
-  return localized || value.ru || value.en || value.kz || value.kk || ''
+  return localized || value.ru || value.en || value.kz || ''
 }
 
 const getBlockImage = (block?: BlogContentBlock): string | null => {
@@ -51,10 +50,43 @@ const getBlogImage = (value: {
   return getBlockImage(fromBlocks) || img1
 }
 
+const formatDate = (iso?: string, lang?: string) => {
+  if (!iso) return ''
+  const parsed = new Date(iso)
+  if (Number.isNaN(parsed.getTime())) return ''
+
+  const locale = lang === 'en' ? 'en-US' : lang === 'kk' || lang === 'kz' ? 'kk-KZ' : 'ru-RU'
+  return parsed.toLocaleDateString(locale, {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+const pickStringField = (source: Record<string, unknown>, keys: string[]) => {
+  for (const key of keys) {
+    const value = source[key]
+    if (typeof value === 'string' && value.trim()) return value.trim()
+  }
+  return ''
+}
+
+const pickNumberField = (source: Record<string, unknown>, keys: string[]) => {
+  for (const key of keys) {
+    const value = source[key]
+    if (typeof value === 'number' && Number.isFinite(value)) return value
+    if (typeof value === 'string') {
+      const parsed = Number(value)
+      if (Number.isFinite(parsed)) return parsed
+    }
+  }
+  return undefined
+}
+
 const BlogPage = () => {
   const [page, setPage] = useState(0)
   const pageSize = 12
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
 
   const { data, isLoading, isError } = useGetBlogsQuery({
     page,
@@ -78,39 +110,53 @@ const BlogPage = () => {
         <section>
           <ScrollReveal>
             <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F58322]">
-              Блог компании
+              {t('blogPage.title')}
             </h1>
 
             <h3 className="font-oswald font-bold mt-4 mb-6 text-2xl md:text-3xl">
-              Подберем станки под ваш бизнес
+              {t('blogPage.subtitle')}
             </h3>
 
             <p className="max-w-3xl mb-6 text-sm font-Monaper text-[#233337] leading-relaxed">
-              Публикуем полезные материалы о выборе оборудования, автоматизации производства и запуске цехов.
+              {t('blogPage.description')}
             </p>
           </ScrollReveal>
 
-          {isLoading && <p className="text-gray-500 mb-6">Загрузка статей...</p>}
+          {isLoading && <p className="text-gray-500 mb-6">{t('blogPage.loading')}</p>}
 
           {isError && (
-            <p className="text-red-600 mb-6">Не удалось загрузить ленту блога. Попробуйте обновить страницу.</p>
+            <p className="text-red-600 mb-6">{t('blogPage.error')}</p>
           )}
 
           {!isLoading && !isError && data?.content?.length === 0 && (
-            <p className="text-gray-500 mb-6">Пока нет опубликованных статей.</p>
+            <p className="text-gray-500 mb-6">{t('blogPage.empty')}</p>
           )}
 
           {!isLoading && !isError && (data?.content?.length ?? 0) > 0 && (
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {data?.content.map((post, index) => {
-                const title = pickLocalized(post.title, i18n.language) || 'Без названия'
+                const rawPost = post as unknown as Record<string, unknown>
+                const title = pickLocalized(post.title, i18n.language) || t('blogPage.untitled')
                 const excerpt = pickLocalized(post.excerpt, i18n.language)
                 const image = getBlogImage(post)
+                const authorName = pickStringField(rawPost, ['authorName', 'author', 'author_name'])
+                const publishedRaw = pickStringField(rawPost, ['publishedAt', 'createdAt', 'created_at', 'date'])
+                const publishedAt = formatDate(publishedRaw, i18n.language)
+                const readingTime = pickNumberField(rawPost, ['readingTime', 'readingMinutes', 'reading_time'])
+                const viewsCount = pickNumberField(rawPost, ['viewsCount', 'viewCount', 'views', 'views_count'])
 
                 return (
                   <StaggerItem key={post.id || index}>
                     <Link to={`/blog/${post.slug}`} className="block group">
-                      <BlogCard image={image} text={excerpt || title} />
+                      <BlogCard
+                        image={image}
+                        title={title}
+                        excerpt={excerpt}
+                        authorName={authorName}
+                        publishedAt={publishedAt}
+                        readingTime={readingTime}
+                        viewsCount={viewsCount}
+                      />
                     </Link>
                   </StaggerItem>
                 )
@@ -126,7 +172,7 @@ const BlogPage = () => {
                   disabled={data?.first}
                   className="px-3 h-8 border text-xs rounded-sm disabled:opacity-40"
                 >
-                  Назад
+                  {t('blogPage.prev')}
                 </button>
 
                 {pages.map((pageIndex) => (
@@ -148,7 +194,7 @@ const BlogPage = () => {
                   disabled={data?.last}
                   className="px-3 h-8 border text-xs rounded-sm disabled:opacity-40"
                 >
-                  Вперед
+                  {t('blogPage.next')}
                 </button>
               </div>
             </ScrollReveal>

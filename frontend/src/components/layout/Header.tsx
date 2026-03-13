@@ -82,6 +82,13 @@ const Header = () => {
             >
               KZ
             </button>
+            <span className="text-gray-500">|</span>
+            <button
+              onClick={() => changeLanguage('en')}
+              className={getLangClass('en')}
+            >
+              EN
+            </button>
           </div>
           <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
             {t('header.cta')}
@@ -137,13 +144,19 @@ const Header = () => {
                 onClick={() => { changeLanguage('ru'); setOpen(false); }}
                 className={`text-lg font-oswald ${getLangClass('ru')}`}
               >
-                Русский
+                {t('header.languages.ru')}
               </button>
               <button
                 onClick={() => { changeLanguage('kz'); setOpen(false); }}
                 className={`text-lg font-oswald ${getLangClass('kz')}`}
               >
-                Қазақша
+                {t('header.languages.kz')}
+              </button>
+              <button
+                onClick={() => { changeLanguage('en'); setOpen(false); }}
+                className={`text-lg font-oswald ${getLangClass('en')}`}
+              >
+                {t('header.languages.en')}
               </button>
             </div>
           </div>

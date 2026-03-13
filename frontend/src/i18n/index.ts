@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 import ruCommon from '@/locales/ru/common.json'
-// import enCommon from '@/locales/en/common.json'
+import enCommon from '@/locales/en/common.json'
 import kzCommon from '@/locales/kz/common.json'
 
 i18n
@@ -12,8 +12,8 @@ i18n
   .init({
     resources: {
       ru: { common: ruCommon },
-      kz: { common: kzCommon }
-      // en: { common: enCommon },
+      kz: { common: kzCommon },
+      en: { common: enCommon },
     },
     lng: 'ru',
     fallbackLng: 'ru',

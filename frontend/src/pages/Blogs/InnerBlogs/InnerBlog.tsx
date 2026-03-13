@@ -23,11 +23,14 @@ const pickLocalized = (value?: LocalizedText | string, lang?: string): string =>
   return localized || value.ru || value.en || value.kz || value.kk || ''
 }
 
-const formatDate = (iso?: string) => {
+const formatDate = (iso?: string, lang?: string) => {
   if (!iso) return ''
   const parsed = new Date(iso)
   if (Number.isNaN(parsed.getTime())) return ''
-  return parsed.toLocaleDateString('ru-RU', {
+
+  const locale = lang === 'en' ? 'en-US' : lang === 'kk' || lang === 'kz' ? 'kk-KZ' : 'ru-RU'
+
+  return parsed.toLocaleDateString(locale, {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
@@ -53,6 +56,19 @@ const getBlogImage = (value: {
   if (direct && direct.trim()) return direct
   const fromBlocks = value.contentBlocks?.find((block) => Boolean(getBlockImage(block)))
   return getBlockImage(fromBlocks) || defaultImage
+}
+
+const imageRatioClassMap: Record<string, string> = {
+  square: 'aspect-square',
+  video: 'aspect-video',
+  portrait: 'aspect-[3/4]',
+}
+
+const imageWidthClassMap: Record<string, string> = {
+  '1/3': 'lg:w-1/3',
+  '1/2': 'lg:w-1/2',
+  '2/3': 'lg:w-2/3',
+  full: 'lg:w-full',
 }
 
 const renderContentBlock = (block: BlogContentBlock, index: number) => {
@@ -158,6 +174,93 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
     )
   }
 
+  if (block.type === 'imageCard') {
+    const imageUrl = typeof block.data?.imageUrl === 'string' && block.data.imageUrl.trim()
+      ? block.data.imageUrl
+      : null
+    if (!imageUrl) return null
+
+    const title = typeof block.data?.title === 'string' ? block.data.title.trim() : ''
+    const description = typeof block.data?.description === 'string' ? block.data.description.trim() : ''
+    const position = typeof block.data?.position === 'string' ? block.data.position : 'left'
+    const imageRatio = typeof block.data?.imageRatio === 'string' ? block.data.imageRatio : 'video'
+    const imageWidth = typeof block.data?.imageWidth === 'string' ? block.data.imageWidth : '1/2'
+    const verticalAlign = block.data?.verticalAlign === 'center' ? 'items-center' : 'items-start'
+
+    const isHorizontal = position === 'left' || position === 'right'
+    const reverse = position === 'right' || position === 'bottom'
+    const directionClass = isHorizontal ? 'lg:flex-row' : 'flex-col'
+    const reverseClass = reverse ? (isHorizontal ? 'lg:flex-row-reverse' : 'flex-col-reverse') : ''
+    const ratioClass = imageRatioClassMap[imageRatio] || imageRatioClassMap.video
+    const widthClass = imageWidthClassMap[imageWidth] || imageWidthClassMap['1/2']
+
+    return (
+      <section
+        key={key}
+        className={`flex ${directionClass} ${reverseClass} ${verticalAlign} gap-5 rounded-xl border border-gray-200 p-4 md:p-5 bg-gradient-to-b from-white to-gray-50/70 shadow-sm mb-8`}
+      >
+        <div className={`w-full ${widthClass}`}>
+          <div className={`${ratioClass} rounded-lg overflow-hidden bg-gray-100`}>
+            <img
+              src={imageUrl}
+              alt={title || 'blog-image'}
+              className="w-full h-full object-cover transition duration-500 hover:scale-[1.02]"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        {(title || description) && (
+          <div className="flex-1 space-y-2">
+            {title && <h3 className="font-oswald font-bold text-2xl text-gray-900 md:text-3xl">{title}</h3>}
+            {description && <p className="text-sm text-gray-700 whitespace-pre-line md:text-base leading-relaxed">{description}</p>}
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  if (block.type === 'cardGrid') {
+    const cardsRaw = block.data?.cards
+    const cards = Array.isArray(cardsRaw) ? cardsRaw : []
+    if (!cards.length) return null
+
+    const columns = Number(block.data?.columns)
+    const ratio = typeof block.data?.imageRatio === 'string' ? block.data.imageRatio : 'square'
+    const ratioClass = imageRatioClassMap[ratio] || imageRatioClassMap.square
+    const colsClass = columns === 2 ? 'md:grid-cols-2' : columns === 4 ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'
+
+    return (
+      <section key={key} className={`grid grid-cols-1 ${colsClass} gap-5 mb-8`}>
+        {cards.map((card, cardIndex) => {
+          const cardData = (card && typeof card === 'object' ? card : {}) as Record<string, unknown>
+          const cardTitle = typeof cardData.title === 'string' ? cardData.title.trim() : ''
+          const cardDescription = typeof cardData.description === 'string' ? cardData.description.trim() : ''
+          const cardImage = typeof cardData.imageUrl === 'string' && cardData.imageUrl.trim() ? cardData.imageUrl : ''
+
+          return (
+            <article key={`${key}-card-${cardIndex}`} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+              <div className={`${ratioClass} bg-gray-100`}>
+                {cardImage ? (
+                  <img src={cardImage} alt={cardTitle || `card-${cardIndex + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-full h-full" />
+                )}
+              </div>
+
+              {(cardTitle || cardDescription) && (
+                <div className="p-4">
+                  {cardTitle && <h4 className="font-oswald font-bold text-lg text-gray-900 mb-2">{cardTitle}</h4>}
+                  {cardDescription && <p className="text-sm text-gray-700 leading-relaxed">{cardDescription}</p>}
+                </div>
+              )}
+            </article>
+          )
+        })}
+      </section>
+    )
+  }
+
   if (typeof block.data?.text === 'string' && block.data.text.trim()) {
     return (
       <p key={key} className="text-gray-700 leading-relaxed mb-6 whitespace-pre-line">
@@ -171,7 +274,7 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
 
 const InnerBlog = () => {
   const { slug } = useParams()
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
 
   const { data, isLoading, isError } = useGetBlogBySlugQuery(
     { slug: slug || '', lang: i18n.language },
@@ -181,7 +284,7 @@ const InnerBlog = () => {
   if (isLoading) {
     return (
       <PageContainer>
-        <div className="py-16 text-center text-gray-500">Загрузка статьи...</div>
+        <div className="py-16 text-center text-gray-500">{t('innerBlog.loading')}</div>
       </PageContainer>
     )
   }
@@ -190,19 +293,19 @@ const InnerBlog = () => {
     return (
       <PageContainer>
         <div className="py-16 text-center">
-          <h2 className="text-2xl font-oswald font-bold mb-3">Статья не найдена</h2>
-          <p className="text-gray-600 mb-6">Проверьте ссылку или перейдите обратно в блог.</p>
+          <h2 className="text-2xl font-oswald font-bold mb-3">{t('innerBlog.notFoundTitle')}</h2>
+          <p className="text-gray-600 mb-6">{t('innerBlog.notFoundText')}</p>
           <Link to="/blog" className="inline-block bg-[#F58322] text-white px-5 py-2 rounded hover:bg-[#DB741F] transition-colors">
-            Вернуться к блогу
+            {t('innerBlog.backToBlog')}
           </Link>
         </div>
       </PageContainer>
     )
   }
 
-  const title = pickLocalized(data.title, i18n.language) || 'Без названия'
+  const title = pickLocalized(data.title, i18n.language) || t('innerBlog.untitled')
   const excerpt = pickLocalized(data.excerpt, i18n.language)
-  const publishedAt = formatDate(data.publishedAt)
+  const publishedAt = formatDate(data.publishedAt, i18n.language)
   const heroImage = getBlogImage(data)
 
   return (
@@ -218,10 +321,10 @@ const InnerBlog = () => {
           </h1>
 
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500 mb-8">
-            {data.authorName && <span>Автор: {data.authorName}</span>}
-            {publishedAt && <span>Дата: {publishedAt}</span>}
-            {typeof data.readingTime === 'number' && <span>{data.readingTime} мин чтения</span>}
-            {typeof data.viewsCount === 'number' && <span>{data.viewsCount} просмотров</span>}
+            {data.authorName && <span>{t('innerBlog.author')}: {data.authorName}</span>}
+            {publishedAt && <span>{t('innerBlog.date')}: {publishedAt}</span>}
+            {typeof data.readingTime === 'number' && <span>{data.readingTime} {t('innerBlog.reading')}</span>}
+            {typeof data.viewsCount === 'number' && <span>{data.viewsCount} {t('innerBlog.views')}</span>}
           </div>
 
           {excerpt && (
@@ -242,7 +345,7 @@ const InnerBlog = () => {
               {data.contentBlocks.map((block, index) => renderContentBlock(block, index))}
             </div>
           ) : (
-            <p className="text-gray-600">Контент статьи пока не заполнен.</p>
+            <p className="text-gray-600">{t('innerBlog.emptyContent')}</p>
           )}
         </article>
       </div>
