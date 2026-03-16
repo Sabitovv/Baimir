@@ -4,7 +4,7 @@ type CartCardProps = {
   image: string
   title: string
   price: number
-  oldPrice?: number
+  oldPrice?: number | null
   quantity: number
   onDecrement?: () => void
   onIncrement?: () => void

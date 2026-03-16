@@ -1,6 +1,8 @@
 import React from "react"
 import { Link } from "react-router-dom"
 import { useTranslation } from 'react-i18next'
+import { useAppDispatch } from '@/app/hooks'
+import { addToCart } from '@/features/cartSlice'
 
 
 type ProductCardProps = {
@@ -9,6 +11,7 @@ type ProductCardProps = {
   name: string
   coverImage?: string | null
   price?: number | string | null
+  oldPrice?: number | null
   inStock?: boolean
 }
 
@@ -17,11 +20,14 @@ const PLACEHOLDER_IMG = "https://via.placeholder.com/400x300?text=No+image"
 const ProductCard: React.FC<ProductCardProps> = ({
   slug,
   name,
+  id,
   coverImage,
   price,
+  oldPrice,
   inStock,
 }) => {
   const { t, i18n } = useTranslation()
+  const dispatch = useAppDispatch()
   const imgSrc = coverImage ?? PLACEHOLDER_IMG
 
   const priceNumber =
@@ -65,7 +71,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
               : "bg-[#F58322] text-white hover:bg-[#DB741F]"
           }`}
           disabled={inStock === false}
-          onClick={(e) => e.preventDefault()} 
+          onClick={(event) => {
+            event.preventDefault()
+
+            if (inStock === false || !Number.isFinite(priceNumber)) return
+
+            dispatch(
+              addToCart({
+                id,
+                slug,
+                name,
+                image: imgSrc,
+                price: priceNumber,
+                oldPrice,
+                inStock,
+              })
+            )
+          }} 
         >
           {inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
         </button>

@@ -1,45 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import CartCard from './CartCard'
-import sampleImg from '@/assets/catalog/sample_machine.png'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { decrementQuantity, incrementQuantity, removeFromCart } from '@/features/cartSlice'
 
 type CartProps = {
   isOpen?: boolean
   onClose: () => void
 }
 
-type CartItem = {
-  id: number
-  image: string
-  title: string
-  price: number
-  oldPrice?: number
-  quantity: number
-}
-
 const Cart = ({ isOpen = false, onClose }: CartProps) => {
   const { t, i18n } = useTranslation()
-
-  const initialItems: CartItem[] = [
-    {
-      id: 1,
-      image: sampleImg,
-      title: t('cart.mockItems.firstTitle'),
-      price: 10500000,
-      oldPrice: 11000000,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      image: sampleImg,
-      title: t('cart.mockItems.secondTitle'),
-      price: 8500000,
-      quantity: 2,
-    },
-  ]
-
-  const [items, setItems] = useState<CartItem[]>(initialItems)
+  const dispatch = useAppDispatch()
+  const items = useAppSelector((state) => state.cart.items)
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0)
@@ -78,23 +52,15 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
   }, [isOpen])
 
   const onIncrement = (id: number) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity: item.quantity + 1 } : item))
-    )
+    dispatch(incrementQuantity(id))
   }
 
   const onDecrement = (id: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity - 1) }
-          : item
-      )
-    )
+    dispatch(decrementQuantity(id))
   }
 
   const onRemove = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id))
+    dispatch(removeFromCart(id))
   }
 
 
@@ -133,7 +99,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                 <CartCard
                   key={item.id}
                   image={item.image}
-                  title={item.title}
+                  title={item.name}
                   price={item.price}
                   oldPrice={item.oldPrice}
                   quantity={item.quantity}

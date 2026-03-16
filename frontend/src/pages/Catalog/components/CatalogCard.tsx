@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next'
+import { useAppDispatch } from '@/app/hooks'
+import { addToCart } from '@/features/cartSlice'
 
 type RawFeatureObject = {
   label?: string | null;
@@ -23,6 +25,7 @@ type Product = {
   name: string;
   coverImage?: string | null;
   price?: number | string | null;
+  oldPrice?: number | null;
   keyFeatures?: Feature[] | null;
   inStock?: boolean;
 };
@@ -66,6 +69,7 @@ const normalizeFeature = (feature: Feature): NormalizedFeature | null => {
 
 const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
   const { t, i18n } = useTranslation()
+  const dispatch = useAppDispatch()
   const imgSrc = product.coverImage ?? PLACEHOLDER_IMG;
 
   const priceNumber =
@@ -134,6 +138,23 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
         <p className="text-lg font-bold text-gray-900 mb-3">{formattedPrice}</p>
         <button
           type="button"
+          onClick={(event) => {
+            event.preventDefault()
+
+            if (product.inStock === false || !Number.isFinite(priceNumber)) return
+
+            dispatch(
+              addToCart({
+                id: product.id,
+                slug: product.slug,
+                name: product.name,
+                image: imgSrc,
+                price: priceNumber,
+                oldPrice: product.oldPrice,
+                inStock: product.inStock,
+              })
+            )
+          }}
           className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
             product.inStock === false
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"

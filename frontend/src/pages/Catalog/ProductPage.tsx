@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { PopularProduct } from './components/PopularProduct'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import Contact from '@/components/common/Contact'
+import { addToCart } from '@/features/cartSlice'
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('ru-KZ', {
     style: 'currency',
@@ -748,6 +749,7 @@ const ProductPage = () => {
 
   const gallery = useMemo(() => normalizeGallery(product?.media), [product?.media])
   const activeMedia = gallery[activeImage] ?? gallery[0]
+  const cartImage = gallery[0]?.preview ?? PLACEHOLDER_IMG
 
   useEffect(() => {
     setActiveImage(0)
@@ -1027,6 +1029,19 @@ const ProductPage = () => {
                   </div>
                   <button
                     disabled={!product.inStock}
+                    onClick={() => {
+                      dispatch(
+                        addToCart({
+                          id: product.id,
+                          slug: product.slug,
+                          name: product.name,
+                          image: cartImage,
+                          price: product.price,
+                          oldPrice: product.oldPrice,
+                          inStock: product.inStock,
+                        })
+                      )
+                    }}
                     className={`w-full px-10 py-3 text-white font-bold uppercase transition shadow-md 
                       ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F] hover:shadow-lg' : 'bg-gray-400 cursor-not-allowed'}`}
                   >
