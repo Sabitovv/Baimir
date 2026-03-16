@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   onClose?: () => void
@@ -7,6 +8,7 @@ type Props = {
 const V_ARRAY = [4, 6, 8, 10, 12, 14, 16, 20, 24, 32, 40, 50, 63, 80, 100, 125, 160, 200]
 
 const CategoryCalculator: React.FC<Props> = () => {
+  const { t } = useTranslation()
   const [material, setMaterial] = useState('') 
   const [thickness, setThickness] = useState('') 
   const [angle, setAngle] = useState('')
@@ -33,18 +35,18 @@ const CategoryCalculator: React.FC<Props> = () => {
       const vVal = V_ARRAY[vIndex]
 
       if (!s || s <= 0) {
-        cols.push({ type: i === 0 ? 'rec' : 'norm', v: null, h: null, r: null, f: null, status: 'S=0' })
+        cols.push({ type: i === 0 ? 'rec' : 'norm', v: null, h: null, r: null, f: null, status: t('calculator.status.sZero') })
         continue
       }
       if (vIndex < 0 || vIndex >= V_ARRAY.length || vVal < s * 4) {
-        cols.push({ type: i === 0 ? 'rec' : 'norm', v: null, h: null, r: null, f: null, status: 'N' })
+        cols.push({ type: i === 0 ? 'rec' : 'norm', v: null, h: null, r: null, f: null, status: t('calculator.status.na') })
         continue
       }
 
       const h = vVal * 1.0 
       const r = vVal * 0.1875       
       let f: number | null = null
-      let fStatus = 'L=0'
+      let fStatus = t('calculator.status.lZero')
       
       const rm = Number(material)
       const l = Number(length)
@@ -60,12 +62,12 @@ const CategoryCalculator: React.FC<Props> = () => {
         h,
         r,
         f,
-        status: !angle ? 'Угол?' : (f !== null ? 'ok' : fStatus)
+        status: !angle ? t('calculator.status.angleRequired') : (f !== null ? 'ok' : fStatus)
       })
     }
     
     return cols
-  }, [thickness, material, length, angle])
+  }, [thickness, material, length, angle, t])
 
   const recommendedForce = columns[2]?.f
 
@@ -74,30 +76,30 @@ const CategoryCalculator: React.FC<Props> = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div>
           <label className="block text-[#F58322] font-bold text-sm mb-1">
-            Материал
+            {t('calculator.material')}
           </label>
           <select
             className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#F58322]"
             value={material}
             onChange={(e) => setMaterial(e.target.value)}
           >
-            <option value="">Выбрать...</option>
-            <option value="45">Сталь (45 Н/мм²)</option>
-            <option value="80">Нерж. сталь (80 Н/мм²)</option>
-            <option value="25">Алюминий (25 Н/мм²)</option>
+            <option value="">{t('calculator.select')}</option>
+            <option value="45">{t('calculator.materialOptions.steel')}</option>
+            <option value="80">{t('calculator.materialOptions.stainless')}</option>
+            <option value="25">{t('calculator.materialOptions.aluminum')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-[#F58322] font-bold text-sm mb-1">
-            Толщина, мм (S)
+            {t('calculator.thickness')}
           </label>
           <select
             className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#F58322]"
             value={thickness}
             onChange={(e) => setThickness(e.target.value)}
           >
-            <option value="">Выбрать...</option>
+            <option value="">{t('calculator.select')}</option>
             <option value="0.5">0.5</option>
             <option value="0.8">0.8</option>
             <option value="1.0">1.0</option>
@@ -113,14 +115,14 @@ const CategoryCalculator: React.FC<Props> = () => {
 
         <div>
           <label className="block text-[#F58322] font-bold text-sm mb-1">
-            Угол, град. (α)
+            {t('calculator.angle')}
           </label>
           <select
             className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#F58322]"
             value={angle}
             onChange={(e) => setAngle(e.target.value)}
           >
-            <option value="">Выбрать...</option>
+            <option value="">{t('calculator.select')}</option>
             <option value="90">90°</option>
             <option value="88">88°</option>
             <option value="60">60°</option>
@@ -129,7 +131,7 @@ const CategoryCalculator: React.FC<Props> = () => {
 
         <div>
           <label className="block text-[#F58322] font-bold text-sm mb-1">
-            Длина гиба, мм (L)
+            {t('calculator.bendLength')}
           </label>
           <input
             type="number"
@@ -137,7 +139,7 @@ const CategoryCalculator: React.FC<Props> = () => {
             className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#F58322]"
             value={length}
             onChange={(e) => setLength(e.target.value)}
-            placeholder="Например: 1000"
+            placeholder={t('calculator.placeholderLength')}
           />
         </div>
       </div>
@@ -146,11 +148,11 @@ const CategoryCalculator: React.FC<Props> = () => {
         <table className="w-full border-collapse bg-[#F8F9FA] text-sm text-center min-w-[750px] shadow-sm">
           <thead>
             <tr className="bg-[#F58322] text-white">
-              <th className="py-2 px-4 text-left w-[25%]">Параметр</th>
+              <th className="py-2 px-4 text-left w-[25%]">{t('calculator.parameter')}</th>
               <th className="py-2 px-2 w-[15%]">▼</th>
               <th className="py-2 px-2 w-[15%]">▼</th>
               <th className="py-1 px-2 w-[20%] font-bold leading-tight bg-[#DB741F]">
-                Рекомендуемое<br />▼
+                {t('calculator.recommended')}<br />▼
               </th>
               <th className="py-2 px-2 w-[15%]">▼</th>
               <th className="py-2 px-2 w-[15%]">▼</th>
@@ -159,7 +161,7 @@ const CategoryCalculator: React.FC<Props> = () => {
           <tbody>
             <tr className="border-b border-gray-200">
               <td className="py-4 px-4 text-left font-medium text-gray-800">
-                Открытие матрицы, мм (V)
+                {t('calculator.matrixOpening')}
               </td>
               {columns.map((col, idx) => (
                 <td key={idx} className={`py-4 ${col.type === 'rec' ? 'bg-[#F58322] text-white font-bold' : ''}`}>
@@ -170,17 +172,17 @@ const CategoryCalculator: React.FC<Props> = () => {
 
             <tr className="border-b border-gray-200">
               <td className="py-4 px-4 text-left font-medium text-gray-800">
-                Минимальная полка, мм (h)
+                {t('calculator.minShelf')}
               </td>
               {columns.map((col, idx) => (
                 <td key={idx} className={`py-4 ${col.type === 'rec' ? 'bg-[#F58322] text-white font-bold' : ''}`}>
-                  {col.h !== null && angle ? col.h.toFixed(2) : (!angle && col.v ? 'Угол?' : col.status)}
+                  {col.h !== null && angle ? col.h.toFixed(2) : (!angle && col.v ? t('calculator.status.angleRequired') : col.status)}
                 </td>
               ))}
             </tr>
             <tr className="border-b border-gray-200">
               <td className="py-4 px-4 text-left font-medium text-gray-800">
-                Внутренний радиус, мм (R<sub>i</sub>)
+                {t('calculator.innerRadius')} (R<sub>i</sub>)
               </td>
               {columns.map((col, idx) => (
                 <td key={idx} className={`py-4 ${col.type === 'rec' ? 'bg-[#F58322] text-white font-bold' : ''}`}>
@@ -191,11 +193,11 @@ const CategoryCalculator: React.FC<Props> = () => {
 
             <tr>
               <td className="py-4 px-4 text-left font-medium text-gray-800">
-                Усилие гибки, тонн (F)
+                {t('calculator.bendingForce')}
               </td>
               {columns.map((col, idx) => (
                 <td key={idx} className={`py-4 ${col.type === 'rec' ? 'bg-[#DB741F] text-white font-bold' : ''}`}>
-                  {col.f !== null ? Math.ceil(col.f) : (col.v ? 'L=0' : col.status)}
+                  {col.f !== null ? Math.ceil(col.f) : (col.v ? t('calculator.status.lZero') : col.status)}
                 </td>
               ))}
             </tr>
@@ -205,9 +207,9 @@ const CategoryCalculator: React.FC<Props> = () => {
       {recommendedForce && recommendedForce > 0 && (
         <div className="bg-orange-50 border-l-4 border-[#F58322] p-4 rounded-r-md flex justify-between items-center animate-in fade-in">
           <div>
-            <h4 className="text-[#DB741F] font-bold text-lg">Результат расчета</h4>
+            <h4 className="text-[#DB741F] font-bold text-lg">{t('calculator.resultTitle')}</h4>
             <p className="text-gray-700 mt-1">
-              Для ваших параметров потребуется усилие не менее <b className="text-black">{Math.ceil(recommendedForce * 1.15)} тонн</b> (с учетом запаса 15%).
+              {t('calculator.resultText', { force: Math.ceil(recommendedForce * 1.15) })}
             </p>
           </div>
           <button 
@@ -216,7 +218,7 @@ const CategoryCalculator: React.FC<Props> = () => {
             }}
             className="hidden sm:block px-6 py-2 bg-[#F58322] hover:bg-[#DB741F] text-white font-medium rounded transition"
           >
-            Подобрать станок
+            {t('calculator.pickMachine')}
           </button>
         </div>
       )}

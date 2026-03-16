@@ -1,15 +1,20 @@
 import { useState } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import SearchIcon from '@mui/icons-material/Search'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import logo from '@/assets/header/oldBg.svg'
-
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 //#F58322
 //#DB741F
 
-const Header = () => {
+type HeaderProps = {
+  setIsCartOpen: Dispatch<SetStateAction<boolean>>
+}
+
+const Header = ({ setIsCartOpen }: HeaderProps) => {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
 
@@ -93,6 +98,9 @@ const Header = () => {
           <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
             {t('header.cta')}
           </button>
+          <button onClick={() => setIsCartOpen(true)}>
+            <ShoppingCartIcon className="hover:text-[#DB741F]" />
+          </button>
         </div>
       </div>
       <div className="xl:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
@@ -100,9 +108,14 @@ const Header = () => {
           <img src={logo} alt="Baymir Logo" className="h-8" />
         </Link>
 
-        <button onClick={() => setOpen(true)}>
-          <MenuIcon sx={{ fontSize: 28 }} />
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={() => setIsCartOpen(true)}>
+            <ShoppingCartIcon sx={{ fontSize: 26 }} />
+          </button>
+          <button onClick={() => setOpen(true)}>
+            <MenuIcon sx={{ fontSize: 28 }} />
+          </button>
+        </div>
       </div>
       {open && (
         <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">

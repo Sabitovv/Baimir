@@ -205,11 +205,11 @@ const CategoryPage = () => {
   useEffect(() => {
     if (!categories.length) return
     if (!currentCategory) {
-      dispatch(setBreadcrumbs([{ name: 'Каталог', path: '/catalog' }]))
+      dispatch(setBreadcrumbs([{ name: t('commonCatalog.catalog'), path: '/catalog' }]))
       return
     }
 
-    const breadcrumbs: BreadcrumbItem[] = [{ name: 'Каталог', path: '/catalog' }]
+    const breadcrumbs: BreadcrumbItem[] = [{ name: t('commonCatalog.catalog'), path: '/catalog' }]
     const stack: Category[] = []
     let temp: Category | null = currentCategory
 
@@ -231,7 +231,7 @@ const CategoryPage = () => {
     })
 
     dispatch(setBreadcrumbs(breadcrumbs))
-  }, [currentCategory, categories, dispatch])
+  }, [currentCategory, categories, dispatch, t])
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 767px)')
@@ -288,9 +288,9 @@ const CategoryPage = () => {
       <div className="px-4 md:px-6 lg:px-0 mb-20">
         <div className="my-5">
           <ScrollReveal key={activeId ?? 'catalog-title'}>
-            <h1 className="font-oswald text-3xl md:text-5xl font-bold uppercase text-gray-900">
-              {currentCategory?.name ?? 'Каталог'}
-            </h1>
+              <h1 className="font-oswald text-3xl md:text-5xl font-bold uppercase text-gray-900">
+                {currentCategory?.name ?? t('commonCatalog.catalog')}
+              </h1>
           </ScrollReveal>
           <Breadcrumbs />
         </div>
@@ -348,7 +348,7 @@ const CategoryPage = () => {
                         onClick={toggleCalculator} 
                         className={`cursor-pointer px-3 py-2 rounded-md text-sm transition flex items-center gap-2 ${isCalculatorOpen ? 'bg-[#F58322] text-white' : 'bg-[#E4E7EC] hover:bg-gray-300 text-gray-700'}`}
                       >
-                        Калькулятор
+                        {t('categoryPage.calculator')}
                       </button>
                     </div>
                   </div>
@@ -386,7 +386,7 @@ const CategoryPage = () => {
                     <button onClick={closePanels} className="absolute top-4 right-4 p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 rounded-md transition-colors">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                     </button>
-                    <h3 className="text-xl font-bold mb-6 text-gray-900">Калькулятор</h3>
+                    <h3 className="text-xl font-bold mb-6 text-gray-900">{t('categoryPage.calculator')}</h3>
                     <CategoryCalculator onClose={closePanels} />
                   </div>
                 )}

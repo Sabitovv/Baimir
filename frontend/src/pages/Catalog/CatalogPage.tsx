@@ -17,7 +17,7 @@ import { PopularProduct } from './components/PopularProduct'
 import { useTranslation } from 'react-i18next'
 
 const CatalogPage = () => {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const { data } = useGetCategoriesTreeQuery({lang: i18n.language})
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -43,7 +43,7 @@ const CatalogPage = () => {
       return
     }
 
-    const breadcrumbsList = [{ name: 'Каталог', path: '/catalog' }]
+    const breadcrumbsList = [{ name: t('commonCatalog.catalog'), path: '/catalog' }]
 
     const stack: typeof data = []
     let temp: typeof currentCategory | undefined | null = currentCategory
@@ -66,7 +66,7 @@ const CatalogPage = () => {
     })
 
     dispatch(setBreadcrumbs(breadcrumbsList))
-  }, [currentCategory, data, dispatch])
+  }, [currentCategory, data, dispatch, t])
 
   const visibleCategories = useMemo(() => {
     if (!data) return []
@@ -102,7 +102,7 @@ const CatalogPage = () => {
       <div className="mt-12 px-4 md:px-6 lg:px-0">
         <ScrollReveal>
           <h1 className="font-oswald text-3xl md:text-4xl font-bold uppercase mb-10">
-            Каталог товаров
+            {t('catalogPage.title')}
           </h1>
         </ScrollReveal>
 
@@ -157,7 +157,7 @@ const CatalogPage = () => {
               ))}
               {visibleCategories.length === 0 && (
                 <div className="col-span-full text-center py-10 text-gray-500">
-                  В этой категории пока нет подкатегорий.
+                  {t('catalogPage.noSubcategories')}
                 </div>
               )}
             </StaggerContainer>
@@ -169,16 +169,16 @@ const CatalogPage = () => {
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="px-2 md:px-0 order-2 md:order-1">
                 <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
-                  ОСТАВЬТЕ ЗАЯВКУ
+                  {t('catalogPage.bid')}
                 </h3>
                 <Contact />
               </div>
               <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0 order-1 md:order-2">
-                <img
-                  src={sampleImg}
-                  alt="Лазерный станок - пример"
-                  loading="lazy"
-                  width="500"
+                  <img
+                    src={sampleImg}
+                    alt={t('catalogPage.sampleAlt')}
+                    loading="lazy"
+                    width="500"
                   height="400"
                   className="max-w-full w-72 sm:w-full object-contain"
                 />

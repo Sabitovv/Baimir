@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next'
 
 type RawFeatureObject = {
   label?: string | null;
@@ -64,6 +65,7 @@ const normalizeFeature = (feature: Feature): NormalizedFeature | null => {
 };
 
 const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
+  const { t, i18n } = useTranslation()
   const imgSrc = product.coverImage ?? PLACEHOLDER_IMG;
 
   const priceNumber =
@@ -74,7 +76,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
       : NaN;
 
   const formattedPrice = Number.isFinite(priceNumber)
-    ? `${priceNumber.toLocaleString("ru-RU")} ₸`
+    ? `${priceNumber.toLocaleString(i18n.language)} ₸`
     : "—";
 
   const normalizedFeatures = useMemo(() => {
@@ -139,7 +141,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
           }`}
           disabled={product.inStock === false}
         >
-          {product.inStock === false ? "Нет в наличии" : "Купить"}
+          {product.inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
         </button>
       </div>
     </Link>

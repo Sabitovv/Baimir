@@ -46,5 +46,136 @@
     "reading": "min read",
     "views": "views",
     "emptyContent": "Article content is not filled in yet."
+  },
+  "commonCatalog": {
+    "catalog": "Catalog",
+    "buy": "Add to cart",
+    "notify": "Notify me",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "code": "Code",
+    "sku": "SKU",
+    "brand": "Brand",
+    "country": "Country",
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "catalogPage": {
+    "title": "Product catalog",
+    "popular": "POPULAR PRODUCTS",
+    "bid": "LEAVE A REQUEST",
+    "noSubcategories": "There are no subcategories in this section yet.",
+    "noPopularProducts": "No popular products",
+    "sampleAlt": "Laser machine sample"
+  },
+  "categoryPage": {
+    "loadingCategories": "Loading categories...",
+    "errorCategories": "Failed to load categories.",
+    "calculator": "Calculator"
+  },
+  "productPage": {
+    "loadingProduct": "Loading product...",
+    "notFoundTitle": "Product not found",
+    "error": "The link may be outdated or the product was removed.",
+    "errorBack": "Back to catalog",
+    "have": "In stock",
+    "haveNot": "Out of stock",
+    "buy": "Add to cart",
+    "notify": "Notify me",
+    "conditionsReturn": "Return policy",
+    "conditions": "Return within 14 days by agreement.",
+    "more": "Details",
+    "delive": "Free shipping",
+    "pay": "Payment and delivery terms",
+    "work": "Working hours",
+    "adress": "Store address",
+    "descriprion": "Description",
+    "certificate": "Specification",
+    "information": "Order information",
+    "model": "Model range:",
+    "sku": "Model / SKU",
+    "techCharacter": "Technical specifications:",
+    "noChcaracter": "Specifications are not provided",
+    "forOrder": "To place an order, contact our managers:",
+    "phone": "By phone:",
+    "Email": "By email:",
+    "artic": "Specify product SKU",
+    "relatedProducts": "Related products",
+    "loadingLinked": "Loading products...",
+    "linkedNotFound": "Products for this block were not found",
+    "showImage": "Show image {{index}}",
+    "pieces": "pcs"
+  },
+  "cart": {
+    "title": "Cart",
+    "close": "Close",
+    "emptyTitle": "Your cart is empty",
+    "emptyDescription": "Add items to your cart to submit a request.",
+    "goToCatalog": "Go to catalog",
+    "itemsCount": "Items ({{count}})",
+    "total": "Total",
+    "submitRequest": "Submit request",
+    "decreaseQuantity": "Decrease quantity",
+    "increaseQuantity": "Increase quantity",
+    "remove": "Remove",
+    "mockItems": {
+      "firstTitle": "Laser cutting machine for metal sheets and tubes A3T6 - 3000W Bodor",
+      "secondTitle": "CNC laser machine BODOR C3 1500W"
+    }
+  },
+  "calculator": {
+    "material": "Material",
+    "select": "Select...",
+    "materialOptions": {
+      "steel": "Steel (45 N/mm2)",
+      "stainless": "Stainless steel (80 N/mm2)",
+      "aluminum": "Aluminum (25 N/mm2)"
+    },
+    "thickness": "Thickness, mm (S)",
+    "angle": "Angle, deg. (a)",
+    "bendLength": "Bend length, mm (L)",
+    "placeholderLength": "For example: 1000",
+    "parameter": "Parameter",
+    "recommended": "Recommended",
+    "matrixOpening": "Die opening, mm (V)",
+    "minShelf": "Minimum flange, mm (h)",
+    "innerRadius": "Inner radius, mm",
+    "bendingForce": "Bending force, tons (F)",
+    "resultTitle": "Calculation result",
+    "resultText": "For your parameters, the required force is at least {{force}} tons (including 15% reserve).",
+    "pickMachine": "Pick a machine",
+    "status": {
+      "sZero": "S=0",
+      "na": "N",
+      "lZero": "L=0",
+      "angleRequired": "Angle?"
+    }
+  },
+  "filters": {
+    "resetAll": "Reset all",
+    "apply": "Apply",
+    "hideFilter": "Hide filter",
+    "showFilter": "Show filter",
+    "have": "In stock",
+    "descendingPrice": "Sort by price descending",
+    "price": "Price",
+    "series": "Series"
+  },
+  "storage": {
+    "cards": {
+      "1": "Demonstration of equipment loading before shipment",
+      "2": "Organized machine storage by zones",
+      "3": "Equipment preparation for customer shipment"
+    },
+    "info": {
+      "title": "xxxx m2 of reliable storage: equipment in stock and ready for shipment.",
+      "description": "For metalworking businesses, an in-house equipment warehouse is a strategic asset. It helps avoid downtime caused by delivery delays and react quickly to urgent orders. BAYMIR provides access to one of the largest logistics facilities in Kazakhstan. Our warehouse is equipped with modern storage systems containing a large fleet of lathes, milling, laser, and other machines. All equipment is ready for immediate shipment."
+    }
+  },
+  "production": {
+    "platformCard": {
+      "type": "Production type",
+      "region": "Region, city"
+    }
   }
 }

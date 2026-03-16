@@ -188,8 +188,8 @@ const ProductionPage = () => {
                   LOGO
                 </span>
               </div>
-              <p className="font-medium text-gray-800 text-sm">Тип производства</p>
-              <p className="font-light text-xs sm:text-sm text-gray-500 mt-1 mb-6 sm:mb-8">Регион, город</p>
+              <p className="font-medium text-gray-800 text-sm">{t('production.platformCard.type')}</p>
+              <p className="font-light text-xs sm:text-sm text-gray-500 mt-1 mb-6 sm:mb-8">{t('production.platformCard.region')}</p>
             </StaggerItem>
           ))}
         </StaggerContainer>

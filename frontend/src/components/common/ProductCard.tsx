@@ -1,5 +1,7 @@
 import React from "react"
 import { Link } from "react-router-dom"
+import { useTranslation } from 'react-i18next'
+
 
 type ProductCardProps = {
   id: number
@@ -19,6 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   inStock,
 }) => {
+  const { t, i18n } = useTranslation()
   const imgSrc = coverImage ?? PLACEHOLDER_IMG
 
   const priceNumber =
@@ -29,7 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       : NaN
 
   const formattedPrice = Number.isFinite(priceNumber)
-    ? `${priceNumber.toLocaleString("ru-RU")} ₸`
+    ? `${priceNumber.toLocaleString(i18n.language)} ₸`
     : "—"
 
   return (
@@ -64,7 +67,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           disabled={inStock === false}
           onClick={(e) => e.preventDefault()} 
         >
-          {inStock === false ? "Нет в наличии" : "Купить"}
+          {inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
         </button>
       </div>
     </Link>

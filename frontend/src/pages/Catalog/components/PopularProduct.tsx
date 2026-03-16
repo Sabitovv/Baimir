@@ -70,11 +70,11 @@ export const PopularProduct = () => {
           [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {isLoading ? (
-            <div className="text-gray-500 px-4">Загрузка...</div>
+            <div className="text-gray-500 px-4">{t('commonCatalog.loading')}</div>
           ) : error ? (
-            <div className="text-red-500 px-4">Ошибка загрузки</div>
+            <div className="text-red-500 px-4">{t('commonCatalog.error')}</div>
           ) : products.length === 0 ? (
-            <div className="text-gray-500 px-4">Нет популярных товаров</div>
+            <div className="text-gray-500 px-4">{t('catalogPage.noPopularProducts')}</div>
           ) : (
             products.map((product: Product) => (
               <div

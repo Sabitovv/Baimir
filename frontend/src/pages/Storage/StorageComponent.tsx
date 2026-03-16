@@ -1,13 +1,15 @@
 import Photo from '@/assets/storage/PhotoCat.webp'
+import { useTranslation } from 'react-i18next'
+
 const StorageComponent = () => {
+    const { t } = useTranslation()
+
     return (
         <>
-        <h2 className='font-bold text-xl my-4'>хххх м² надёжного хранения: оборудование в наличии, готово к отгрузке.</h2>
+        <h2 className='font-bold text-xl my-4'>{t('storage.info.title')}</h2>
         <div className='flex gap-5 mb-14'>
             <img src={Photo}/>
-            <p className='pt-2'>Для бизнеса в металлообработке собственный склад оборудования — это стратегический актив. Он позволяет избежать простоев из-за задержек поставок и оперативно реагировать на срочные заказы.
-                «БАЙМИР» предлагает доступ к одной из крупнейших в Казахстане логистических площадок. Наши склад оснащен современными системами хранения, где содержится обширный парк токарных, фрезерных, лазерных станков и другого оборудования. 
-                Вся техника готова к немедленной отгрузке.</p>
+            <p className='pt-2'>{t('storage.info.description')}</p>
         </div>
         </>
     );}

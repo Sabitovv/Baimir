@@ -88,13 +88,13 @@ const StoragePage = () => {
 
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
               <StaggerItem>
-                <Cart title="Производство чего-то там. Не шарю в станках." image={Photo} />
+                <Cart title={t('storage.cards.1')} image={Photo} />
               </StaggerItem>
               <StaggerItem>
-                <Cart title="Производство чего-то там. Не шарю в станках." image={Photo2} />
+                <Cart title={t('storage.cards.2')} image={Photo2} />
               </StaggerItem>
               <StaggerItem>
-                <Cart title="Производство чего-то там. Не шарю в станках." image={Photo3} />
+                <Cart title={t('storage.cards.3')} image={Photo3} />
               </StaggerItem>
             </StaggerContainer>
 

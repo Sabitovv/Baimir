@@ -352,7 +352,7 @@ const ProductLinksBlock = ({
   block: Extract<ProductContentBlock, { type: 'productLink' }>
 }) => {
   const dispatch = useAppDispatch()
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const [items, setItems] = useState<LinkedProductCard[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -412,12 +412,12 @@ const ProductLinksBlock = ({
 
   return (
     <section className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-900">Связанные товары</h3>
+      <h3 className="text-lg font-semibold text-gray-900">{t('productPage.relatedProducts')}</h3>
 
-      {loading && <p className="text-sm text-gray-500">Загрузка товаров...</p>}
+      {loading && <p className="text-sm text-gray-500">{t('productPage.loadingLinked')}</p>}
 
       {!loading && block.data.productIds?.length > 0 && items.length === 0 && (
-        <p className="text-sm text-gray-500">Товары для блока не найдены</p>
+        <p className="text-sm text-gray-500">{t('productPage.linkedNotFound')}</p>
       )}
 
       {items.length > 0 && (
@@ -436,7 +436,7 @@ const ProductLinksBlock = ({
               <div className="p-4 space-y-2">
                 <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-[#F58322]">{item.name}</h4>
                 <div className="text-[#F58322] font-semibold">{formatPrice(item.price)}</div>
-                {!item.inStock && <div className="text-xs text-gray-500">Нет в наличии</div>}
+                {!item.inStock && <div className="text-xs text-gray-500">{t('commonCatalog.outOfStock')}</div>}
               </div>
             </Link>
           ))}
@@ -697,7 +697,7 @@ const ProductPage = () => {
     if (!categories || categories.length === 0) return
     if (!product) return
 
-    const breadcrumbs: BreadcrumbItem[] = [{ name: 'Каталог', path: '/catalog' }]
+    const breadcrumbs: BreadcrumbItem[] = [{ name: t('commonCatalog.catalog'), path: '/catalog' }]
 
     const productCategoryId =
       product.category?.id ?? Number(searchParams.get('categoryId'))
@@ -744,7 +744,7 @@ const ProductPage = () => {
     })
 
     dispatch(setBreadcrumbs(breadcrumbs))
-  }, [product, categories, dispatch, searchParams])
+  }, [product, categories, dispatch, searchParams, t])
 
   const gallery = useMemo(() => normalizeGallery(product?.media), [product?.media])
   const activeMedia = gallery[activeImage] ?? gallery[0]
@@ -969,7 +969,7 @@ const ProductPage = () => {
                           ? 'border-[#F58322] ring-2 ring-[#DB741F] scale-105'
                           : 'border-transparent hover:border-gray-300'}
                       `}
-                      aria-label={`Показать изображение ${idx + 1}`}
+                      aria-label={t('productPage.showImage', { index: idx + 1 })}
                     >
                       {item.kind === 'image' ? (
                         <img src={item.preview} alt={`${product.name}-${idx}`} className="w-full h-full object-cover" />
@@ -1017,7 +1017,7 @@ const ProductPage = () => {
 
                     {product.inStock ? (
                       <span className="text-green-600 text-sm font-medium flex items-center gap-1 mb-5">
-                        {t("productPage.have")} {product.stockQuantity > 0 && `(${product.stockQuantity} шт.)`}
+                        {t("productPage.have")} {product.stockQuantity > 0 && `(${product.stockQuantity} ${t('productPage.pieces')})`}
                       </span>
                     ) : (
                       <span className="text-gray-500 text-sm font-medium flex items-center gap-1 mb-5">
@@ -1117,7 +1117,7 @@ const ProductPage = () => {
 
             {product.variants && product.variants.length > 0 && (
               <div className="mt-12 overflow-x-auto">
-                <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">Модельный ряд:</h4>
+                <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">{t('productPage.model')}</h4>
                 <div className="md:hidden space-y-3">
                   {product.variants.map((variant: ProductVariant) => (
                     <article key={variant.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
@@ -1146,8 +1146,8 @@ const ProductPage = () => {
                 <table className="hidden md:table w-full min-w-[900px] border-collapse text-[13px] text-center border border-gray-300">
                   <thead>
                     <tr className="bg-white text-gray-800 font-bold border-b border-gray-300">
-                      <th className="p-3 border-r border-gray-300 text-left w-[180px]">Модель / SKU</th>
-                      <th className="p-3 border-r border-gray-300">Цена</th>
+                      <th className="p-3 border-r border-gray-300 text-left w-[180px]">{t('productPage.sku')}</th>
+                      <th className="p-3 border-r border-gray-300">{t('filters.price')}</th>
                       {Object.keys(product.variants[0].attributes).map(attrName => (
                         <th key={attrName} className="p-3 border-r border-gray-300 capitalize">{attrName}</th>
                       ))}
@@ -1228,19 +1228,19 @@ const ProductPage = () => {
                 })}
               </div>
             ) : (
-              <p className="py-4 text-gray-500">Характеристики не указаны</p>
+              <p className="py-4 text-gray-500">{t('productPage.noChcaracter')}</p>
             )}
           </div>
         )}
         {activeTab === 'order' && (
           <div className="animate-fade-in text-gray-800 py-4">
-            <p className="mb-4">Для оформления заказа свяжитесь с нашими менеджерами:</p>
+            <p className="mb-4">{t('productPage.forOrder')}</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li>По телефону: <a href="tel:+77777777777" className="text-[#F58322] font-bold">+7 (777) 777-77-77</a></li>
-              <li>По электронной почте: <a href="mailto:sales@example.com" className="text-[#F58322] font-bold">sales@example.com</a></li>
+              <li>{t('productPage.phone')} <a href="tel:+77777777777" className="text-[#F58322] font-bold">+7 (777) 777-77-77</a></li>
+              <li>{t('productPage.Email')} <a href="mailto:sales@example.com" className="text-[#F58322] font-bold">sales@example.com</a></li>
             </ul>
             <p className="mt-4 text-sm text-gray-500">
-              Укажите артикул товара: <span className="font-bold text-gray-900">{product.sku}</span>
+              {t('productPage.artic')}: <span className="font-bold text-gray-900">{product.sku}</span>
             </p>
           </div>
         )}
