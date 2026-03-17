@@ -1,8 +1,9 @@
 import React from "react"
 import { Link } from "react-router-dom"
 import { useTranslation } from 'react-i18next'
-import { useAppDispatch } from '@/app/hooks'
-import { addToCart } from '@/features/cartSlice'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
+import { useCartAnimation } from './useCartAnimation'
 
 
 type ProductCardProps = {
@@ -28,7 +29,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { t, i18n } = useTranslation()
   const dispatch = useAppDispatch()
+  const items = useAppSelector((state) => state.cart.items)
+  const cartItem = items.find((item) => item.id === id)
   const imgSrc = coverImage ?? PLACEHOLDER_IMG
+  const { addAnimation } = useCartAnimation()
 
   const priceNumber =
     typeof price === "number"
@@ -63,34 +67,66 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {formattedPrice}
         </p>
 
-        <button
-          type="button"
-          className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
-            inStock === false
-              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-              : "bg-[#F58322] text-white hover:bg-[#DB741F]"
-          }`}
-          disabled={inStock === false}
-          onClick={(event) => {
-            event.preventDefault()
+        {cartItem ? (
+          <div className="flex items-center justify-between bg-[#F58322] rounded-sm">
+            <button
+              type="button"
+              className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+              onClick={(event) => {
+                event.preventDefault()
+                if (cartItem.quantity <= 1) {
+                  dispatch(removeFromCart(id))
+                } else {
+                  dispatch(decrementQuantity(id))
+                }
+              }}
+            >
+              −
+            </button>
+            <span className="text-white font-bold">{cartItem.quantity}</span>
+            <button
+              type="button"
+              className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+              onClick={(event) => {
+                event.preventDefault()
+                dispatch(incrementQuantity(id))
+              }}
+            >
+              +
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
+              inStock === false
+                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                : "bg-[#F58322] text-white hover:bg-[#DB741F]"
+            }`}
+            disabled={inStock === false}
+            onClick={(event) => {
+              event.preventDefault()
 
-            if (inStock === false || !Number.isFinite(priceNumber)) return
+              if (inStock === false || !Number.isFinite(priceNumber)) return
 
-            dispatch(
-              addToCart({
-                id,
-                slug,
-                name,
-                image: imgSrc,
-                price: priceNumber,
-                oldPrice,
-                inStock,
-              })
-            )
-          }} 
-        >
-          {inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
-        </button>
+              addAnimation(id, imgSrc, event)
+              
+              dispatch(
+                addToCart({
+                  id,
+                  slug,
+                  name,
+                  image: imgSrc,
+                  price: priceNumber,
+                  oldPrice,
+                  inStock,
+                })
+              )
+            }} 
+          >
+            {inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
+          </button>
+        )}
       </div>
     </Link>
   )

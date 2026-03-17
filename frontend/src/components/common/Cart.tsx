@@ -14,6 +14,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
   const { t, i18n } = useTranslation()
   const dispatch = useAppDispatch()
   const items = useAppSelector((state) => state.cart.items)
+  console.log(items)
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0)
@@ -64,13 +65,20 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
   }
 
 
-  if (!isOpen) return null
+  // if (!isOpen) return null
 
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/20 backdrop-blur-sm" onClick={onClose}>
+    <div 
+      className={`fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
+        isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+      }`}
+      onClick={onClose}
+    >      
       <div
-        className="w-full max-w-md h-full bg-white shadow-2xl flex flex-col"
+        className={`w-full max-w-md h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">

@@ -7,6 +7,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import logo from '@/assets/header/oldBg.svg'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import { useAppSelector } from '@/app/hooks'
 //#F58322
 //#DB741F
 
@@ -17,6 +18,8 @@ type HeaderProps = {
 const Header = ({ setIsCartOpen }: HeaderProps) => {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
+  const cartItems = useAppSelector((state) => state.cart.items)
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
   const navItems = [
     { id: 'catalog', path: '/catalog' },
@@ -98,8 +101,13 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
             {t('header.cta')}
           </button>
-          <button onClick={() => setIsCartOpen(true)}>
+          <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-desktop>
             <ShoppingCartIcon className="hover:text-[#DB741F]" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -109,8 +117,13 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
         </Link>
 
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsCartOpen(true)}>
+          <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-mobile>
             <ShoppingCartIcon sx={{ fontSize: 26 }} />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
           </button>
           <button onClick={() => setOpen(true)}>
             <MenuIcon sx={{ fontSize: 28 }} />

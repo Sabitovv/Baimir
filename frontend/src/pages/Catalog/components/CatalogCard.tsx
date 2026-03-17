@@ -1,8 +1,9 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next'
-import { useAppDispatch } from '@/app/hooks'
-import { addToCart } from '@/features/cartSlice'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
+import { useCartAnimation } from '@/components/common/useCartAnimation'
 
 type RawFeatureObject = {
   label?: string | null;
@@ -70,7 +71,10 @@ const normalizeFeature = (feature: Feature): NormalizedFeature | null => {
 const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
   const { t, i18n } = useTranslation()
   const dispatch = useAppDispatch()
+  const items = useAppSelector((state) => state.cart.items)
+  const cartItem = items.find((item) => item.id === product.id)
   const imgSrc = product.coverImage ?? PLACEHOLDER_IMG;
+  const { addAnimation } = useCartAnimation()
 
   const priceNumber =
     typeof product.price === "number"
@@ -136,34 +140,67 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
 
       <div className="mt-auto">
         <p className="text-lg font-bold text-gray-900 mb-3">{formattedPrice}</p>
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault()
+        
+        {cartItem ? (
+          <div className="flex items-center justify-between bg-[#F58322] rounded-sm">
+            <button
+              type="button"
+              className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+              onClick={(event) => {
+                event.preventDefault()
+                if (cartItem.quantity <= 1) {
+                  dispatch(removeFromCart(product.id))
+                } else {
+                  dispatch(decrementQuantity(product.id))
+                }
+              }}
+            >
+              −
+            </button>
+            <span className="text-white font-bold">{cartItem.quantity}</span>
+            <button
+              type="button"
+              className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+              onClick={(event) => {
+                event.preventDefault()
+                dispatch(incrementQuantity(product.id))
+              }}
+            >
+              +
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault()
 
-            if (product.inStock === false || !Number.isFinite(priceNumber)) return
+              if (product.inStock === false || !Number.isFinite(priceNumber)) return
 
-            dispatch(
-              addToCart({
-                id: product.id,
-                slug: product.slug,
-                name: product.name,
-                image: imgSrc,
-                price: priceNumber,
-                oldPrice: product.oldPrice,
-                inStock: product.inStock,
-              })
-            )
-          }}
-          className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
-            product.inStock === false
-              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-              : "bg-[#F58322] text-white hover:bg-[#DB741F]"
-          }`}
-          disabled={product.inStock === false}
-        >
-          {product.inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
-        </button>
+              addAnimation(product.id, imgSrc, event)
+
+              dispatch(
+                addToCart({
+                  id: product.id,
+                  slug: product.slug,
+                  name: product.name,
+                  image: imgSrc,
+                  price: priceNumber,
+                  oldPrice: product.oldPrice,
+                  inStock: product.inStock,
+                })
+              )
+            }}
+            className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
+              product.inStock === false
+                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                : "bg-[#F58322] text-white hover:bg-[#DB741F]"
+            }`}
+            disabled={product.inStock === false}
+          >
+            {product.inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
+          </button>
+        )}
       </div>
     </Link>
   );

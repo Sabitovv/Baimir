@@ -5,7 +5,7 @@ import DOMPurify from 'dompurify'
 
 import PageContainer from '@/components/ui/PageContainer'
 import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
-import { useAppDispatch } from '@/app/hooks'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { setBreadcrumbs } from '@/features/catalogSlice'
 import { productsApi, useGetProductBySlugQuery } from '@/api/productsApi'
 import type { ProductContentBlock, GridCardItem, ProductDetail } from '@/api/productsApi'
@@ -21,7 +21,8 @@ import { useTranslation } from 'react-i18next'
 import { PopularProduct } from './components/PopularProduct'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import Contact from '@/components/common/Contact'
-import { addToCart } from '@/features/cartSlice'
+import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
+import { useCartAnimation } from '@/components/common/useCartAnimation'
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('ru-KZ', {
     style: 'currency',
@@ -676,9 +677,11 @@ const renderContentBlock = (block: ProductContentBlock) => {
 const ProductPage = () => {
   const { productSlug } = useParams()
   const dispatch = useAppDispatch()
+  const items = useAppSelector((state) => state.cart.items)
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
   const { i18n } = useTranslation()
+  const { addAnimation } = useCartAnimation()
 
   const { data: product, isLoading, isError } = useGetProductBySlugQuery(
     productSlug ? { slug: productSlug, lang: i18n.language } : skipToken
@@ -1027,26 +1030,58 @@ const ProductPage = () => {
                       </span>
                     )}
                   </div>
-                  <button
-                    disabled={!product.inStock}
-                    onClick={() => {
-                      dispatch(
-                        addToCart({
-                          id: product.id,
-                          slug: product.slug,
-                          name: product.name,
-                          image: cartImage,
-                          price: product.price,
-                          oldPrice: product.oldPrice,
-                          inStock: product.inStock,
-                        })
-                      )
-                    }}
-                    className={`w-full px-10 py-3 text-white font-bold uppercase transition shadow-md 
-                      ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F] hover:shadow-lg' : 'bg-gray-400 cursor-not-allowed'}`}
-                  >
-                    {product.inStock ? t('productPage.buy') : t('productPage.notify')}
-                  </button>
+                  {items.find((item) => item.id === product.id) ? (
+                    <div className="flex items-center justify-between bg-[#F58322] rounded-sm">
+                      <button
+                        type="button"
+                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+                        onClick={() => {
+                          const currentQty = items.find((item) => item.id === product.id)?.quantity ?? 1
+                          if (currentQty <= 1) {
+                            dispatch(removeFromCart(product.id))
+                          } else {
+                            dispatch(decrementQuantity(product.id))
+                          }
+                        }}
+                      >
+                        −
+                      </button>
+                      <span className="text-white font-bold text-lg">
+                        {items.find((item) => item.id === product.id)?.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+                        onClick={() => {
+                          dispatch(incrementQuantity(product.id))
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      disabled={!product.inStock}
+                      onClick={(event) => {
+                        addAnimation(product.id, cartImage, event)
+                        dispatch(
+                          addToCart({
+                            id: product.id,
+                            slug: product.slug,
+                            name: product.name,
+                            image: cartImage,
+                            price: product.price,
+                            oldPrice: product.oldPrice,
+                            inStock: product.inStock,
+                          })
+                        )
+                      }}
+                      className={`w-full px-10 py-3 text-white font-bold uppercase transition shadow-md 
+                        ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F] hover:shadow-lg' : 'bg-gray-400 cursor-not-allowed'}`}
+                    >
+                      {product.inStock ? t('productPage.buy') : t('productPage.notify')}
+                    </button>
+                  )}
                 </div>
                 <div className="space-y-3 text-sm pt-2 w-full sm:w-1/3">
                   {rowsWithBg.filter(r => r.type === 'attr').slice(0, 4).map((r, i) => (
