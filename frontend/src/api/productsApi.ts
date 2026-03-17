@@ -200,6 +200,12 @@ export type Product = {
         attributes: Record<string, string>
     }>
     discountPercent?: number
+    keyFeatures?: Array<{
+        code: string
+        label: string
+        value: string | number
+        unit?: string
+    }>
 }
 
 export type FilterValue = {
@@ -209,12 +215,19 @@ export type FilterValue = {
     selected: boolean
 }
 
+export type FilterRange = {
+    max: number
+    min: number
+    step: number | null
+}
+
 export type Filter = {
     code: string
     name: string
-    uiType: 'checkbox' | 'range' | 'select' | 'color'
-    range?: { min: number; max: number } | null
-    values?: FilterValue[] | null
+    range: FilterRange | null
+    uiType: 'RANGE_SLIDER' | 'CHECKBOX_LIST'
+    unitCode: string | null
+    values: FilterValue[] | null
 }
 
 export type Meta = {

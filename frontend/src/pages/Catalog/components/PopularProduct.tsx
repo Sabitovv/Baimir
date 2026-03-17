@@ -90,6 +90,7 @@ export const PopularProduct = () => {
                   price={product.price}
                   oldPrice={product.oldPrice}
                   inStock={product.inStock}
+                  keyFeatures={product.keyFeatures}
                 />
               </div>
             ))

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import type { Filter, FilterValue } from '@/api/categoriesApi'
+import type { Filter, FilterValue } from '@/api/productsApi'
 import { useTranslation } from 'react-i18next'
 
 type CatalogFiltersProps = {
@@ -13,6 +13,18 @@ type CatalogFiltersProps = {
 type RangeValues = { from: string; to: string }
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v))
+
+const valueToSlider = (value: number, min: number, max: number): number => {
+  const range = max - min
+  if (range === 0) return 0
+  return Math.round(((value - min) / range) * 100)
+}
+
+const sliderToValue = (sliderValue: number, min: number, max: number): number => {
+  const range = max - min
+  if (range === 0) return min
+  return Math.round(min + (sliderValue / 100) * range)
+}
 
 const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogFiltersProps) => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -144,7 +156,10 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
         {(filters ?? []).map((f) => (
           <div key={f.code} className="space-y-6">
             <div>
-              <h4 className="font-bold text-sm mb-3">{f.name}</h4>
+              <h4 className="font-bold text-sm mb-3">
+                {f.name}
+                {f.unitCode != null && f.unitCode !== '' && <span className="font-normal text-gray-500 ml-1">({f.unitCode})</span>}
+              </h4>
 
               {f.uiType === 'RANGE_SLIDER' && (() => {
                 const { min: safeMin, max: safeMax } = getLimits(f)
@@ -155,21 +170,62 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
                 const numericFrom = Number(String(fromStr).replace(/[^\d-]/g, '')) || safeMin
                 const numericTo = Number(String(toStr).replace(/[^\d-]/g, '')) || safeMax
 
-                const rangeDiff = safeMax - safeMin
-                const percentFrom = rangeDiff === 0 ? 0 : ((Math.max(safeMin, Math.min(safeMax, numericFrom)) - safeMin) / rangeDiff) * 100
-                const percentTo = rangeDiff === 0 ? 0 : ((Math.max(safeMin, Math.min(safeMax, numericTo)) - safeMin) / rangeDiff) * 100
+                const percentFrom = valueToSlider(numericFrom, safeMin, safeMax)
+                const percentTo = valueToSlider(numericTo, safeMin, safeMax)
+
+                const handleSliderFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                  const sliderVal = Number(e.target.value)
+                  const realVal = sliderToValue(sliderVal, safeMin, safeMax)
+                  setRange(f.code, 'from', String(realVal))
+                }
+
+                const handleSliderToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                  const sliderVal = Number(e.target.value)
+                  const realVal = sliderToValue(sliderVal, safeMin, safeMax)
+                  setRange(f.code, 'to', String(realVal))
+                }
 
                 return (
                   <div key={`range-${f.code}`}>
                     <div className="flex gap-2 mb-4">
-                      <input type="number" value={fromStr} onChange={(e) => setRange(f.code, 'from', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#F58322] transition-colors" />
-                      <input type="number" value={toStr} onChange={(e) => setRange(f.code, 'to', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:border-[#F58322] transition-colors" />
+                      <div className="relative flex-1">
+                        <input type="number" value={fromStr} onChange={(e) => setRange(f.code, 'from', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors" />
+                        {f.unitCode != null && f.unitCode !== '' && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">{f.unitCode}</span>}
+                      </div>
+                      <div className="relative flex-1">
+                        <input type="number" value={toStr} onChange={(e) => setRange(f.code, 'to', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors" />
+                        {f.unitCode != null && f.unitCode !== '' && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">{f.unitCode}</span>}
+                      </div>
                     </div>
                     <div className="relative h-6 mb-4 select-none">
                       <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1 bg-gray-200 rounded" />
                       <div className="absolute top-1/2 -translate-y-1/2 h-1 bg-[#F58322] rounded z-10" style={{ left: `${percentFrom}%`, right: `${100 - percentTo}%` }} />
-                      <input type="range" min={safeMin} max={safeMax} value={numericFrom} onChange={(e) => setRange(f.code, 'from', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="absolute w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-none z-20 h-0" style={{ background: 'transparent', WebkitAppearance: 'none' }} />
-                      <input type="range" min={safeMin} max={safeMax} value={numericTo} onChange={(e) => setRange(f.code, 'to', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="absolute w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-none z-20 h-0" style={{ background: 'transparent', WebkitAppearance: 'none' }} />
+                      <input 
+                        type="range" 
+                        min={0} 
+                        max={100} 
+                        value={percentFrom} 
+                        onChange={handleSliderFromChange} 
+                        onPointerUp={() => commitAndNormalize(f.code)} 
+                        className="absolute w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-auto z-30 h-6 cursor-pointer" 
+                        style={{ 
+                          background: 'transparent',
+                          clipPath: 'inset(0 50% 0 0)',
+                        }} 
+                      />
+                      <input 
+                        type="range" 
+                        min={0} 
+                        max={100} 
+                        value={percentTo} 
+                        onChange={handleSliderToChange} 
+                        onPointerUp={() => commitAndNormalize(f.code)} 
+                        className="absolute w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-auto z-20 h-6 cursor-pointer" 
+                        style={{ 
+                          background: 'transparent',
+                          clipPath: 'inset(0 0 0 50%)',
+                        }} 
+                      />
                     </div>
                   </div>
                 )

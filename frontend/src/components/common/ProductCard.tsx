@@ -6,6 +6,13 @@ import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from 
 import { useCartAnimation } from './useCartAnimation'
 
 
+type KeyFeature = {
+  code: string
+  label: string
+  value: string | number
+  unit?: string
+}
+
 type ProductCardProps = {
   id: number
   slug: string
@@ -14,9 +21,26 @@ type ProductCardProps = {
   price?: number | string | null
   oldPrice?: number | null
   inStock?: boolean
+  keyFeatures?: KeyFeature[] | null
 }
 
 const PLACEHOLDER_IMG = "https://via.placeholder.com/400x300?text=No+image"
+
+const normalizeFeature = (feature: KeyFeature): { label?: string; value: string; unit?: string } | null => {
+  if (!feature) return null
+
+  const rawLabel = feature.label ?? ""
+  const rawValue = feature.value === undefined || feature.value === null ? "" : String(feature.value).trim()
+  const rawUnit = feature.unit ?? ""
+
+  if (!rawValue) return null
+
+  const normalized: { label?: string; value: string; unit?: string } = { value: rawValue }
+  if (rawLabel) normalized.label = rawLabel
+  if (rawUnit) normalized.unit = rawUnit
+
+  return normalized
+}
 
 const ProductCard: React.FC<ProductCardProps> = ({
   slug,
@@ -26,6 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   oldPrice,
   inStock,
+  keyFeatures,
 }) => {
   const { t, i18n } = useTranslation()
   const dispatch = useAppDispatch()
@@ -45,6 +70,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
     ? `${priceNumber.toLocaleString(i18n.language)} ₸`
     : "—"
 
+  const normalizedFeatures = React.useMemo(() => {
+    return (keyFeatures ?? [])
+      .map((f) => normalizeFeature(f))
+      .filter((f): f is { label?: string; value: string; unit?: string } => !!f)
+      .slice(0, 3)
+  }, [keyFeatures])
+
   return (
     <Link
       to={`/catalog/product/${slug}`}
@@ -59,9 +91,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
       </div>
 
-      <h3 className="text-sm font-extrabold text-gray-800 leading-tight mb-3 group-hover:text-[#DB741F] transition-colors line-clamp-2">
+      <h3 className="text-sm font-extrabold text-gray-800 leading-tight mb-2 group-hover:text-[#DB741F] transition-colors line-clamp-2">
         {name}
       </h3>
+
+      {normalizedFeatures.length > 0 && (
+        <div className="mb-3 space-y-1">
+          {normalizedFeatures.map((nf, idx) => (
+            <div key={idx} className="flex items-center text-xs gap-1">
+              {nf.label && (
+                <span className="text-gray-500 font-medium whitespace-nowrap">
+                  {nf.label}:
+                </span>
+              )}
+              <span className="text-gray-800 font-semibold truncate">
+                {nf.value}
+                {nf.unit ? ` ${nf.unit}` : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="mt-auto">
         <p className="text-lg font-bold text-gray-900 mb-3">
           {formattedPrice}

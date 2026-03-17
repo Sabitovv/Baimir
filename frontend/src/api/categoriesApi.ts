@@ -30,12 +30,18 @@ export type FilterValue = {
   count: number
   selected: boolean
 }
+export type FilterRange = {
+  max: number
+  min: number
+  step: number | null
+}
 export type Filter = {
   code: string
   name: string
-  uiType: string
-  range?: { min: number; max: number } | null
-  values?: FilterValue[] | null
+  range: FilterRange | null
+  uiType: 'RANGE_SLIDER' | 'CHECKBOX_LIST'
+  unitCode: string | null
+  values: FilterValue[] | null
 }
 export type Meta = {
   currentPage: number
