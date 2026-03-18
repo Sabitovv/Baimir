@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
-import { useCartAnimation } from '@/components/common/useCartAnimation'
+import { useCartAnimation } from '@/components/animations/useCartAnimation'
 
 type RawFeatureObject = {
   label?: string | null;

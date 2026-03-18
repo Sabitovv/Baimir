@@ -98,9 +98,9 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               EN
             </button>
           </div>
-          <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
+          {/* <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
             {t('header.cta')}
-          </button>
+          </button> */}
           <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-desktop>
             <ShoppingCartIcon className="hover:text-[#DB741F]" />
             {cartCount > 0 && (

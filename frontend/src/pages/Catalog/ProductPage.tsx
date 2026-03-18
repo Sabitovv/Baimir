@@ -22,7 +22,7 @@ import { PopularProduct } from './components/PopularProduct'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import Contact from '@/components/common/Contact'
 import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
-import { useCartAnimation } from '@/components/common/useCartAnimation'
+import { useCartAnimation } from '@/components/animations/useCartAnimation'
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('ru-KZ', {
     style: 'currency',
@@ -324,12 +324,12 @@ const normalizeContentBlocks = (value: unknown): ProductContentBlock[] => {
 }
 
 const renderCardItem = (card: GridCardItem, idx: number, ratio: 'square' | 'video' | 'portrait') => (
-  <article key={`${card.title}-${idx}`} className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm transition hover:shadow-md">
-    <div className={`${imageRatioClassMap[ratio]} bg-gray-100 overflow-hidden`}>
+  <article key={`${card.title}-${idx}`} className="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+    <div className={`${imageRatioClassMap[ratio]} bg-gray-100 overflow-hidden group-hover:scale-105 transition-transform duration-500`}>
       <img
         src={card.imageUrl || PLACEHOLDER_IMG}
         alt={card.title}
-        className="w-full h-full object-cover transition duration-500 hover:scale-[1.03]"
+        className="w-full h-full object-cover transition duration-500 hover:scale-[1.05]"
         loading="lazy"
       />
     </div>
@@ -428,15 +428,15 @@ const ProductLinksBlock = ({
             <Link
               key={item.id}
               to={`/catalog/product/${item.slug}`}
-              className={`group rounded-lg border border-gray-200 bg-white overflow-hidden transition hover:shadow-md ${
+              className={`group rounded-2xl border border-gray-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] ${
                 block.data.layout === 'carousel' ? 'min-w-[260px] snap-start' : ''
               }`}
             >
-              <div className="aspect-[4/3] bg-gray-100">
-                <img src={getPrimaryImage(item.media)} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+              <div className="aspect-[4/3] bg-gray-100 overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                <img src={getPrimaryImage(item.media)} alt={item.name} className="w-full h-full object-cover transition duration-500 hover:scale-105" loading="lazy" />
               </div>
               <div className="p-4 space-y-2">
-                <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-[#F58322]">{item.name}</h4>
+                <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-[#F58322] transition-colors duration-300">{item.name}</h4>
                 <div className="text-[#F58322] font-semibold">{formatPrice(item.price)}</div>
                 {!item.inStock && <div className="text-xs text-gray-500">{t('commonCatalog.outOfStock')}</div>}
               </div>
@@ -479,14 +479,14 @@ const renderContentBlock = (block: ProductContentBlock) => {
       return (
         <section
           key={block.id}
-          className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-5 rounded-xl border border-gray-200 p-4 md:p-5 bg-gradient-to-b from-white to-gray-50/70 shadow-sm`}
+          className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-5 rounded-2xl border border-gray-200 p-5 md:p-6 bg-gradient-to-b from-white to-gray-50/70 shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.01]`}
         >
           <div className={`w-full ${imageWidthClassMap[block.data.imageWidth]}`}>
-            <div className={`${imageRatioClassMap[block.data.imageRatio]} rounded-lg overflow-hidden bg-gray-100`}>
+            <div className={`${imageRatioClassMap[block.data.imageRatio]} rounded-xl overflow-hidden bg-gray-100 group`}>
               <img
                 src={block.data.imageUrl || PLACEHOLDER_IMG}
                 alt={block.data.title || 'content-image'}
-                className="w-full h-full object-cover transition duration-500 hover:scale-[1.02]"
+                className="w-full h-full object-cover transition duration-500 hover:scale-110"
                 loading="lazy"
               />
             </div>
@@ -509,7 +509,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
       if (!embedUrl) return null
 
       return (
-        <div key={block.id} className="aspect-video rounded-xl overflow-hidden bg-black border border-gray-200 shadow-sm">
+        <div key={block.id} className="aspect-video rounded-2xl overflow-hidden bg-black border border-gray-200 shadow-lg">
           <iframe
             src={embedUrl}
             title="product-content-video"
@@ -525,7 +525,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
       if (!block.data.rows?.length) return null
       const [header, ...body] = block.data.rows
       return (
-        <div key={block.id} className="overflow-x-auto border border-gray-200 rounded-xl shadow-sm bg-white">
+        <div key={block.id} className="overflow-x-auto border border-gray-200 rounded-2xl shadow-md bg-white">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-700">
               <tr>
@@ -536,7 +536,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
             </thead>
             <tbody>
               {body.map((row, rowIdx) => (
-                <tr key={rowIdx} className="border-b border-gray-100 last:border-b-0">
+                <tr key={rowIdx} className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
                   {row.map((cell, cellIdx) => (
                     <td key={cellIdx} className="px-4 py-3 text-gray-700">{cell}</td>
                   ))}
@@ -555,12 +555,12 @@ const renderContentBlock = (block: ProductContentBlock) => {
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="group snap-start min-w-[78%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-sm"
+                className="group snap-start min-w-[78%] sm:min-w-[56%] lg:min-w-[40%] rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-[1.03]"
+                  className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110"
                   loading="lazy"
                 />
               </div>
@@ -573,11 +573,11 @@ const renderContentBlock = (block: ProductContentBlock) => {
         return (
           <div key={block.id} className="columns-1 sm:columns-2 lg:columns-3 gap-4">
             {block.data.urls.map((url, idx) => (
-              <div key={`${url}-${idx}`} className="mb-4 break-inside-avoid rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-sm">
+              <div key={`${url}-${idx}`} className="mb-4 break-inside-avoid rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl">
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className="w-full h-auto object-cover transition duration-500 hover:scale-[1.02]"
+                  className="w-full h-auto object-cover transition duration-500 hover:scale-105"
                   loading="lazy"
                 />
               </div>
@@ -592,12 +592,12 @@ const renderContentBlock = (block: ProductContentBlock) => {
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className={`group rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-sm ${idx === 0 ? 'md:col-span-2' : ''}`}
+                className={`group rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? 'md:col-span-2' : ''}`}
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className={`w-full h-full object-cover transition duration-500 group-hover:scale-[1.03] ${idx === 0 ? 'aspect-[16/7]' : 'aspect-[4/3]'}`}
+                  className={`w-full h-full object-cover transition duration-500 group-hover:scale-110 ${idx === 0 ? 'aspect-[16/7]' : 'aspect-[4/3]'}`}
                   loading="lazy"
                 />
               </div>
@@ -611,11 +611,11 @@ const renderContentBlock = (block: ProductContentBlock) => {
       return (
         <div key={block.id} className={`grid ${gridClass} gap-4`}>
           {block.data.urls.map((url, idx) => (
-            <div key={`${url}-${idx}`} className="group rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-sm">
+            <div key={`${url}-${idx}`} className="group rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl">
               <img
                 src={url || PLACEHOLDER_IMG}
                 alt={`gallery-${idx + 1}`}
-                className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-[1.03]"
+                className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110"
                 loading="lazy"
               />
             </div>
@@ -644,7 +644,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
       return (
         <ul key={block.id} className="space-y-2 text-gray-700">
           {block.data.items.map((item, idx) => (
-            <li key={idx} className="flex gap-2 rounded-md px-2 py-1 hover:bg-gray-50 transition">
+            <li key={idx} className="flex gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 transition-all duration-300">
               <span className="text-[#F58322] font-semibold">{marker}</span>
               <span className="flex-1">{item}</span>
             </li>
@@ -906,7 +906,7 @@ const ProductPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
           <div>
             <div
-              className="rounded-lg overflow-hidden mb-4 flex relative bg-white border border-gray-100 aspect-[4/3] items-center justify-center"
+              className="rounded-2xl overflow-hidden mb-4 flex relative bg-white border border-gray-200 shadow-lg aspect-[4/3] items-center justify-center"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
@@ -915,7 +915,7 @@ const ProductPage = () => {
                 <img
                   src={activeMedia.url || PLACEHOLDER_IMG}
                   alt={product.name || 'product image'}
-                  className="object-contain w-full h-full max-h-[520px]"
+                  className="object-contain w-full h-full max-h-[520px] transition-transform duration-300 hover:scale-105"
                 />
               )}
 
@@ -941,24 +941,13 @@ const ProductPage = () => {
               )}
 
               {product.discountPercent && (
-                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-sm font-bold rounded">
+                <div className="absolute top-4 left-4 bg-red-600 text-white px-4 py-1.5 text-sm font-bold rounded-lg shadow-lg">
                   -{product.discountPercent}%
                 </div>
               )}
             </div>
 
             <div className="flex items-center justify-center gap-4">
-              {/* <button
-                onClick={() => goToIndex(activeImage - 1)}
-                aria-label="Previous thumbnail"
-                className={`p-2 rounded-full bg-white/90 hover:bg-white shadow transition ${activeImage === 0 ? 'opacity-40 pointer-events-none' : ''
-                  }`}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M15 18L9 12L15 6" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button> */}
-
               <div className="w-full max-w-[720px] flex justify-center">
                 <div
                   ref={thumbsRef}
@@ -969,10 +958,10 @@ const ProductPage = () => {
                       key={idx}
                       onClick={() => goToIndex(idx)}
                       className={`
-                        flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 focus:outline-none
+                        flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 focus:outline-none transition-all duration-300
                         ${activeImage === idx
-                          ? 'border-[#F58322] ring-2 ring-[#DB741F] scale-105'
-                          : 'border-transparent hover:border-gray-300'}
+                          ? 'border-[#F58322] ring-4 ring-[#F58322]/30 scale-105 shadow-lg'
+                          : 'border-transparent hover:border-gray-300 hover:scale-105 hover:shadow-md'}
                       `}
                       aria-label={t('productPage.showImage', { index: idx + 1 })}
                     >
@@ -992,24 +981,13 @@ const ProductPage = () => {
                   ))}
                 </div>
               </div>
-
-              {/* <button
-                onClick={() => goToIndex(activeImage + 1)}
-                aria-label="Next thumbnail"
-                className={`p-2 rounded-full bg-white/90 hover:bg-white shadow transition ${activeImage === gallery.length - 1 ? 'opacity-40 pointer-events-none' : ''
-                  }`}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 6L15 12L9 18" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button> */}
             </div>
           </div>
 
           <div>
             <div>
               <div className="flex flex-col sm:flex-row border-b gap-5 border-gray-100 pb-6">
-                <div className='bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-sm w-full sm:w-2/3'>
+                <div className='bg-gradient-to-br from-white to-gray-50 p-6 rounded-2xl border border-gray-200 shadow-lg w-full sm:w-2/3 transition-all duration-300 hover:shadow-xl'>
                   <div className="mb-4">
                     {product.oldPrice && (
                       <div className="text-gray-400 line-through text-lg font-medium">
@@ -1031,10 +1009,10 @@ const ProductPage = () => {
                     )}
                   </div>
                   {items.find((item) => item.id === product.id) ? (
-                    <div className="flex items-center justify-between bg-[#F58322] rounded-sm">
+                    <div className="flex items-center justify-between bg-[#F58322] rounded-xl overflow-hidden shadow-lg">
                       <button
                         type="button"
-                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition-all duration-300"
                         onClick={() => {
                           const currentQty = items.find((item) => item.id === product.id)?.quantity ?? 1
                           if (currentQty <= 1) {
@@ -1051,7 +1029,7 @@ const ProductPage = () => {
                       </span>
                       <button
                         type="button"
-                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition-all duration-300"
                         onClick={() => {
                           dispatch(incrementQuantity(product.id))
                         }}
@@ -1076,8 +1054,8 @@ const ProductPage = () => {
                           })
                         )
                       }}
-                      className={`w-full px-10 py-3 text-white font-bold uppercase transition shadow-md 
-                        ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F] hover:shadow-lg' : 'bg-gray-400 cursor-not-allowed'}`}
+                      className={`w-full px-10 py-3 text-white font-bold uppercase transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02]
+                        ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F]' : 'bg-gray-400 cursor-not-allowed'}`}
                     >
                       {product.inStock ? t('productPage.buy') : t('productPage.notify')}
                     </button>
@@ -1094,28 +1072,32 @@ const ProductPage = () => {
               </div>
 
               <div className="mt-8 space-y-3">
-                <div className="p-4 bg-gray-50 rounded text-sm text-gray-600">
-                  <h5 className="text-[#F58322] font-bold mb-1 text-xs uppercase">{t('productPage.conditionsReturn')}</h5>
+                <div className="p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl text-sm text-gray-600 border border-gray-200 shadow-sm">
+                  <h5 className="text-[#F58322] font-bold mb-2 text-xs uppercase">{t('productPage.conditionsReturn')}</h5>
                   <div className='flex justify-between flex-wrap gap-2'>
                     <p>
                       {t('productPage.conditions')}
                     </p>
-                    <a href="#" className="font-bold hover:underline whitespace-nowrap">{t('productPage.more')} →</a>
+                    <a href="#" className="font-bold hover:underline whitespace-nowrap text-[#F58322] hover:text-[#DB741F] transition-colors">{t('productPage.more')} →</a>
                   </div>
                 </div>
 
-                <div className="space-y-2 text-xs font-bold text-gray-500 uppercase mt-4">
-                  <div className="flex items-center gap-2 mb-4 text-[#F58322]">
-                    <span className="text-[#F58322]"><img src={track} alt="" className="w-4 h-4" /></span> {t('productPage.delive')}
+                <div className="space-y-3 text-xs font-bold text-gray-500 uppercase mt-4">
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]">
+                    <span className="text-[#F58322]"><img src={track} alt="" className="w-5 h-5" /></span> 
+                    <span className="hover:text-[#DB741F] transition-colors">{t('productPage.delive')}</span>
                   </div>
-                  <div className="flex items-center gap-2 mb-4 text-[#F58322]">
-                    <span className="text-[#F58322]"><img src={delivery} alt="" className="w-4 h-4" /></span> {t('productPage.pay')}
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]">
+                    <span className="text-[#F58322]"><img src={delivery} alt="" className="w-5 h-5" /></span> 
+                    <span className="hover:text-[#DB741F] transition-colors">{t('productPage.pay')}</span>
                   </div>
-                  <div className="flex items-center gap-2 mb-4 text-[#F58322]">
-                    <span className="text-[#F58322]"><img src={calendar} alt="" className="w-4 h-4" /></span> {t('productPage.work')}
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]">
+                    <span className="text-[#F58322]"><img src={calendar} alt="" className="w-5 h-5" /></span> 
+                    <span className="hover:text-[#DB741F] transition-colors">{t('productPage.work')}</span>
                   </div>
-                  <div className="flex items-center gap-2 mb-4 text-[#F58322]">
-                    <span className="text-[#F58322]"><img src={address} alt="" className="w-4 h-4" /></span> {t('productPage.adress')}
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]">
+                    <span className="text-[#F58322]"><img src={address} alt="" className="w-5 h-5" /></span> 
+                    <span className="hover:text-[#DB741F] transition-colors">{t('productPage.adress')}</span>
                   </div>
                 </div>
               </div>
@@ -1128,22 +1110,22 @@ const ProductPage = () => {
           <div className="flex gap-8 overflow-x-auto">
             <button
               onClick={() => setActiveTab('desc')}
-              className={`pb-4 px-2 font-bold uppercase text-sm transition whitespace-nowrap border-b-2 
-                  ${activeTab === 'desc' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+              className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+                  ${activeTab === 'desc' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'}`}
             >
               {t('productPage.descriprion')}
             </button>
             <button
               onClick={() => setActiveTab('specs')}
-              className={`pb-4 px-2 font-bold uppercase text-sm transition whitespace-nowrap border-b-2 
-                  ${activeTab === 'specs' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+              className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+                  ${activeTab === 'specs' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'}`}
             >
               {t('productPage.certificate')}
             </button>
             <button
               onClick={() => setActiveTab('order')}
-              className={`pb-4 px-2 font-bold uppercase text-sm transition whitespace-nowrap border-b-2 
-                  ${activeTab === 'order' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+              className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+                  ${activeTab === 'order' ? 'border-[#F58322] text-[#F58322]' : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'}`}
             >
               {t('productPage.information')}
             </button>
@@ -1170,7 +1152,7 @@ const ProductPage = () => {
                 <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">{t('productPage.model')}</h4>
                 <div className="md:hidden space-y-3">
                   {product.variants.map((variant: ProductVariant) => (
-                    <article key={variant.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                    <article key={variant.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-md transition-all duration-300 hover:shadow-lg">
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <div>
                           <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
@@ -1205,7 +1187,7 @@ const ProductPage = () => {
                   </thead>
                   <tbody>
                     {product.variants.map((variant: ProductVariant) => (
-                      <tr key={variant.id} className="border-b border-gray-300 last:border-0 hover:bg-gray-50">
+                      <tr key={variant.id} className="border-b border-gray-300 last:border-0 hover:bg-gray-50 transition-colors">
                         <td className="p-3 border-r border-gray-300 text-left align-top">
                           <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
                           <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
@@ -1234,7 +1216,7 @@ const ProductPage = () => {
                 {(product.specifications as SpecGroup[]).map((item, blockIdx: number) => {
                   if ('isHeader' in item && item.isHeader) {
                     return (
-                      <div key={`header-${blockIdx}`} className="md:col-span-2 bg-[#E6EDF5] px-4 py-3 rounded">
+                      <div key={`header-${blockIdx}`} className="md:col-span-2 bg-gradient-to-r from-[#E6EDF5] to-[#F0F5FA] px-4 py-3 rounded-xl">
                         <div className="font-bold text-xs uppercase text-gray-800">• {item.name}</div>
                       </div>
                     )
@@ -1246,7 +1228,7 @@ const ProductPage = () => {
                   return (
                     <div
                       key={`block-${blockIdx}`}
-                      className={`${mainBg} self-start rounded-md border border-gray-100 overflow-hidden shadow-sm`}
+                      className={`${mainBg} self-start rounded-2xl border border-gray-100 overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg`}
                     >
                       {item.name && (
                         <div className={`${mainBg} px-4 py-3 border-b border-gray-100`}>
@@ -1261,7 +1243,7 @@ const ProductPage = () => {
                           return (
                             <div
                               key={`atr-${blockIdx}-${aIdx}`}
-                              className={`${childBg} px-4 py-3 flex justify-between items-start border-b border-gray-100`}
+                              className={`${childBg} px-4 py-3 flex justify-between items-start border-b border-gray-100 transition-colors hover:bg-gray-50`}
                             >
                               <div className="text-gray-600">• {atr.name}</div>
                               <div className="font-medium text-gray-900 text-right max-w-[60%] whitespace-pre-wrap">

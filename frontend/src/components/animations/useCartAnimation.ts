@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { CartAnimationContext } from '../animations/CartAnimationContext'
+import { CartAnimationContext } from './CartAnimationContext'
 
 export const useCartAnimation = () => {
   const context = useContext(CartAnimationContext)

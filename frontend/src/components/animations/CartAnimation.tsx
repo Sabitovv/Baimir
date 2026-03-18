@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useCartAnimation } from '../common/useCartAnimation'
+import { useCartAnimation } from './useCartAnimation'
 
 const getAdaptiveSizes = (): { startWidth: number; startHeight: number; endWidth: number; endHeight: number; offset: number; isMobile: boolean } => {
   const isMobile = window.innerWidth < 1280

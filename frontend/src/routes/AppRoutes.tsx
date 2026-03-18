@@ -1,3 +1,4 @@
+import ScrollToTop from '@/app/ScrollToTop'
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 
@@ -23,6 +24,7 @@ const PageLoader = () => (
 
 const AppRoutes = () => (
     <Suspense fallback={<PageLoader />}>
+        <ScrollToTop />
         <Routes>
             <Route path="/" element={<Home />} />
 

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import bgMain from '@/assets/home/background_main.webp'
 import ScrollReveal from '@/components/animations/ScrollReveal'
+import { Link } from 'react-router-dom'
 
 //#F58322
 //#DB741F
@@ -64,19 +65,21 @@ const Hero = () => {
           </ScrollReveal>
 
           <ScrollReveal delay={0.4}>
-            <button
-              className="
-                mt-8 md:mt-12
-                bg-[#F58322] hover:bg-[#DB741F]
-                px-8 md:px-10 py-3 md:py-4
-                font-bold uppercase tracking-widest
-                transition
-                text-xs md:text-sm
-                hover:shadow-lg hover:shadow-[#F05023]/20
-              "
-            >
-              {t('hero.buttons.catalog')}
-            </button>
+            <Link to={"/catalog"}>
+              <button
+                className="
+                  mt-8 md:mt-12
+                  bg-[#F58322] hover:bg-[#DB741F]
+                  px-8 md:px-10 py-3 md:py-4
+                  font-bold uppercase tracking-widest
+                  transition
+                  text-xs md:text-sm
+                  hover:shadow-lg hover:shadow-[#F05023]/20
+                "
+              >
+                {t('hero.buttons.catalog')}
+              </button>
+            </Link>
           </ScrollReveal>
         </div>
 
@@ -110,41 +113,48 @@ const Hero = () => {
                 {t('hero.description')}
               </p>
 
-              <button
-                className="
-                  flex items-center gap-4
-                  border border-[#F58322]
-                  px-6 py-3
-                  bg-black/30 hover:bg-[#DB741F]
-                  transition group
-                  shrink-0
-                  font-oswald
-                "
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-[#F58322] group-hover:text-white transition"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <path d="M15 3h6v6" />
-                  <path d="M10 14L21 3" />
-                </svg>
-
-                <span
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    const contactSection = document.getElementById('contact-section')
+                    if (contactSection) {
+                      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                  }}
                   className="
-                    uppercase tracking-widest
-                    font-oswald font-400
-                    text-xs
+                    flex items-center gap-4
+                    border border-[#F58322]
+                    px-6 py-3
+                    bg-black/30 hover:bg-[#DB741F]
+                    transition group
+                    shrink-0
+                    font-oswald
                   "
                 >
-                  {t('hero.buttons.request')}
-                </span>
-              </button>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="text-[#F58322] group-hover:text-white transition"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M15 3h6v6" />
+                    <path d="M10 14L21 3" />
+                  </svg>
+
+                  <span
+                    className="
+                      uppercase tracking-widest
+                      font-oswald font-400
+                      text-xs
+                    "
+                  >
+                    {t('hero.buttons.request')}
+                  </span>
+                </button>
             </div>
           </ScrollReveal>
         </div>
