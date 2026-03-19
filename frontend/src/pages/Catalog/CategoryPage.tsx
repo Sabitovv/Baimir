@@ -125,7 +125,6 @@ const CategoryPage = () => {
 
   const queryArg = activeId ? { categoryId: activeId, page, limit, ...filters } : skipToken
 
-
     const {
       data: productsResponse,
       isLoading: isLoadingProducts,
@@ -133,6 +132,8 @@ const CategoryPage = () => {
       queryArg === skipToken
         ? skipToken
         : { ...queryArg, lang: i18n.language })
+
+    
 
   const products = useMemo(() => productsResponse?.products ?? [], [productsResponse?.products])
   const total = productsResponse?.meta?.totalPages

@@ -267,9 +267,6 @@ export const productsApi = createApi({
     prepareHeaders: (headers) => {
       const lang = i18n.language || 'ru'
       headers.set('Accept-Language', lang)
-      // если нужен токен, тут же можно его подставлять:
-      // const token = localStorage.getItem('token') || undefined
-      // if (token) headers.set('Authorization', `Bearer ${token}`)
       return headers
     },
   }),
@@ -294,10 +291,23 @@ export const productsApi = createApi({
           : [{ type: 'Product', id: 'LIST' }],
     }),
 
-    getProductById: builder.query<ProductDetail, number>({
-      query: (id) => `/products/${id}`,
-      providesTags: (_result, _error, id) => [{ type: 'Product' as const, id }],
-    }),
+  getProductsBatch: builder.query<ProductDetail[], (string | number)[]>({
+    query: (ids) => {
+      const params = new URLSearchParams()
+      ids.forEach(id => params.append('ids[]', String(id)))
+      
+      return {
+        url: `/products/batch?${params.toString()}`,
+      }
+    },
+    providesTags: (result) =>
+      result
+        ? [
+            ...result.map((prod) => ({ type: 'Product' as const, id: prod.id })),
+            { type: 'Product', id: 'BATCH' },
+          ]
+        : [{ type: 'Product', id: 'BATCH' }],
+  }),
 
     getProductBySlug: builder.query<ProductDetail, { slug: string; lang?: string }>({
       query: ({ slug, lang }) => ({
@@ -340,7 +350,7 @@ export const productsApi = createApi({
 
 export const {
     useGetProductsQuery,
-    useGetProductByIdQuery,
+    useGetProductsBatchQuery,
     useGetProductBySlugQuery,
     useSearchProductsQuery,
     useGetFeaturedProductsQuery,

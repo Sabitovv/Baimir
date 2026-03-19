@@ -5,6 +5,8 @@ import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
 import { useGetBlogBySlugQuery, type BlogContentBlock } from '@/api/blogsApi'
 import defaultImage from '@/assets/home/lazerStanok.webp'
+import { useGetProductsBatchQuery } from '@/api/productsApi'
+import ProductCard from '@/components/common/ProductCard'
 
 type LocalizedText = {
   ru?: string
@@ -69,6 +71,30 @@ const imageWidthClassMap: Record<string, string> = {
   '1/2': 'lg:w-1/2',
   '2/3': 'lg:w-2/3',
   full: 'lg:w-full',
+}
+
+const BlogProductsBlock = ({ productIds, layout }: { productIds: string[], layout: string }) => {
+  const { data: products, isLoading, isError } = useGetProductsBatchQuery(productIds, {
+    skip: !productIds.length,
+  })
+
+  if (!productIds.length) return null
+  if (isLoading) return <div className="py-8 text-center text-gray-500">Загрузка товаров...</div>
+  if (isError || !products?.length) return null
+
+  const layoutClass = layout === 'carousel' 
+    ? 'flex overflow-x-auto gap-5 pb-4 snap-x'
+    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'
+
+  return (
+    <section className="my-8">
+      <div className={layoutClass}>
+        {products.map((product) => (
+          <ProductCard id={product.id} slug= {product.slug} name={product.name} coverImage={product.coverImage} price={product.price} oldPrice={product.oldPrice} inStock={product.inStock} />
+        ))}
+      </div>
+    </section>
+  )
 }
 
 const renderContentBlock = (block: BlogContentBlock, index: number) => {
@@ -261,6 +287,19 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
     )
   }
 
+
+  if (block.type === 'productLink') {
+    const productIds = Array.isArray(block.data?.productIds) 
+      ? block.data.productIds 
+      : []
+    const layout = typeof block.data?.layout === 'string' ? block.data.layout : 'grid'
+    if (!productIds.length) return null
+    
+    return (
+      <BlogProductsBlock key={key} productIds={productIds} layout={layout}/>
+    )
+  }
+
   if (typeof block.data?.text === 'string' && block.data.text.trim()) {
     return (
       <p key={key} className="text-gray-700 leading-relaxed mb-6 whitespace-pre-line">
@@ -302,6 +341,7 @@ const InnerBlog = () => {
       </PageContainer>
     )
   }
+
 
   const title = pickLocalized(data.title, i18n.language) || t('innerBlog.untitled')
   const excerpt = pickLocalized(data.excerpt, i18n.language)
@@ -350,7 +390,7 @@ const InnerBlog = () => {
         </article>
       </div>
     </PageContainer>
-  )
+  ) 
 }
 
 export default InnerBlog
