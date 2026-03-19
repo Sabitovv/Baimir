@@ -152,6 +152,7 @@ export type ProductDetail = {
     slug: string
     sku: string
     name: string
+    coverImage?: string | null
     description: string
     price: number
     oldPrice: number | null

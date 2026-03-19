@@ -11,30 +11,30 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 
-
-type ReviewItem = {
-  name: string
-  location: string
-  textKey: string
-}
+// 1. Импортируем хук из вашего API
+import { useGetReviewsQuery } from '@/api/reviewsApi' 
 
 const ReviewsSection = () => {
   const { t } = useTranslation()
-
+  
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
 
-  const reviews: ReviewItem[] = [
-    { name: 'Иванов Роберт', location: 'Warsaw, Poland', textKey: 'home.reviews.items.1' },
-    { name: 'Малика', location: 'Shanxi, China', textKey: 'home.reviews.items.2' },
-    { name: 'Ким Женя', location: 'Seoul, South Korea', textKey: 'home.reviews.items.3' },
-    { name: 'Анна Смит', location: 'London, UK', textKey: 'home.reviews.items.4' }
-  ]
+  // 2. Делаем запрос за отзывами
+  const { data: reviews = [], isLoading, isError } = useGetReviewsQuery()
+
+  // Если данные грузятся или произошла ошибка
+  if (isLoading) {
+    return <div className="py-24 text-center">Загрузка отзывов...</div>
+  }
+
+  if (isError || reviews.length === 0) {
+    return null; 
+  }
 
   return (
     <section className="py-16 md:py-20 xl:py-24 bg-[#F5F5F5] overflow-x-hidden">
       <div className="max-w-[1920px] mx-auto px-6 md:px-[80px] xl:px-[250px]">
-
         <ScrollReveal>
           <h2
             className="
@@ -50,7 +50,6 @@ const ReviewsSection = () => {
 
         <ScrollReveal delay={0.15}>
           <div className="relative">
-
             <button
               ref={prevRef}
               className="
@@ -73,18 +72,15 @@ const ReviewsSection = () => {
                 navigation.prevEl = prevRef.current
                 navigation.nextEl = nextRef.current
               }}
-
               spaceBetween={24}
               slidesPerView={1}
-              loop
+              loop={reviews.length > 1}
               onSwiper={(swiper) => {
                 setTimeout(() => {
                   const navigation = swiper.params.navigation as NavigationOptions
-
                   if (prevRef.current && nextRef.current) {
                     navigation.prevEl = prevRef.current
                     navigation.nextEl = nextRef.current
-
                     swiper.navigation.destroy()
                     swiper.navigation.init()
                     swiper.navigation.update()
@@ -93,12 +89,12 @@ const ReviewsSection = () => {
               }}
               breakpoints={{
                 640: { slidesPerView: 1 },
-                768: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 }
+                768: { slidesPerView: reviews.length >= 2 ? 2 : reviews.length },
+                1024: { slidesPerView: reviews.length >= 3 ? 3 : reviews.length }
               }}
             >
-              {reviews.map((review, index) => (
-                <SwiperSlide key={index}>
+              {reviews.map((review) => (
+                <SwiperSlide key={review.id}>
                   <div
                     className="
                       bg-white
@@ -111,21 +107,23 @@ const ReviewsSection = () => {
                   >
                     <div className="flex items-center gap-4">
                       <img
-                        src={reviewImg}
+                        src={review.imageUrl || reviewImg}
                         className="w-12 h-12 rounded-full object-cover"
                       />
                       <div>
-                        <h4 className="font-bold text-sm text-[#111111]  mb-1">
-                          {review.name}
+                        <h4 className="font-bold text-sm text-[#111111] mb-1">
+                          {review.authorName}
                         </h4>
-                        <p className="text-gray-400 text-[11px] ">
-                          {review.location}
+                        {/* Выводим строку напрямую */}
+                        <p className="text-gray-400 text-[11px]">
+                          {review.authorDescription}
                         </p>
                       </div>
                     </div>
 
-                    <p className="text-[#444444] text-sm leading-relaxed ">
-                      {t(review.textKey)}
+                    {/* Выводим строку напрямую */}
+                    <p className="text-[#444444] text-sm leading-relaxed">
+                      {review.text}
                     </p>
                   </div>
                 </SwiperSlide>
@@ -145,7 +143,6 @@ const ReviewsSection = () => {
             >
               <ArrowForwardIosIcon sx={{ fontSize: 16 }} />
             </button>
-
           </div>
         </ScrollReveal>
       </div>

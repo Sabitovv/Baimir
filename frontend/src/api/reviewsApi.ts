@@ -22,16 +22,8 @@ export type CreateReviewRequest = {
 export type CreateReviewResponse = {
   id: number
   authorName: string
-  authorDescription: {
-    ru?: string
-    en?: string
-    kz?: string
-  }
-  text: {
-    ru?: string
-    en?: string
-    kz?: string
-  }
+  authorDescription: string 
+  text: string
   rating: number
   profileUrl?: string
   sortOrder: number
@@ -40,11 +32,14 @@ export type CreateReviewResponse = {
   updatedAt: string
 }
 
+// 2. Создаем алиас (синоним) для удобства использования в компонентах
+export type Review = CreateReviewResponse;
+
+// 3. Создаем сам API
 export const reviewsApi = createApi({
   reducerPath: 'reviewsApi',
   baseQuery: fetchBaseQuery({
-    // Убедитесь, что VITE_API_BASE_URL указывает на http://localhost:8080/api/v1
-    baseUrl: import.meta.env.VITE_API_BASE_URL, 
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
     prepareHeaders: (headers) => {
       const lang = i18n.language || 'ru'
       headers.set('Accept-Language', lang)
@@ -53,11 +48,18 @@ export const reviewsApi = createApi({
   }),
   tagTypes: ['Review'],
   endpoints: (builder) => ({
+    
+    // Эндпоинт для получения списка отзывов
+    getReviews: builder.query<Review[], void>({
+      query: () => '/reviews',
+      providesTags: [{ type: 'Review', id: 'LIST' }],
+    }),
+    
+    // Эндпоинт для создания нового отзыва
     createReview: builder.mutation<CreateReviewResponse, CreateReviewRequest>({
       query: (data) => {
         const formData = new FormData()
         
-        // 1. Собираем все текстовые данные в один объект
         const reviewPayload = {
           authorName: data.authorName,
           authorDescription: data.authorDescription,
@@ -67,21 +69,18 @@ export const reviewsApi = createApi({
           sortOrder: data.sortOrder ?? 0,
         }
 
-        // 2. Создаем Blob с явным указанием типа application/json
         const reviewBlob = new Blob([JSON.stringify(reviewPayload)], {
           type: 'application/json',
         })
         
-        // 3. Добавляем Blob в formData под ключом 'review'
         formData.append('review', reviewBlob)
         
-        // 4. Добавляем файл, если он есть
         if (data.image) {
           formData.append('image', data.image)
         }
 
         return {
-          url: '/reviews', // Изменил URL в соответствии с вашим эндпоинтом
+          url: '/reviews', 
           method: 'POST',
           body: formData,
         }
@@ -91,4 +90,4 @@ export const reviewsApi = createApi({
   }),
 })
 
-export const { useCreateReviewMutation } = reviewsApi
+export const { useCreateReviewMutation, useGetReviewsQuery } = reviewsApi

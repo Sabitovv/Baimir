@@ -90,14 +90,14 @@ const BlogProductsBlock = ({ productIds, layout }: { productIds: string[], layou
     <section className="my-8">
       <div className={layoutClass}>
         {products.map((product) => {
-          const coverImage = product.media?.[0]?.url ?? null
+          // const coverImage = product.media?.[0]?.url ?? null
           return (
             <ProductCard 
               key={product.id} 
               id={product.id} 
               slug={product.slug} 
               name={product.name} 
-              coverImage={coverImage} 
+              coverImage={product.coverImage} 
               price={product.price} 
               oldPrice={product.oldPrice} 
               inStock={product.inStock} 
