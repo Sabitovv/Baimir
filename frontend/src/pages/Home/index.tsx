@@ -5,6 +5,7 @@ import Service from './Components/Service'
 import Warehouse from './Components/Warehouse'
 import ForClients from './Components/ForClients'
 import ReviewsSection from './Components/ReviewsSection'
+import ReviewForm from './Components/ReviewForm'
 import ContactForm from './Components/ContactForm'
 import RepairService from './Components/RepairService'
 import CertificateSection from './Components/CertificatesSection'
@@ -19,6 +20,7 @@ const Home = () => (
         <Warehouse />
         <ForClients />
         <ReviewsSection />
+        <ReviewForm/>
         <ContactForm />
 
         <RepairService />
