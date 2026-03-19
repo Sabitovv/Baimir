@@ -34,12 +34,14 @@ const BlogCard = ({
 
     <article className="bg-white shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300 flex flex-col cursor-pointer h-full rounded-sm overflow-hidden">
 
-      <img
-        src={image}
-        alt={title}
-        className="w-full h-[200px] object-cover"
-        loading="lazy"
-      />
+      <div className="aspect-[16/10] overflow-hidden bg-gray-100">
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
+      </div>
 
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="font-extrabold text-sm leading-snug line-clamp-2 mb-2 group-hover:text-[#DB741F] transition-colors">

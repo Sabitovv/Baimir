@@ -21,9 +21,9 @@ const Home = () => (
         <ForClients />
         <ReviewsSection />
         <ReviewForm/>
-        <ContactForm />
 
         <RepairService />
+        <ContactForm />
 
         <CertificateSection/>
         <NewsSection/>
