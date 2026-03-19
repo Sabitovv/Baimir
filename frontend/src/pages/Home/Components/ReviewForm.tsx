@@ -11,7 +11,7 @@ const ReviewForm = () => {
   const [description, setDescription] = useState('')
   const [review, setReview] = useState('')
   const [rating, setRating] = useState(5)
-  const [socialLink, setSocialLink] = useState('')
+  // const [socialLink, setSocialLink] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -54,7 +54,7 @@ const ReviewForm = () => {
         [lang]: review,
       },
       rating,
-      profileUrl: socialLink || undefined,
+      // profileUrl: socialLink || undefined,
       sortOrder: 0,
       image: photo,
     }
@@ -66,7 +66,7 @@ const ReviewForm = () => {
       setDescription('')
       setReview('')
       setRating(5)
-      setSocialLink('')
+      // setSocialLink('')
       removePhoto()
       
       setTimeout(() => setSuccess(false), 5000)
@@ -86,6 +86,7 @@ const ReviewForm = () => {
             text-3xl md:text-4xl xl:text-[54px]
             mb-10 md:mb-12 xl:mb-16
             tracking-tight
+            text-center
           ">
             Оставить отзыв
           </h2>
@@ -95,19 +96,20 @@ const ReviewForm = () => {
           <div className="
             max-w-4xl 
             mx-auto 
-            bg-white 
+            bg-white/60 backdrop-blur-sm
+            border border-white/80
             rounded-2xl 
-            shadow-[0_10px_40px_rgba(0,0,0,0.06)]
+            shadow-[0_4px_30px_rgba(0,0,0,0.08)]
             p-6 md:p-10 xl:p-14
           ">
             {success && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-center">
+              <div className="mb-6 p-4 bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl text-[#111111] text-center shadow-sm">
                 Спасибо за ваш отзыв! Он будет проверен и опубликован.
               </div>
             )}
             
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-center">
+              <div className="mb-6 p-4 bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl text-red-600 text-center shadow-sm">
                 {error}
               </div>
             )}
@@ -117,8 +119,7 @@ const ReviewForm = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div>
                   <label htmlFor="name" className="
-                    block text-sm font-semibold text-[#111111] mb-2
-                    tracking-wide
+                    block text-sm font-medium text-[#111111]/70 mb-2
                   ">
                     Ваше имя *
                   </label>
@@ -129,16 +130,17 @@ const ReviewForm = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="
-                      w-full px-5 py-3.5 
-                      border-2 border-gray-200 
-                      rounded-xl 
+                      w-full px-4 py-3 
+                      bg-white/50 backdrop-blur-sm
+                      border border-white/50
+                      rounded-lg 
                       text-[#111111]
                       placeholder:text-gray-400
-                      focus:border-[#F58322] 
-                      focus:ring-4 focus:ring-[#F58322]/10
+                      focus:border-[#F58322]/60 
+                      focus:ring-2 focus:ring-[#F58322]/10
                       outline-none 
                       transition-all duration-300
-                      hover:border-gray-300
+                      hover:border-[#F58322]/40
                     "
                     placeholder="Иван Иванов"
                   />
@@ -146,8 +148,7 @@ const ReviewForm = () => {
 
                 <div>
                   <label htmlFor="description" className="
-                    block text-sm font-semibold text-[#111111] mb-2
-                    tracking-wide
+                    block text-sm font-medium text-[#111111]/70 mb-2
                   ">
                     Краткое описание
                   </label>
@@ -157,16 +158,17 @@ const ReviewForm = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="
-                      w-full px-5 py-3.5 
-                      border-2 border-gray-200 
-                      rounded-xl 
+                      w-full px-4 py-3 
+                      bg-white/50 backdrop-blur-sm
+                      border border-white/50
+                      rounded-lg 
                       text-[#111111]
                       placeholder:text-gray-400
-                      focus:border-[#F58322] 
-                      focus:ring-4 focus:ring-[#F58322]/10
+                      focus:border-[#F58322]/60 
+                      focus:ring-2 focus:ring-[#F58322]/10
                       outline-none 
                       transition-all duration-300
-                      hover:border-gray-300
+                      hover:border-[#F58322]/40
                     "
                     placeholder="Директор компании"
                   />
@@ -174,7 +176,7 @@ const ReviewForm = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-[#111111] mb-3 tracking-wide">
+                <label className="block text-sm font-medium text-[#111111]/70 mb-3">
                   Оценка *
                 </label>
                 <div className="flex items-center gap-1">
@@ -183,26 +185,22 @@ const ReviewForm = () => {
                       key={star}
                       type="button"
                       onClick={() => setRating(star)}
-                      className="text-4xl transition-all duration-200 hover:scale-110 focus:outline-none cursor-pointer p-1"
+                      className="text-3xl transition-all duration-200 hover:scale-110 focus:outline-none cursor-pointer p-1"
                     >
                       <span 
                         className={`
                           transition-colors duration-200
                           ${star <= rating 
-                            ? 'text-[#F58322] drop-shadow-[0_0_8px_rgba(245,131,34,0.5)]' 
+                            ? 'text-[#F58322]/80' 
                             : 'text-gray-300 hover:text-[#F58322]/50'
                           }
                         `}
-                        style={{
-                          textShadow: star <= rating ? '0 0 10px rgba(245, 131, 34, 0.4)' : 'none',
-                          filter: star <= rating ? 'drop-shadow(0 0 8px rgba(245, 131, 34, 0.5))' : 'none'
-                        }}
                       >
                         ★
                       </span>
                     </button>
                   ))}
-                  <span className="ml-3 text-sm font-medium text-gray-500">
+                  <span className="ml-3 text-sm font-medium text-[#111111]/50">
                     {rating === 5 && 'Отлично'}
                     {rating === 4 && 'Хорошо'}
                     {rating === 3 && 'Нормально'}
@@ -214,38 +212,37 @@ const ReviewForm = () => {
 
               <div>
                 <label htmlFor="review" className="
-                  block text-sm font-semibold text-[#111111] mb-2
-                  tracking-wide
+                  block text-sm font-medium text-[#111111]/70 mb-2
                 ">
                   Ваш отзыв *
                 </label>
                 <textarea
                   id="review"
                   required
-                  rows={6}
+                  rows={5}
                   value={review}
                   onChange={(e) => setReview(e.target.value)}
                   className="
-                    w-full px-5 py-4 
-                    border-2 border-gray-200 
-                    rounded-xl 
+                    w-full px-4 py-3 
+                    bg-white/50 backdrop-blur-sm
+                    border border-white/50
+                    rounded-lg 
                     text-[#111111]
                     placeholder:text-gray-400
-                    focus:border-[#F58322] 
-                    focus:ring-4 focus:ring-[#F58322]/10
+                    focus:border-[#F58322]/60 
+                    focus:ring-2 focus:ring-[#F58322]/10
                     outline-none 
                     transition-all duration-300
-                    hover:border-gray-300
+                    hover:border-[#F58322]/40
                     resize-none
                   "
                   placeholder="Поделитесь вашими впечатлениями о работе компании..."
                 />
               </div>
-
+{/* 
               <div>
                 <label htmlFor="socialLink" className="
-                  block text-sm font-semibold text-[#111111] mb-2
-                  tracking-wide
+                  block text-sm font-medium text-[#111111]/70 mb-2
                 ">
                   Ссылка на соцсети
                 </label>
@@ -255,30 +252,29 @@ const ReviewForm = () => {
                   value={socialLink}
                   onChange={(e) => setSocialLink(e.target.value)}
                   className="
-                    w-full px-5 py-3.5 
-                    border-2 border-gray-200 
-                    rounded-xl 
+                    w-full px-4 py-3 
+                    bg-white/50 backdrop-blur-sm
+                    border border-white/50
+                    rounded-lg 
                     text-[#111111]
                     placeholder:text-gray-400
-                    focus:border-[#F58322] 
-                    focus:ring-4 focus:ring-[#F58322]/10
+                    focus:border-[#F58322]/60 
+                    focus:ring-2 focus:ring-[#F58322]/10
                     outline-none 
                     transition-all duration-300
-                    hover:border-gray-300
+                    hover:border-[#F58322]/40
                   "
                   placeholder="https://instagram.com/..."
                 />
-              </div>
+              </div> */}
 
               <div className="
-                p-6 
-                bg-[#FAFAFA] 
-                rounded-xl 
-                border-2 border-dashed border-gray-200
-                hover:border-[#F58322]/50
-                transition-colors duration-300
+                p-5 
+                bg-white/30
+                rounded-lg 
+                border border-white/30
               ">
-                <label className="block text-sm font-semibold text-[#111111] mb-4 tracking-wide">
+                <label className="block text-sm font-medium text-[#111111]/70 mb-4">
                   Загрузить фото (необязательно)
                 </label>
                 
@@ -297,17 +293,16 @@ const ReviewForm = () => {
                     className="
                       cursor-pointer 
                       inline-flex items-center justify-center 
-                      px-6 py-3 
-                      bg-white 
-                      border-2 border-[#F58322] 
-                      rounded-xl 
-                      text-sm font-semibold text-[#F58322]
-                      hover:bg-[#F58322] hover:text-white
+                      px-5 py-2.5 
+                      bg-white/70
+                      border border-[#F58322]/40
+                      rounded-lg 
+                      text-sm font-medium text-[#111111]/70
+                      hover:bg-white/90
                       transition-all duration-300
-                      shadow-sm hover:shadow-md
                     "
                   >
-                    <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     Выбрать фото
@@ -319,11 +314,10 @@ const ReviewForm = () => {
                         src={photoPreview} 
                         alt="Preview" 
                         className="
-                          w-20 h-20 
+                          w-16 h-16 
                           object-cover 
-                          rounded-xl 
-                          border-2 border-gray-200
-                          shadow-sm
+                          rounded-lg 
+                          border border-white/50
                         "
                       />
                       <button
@@ -331,17 +325,16 @@ const ReviewForm = () => {
                         onClick={removePhoto}
                         className="
                           absolute -top-2 -right-2 
-                          bg-red-500 text-white 
-                          rounded-full w-7 h-7 
+                          bg-[#111111]/70 text-white 
+                          rounded-full w-6 h-6 
                           flex items-center justify-center
-                          hover:bg-red-600 
+                          hover:bg-[#111111] 
                           transition-colors
-                          shadow-md
                           opacity-0 group-hover:opacity-100
                         "
                         title="Удалить"
                       >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
@@ -350,23 +343,22 @@ const ReviewForm = () => {
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-center">
+              <div className="pt-2 flex justify-center">
                 <button
                   type="submit"
                   disabled={isLoading}
                   className="
-                    px-10 py-4 
-                    bg-[#F58322] text-white 
-                    font-oswald font-medium uppercase 
-                    text-lg tracking-wider
-                    rounded-xl 
-                    hover:bg-[#DB741F] 
+                    px-8 py-3 
+                    bg-white/70 text-[#111111] 
+                    font-medium 
+                    text-base tracking-wide
+                    rounded-lg 
+                    hover:bg-white 
                     transition-all duration-300
-                    shadow-lg hover:shadow-xl
-                    hover:scale-[1.02]
+                    shadow-sm hover:shadow-md
                     disabled:opacity-70 disabled:cursor-not-allowed
-                    disabled:hover:scale-100
-                    focus:ring-4 focus:ring-[#F58322]/30
+                    disabled:hover:bg-white/70
+                    focus:ring-2 focus:ring-[#F58322]/30
                     outline-none
                   "
                 >

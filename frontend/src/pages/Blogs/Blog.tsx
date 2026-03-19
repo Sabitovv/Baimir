@@ -133,7 +133,7 @@ const BlogPage = () => {
           )}
 
           {!isLoading && !isError && (data?.content?.length ?? 0) > 0 && (
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
               {data?.content.map((post, index) => {
                 const rawPost = post as unknown as Record<string, unknown>
                 const title = pickLocalized(post.title, i18n.language) || t('blogPage.untitled')

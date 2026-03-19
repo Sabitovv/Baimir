@@ -31,56 +31,50 @@ const BlogCard = ({
   const viewsLabel = typeof viewsCount === 'number' && viewsCount >= 0 ? `${viewsCount}` : '—'
 
   return (
-
-    <article className="bg-white shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300 flex flex-col cursor-pointer h-full rounded-sm overflow-hidden">
-
-      <div className="aspect-[16/10] overflow-hidden bg-gray-100">
+    <article className="bg-white shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300 cursor-pointer h-full rounded-sm overflow-hidden flex flex-col">
+      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
         <img
           src={image}
           alt={title}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+          className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
       </div>
 
-      <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-extrabold text-sm leading-snug line-clamp-2 mb-2 group-hover:text-[#DB741F] transition-colors">
+      <div className="p-3 flex flex-col flex-1 min-h-0">
+        <h3 className="font-bold text-xs leading-tight line-clamp-2 mb-1.5 group-hover:text-[#DB741F] transition-colors">
           {title}
         </h3>
 
         {excerpt && (
-          <p className="text-xs leading-relaxed text-[#4A5B5F] line-clamp-2 mb-3">
+          <p className="text-[11px] leading-snug text-[#4A5B5F] line-clamp-2 mb-2">
             {excerpt}
           </p>
         )}
 
-        <div className="mt-auto pt-3 border-t border-gray-100 text-[11px] text-[#55676B] space-y-2">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#2F4044]">
-            <PersonOutlineRoundedIcon sx={{ fontSize: 15, color: '#F58322' }} />
+        <div className="mt-auto pt-2 border-t border-gray-100 space-y-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 text-[10px] text-[#55676B]">
+            <PersonOutlineRoundedIcon sx={{ fontSize: 12, color: '#F58322' }} />
             <span className="truncate">{authorLabel}</span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            <div className="inline-flex items-center gap-1.5 rounded-md bg-[#F8FAFA] px-2 py-1 min-w-0">
-              <CalendarTodayRoundedIcon sx={{ fontSize: 12, color: '#7B8C90' }} />
+          <div className="flex items-center justify-between gap-2 text-[10px] text-[#55676B]">
+            <div className="flex items-center gap-1">
+              <CalendarTodayRoundedIcon sx={{ fontSize: 10, color: '#7B8C90' }} />
               <span className="truncate">{dateLabel}</span>
             </div>
-
-            <div className="inline-flex items-center gap-1.5 rounded-md bg-[#F8FAFA] px-2 py-1 min-w-0">
-              <AccessTimeRoundedIcon sx={{ fontSize: 12, color: '#7B8C90' }} />
-              <span className="truncate">{readingLabel}</span>
+            <div className="flex items-center gap-1">
+              <AccessTimeRoundedIcon sx={{ fontSize: 10, color: '#7B8C90' }} />
+              <span>{readingLabel}</span>
             </div>
-
-            <div className="inline-flex items-center gap-1.5 rounded-md bg-[#F8FAFA] px-2 py-1 min-w-0">
-              <VisibilityRoundedIcon sx={{ fontSize: 13, color: '#7B8C90' }} />
-              <span className="truncate">{viewsLabel}</span>
+            <div className="flex items-center gap-1">
+              <VisibilityRoundedIcon sx={{ fontSize: 10, color: '#7B8C90' }} />
+              <span>{viewsLabel}</span>
             </div>
           </div>
         </div>
       </div>
-
     </article>
-
   )
 }
 

@@ -43,7 +43,8 @@ export type CreateReviewResponse = {
 export const reviewsApi = createApi({
   reducerPath: 'reviewsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL,
+    // Убедитесь, что VITE_API_BASE_URL указывает на http://localhost:8080/api/v1
+    baseUrl: import.meta.env.VITE_API_BASE_URL, 
     prepareHeaders: (headers) => {
       const lang = i18n.language || 'ru'
       headers.set('Accept-Language', lang)
@@ -55,28 +56,32 @@ export const reviewsApi = createApi({
     createReview: builder.mutation<CreateReviewResponse, CreateReviewRequest>({
       query: (data) => {
         const formData = new FormData()
-        formData.append('authorName', data.authorName)
         
-        const authorDesc = JSON.stringify(data.authorDescription)
-        formData.append('authorDescription', authorDesc)
-        
-        const text = JSON.stringify(data.text)
-        formData.append('text', text)
-        
-        formData.append('rating', String(data.rating))
-        
-        if (data.profileUrl) {
-          formData.append('profileUrl', data.profileUrl)
+        // 1. Собираем все текстовые данные в один объект
+        const reviewPayload = {
+          authorName: data.authorName,
+          authorDescription: data.authorDescription,
+          text: data.text,
+          rating: data.rating,
+          profileUrl: data.profileUrl,
+          sortOrder: data.sortOrder ?? 0,
         }
+
+        // 2. Создаем Blob с явным указанием типа application/json
+        const reviewBlob = new Blob([JSON.stringify(reviewPayload)], {
+          type: 'application/json',
+        })
         
-        formData.append('sortOrder', String(data.sortOrder ?? 0))
+        // 3. Добавляем Blob в formData под ключом 'review'
+        formData.append('review', reviewBlob)
         
+        // 4. Добавляем файл, если он есть
         if (data.image) {
           formData.append('image', data.image)
         }
 
         return {
-          url: '/api/v1/admin/reviews',
+          url: '/reviews', // Изменил URL в соответствии с вашим эндпоинтом
           method: 'POST',
           body: formData,
         }
