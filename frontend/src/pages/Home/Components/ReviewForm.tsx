@@ -174,22 +174,41 @@ const ReviewForm = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-[#111111] mb-2 tracking-wide">
+                <label className="block text-sm font-semibold text-[#111111] mb-3 tracking-wide">
                   Оценка *
                 </label>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       type="button"
                       onClick={() => setRating(star)}
-                      className="text-3xl transition-transform hover:scale-110 focus:outline-none"
+                      className="text-4xl transition-all duration-200 hover:scale-110 focus:outline-none cursor-pointer p-1"
                     >
-                      <span className={star <= rating ? 'text-[#F58322]' : 'text-gray-300'}>
+                      <span 
+                        className={`
+                          transition-colors duration-200
+                          ${star <= rating 
+                            ? 'text-[#F58322] drop-shadow-[0_0_8px_rgba(245,131,34,0.5)]' 
+                            : 'text-gray-300 hover:text-[#F58322]/50'
+                          }
+                        `}
+                        style={{
+                          textShadow: star <= rating ? '0 0 10px rgba(245, 131, 34, 0.4)' : 'none',
+                          filter: star <= rating ? 'drop-shadow(0 0 8px rgba(245, 131, 34, 0.5))' : 'none'
+                        }}
+                      >
                         ★
                       </span>
                     </button>
                   ))}
+                  <span className="ml-3 text-sm font-medium text-gray-500">
+                    {rating === 5 && 'Отлично'}
+                    {rating === 4 && 'Хорошо'}
+                    {rating === 3 && 'Нормально'}
+                    {rating === 2 && 'Плохо'}
+                    {rating === 1 && 'Очень плохо'}
+                  </span>
                 </div>
               </div>
 
