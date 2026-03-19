@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { categoriesApi } from '@/api/categoriesApi'
 import { productsApi } from '@/api/productsApi'
 import { blogsApi } from '@/api/blogsApi'
+import { reviewsApi } from '@/api/reviewsApi'
 import catalogReducer from "@/features/catalogSlice"
 import cartReducer from '@/features/cartSlice'
 import { writeCartStorage } from '@/utils/cartStorage'
@@ -18,6 +19,7 @@ export const store = configureStore({
         [categoriesApi.reducerPath]: categoriesApi.reducer,
         [productsApi.reducerPath]: productsApi.reducer,
         [blogsApi.reducerPath]: blogsApi.reducer,
+        [reviewsApi.reducerPath]: reviewsApi.reducer,
         catalog: catalogReducer,
         cart: cartReducer,
     },
@@ -25,7 +27,8 @@ export const store = configureStore({
         getDefaultMiddleware().concat(
             categoriesApi.middleware,
             productsApi.middleware,
-            blogsApi.middleware
+            blogsApi.middleware,
+            reviewsApi.middleware
         ),
 });
 

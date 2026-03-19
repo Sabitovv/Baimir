@@ -1,13 +1,21 @@
 import { useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import ScrollReveal from '@/components/animations/ScrollReveal'
+import { useCreateReviewMutation } from '@/api/reviewsApi'
 
 const ReviewForm = () => {
+  const { i18n } = useTranslation()
+  const [createReview, { isLoading }] = useCreateReviewMutation()
+  
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
   const [review, setReview] = useState('')
+  const [rating, setRating] = useState(5)
   const [socialLink, setSocialLink] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -30,28 +38,41 @@ const ReviewForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
+    setError(null)
+    setSuccess(false)
 
-    const formData = new FormData()
-    formData.append('name', name)
-    formData.append('review', review)
-    formData.append('socialLink', socialLink)
-    if (photo) {
-      formData.append('photo', photo)
+    const lang = i18n.language === 'kk' ? 'kz' : i18n.language
+
+    const reviewData = {
+      authorName: name,
+      authorDescription: {
+        ru: description,
+        [lang]: description,
+      },
+      text: {
+        ru: review,
+        [lang]: review,
+      },
+      rating,
+      profileUrl: socialLink || undefined,
+      sortOrder: 0,
+      image: photo,
     }
 
     try {
-      console.log('Отправка отзыва:', { name, review, socialLink, photo })
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      alert('Спасибо за ваш отзыв!')
+      await createReview(reviewData).unwrap()
+      setSuccess(true)
       setName('')
+      setDescription('')
       setReview('')
+      setRating(5)
       setSocialLink('')
       removePhoto()
-    } catch (error) {
-      console.error('Ошибка при отправке отзыва', error)
-    } finally {
-      setIsSubmitting(false)
+      
+      setTimeout(() => setSuccess(false), 5000)
+    } catch (err: any) {
+      console.error('Ошибка при отправке отзыва:', err)
+      setError(err?.data?.message || 'Произошла ошибка при отправке отзыва')
     }
   }
 
@@ -79,6 +100,18 @@ const ReviewForm = () => {
             shadow-[0_10px_40px_rgba(0,0,0,0.06)]
             p-6 md:p-10 xl:p-14
           ">
+            {success && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-center">
+                Спасибо за ваш отзыв! Он будет проверен и опубликован.
+              </div>
+            )}
+            
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-center">
+                {error}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -112,17 +145,17 @@ const ReviewForm = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="socialLink" className="
+                  <label htmlFor="description" className="
                     block text-sm font-semibold text-[#111111] mb-2
                     tracking-wide
                   ">
-                    Ссылка на соцсети
+                    Краткое описание
                   </label>
                   <input
-                    id="socialLink"
-                    type="url"
-                    value={socialLink}
-                    onChange={(e) => setSocialLink(e.target.value)}
+                    id="description"
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     className="
                       w-full px-5 py-3.5 
                       border-2 border-gray-200 
@@ -135,8 +168,28 @@ const ReviewForm = () => {
                       transition-all duration-300
                       hover:border-gray-300
                     "
-                    placeholder="https://instagram.com/..."
+                    placeholder="Директор компании"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-[#111111] mb-2 tracking-wide">
+                  Оценка *
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="text-3xl transition-transform hover:scale-110 focus:outline-none"
+                    >
+                      <span className={star <= rating ? 'text-[#F58322]' : 'text-gray-300'}>
+                        ★
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -167,6 +220,34 @@ const ReviewForm = () => {
                     resize-none
                   "
                   placeholder="Поделитесь вашими впечатлениями о работе компании..."
+                />
+              </div>
+
+              <div>
+                <label htmlFor="socialLink" className="
+                  block text-sm font-semibold text-[#111111] mb-2
+                  tracking-wide
+                ">
+                  Ссылка на соцсети
+                </label>
+                <input
+                  id="socialLink"
+                  type="url"
+                  value={socialLink}
+                  onChange={(e) => setSocialLink(e.target.value)}
+                  className="
+                    w-full px-5 py-3.5 
+                    border-2 border-gray-200 
+                    rounded-xl 
+                    text-[#111111]
+                    placeholder:text-gray-400
+                    focus:border-[#F58322] 
+                    focus:ring-4 focus:ring-[#F58322]/10
+                    outline-none 
+                    transition-all duration-300
+                    hover:border-gray-300
+                  "
+                  placeholder="https://instagram.com/..."
                 />
               </div>
 
@@ -253,7 +334,7 @@ const ReviewForm = () => {
               <div className="pt-4 flex justify-center">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                   className="
                     px-10 py-4 
                     bg-[#F58322] text-white 
@@ -270,7 +351,7 @@ const ReviewForm = () => {
                     outline-none
                   "
                 >
-                  {isSubmitting ? (
+                  {isLoading ? (
                     <span className="flex items-center gap-2">
                       <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
