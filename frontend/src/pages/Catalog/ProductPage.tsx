@@ -368,20 +368,57 @@ const ProductLinksBlock = ({
       if (!cancelled) setLoading(true)
     }, 0)
 
-    const requests = block.data.productIds.map((value) => {
+    const ids: (string | number)[] = []
+    const slugs: string[] = []
+    
+    block.data.productIds.forEach((value) => {
       const token = String(value).trim()
       if (/^\d+$/.test(token)) {
-        return dispatch(productsApi.endpoints.getProductById.initiate(Number(token)))
+        ids.push(Number(token))
+      } else {
+        slugs.push(token)
       }
-      return dispatch(productsApi.endpoints.getProductBySlug.initiate({ slug: token, lang: i18n.language }))
     })
 
-    Promise.allSettled(requests.map((req) => req.unwrap()))
+    const subscriptions: any[] = []
+    const requests: Promise<any>[] = []
+    
+    if (ids.length > 0) {
+      const sub = dispatch(productsApi.endpoints.getProductsBatch.initiate(ids))
+      subscriptions.push(sub)
+      requests.push(
+        sub
+          .then(res => {
+            if (res.status === 'fulfilled') {
+              return res.data.map((p: ProductDetail) => ({ type: 'product' as const, product: p }))
+            }
+            return null
+          })
+          .catch(() => null)
+      )
+    }
+    
+    slugs.forEach(slug => {
+      const sub = dispatch(productsApi.endpoints.getProductBySlug.initiate({ slug, lang: i18n.language }))
+      subscriptions.push(sub)
+      requests.push(
+        sub
+          .then(res => {
+            if (res.status === 'fulfilled') {
+              return { type: 'product' as const, product: res.data }
+            }
+            return null
+          })
+          .catch(() => null)
+      )
+    })
+
+    Promise.allSettled(requests)
       .then((results) => {
         if (cancelled) return
         const loaded = results
-          .filter((res): res is PromiseFulfilledResult<ProductDetail> => res.status === 'fulfilled')
-          .map((res) => res.value)
+          .filter((res): res is PromiseFulfilledResult<any> => res.status === 'fulfilled' && res.value !== null)
+          .map((res) => res.value.product)
           .map((prod) => ({
             id: prod.id,
             slug: prod.slug,
@@ -401,7 +438,7 @@ const ProductLinksBlock = ({
     return () => {
       cancelled = true
       window.clearTimeout(loadingTimer)
-      requests.forEach((req) => req.unsubscribe())
+      subscriptions.forEach((sub) => sub.unsubscribe())
     }
   }, [block.data.productIds, dispatch, i18n.language])
 

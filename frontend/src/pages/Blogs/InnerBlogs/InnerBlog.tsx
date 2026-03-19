@@ -89,9 +89,21 @@ const BlogProductsBlock = ({ productIds, layout }: { productIds: string[], layou
   return (
     <section className="my-8">
       <div className={layoutClass}>
-        {products.map((product) => (
-          <ProductCard id={product.id} slug= {product.slug} name={product.name} coverImage={product.coverImage} price={product.price} oldPrice={product.oldPrice} inStock={product.inStock} />
-        ))}
+        {products.map((product) => {
+          const coverImage = product.media?.[0]?.url ?? null
+          return (
+            <ProductCard 
+              key={product.id} 
+              id={product.id} 
+              slug={product.slug} 
+              name={product.name} 
+              coverImage={coverImage} 
+              price={product.price} 
+              oldPrice={product.oldPrice} 
+              inStock={product.inStock} 
+            />
+          )
+        })}
       </div>
     </section>
   )
