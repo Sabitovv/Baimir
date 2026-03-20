@@ -3,20 +3,9 @@ import i18n from 'i18next'
 
 export type CreateReviewRequest = {
   authorName: string
-  authorDescription: {
-    ru?: string
-    en?: string
-    kz?: string
-  }
-  text: {
-    ru?: string
-    en?: string
-    kz?: string
-  }
+  text: string
   rating: number
-  profileUrl?: string
-  sortOrder?: number
-  image?: File | null
+  source: string
 }
 
 export type CreateReviewResponse = {
@@ -25,6 +14,7 @@ export type CreateReviewResponse = {
   authorDescription: string 
   text: string
   rating: number
+  reviewDate?: string
   profileUrl?: string
   sortOrder: number
   imageUrl?: string
@@ -57,34 +47,11 @@ export const reviewsApi = createApi({
     
     // Эндпоинт для создания нового отзыва
     createReview: builder.mutation<CreateReviewResponse, CreateReviewRequest>({
-      query: (data) => {
-        const formData = new FormData()
-        
-        const reviewPayload = {
-          authorName: data.authorName,
-          authorDescription: data.authorDescription,
-          text: data.text,
-          rating: data.rating,
-          profileUrl: data.profileUrl,
-          sortOrder: data.sortOrder ?? 0,
-        }
-
-        const reviewBlob = new Blob([JSON.stringify(reviewPayload)], {
-          type: 'application/json',
-        })
-        
-        formData.append('review', reviewBlob)
-        
-        if (data.image) {
-          formData.append('image', data.image)
-        }
-
-        return {
-          url: '/reviews', 
-          method: 'POST',
-          body: formData,
-        }
-      },
+      query: (data) => ({
+        url: '/reviews',
+        method: 'POST',
+        body: data,
+      }),
       invalidatesTags: [{ type: 'Review', id: 'LIST' }],
     }),
   }),

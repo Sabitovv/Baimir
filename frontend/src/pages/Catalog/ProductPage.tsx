@@ -31,6 +31,12 @@ const formatPrice = (price: number): string => {
   }).format(price)
 }
 
+const formatAttributeLabel = (key: string): string => {
+  const normalized = key.replace(/[_-]+/g, ' ').trim().replace(/\s+/g, ' ')
+  if (!normalized) return key
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1)
+}
+
 const findCategoryById = (categories: Category[], id: number): Category | null => {
   for (const cat of categories) {
     if (Number(cat.id) === id) return cat
@@ -323,19 +329,19 @@ const normalizeContentBlocks = (value: unknown): ProductContentBlock[] => {
     .filter((item): item is ProductContentBlock => item !== null)
 }
 
-const renderCardItem = (card: GridCardItem, idx: number, ratio: 'square' | 'video' | 'portrait') => (
-  <article key={`${card.title}-${idx}`} className="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
-    <div className={`${imageRatioClassMap[ratio]} bg-gray-100 overflow-hidden group-hover:scale-105 transition-transform duration-500`}>
+const renderCardItem = (card: GridCardItem, idx: number, _ratio: 'square' | 'video' | 'portrait') => (
+  <article key={`${card.title}-${idx}`} className="group rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl flex h-full flex-col">
+    <div className="h-[220px] md:h-[240px] lg:h-[260px] bg-gray-100 overflow-hidden">
       <img
         src={card.imageUrl || PLACEHOLDER_IMG}
         alt={card.title}
-        className="w-full h-full object-cover transition duration-500 hover:scale-[1.05]"
+        className="w-full h-full object-contain sm:object-cover transition duration-500 group-hover:scale-[1.03]"
         loading="lazy"
       />
     </div>
-    <div className="p-5 space-y-2">
-      <h4 className="font-semibold text-gray-900">{card.title}</h4>
-      <p className="text-sm text-gray-600 whitespace-pre-line">{card.description}</p>
+    <div className="p-4 sm:p-5 space-y-2 flex flex-1 flex-col">
+      <h4 className="font-semibold text-gray-900 leading-snug line-clamp-2">{card.title}</h4>
+      <p className="text-sm text-gray-600 whitespace-pre-line line-clamp-4">{card.description}</p>
     </div>
   </article>
 )
@@ -465,17 +471,19 @@ const ProductLinksBlock = ({
             <Link
               key={item.id}
               to={`/catalog/product/${item.slug}`}
-              className={`group rounded-2xl border border-gray-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] ${
+              className={`group rounded-2xl border border-gray-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] flex h-full flex-col ${
                 block.data.layout === 'carousel' ? 'min-w-[260px] snap-start' : ''
               }`}
             >
-              <div className="aspect-[4/3] bg-gray-100 overflow-hidden group-hover:scale-105 transition-transform duration-500">
-                <img src={getPrimaryImage(item.media)} alt={item.name} className="w-full h-full object-cover transition duration-500 hover:scale-105" loading="lazy" />
+              <div className="h-[220px] md:h-[240px] lg:h-[260px] bg-gray-100 overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                <img src={getPrimaryImage(item.media)} alt={item.name} className="w-full h-full object-contain sm:object-cover transition duration-500 hover:scale-105" loading="lazy" />
               </div>
-              <div className="p-4 space-y-2">
+              <div className="p-4 space-y-2 flex flex-1 flex-col">
                 <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-[#F58322] transition-colors duration-300">{item.name}</h4>
-                <div className="text-[#F58322] font-semibold">{formatPrice(item.price)}</div>
-                {!item.inStock && <div className="text-xs text-gray-500">{t('commonCatalog.outOfStock')}</div>}
+                <div className="mt-auto text-[#F58322] font-semibold">{formatPrice(item.price)}</div>
+                <div className={`text-xs ${item.inStock ? 'invisible' : 'text-gray-500'}`}>
+                  {item.inStock ? t('commonCatalog.outOfStock') : t('commonCatalog.outOfStock')}
+                </div>
               </div>
             </Link>
           ))}
@@ -512,6 +520,10 @@ const renderContentBlock = (block: ProductContentBlock) => {
       const alignClass = block.data.verticalAlign === 'center' ? 'items-center' : 'items-start'
       const hasTitle = Boolean(block.data.title?.trim())
       const hasDescription = Boolean(block.data.description?.trim())
+      const isFullWidthImage = block.data.imageWidth === 'full'
+      const mediaFrameClass = isFullWidthImage ? 'h-[clamp(360px,50vw,700px)]' : imageRatioClassMap[block.data.imageRatio]
+      const imageFitClass = isFullWidthImage ? 'object-cover object-center' : 'object-cover'
+      const imageHoverClass = isFullWidthImage ? 'hover:scale-[1.02]' : 'hover:scale-110'
 
       return (
         <section
@@ -519,11 +531,11 @@ const renderContentBlock = (block: ProductContentBlock) => {
           className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-5 rounded-2xl border border-gray-200 p-5 md:p-6 bg-gradient-to-b from-white to-gray-50/70 shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.01]`}
         >
           <div className={`w-full ${imageWidthClassMap[block.data.imageWidth]}`}>
-            <div className={`${imageRatioClassMap[block.data.imageRatio]} rounded-xl overflow-hidden bg-gray-100 group`}>
+            <div className={`${mediaFrameClass} rounded-xl overflow-hidden bg-gray-100 group`}>
               <img
                 src={block.data.imageUrl || PLACEHOLDER_IMG}
                 alt={block.data.title || 'content-image'}
-                className="w-full h-full object-cover transition duration-500 hover:scale-110"
+                className={`w-full h-full ${imageFitClass} transition duration-500 ${imageHoverClass}`}
                 loading="lazy"
               />
             </div>
@@ -644,15 +656,21 @@ const renderContentBlock = (block: ProductContentBlock) => {
       }
 
       const gridClass = block.data.layout === 'single' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+      const isSingleLayout = block.data.layout === 'single'
 
       return (
         <div key={block.id} className={`grid ${gridClass} gap-4`}>
           {block.data.urls.map((url, idx) => (
-            <div key={`${url}-${idx}`} className="group rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl">
+            <div
+              key={`${url}-${idx}`}
+              className="group rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+            >
               <img
                 src={url || PLACEHOLDER_IMG}
                 alt={`gallery-${idx + 1}`}
-                className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110"
+                className={isSingleLayout
+                  ? 'w-full h-[clamp(360px,50vw,700px)] object-cover object-center transition duration-500 group-hover:scale-[1.02]'
+                  : 'w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110'}
                 loading="lazy"
               />
             </div>
@@ -943,7 +961,11 @@ const ProductPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
           <div>
             <div
-              className="rounded-2xl overflow-hidden mb-4 flex relative bg-white border border-gray-200 shadow-lg aspect-[4/3] items-center justify-center"
+              className={`rounded-2xl overflow-hidden mb-4 flex relative bg-white border border-gray-200 shadow-lg items-center justify-center ${
+                activeMedia?.kind === 'image'
+                  ? 'h-[260px] sm:h-[320px] md:h-[360px] lg:h-[400px] xl:h-[440px]'
+                  : 'aspect-video'
+              }`}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
@@ -952,7 +974,7 @@ const ProductPage = () => {
                 <img
                   src={activeMedia.url || PLACEHOLDER_IMG}
                   alt={product.name || 'product image'}
-                  className="object-contain w-full h-full max-h-[520px] transition-transform duration-300 hover:scale-105"
+                  className="w-full h-full object-contain p-2 sm:p-3"
                 />
               )}
 
@@ -1189,7 +1211,7 @@ const ProductPage = () => {
                 <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">{t('productPage.model')}</h4>
                 <div className="md:hidden space-y-3">
                   {product.variants.map((variant: ProductVariant) => (
-                    <article key={variant.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-md transition-all duration-300 hover:shadow-lg">
+                    <article key={variant.id} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md">
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <div>
                           <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
@@ -1200,11 +1222,11 @@ const ProductPage = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-2 rounded-xl border border-gray-100 bg-[#FAFAFA] p-3">
                         {Object.entries(variant.attributes ?? {}).map(([attrKey, attrValue]) => (
-                          <div key={`${variant.id}-${attrKey}`} className="flex justify-between items-start gap-4 border-t border-gray-100 pt-2 text-sm">
-                            <span className="text-gray-500 capitalize">{attrKey}</span>
-                            <span className="font-medium text-gray-900 text-right">{String(attrValue ?? '—')}</span>
+                          <div key={`${variant.id}-${attrKey}`} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-3 border-t border-gray-100 pt-2 first:border-t-0 first:pt-0 text-sm">
+                            <span className="text-gray-500">{formatAttributeLabel(attrKey)}</span>
+                            <span className="font-medium text-gray-900 text-right break-words">{String(attrValue ?? '—')}</span>
                           </div>
                         ))}
                       </div>
@@ -1218,7 +1240,7 @@ const ProductPage = () => {
                       <th className="p-3 border-r border-gray-300 text-left w-[180px]">{t('productPage.sku')}</th>
                       <th className="p-3 border-r border-gray-300">{t('filters.price')}</th>
                       {Object.keys(product.variants[0].attributes).map(attrName => (
-                        <th key={attrName} className="p-3 border-r border-gray-300 capitalize">{attrName}</th>
+                        <th key={attrName} className="p-3 border-r border-gray-300">{formatAttributeLabel(attrName)}</th>
                       ))}
                     </tr>
                   </thead>
@@ -1234,7 +1256,7 @@ const ProductPage = () => {
                         </td>
                         {Object.keys(product.variants![0].attributes).map((attrKey) => (
                           <td key={attrKey} className="p-3 border-r border-gray-300 font-medium text-gray-700">
-                            {variant.attributes[attrKey]}
+                            {variant.attributes[attrKey] ?? '—'}
                           </td>
                         ))}
                       </tr>

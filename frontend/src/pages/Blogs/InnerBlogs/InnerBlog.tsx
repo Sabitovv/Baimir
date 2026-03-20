@@ -7,6 +7,10 @@ import { useGetBlogBySlugQuery, type BlogContentBlock } from '@/api/blogsApi'
 import defaultImage from '@/assets/home/lazerStanok.webp'
 import { useGetProductsBatchQuery } from '@/api/productsApi'
 import ProductCard from '@/components/common/ProductCard'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 type LocalizedText = {
   ru?: string
@@ -67,10 +71,17 @@ const imageRatioClassMap: Record<string, string> = {
 }
 
 const imageWidthClassMap: Record<string, string> = {
-  '1/3': 'lg:w-1/3',
-  '1/2': 'lg:w-1/2',
-  '2/3': 'lg:w-2/3',
-  full: 'lg:w-full',
+  '1/3': 'md:col-span-4',
+  '1/2': 'md:col-span-6',
+  '2/3': 'md:col-span-8',
+  full: 'md:col-span-12',
+}
+
+const textWidthClassMap: Record<string, string> = {
+  '1/3': 'md:col-span-8',
+  '1/2': 'md:col-span-6',
+  '2/3': 'md:col-span-4',
+  full: 'md:col-span-12',
 }
 
 const BlogProductsBlock = ({ productIds, layout }: { productIds: string[], layout: string }) => {
@@ -82,29 +93,53 @@ const BlogProductsBlock = ({ productIds, layout }: { productIds: string[], layou
   if (isLoading) return <div className="py-8 text-center text-gray-500">Загрузка товаров...</div>
   if (isError || !products?.length) return null
 
-  const layoutClass = layout === 'carousel' 
-    ? 'flex overflow-x-auto gap-5 pb-4 snap-x'
-    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'
+  const shouldUseCarousel = layout === 'carousel' || products.length > 3
+  const gridClass = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-fr'
 
   return (
     <section className="my-8">
-      <div className={layoutClass}>
-        {products.map((product) => {
-          // const coverImage = product.media?.[0]?.url ?? null
-          return (
-            <ProductCard 
-              key={product.id} 
-              id={product.id} 
-              slug={product.slug} 
-              name={product.name} 
-              coverImage={product.coverImage} 
-              price={product.price} 
-              oldPrice={product.oldPrice} 
-              inStock={product.inStock} 
+      {shouldUseCarousel ? (
+        <Swiper
+          modules={[Pagination]}
+          spaceBetween={16}
+          pagination={{ clickable: true }}
+          breakpoints={{
+            0: { slidesPerView: 1.1 },
+            640: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }}
+          className="pb-10"
+        >
+          {products.map((product) => (
+            <SwiperSlide key={product.id} className="h-auto">
+              <ProductCard
+                id={product.id}
+                slug={product.slug}
+                name={product.name}
+                coverImage={product.coverImage}
+                price={product.price}
+                oldPrice={product.oldPrice}
+                inStock={product.inStock}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <div className={gridClass}>
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              slug={product.slug}
+              name={product.name}
+              coverImage={product.coverImage}
+              price={product.price}
+              oldPrice={product.oldPrice}
+              inStock={product.inStock}
             />
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   )
 }
@@ -223,33 +258,50 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
     const position = typeof block.data?.position === 'string' ? block.data.position : 'left'
     const imageRatio = typeof block.data?.imageRatio === 'string' ? block.data.imageRatio : 'video'
     const imageWidth = typeof block.data?.imageWidth === 'string' ? block.data.imageWidth : '1/2'
-    const verticalAlign = block.data?.verticalAlign === 'center' ? 'items-center' : 'items-start'
+    const verticalAlignClass = block.data?.verticalAlign === 'center' ? 'self-center' : 'self-start'
 
     const isHorizontal = position === 'left' || position === 'right'
-    const reverse = position === 'right' || position === 'bottom'
-    const directionClass = isHorizontal ? 'lg:flex-row' : 'flex-col'
-    const reverseClass = reverse ? (isHorizontal ? 'lg:flex-row-reverse' : 'flex-col-reverse') : ''
     const ratioClass = imageRatioClassMap[imageRatio] || imageRatioClassMap.video
-    const widthClass = imageWidthClassMap[imageWidth] || imageWidthClassMap['1/2']
+    const imageWidthClass = imageWidthClassMap[imageWidth] || imageWidthClassMap['1/2']
+    const textWidthClass = textWidthClassMap[imageWidth] || textWidthClassMap['1/2']
+    const mediaSlotClass = imageWidth === 'full'
+      ? 'h-[220px] sm:h-[280px] lg:h-[340px]'
+      : ratioClass
+
+    const imageOrderClass = isHorizontal
+      ? position === 'right'
+        ? 'md:order-2'
+        : 'md:order-1'
+      : position === 'bottom'
+        ? 'order-2'
+        : 'order-1'
+
+    const textOrderClass = isHorizontal
+      ? position === 'right'
+        ? 'md:order-1'
+        : 'md:order-2'
+      : position === 'bottom'
+        ? 'order-1'
+        : 'order-2'
 
     return (
       <section
         key={key}
-        className={`flex ${directionClass} ${reverseClass} ${verticalAlign} gap-5 rounded-xl border border-gray-200 p-4 md:p-5 bg-gradient-to-b from-white to-gray-50/70 shadow-sm mb-8`}
+        className={`grid grid-cols-1 ${isHorizontal ? 'md:grid-cols-12' : ''} gap-5 rounded-xl border border-gray-200 p-4 md:p-5 bg-gradient-to-b from-white to-gray-50/70 shadow-sm mb-8`}
       >
-        <div className={`w-full ${widthClass}`}>
-          <div className={`${ratioClass} rounded-lg overflow-hidden bg-gray-100`}>
+        <div className={`w-full ${imageWidthClass} ${imageOrderClass} ${verticalAlignClass}`}>
+          <div className={`${mediaSlotClass} rounded-xl overflow-hidden bg-[#F3F4F6] border border-gray-200 p-2 sm:p-3`}>
             <img
               src={imageUrl}
               alt={title || 'blog-image'}
-              className="w-full h-full object-cover transition duration-500 hover:scale-[1.02]"
+              className="w-full h-full object-cover object-center"
               loading="lazy"
             />
           </div>
         </div>
 
         {(title || description) && (
-          <div className="flex-1 space-y-2">
+          <div className={`${isHorizontal ? textWidthClass : 'w-full'} ${textOrderClass} ${verticalAlignClass} space-y-2`}>
             {title && <h3 className="font-oswald font-bold text-2xl text-gray-900 md:text-3xl">{title}</h3>}
             {description && <p className="text-sm text-gray-700 whitespace-pre-line md:text-base leading-relaxed">{description}</p>}
           </div>
@@ -278,9 +330,9 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
 
           return (
             <article key={`${key}-card-${cardIndex}`} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-              <div className={`${ratioClass} bg-gray-100`}>
+              <div className={`${ratioClass} bg-[#F3F4F6] border-b border-gray-200`}>
                 {cardImage ? (
-                  <img src={cardImage} alt={cardTitle || `card-${cardIndex + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                  <img src={cardImage} alt={cardTitle || `card-${cardIndex + 1}`} className="w-full h-full object-cover object-center" loading="lazy" />
                 ) : (
                   <div className="w-full h-full" />
                 )}
