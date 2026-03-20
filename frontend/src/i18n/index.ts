@@ -2,30 +2,22 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
-// 1. ИМПОРТИРУЕМ BackendFetch отсюда:
-import { Tolgee, FormatSimple, BackendFetch } from '@tolgee/web' 
-// Оставляем InContextTools:
-import { InContextTools } from '@tolgee/web/tools' 
+// 1. Возвращаем DevTools, так как Nginx теперь пропускает WebSockets!
+import { Tolgee, FormatSimple, DevTools } from '@tolgee/web' 
 import { withTolgee } from '@tolgee/i18next'
 
 import ruCommon from '@/locales/ru/common.json'
 import enCommon from '@/locales/en/common.json'
 import kzCommon from '@/locales/kz/common.json'
 
-// 1. Ловим ключ И URL из адресной строки
 const urlParams = new URLSearchParams(window.location.search);
 const keyFromUrl = urlParams.get('editor_key');
-const urlFromUrl = urlParams.get('tolgee_url'); // Ловим URL
+const urlFromUrl = urlParams.get('tolgee_url'); 
 
 if (keyFromUrl) {
-  // Сохраняем ключ
   sessionStorage.setItem('tolgeeApiKey', keyFromUrl);
-  
-  // Сохраняем URL (если передали из админки) ИЛИ берем из .env ИЛИ ставим дефолт
   const apiUrlToSave = urlFromUrl || import.meta.env.VITE_TOLGEE_API_URL || 'http://localhost:8080';
   sessionStorage.setItem('tolgeeApiUrl', apiUrlToSave);
-  
-  // Очищаем URL
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 
@@ -36,22 +28,20 @@ export let tolgee: any = null;
 
 if (savedApiKey && savedApiUrl) {
   tolgee = Tolgee()
-    .use(InContextTools()) // <--- Оставляем ваш рабочий плагин
-    .use(BackendFetch())   // <--- 2. ДОБАВЛЯЕМ ПЛАГИН ДЛЯ СКАЧИВАНИЯ ДАННЫХ
+    .use(DevTools()) // <--- Используем мощный DevTools
     .use(FormatSimple())
     .init({
       apiUrl: savedApiUrl,
       apiKey: savedApiKey,
-      defaultLanguage: 'ru', 
+      defaultLanguage: 'ru',
+      defaultNs: 'common', // <--- Подсказываем Tolgee ваш namespace
     });
 
   withTolgee(i18n as any, tolgee);
   
-  // 3. НЕ ЗАБЫВАЕМ tolgee.run(), он нужен для запуска скачивания
   tolgee.run(); 
 }
 
-// 4. Стандартная инициализация i18n
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -65,6 +55,12 @@ i18n
     fallbackLng: 'ru',
     defaultNS: 'common',
     ns: ['common'],
+    
+    // ====================================================
+    // 2. САМОЕ ВАЖНОЕ: Разрешаем скачивать обновления поверх локальных файлов!
+    partialBundledLanguages: true, 
+    // ====================================================
+
     interpolation: {
       escapeValue: false
     },
