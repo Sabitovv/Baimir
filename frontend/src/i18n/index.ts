@@ -2,8 +2,10 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
-// 1. Возвращаем DevTools, так как Nginx теперь пропускает WebSockets!
-import { Tolgee, FormatSimple, DevTools } from '@tolgee/web' 
+// Импортируем BackendFetch для скачивания
+import { Tolgee, FormatSimple, BackendFetch } from '@tolgee/web' 
+// Возвращаем InContextTools, который у вас работал!
+import { InContextTools } from '@tolgee/web/tools' 
 import { withTolgee } from '@tolgee/i18next'
 
 import ruCommon from '@/locales/ru/common.json'
@@ -28,13 +30,14 @@ export let tolgee: any = null;
 
 if (savedApiKey && savedApiUrl) {
   tolgee = Tolgee()
-    .use(DevTools()) // <--- Используем мощный DevTools
+    .use(InContextTools()) // <--- 1. ВОЗВРАЩАЕМ ТО, ЧТО РАБОТАЕТ ДЛЯ ALT+CLICK
+    .use(BackendFetch())   // <--- 2. ПЛАГИН ДЛЯ СКАЧИВАНИЯ
     .use(FormatSimple())
     .init({
       apiUrl: savedApiUrl,
       apiKey: savedApiKey,
       defaultLanguage: 'ru',
-      defaultNs: 'common', // <--- Подсказываем Tolgee ваш namespace
+      defaultNs: 'common',
     });
 
   withTolgee(i18n as any, tolgee);
@@ -57,7 +60,8 @@ i18n
     ns: ['common'],
     
     // ====================================================
-    // 2. САМОЕ ВАЖНОЕ: Разрешаем скачивать обновления поверх локальных файлов!
+    // 3. ОСТАВЛЯЕМ ЭТУ НАСТРОЙКУ! Именно она заставляет i18next 
+    // скачивать обновления, а не смотреть только в локальные файлы
     partialBundledLanguages: true, 
     // ====================================================
 
