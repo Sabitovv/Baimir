@@ -29,6 +29,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     { id: 'storage', path: '/storage' },
     { id: 'service', path: '/service' },
     { id: 'blog', path: '/blog' },
+    { id: 'about', path: '/about' },
   ]
 
   const changeLanguage = (lng: string) => {

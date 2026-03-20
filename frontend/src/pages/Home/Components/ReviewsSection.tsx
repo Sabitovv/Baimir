@@ -135,6 +135,10 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
             >
               {reviews.map((review) => (
                 <SwiperSlide key={review.id}>
+                  {(() => {
+                    const profileLink = review.profileUrl || review.profileLink
+
+                    return (
                   <div
                     className="
                       bg-white
@@ -153,7 +157,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                           className="w-12 h-12 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-[#1E9CA6] text-white flex items-center justify-center font-oswald text-xl">
+                        <div className="w-12 h-12 rounded-full bg-[#F59E0B] text-white flex items-center justify-center font-oswald text-xl">
                           {getInitial(review.authorName)}
                         </div>
                       )}
@@ -192,16 +196,16 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                           {formatReviewDate(review.reviewDate || review.createdAt, i18n.language)}
                         </span>
                         <span className="px-2 py-1 rounded-md bg-[#E8F6EF] text-[#047857] font-semibold whitespace-nowrap">
-                          {getSourceLabel(review.profileUrl)}
+                          {getSourceLabel(profileLink)}
                         </span>
                       </div>
 
-                      {review.profileUrl && (
+                      {profileLink && (
                         <a
-                          href={review.profileUrl}
+                          href={profileLink}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-[#0B5FA1] hover:text-[#084B7D] font-semibold whitespace-nowrap"
+                          className="inline-flex items-center gap-1 text-[#F59E0B] hover:text-[#DB741F] font-semibold whitespace-nowrap"
                         >
                           Источник
                           <OpenInNewRoundedIcon sx={{ fontSize: 14 }} />
@@ -209,6 +213,8 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                       )}
                     </div>
                   </div>
+                    )
+                  })()}
                 </SwiperSlide>
               ))}
             </Swiper>

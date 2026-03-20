@@ -12,6 +12,7 @@ const InnerBlog = lazy(() => import('@/pages/Blogs/InnerBlogs/InnerBlog'))
 const ProductionPage = lazy(() => import('@/pages/Production/ProductionPage'))
 const StoragePage = lazy(() => import('@/pages/Storage/StoragePage'))
 const ServicePage = lazy(() => import('@/pages/Service/ServicePage'))
+const AboutPage = lazy(() => import('@/pages/About/AboutPage'))
 const CatalogPage = lazy(() => import('@/pages/Catalog/CatalogPage'))
 const CategoryPage = lazy(() => import('@/pages/Catalog/CategoryPage'))
 const ProductPage = lazy(() => import('@/pages/Catalog/ProductPage'))
@@ -37,6 +38,7 @@ const AppRoutes = () => (
             <Route path="/production" element={<ProductionPage />} />
             <Route path="/storage" element={<StoragePage />} />
             <Route path="/service" element={<ServicePage />} />
+            <Route path="/about" element={<AboutPage />} />
 
             <Route path="/catalog/product/:productSlug" element={<ProductPage />} />
             <Route path="/catalog/:categorySlug/products/:categoryId" element={<CategoryPage />} />

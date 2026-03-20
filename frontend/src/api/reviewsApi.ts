@@ -6,6 +6,7 @@ export type CreateReviewRequest = {
   text: string
   rating: number
   source: string
+  profileLink?: string
 }
 
 export type CreateReviewResponse = {
@@ -16,6 +17,7 @@ export type CreateReviewResponse = {
   rating: number
   reviewDate?: string
   profileUrl?: string
+  profileLink?: string
   sortOrder: number
   imageUrl?: string
   createdAt: string

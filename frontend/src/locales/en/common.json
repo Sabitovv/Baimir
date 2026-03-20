@@ -8,7 +8,8 @@
       "production": "Production",
       "storage": "Warehouse",
       "service": "Service",
-      "blog": "About company",
+      "blog": "Blog",
+      "about": "About company",
       "catalog": "Catalog"
     },
     "languages": {
@@ -176,6 +177,67 @@
     "platformCard": {
       "type": "Production type",
       "region": "Region, city"
+    }
+  },
+  "about": {
+    "hero": {
+      "kicker": "About company",
+      "title": "BAYMIR - turnkey machines and equipment",
+      "description": "We select equipment for your production goals: configuration, recommendations, commissioning, and long-term support. Our focus is fast payback and stable performance.",
+      "imageAlt": "BAYMIR warehouse and equipment"
+    },
+    "stats": {
+      "title": "Key facts",
+      "years": "years of experience in Kazakhstan and Russia",
+      "warehouse": "m2 of one of the largest machine warehouses",
+      "items": "equipment items available",
+      "since": "working since 2012"
+    },
+    "advantages": {
+      "title": "Why clients choose BAYMIR",
+      "expertise": {
+        "title": "Deep expertise",
+        "text": "We choose equipment based on your actual workshop tasks and budget, without unnecessary options."
+      },
+      "engineers": {
+        "title": "Strong engineering team",
+        "text": "Experienced engineers provide commissioning, training, and technical support throughout the machine lifecycle."
+      },
+      "stock": {
+        "title": "Powerful warehouse resource",
+        "text": "A large stock in Almaty helps us ship equipment quickly and reduce downtime risks for your business."
+      },
+      "speed": {
+        "title": "Fast deliveries",
+        "text": "Direct supplies, trusted brands, and service coverage across Kazakhstan, as well as Russia, Belarus, and Kyrgyzstan."
+      }
+    },
+    "brands": {
+      "title": "Brands and geography",
+      "description": "BAYMIR is a premium dealer in Kazakhstan for Bodor, Krrass, LOCK, and other brands. We deliver equipment and provide full support from launch to maintenance."
+    },
+    "schedule": {
+      "title": "Working hours",
+      "break": "Break",
+      "closed": "Closed",
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      }
+    },
+    "contacts": {
+      "title": "Contacts",
+      "address": "Almaty, Alatau district, Rakhat microdistrict, 244",
+      "cta": "Leave a request - we will select equipment for your task and budget, and calculate timelines and terms (installment/leasing)."
+    },
+    "map": {
+      "title": "Find us on 2GIS",
+      "openIn2gis": "Open in 2GIS"
     }
   }
 }
