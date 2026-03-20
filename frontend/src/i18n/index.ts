@@ -8,40 +8,43 @@ import ruCommon from '@/locales/ru/common.json'
 import enCommon from '@/locales/en/common.json'
 import kzCommon from '@/locales/kz/common.json'
 
-// 1. URL сервера Tolgee можно оставить публичным (без ключа он бесполезен)
-// Замените на реальный IP или домен, где доступен ваш docker (например, http://130.193.xx.xx:8080)
-const tolgeeApiUrl = import.meta.env.VITE_TOLGEE_API_URL || 'http://localhost:8080';
-
-// 2. Ловим ключ из URL (когда админ переходит из админки)
+// 1. Ловим ключ И URL из адресной строки
 const urlParams = new URLSearchParams(window.location.search);
 const keyFromUrl = urlParams.get('editor_key');
+const urlFromUrl = urlParams.get('tolgee_url'); // Ловим URL
 
 if (keyFromUrl) {
-  // Если пришли с ключом, сохраняем его в сессию (до закрытия вкладки)
+  // Сохраняем ключ
   sessionStorage.setItem('tolgeeApiKey', keyFromUrl);
-  // Очищаем URL, чтобы ключ не маячил в адресной строке
+  
+  // Сохраняем URL (если передали из админки) ИЛИ берем из .env ИЛИ ставим дефолт
+  const apiUrlToSave = urlFromUrl || import.meta.env.VITE_TOLGEE_API_URL || 'http://localhost:8080';
+  sessionStorage.setItem('tolgeeApiUrl', apiUrlToSave);
+  
+  // Очищаем URL
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 
-// 3. Достаем ключ из сессии
+// 2. Достаем данные из сессии
 const savedApiKey = sessionStorage.getItem('tolgeeApiKey');
+const savedApiUrl = sessionStorage.getItem('tolgeeApiUrl');
 
 export let tolgee: any = null;
 
-// 4. Включаем Tolgee ТОЛЬКО если в сессии есть ключ
-if (savedApiKey) {
+// 3. Включаем Tolgee, только если есть ключ и URL
+if (savedApiKey && savedApiUrl) {
   tolgee = Tolgee()
     .use(DevTools())
     .use(FormatSimple())
     .init({
-      apiUrl: tolgeeApiUrl,
+      apiUrl: savedApiUrl,
       apiKey: savedApiKey,
     });
 
   withTolgee(i18n as any, tolgee);
 }
 
-// 3. Стандартная инициализация i18next
+// 4. Стандартная инициализация
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -62,6 +65,6 @@ i18n
       order: ['localStorage', 'cookie', 'navigator'],
       caches: ['localStorage', 'cookie'],
     }
-  })
+  });
 
 export default i18n;
