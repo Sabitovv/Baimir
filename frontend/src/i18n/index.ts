@@ -1,7 +1,11 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
-import { Tolgee, DevTools, FormatSimple } from '@tolgee/web'
+
+// УБИРАЕМ DevTools отсюда:
+import { Tolgee, FormatSimple } from '@tolgee/web' 
+// ДОБАВЛЯЕМ InContextTools отсюда:
+import { InContextTools } from '@tolgee/web/tools' 
 import { withTolgee } from '@tolgee/i18next'
 
 import ruCommon from '@/locales/ru/common.json'
@@ -31,10 +35,9 @@ const savedApiUrl = sessionStorage.getItem('tolgeeApiUrl');
 
 export let tolgee: any = null;
 
-// 3. Включаем Tolgee, только если есть ключ и URL
 if (savedApiKey && savedApiUrl) {
   tolgee = Tolgee()
-    .use(DevTools())
+    .use(InContextTools()) // <--- ИСПОЛЬЗУЕМ ЭТОТ ПЛАГИН
     .use(FormatSimple())
     .init({
       apiUrl: savedApiUrl,
