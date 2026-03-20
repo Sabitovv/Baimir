@@ -2,9 +2,9 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
-// УБИРАЕМ DevTools отсюда:
-import { Tolgee, FormatSimple } from '@tolgee/web' 
-// ДОБАВЛЯЕМ InContextTools отсюда:
+// 1. ИМПОРТИРУЕМ BackendFetch отсюда:
+import { Tolgee, FormatSimple, BackendFetch } from '@tolgee/web' 
+// Оставляем InContextTools:
 import { InContextTools } from '@tolgee/web/tools' 
 import { withTolgee } from '@tolgee/i18next'
 
@@ -29,7 +29,6 @@ if (keyFromUrl) {
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 
-// 2. Достаем данные из сессии
 const savedApiKey = sessionStorage.getItem('tolgeeApiKey');
 const savedApiUrl = sessionStorage.getItem('tolgeeApiUrl');
 
@@ -37,17 +36,22 @@ export let tolgee: any = null;
 
 if (savedApiKey && savedApiUrl) {
   tolgee = Tolgee()
-    .use(InContextTools()) // <--- ИСПОЛЬЗУЕМ ЭТОТ ПЛАГИН
+    .use(InContextTools()) // <--- Оставляем ваш рабочий плагин
+    .use(BackendFetch())   // <--- 2. ДОБАВЛЯЕМ ПЛАГИН ДЛЯ СКАЧИВАНИЯ ДАННЫХ
     .use(FormatSimple())
     .init({
       apiUrl: savedApiUrl,
       apiKey: savedApiKey,
+      defaultLanguage: 'ru', 
     });
 
   withTolgee(i18n as any, tolgee);
+  
+  // 3. НЕ ЗАБЫВАЕМ tolgee.run(), он нужен для запуска скачивания
+  tolgee.run(); 
 }
 
-// 4. Стандартная инициализация
+// 4. Стандартная инициализация i18n
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
