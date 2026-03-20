@@ -5,16 +5,15 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import 'swiper/css'
 import ScrollReveal from '@/components/animations/ScrollReveal'
-
-import cert1 from '@/assets/home/image 137.webp'
-import cert2 from '@/assets/home/image 139.webp'
-import cert3 from '@/assets/home/image 140.webp'
+import { useGetCertificatesQuery } from '@/api/certificatesApi'
 
 const CertificatesSection = () => {
   const { t } = useTranslation()
+  const { data: certificates = [], isLoading, isError } = useGetCertificatesQuery()
 
-  const certificates = [cert1, cert2, cert3]
-  const slides = [...certificates, ...certificates]
+  if (isError || (!isLoading && certificates.length === 0)) {
+    return null
+  }
 
   return (
     <section className="py-16 md:py-20 bg-white overflow-x-hidden">
@@ -41,7 +40,7 @@ const CertificatesSection = () => {
             <Swiper
               modules={[Navigation]}
               spaceBetween={24}
-              loop
+              loop={certificates.length > 1}
               navigation={{ prevEl: '.cert-prev', nextEl: '.cert-next' }}
               breakpoints={{
                 320: { slidesPerView: 1 },
@@ -49,17 +48,24 @@ const CertificatesSection = () => {
                 1024: { slidesPerView: 3 }
               }}
             >
-              {slides.map((img, i) => (
+              {isLoading
+                ? Array.from({ length: 3 }).map((_, i) => (
                 <SwiperSlide key={i}>
-                  <div className="bg-white shadow-sm p-4 flex items-center justify-center">
+                  <div className="bg-white shadow-sm p-4 h-[250px] animate-pulse" />
+                </SwiperSlide>
+                  ))
+                : certificates.map((certificate) => (
+                <SwiperSlide key={certificate.id}>
+                  <div className="bg-white shadow-sm p-4 flex items-center justify-center h-[250px]">
                     <img
-                      src={img}
-                      alt={t('home.certificates.itemAlt') || `certificate-${i}`}
+                      src={certificate.imageUrl}
+                      alt={certificate.name || `certificate-${certificate.id}`}
                       className="max-h-[220px] object-contain mx-auto"
+                      loading="lazy"
                     />
                   </div>
                 </SwiperSlide>
-              ))}
+                  ))}
             </Swiper>
 
             <button
