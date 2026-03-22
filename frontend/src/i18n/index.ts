@@ -1,7 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
-// 1. Добавляем HTTP Backend
 import HttpBackend from 'i18next-http-backend'
 
 import { Tolgee, FormatSimple, BackendFetch } from '@tolgee/web' 
@@ -26,7 +25,12 @@ const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
 export let tolgee: any = null;
 
+const CDN_URL = 'http://89.207.255.17/minio/locales/182a077de00162c5d0f7acc0badff225';
+
 if (isEditMode) {
+  // ====================================================
+  // РЕЖИМ РЕДАКТОРА
+  // ====================================================
   tolgee = Tolgee()
     .use(InContextTools()) 
     .use(BackendFetch())   
@@ -40,19 +44,22 @@ if (isEditMode) {
 
   withTolgee(i18n as any, tolgee);
   tolgee.run(); 
+} else {
+  // ====================================================
+  // РЕЖИМ ПОЛЬЗОВАТЕЛЯ (Подключаем плагин для MinIO ТОЛЬКО здесь)
+  // ====================================================
+  i18n.use(HttpBackend);
 }
 
-const CDN_URL = 'http://89.207.255.17/minio/locales/182a077de00162c5d0f7acc0badff225';
-
 i18n
-  .use(HttpBackend) 
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    backend: {
+    // Передаем настройки backend тоже ТОЛЬКО для обычных пользователей
+    backend: !isEditMode ? {
       loadPath: `${CDN_URL}/{{ns}}/{{lng}}.json`,
       crossDomain: true 
-    },
+    } : undefined,
     
     lng: 'ru',
     fallbackLng: 'ru',
