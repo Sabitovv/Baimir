@@ -231,6 +231,20 @@ export type Filter = {
     values: FilterValue[] | null
 }
 
+export type InquiryItem = {
+  productId: number
+  quantity: number
+}
+
+export type InquiryRequest = {
+  name: string
+  email: string
+  phone: string
+  message?: string
+  items: InquiryItem[]
+  sourceUrl: string
+}
+
 export type Meta = {
     currentPage: number
     pageSize: number
@@ -345,7 +359,15 @@ export const productsApi = createApi({
             result
                 ? [...result.content.map((prod) => ({ type: 'Product' as const, id: prod.id })), { type: 'Product', id: 'POPULAR' }]
                 : [{ type: 'Product', id: 'POPULAR' }],
-    })
+    }),
+
+    createInquiry: builder.mutation<any, InquiryRequest>({
+      query: (body) => ({
+        url: '/inquiries', 
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 })
 
@@ -356,4 +378,5 @@ export const {
     useSearchProductsQuery,
     useGetFeaturedProductsQuery,
     useGetPopularProductsQuery,
+    useCreateInquiryMutation,
 } = productsApi

@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import CartCard from './CartCard'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { decrementQuantity, incrementQuantity, removeFromCart } from '@/features/cartSlice'
+import { clearCart, decrementQuantity, incrementQuantity, removeFromCart } from '@/features/cartSlice'
+import { useCreateInquiryMutation } from '@/api/categoriesApi'
+
+const CheckCircleIcon = () => (
+  <svg className="w-16 h-16 text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+  </svg>
+)
 
 type CartProps = {
   isOpen?: boolean
@@ -16,9 +23,21 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
   const items = useAppSelector((state) => state.cart.items)
   
   const [openUp, setOpenUp] = useState(false)
+  // Новое состояние для экрана успеха
+  const [isSuccess, setIsSuccess] = useState(false)
+
+  const [createInquiry, { isLoading }] = useCreateInquiryMutation()
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0)
+
+  const handleClose = () => {
+    onClose()
+    setTimeout(() => {
+      setOpenUp(false)
+      setIsSuccess(false)
+    }, 300) 
+  }
 
   useEffect(() => {
     if (isOpen) {
@@ -55,7 +74,10 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
 
   useEffect(() => {
     if (!isOpen) {
-      setTimeout(() => setOpenUp(false), 300) 
+      setTimeout(() => {
+        setOpenUp(false)
+        setIsSuccess(false)
+      }, 300) 
     }
   }, [isOpen])
 
@@ -63,9 +85,33 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
   const onDecrement = (id: number) => dispatch(decrementQuantity(id))
   const onRemove = (id: number) => dispatch(removeFromCart(id))
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setOpenUp(false) 
+    
+    const formData = new FormData(e.currentTarget)
+    
+    const payload = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      phone: formData.get('phone') as string,
+      message: formData.get('message') as string,
+      items: items.map(item => ({
+        productId: item.id,
+        quantity: item.quantity
+      })),
+      sourceUrl: window.location.href
+    }
+
+    try {
+      await createInquiry(payload).unwrap()
+      
+      setIsSuccess(true)
+      
+      dispatch(clearCart())
+    } catch (error) {
+      console.error('Ошибка при отправке заявки:', error)
+      alert('Произошла ошибка при отправке. Пожалуйста, проверьте подключение и попробуйте позже.')
+    }
   }
 
   return (
@@ -73,7 +119,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
       className={`fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
         isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       }`}
-      onClick={onClose}
+      onClick={handleClose}
     >      
       <div
         className={`relative w-full max-w-md h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out overflow-hidden ${
@@ -83,7 +129,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
           <h2 className="text-2xl font-semibold text-black">{t('cart.title')}</h2>
-          <button onClick={onClose} className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
+          <button onClick={handleClose} className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
             {t('cart.close')}
           </button>
         </div>
@@ -95,7 +141,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
               <p className="mt-2 text-sm text-gray-500">{t('cart.emptyDescription')}</p>
               <Link
                 to="/catalog"
-                onClick={onClose}
+                onClick={handleClose}
                 className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#F58322] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#DB741F]"
               >
                 {t('cart.goToCatalog')}
@@ -122,11 +168,11 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
 
         <div className="border-t border-gray-200 p-4 space-y-3 bg-white relative z-10">
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>{t('cart.itemsCount', { count: itemsCount })}</span>
-            <span>{total.toLocaleString(i18n.language)} ₸</span>
+            <span>Всего товаров:</span>
+            <span>{itemsCount} шт.</span>
           </div>
           <div className="flex items-center justify-between text-base font-semibold text-gray-900">
-            <span>{t('cart.total')}</span>
+            <span>Итого к оплате:</span>
             <span>{total.toLocaleString(i18n.language)} ₸</span>
           </div>
 
@@ -135,7 +181,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
             className="w-full rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F] disabled:cursor-not-allowed disabled:bg-gray-300"
             onClick={() => setOpenUp(true)} 
           >
-            {t('cart.submitRequest')}
+            {t('cart.submitRequest', 'Оформить заявку')}
           </button>
         </div>
 
@@ -144,61 +190,104 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
             openUp ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
-          <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-gray-50">
-            <h3 className="text-xl font-semibold text-black">Оформление заявки</h3>
-            <button 
-              onClick={() => setOpenUp(false)} 
-              className="text-sm font-medium text-gray-600 hover:text-black transition-colors"
-            >
-              Назад
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-auto p-5">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ваше имя *</label>
-                <input 
-                  type="text" 
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
-                  placeholder="Иван Иванов"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Номер телефона *</label>
-                <input 
-                  type="tel" 
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
-                  placeholder="+7 (___) ___-__-__"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Комментарий (необязательно)</label>
-                <textarea 
-                  rows={4}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all resize-none"
-                  placeholder="Дополнительные пожелания к заказу..."
-                />
-              </div>
-
-              <div className="pt-4 border-t border-gray-100 mt-6">
-                <div className="flex items-center justify-between text-base font-semibold text-gray-900 mb-4">
-                  <span>Итого к оплате:</span>
-                  <span>{total.toLocaleString(i18n.language)} ₸</span>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-bg-[#DB741F]"
+          {isSuccess ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-gray-50">
+              <CheckCircleIcon />
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Заявка отправлена!</h3>
+              <p className="text-gray-600 mb-8">
+                Спасибо за ваш заказ. Наш менеджер свяжется с вами в ближайшее время для уточнения деталей.
+              </p>
+              <button
+                onClick={handleClose}
+                className="w-full max-w-xs rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F]"
+              >
+                Вернуться к покупкам
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 className="text-xl font-semibold text-black">Оформление заявки</h3>
+                <button 
+                  onClick={() => setOpenUp(false)} 
+                  className="text-sm font-medium text-gray-600 hover:text-black transition-colors"
                 >
-                  Подтвердить заказ
+                  Назад
                 </button>
               </div>
-            </form>
-          </div>
+
+              <div className="flex-1 overflow-auto p-5">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ваше имя *</label>
+                    <input 
+                      type="text" 
+                      name="name" 
+                      required
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
+                      placeholder="Иван Иванов"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Номер телефона *</label>
+                    <input 
+                      type="tel" 
+                      name="phone" 
+                      required
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
+                      placeholder="+7 (___) ___-__-__"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input 
+                      type="email" 
+                      name="email" 
+                      required
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
+                      placeholder="example@mail.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Комментарий (необязательно)</label>
+                    <textarea 
+                      name="message" 
+                      rows={4}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all resize-none"
+                      placeholder="Дополнительные пожелания к заказу..."
+                    />
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100 mt-6">
+                    <div className="flex items-center justify-between text-base font-semibold text-gray-900 mb-4">
+                      <span>Сумма заказа:</span>
+                      <span>{total.toLocaleString(i18n.language)} ₸</span>
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isLoading} 
+                      className="w-full rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F] disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center"
+                    >
+                      {isLoading ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Отправка...
+                        </>
+                      ) : (
+                        'Отправить заявку'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
