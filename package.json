@@ -2,6 +2,7 @@
   "dependencies": {
     "@tolgee/i18next": "^6.6.0",
     "@tolgee/react": "^6.6.0",
-    "@tolgee/web": "^6.6.0"
+    "@tolgee/web": "^6.6.0",
+    "i18next-http-backend": "^3.0.2"
   }
 }
