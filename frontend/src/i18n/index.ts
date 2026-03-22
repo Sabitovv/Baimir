@@ -8,11 +8,6 @@ import { Tolgee, FormatSimple, BackendFetch } from '@tolgee/web'
 import { InContextTools } from '@tolgee/web/tools' 
 import { withTolgee } from '@tolgee/i18next'
 
-// Статичные импорты удаляем - они больше не нужны!
-// import ruCommon from '@/locales/ru/common.json'
-// import enCommon from '@/locales/en/common.json'
-// import kzCommon from '@/locales/kz/common.json'
-
 const urlParams = new URLSearchParams(window.location.search);
 const keyFromUrl = urlParams.get('editor_key');
 const urlFromUrl = urlParams.get('tolgee_url'); 
@@ -47,7 +42,7 @@ if (isEditMode) {
   tolgee.run(); 
 }
 
-const CDN_URL = 'http://89.207.255.17/minio/locales/a93214cc6e77fa276a30db6d738c9b3d';
+const CDN_URL = 'http://89.207.255.17/minio/locales/182a077de00162c5d0f7acc0badff225';
 
 i18n
   .use(HttpBackend) 
