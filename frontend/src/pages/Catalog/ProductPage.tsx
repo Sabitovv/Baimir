@@ -22,7 +22,11 @@ import { PopularProduct } from './components/PopularProduct'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import Contact from '@/components/common/Contact'
 import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
+import { addToCompare, removeFromCompare } from '@/features/compareSlice'
 import { useCartAnimation } from '@/components/animations/useCartAnimation'
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('ru-KZ', {
     style: 'currency',
@@ -733,6 +737,7 @@ const ProductPage = () => {
   const { productSlug } = useParams()
   const dispatch = useAppDispatch()
   const items = useAppSelector((state) => state.cart.items)
+  const compareItems = useAppSelector((state) => state.compare.items)
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
   const { i18n } = useTranslation()
@@ -745,6 +750,7 @@ const ProductPage = () => {
 
   const [activeImage, setActiveImage] = useState(0)
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'order'>('desc')
+  const [compareError, setCompareError] = useState<string | null>(null)
 
   const touchStartX = useRef<number | null>(null)
   const touchEndX = useRef<number | null>(null)
@@ -909,6 +915,44 @@ const ProductPage = () => {
     () => normalizeContentBlocks(product?.contentBlocks),
     [product?.contentBlocks],
   )
+
+  const isInCompare = product ? compareItems.some((item) => item.id === product.id) : false
+
+  const handleCompareToggle = () => {
+    if (!product) return
+
+    if (isInCompare) {
+      dispatch(removeFromCompare(product.id))
+      return
+    }
+
+    const productCategoryId = Number(product.category?.id)
+    const isValidCategory = Number.isFinite(productCategoryId)
+
+    if (!isValidCategory) {
+      setCompareError(t('compare.categoryUnknown'))
+      return
+    }
+
+    const activeCategoryId = compareItems[0]?.categoryId
+
+    if (activeCategoryId && activeCategoryId !== productCategoryId) {
+      setCompareError(t('compare.onlyOneCategory'))
+      return
+    }
+
+    dispatch(
+      addToCompare({
+        id: product.id,
+        slug: product.slug,
+        name: product.name,
+        image: cartImage,
+        price: product.price,
+        categoryId: productCategoryId,
+        categoryName: product.category?.name ?? '',
+      }),
+    )
+  }
 
   const safeDescriptionHtml = useMemo(
     () => DOMPurify.sanitize(product?.description || '', {
@@ -1119,6 +1163,17 @@ const ProductPage = () => {
                       {product.inStock ? t('productPage.buy') : t('productPage.notify')}
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={handleCompareToggle}
+                    className={`mt-3 w-full px-5 py-3 border rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2
+                      ${isInCompare
+                        ? 'border-[#F58322] bg-[#F58322]/10 text-[#DB741F]'
+                        : 'border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]'}`}
+                  >
+                    <CompareArrowsIcon fontSize="small" />
+                    {isInCompare ? t('compare.removeFromCompare') : t('compare.addToCompare')}
+                  </button>
                 </div>
                 <div className="space-y-3 text-sm pt-2 w-full sm:w-1/3">
                   {rowsWithBg.filter(r => r.type === 'attr').slice(0, 4).map((r, i) => (
@@ -1350,6 +1405,22 @@ const ProductPage = () => {
           </div>
         </section>
       </div>
+
+      <Snackbar
+        open={Boolean(compareError)}
+        autoHideDuration={3200}
+        onClose={() => setCompareError(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setCompareError(null)}
+          severity="warning"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {compareError}
+        </Alert>
+      </Snackbar>
     </PageContainer>
   )
 }

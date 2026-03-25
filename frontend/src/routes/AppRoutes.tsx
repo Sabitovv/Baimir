@@ -16,6 +16,7 @@ const AboutPage = lazy(() => import('@/pages/About/AboutPage'))
 const CatalogPage = lazy(() => import('@/pages/Catalog/CatalogPage'))
 const CategoryPage = lazy(() => import('@/pages/Catalog/CategoryPage'))
 const ProductPage = lazy(() => import('@/pages/Catalog/ProductPage'))
+const ComparePage = lazy(() => import('@/pages/Compare/ComparePage'))
 
 const PageLoader = () => (
     <div className="flex items-center justify-center h-[60vh]">
@@ -41,6 +42,7 @@ const AppRoutes = () => (
             <Route path="/about" element={<AboutPage />} />
 
             <Route path="/catalog/product/:productSlug" element={<ProductPage />} />
+            <Route path="/compare" element={<ComparePage />} />
             <Route path="/catalog/:categorySlug/products/:categoryId" element={<CategoryPage />} />
             <Route path="/catalog/*" element={<CatalogPage />} />
         </Routes>

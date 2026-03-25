@@ -1,6 +1,9 @@
 {
   "header": {
     "search": "Search",
+    "searchStartTyping": "Type at least 2 characters",
+    "searchLoading": "Searching products...",
+    "searchNoResults": "No products found",
     "cta": "Leave a request",
     "nav": {
       "technologies": "Technologies",
@@ -123,6 +126,24 @@
       "firstTitle": "Laser cutting machine for metal sheets and tubes A3T6 - 3000W Bodor",
       "secondTitle": "CNC laser machine BODOR C3 1500W"
     }
+  },
+  "compare": {
+    "title": "Product comparison",
+    "open": "Open comparison",
+    "emptyTitle": "Comparison list is empty",
+    "emptyDescription": "Add products from one category to compare their specifications.",
+    "goToCatalog": "Go to catalog",
+    "addToCompare": "Add to compare",
+    "removeFromCompare": "Remove from compare",
+    "remove": "Remove",
+    "clear": "Clear comparison",
+    "attribute": "Attribute",
+    "noValue": "—",
+    "productImageAlt": "Product image {{name}}",
+    "loading": "Loading comparison...",
+    "error": "Failed to load comparison. Please try again later.",
+    "onlyOneCategory": "You can compare products only within the same category.",
+    "categoryUnknown": "Could not detect product category for comparison."
   },
   "calculator": {
     "material": "Material",

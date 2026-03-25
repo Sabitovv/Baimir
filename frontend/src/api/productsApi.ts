@@ -245,6 +245,36 @@ export type InquiryRequest = {
   sourceUrl: string
 }
 
+export type CompareAttribute = {
+  attributeName: string
+  values: Record<string, string>
+}
+
+export type CompareProduct = {
+  id: number
+  slug: string
+  sku: string
+  name: string
+  brandName: string | null
+  categoryName: string
+  coverImage: string | null
+  price: number
+  oldPrice: number | null
+  discountPercent: number | null
+  inStock: boolean
+  hasVariants: boolean
+  reviewsCount: number
+  keyFeatures: unknown
+  medias: unknown
+}
+
+export type CompareGroup = {
+  categoryId: number
+  categoryName: string
+  products: CompareProduct[]
+  attributes: CompareAttribute[]
+}
+
 export type Meta = {
     currentPage: number
     pageSize: number
@@ -332,15 +362,15 @@ export const productsApi = createApi({
       providesTags: (result) => (result ? [{ type: 'Product' as const, id: result.id }] : []),
     }),
 
-    searchProducts: builder.query<ProductsResponse, { query: string; page?: number; limit?: number }>({
-      query: ({ query, page = 0, limit = 20 }) => ({
+    searchProducts: builder.query<PageResponse<Product>, { query: string; page?: number; size?: number; sort?: string }>({
+      query: ({ query, page = 0, size = 20, sort = 'id,DESC' }) => ({
         url: '/products/search',
-        params: { q: query, page, limit },
+        params: { query, page, size, sort },
       }),
       providesTags: (result) =>
         result
           ? [
-              ...result.products.map((prod) => ({ type: 'Product' as const, id: prod.id })),
+              ...result.content.map((prod) => ({ type: 'Product' as const, id: prod.id })),
               { type: 'Product', id: 'SEARCH' },
             ]
           : [{ type: 'Product', id: 'SEARCH' }],
@@ -368,6 +398,19 @@ export const productsApi = createApi({
         body,
       }),
     }),
+
+    getProductsCompare: builder.query<CompareGroup[], number[]>({
+      query: (ids) => {
+        const params = new URLSearchParams()
+        ids.forEach((id) => params.append('ids', String(id)))
+
+        return {
+          url: `/products/compare?${params.toString()}`,
+        }
+      },
+      transformResponse: (response: CompareGroup | CompareGroup[]) =>
+        Array.isArray(response) ? response : [response],
+    }),
   }),
 })
 
@@ -379,4 +422,5 @@ export const {
     useGetFeaturedProductsQuery,
     useGetPopularProductsQuery,
     useCreateInquiryMutation,
+    useGetProductsCompareQuery,
 } = productsApi

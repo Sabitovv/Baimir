@@ -1,7 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
-import HttpBackend from 'i18next-http-backend'
 
 import { Tolgee, FormatSimple, BackendFetch } from '@tolgee/web' 
 import { InContextTools } from '@tolgee/web/tools' 
@@ -25,7 +24,25 @@ const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
 export let tolgee: any = null;
 
-const CDN_URL = 'http://89.207.255.17/minio/locales/182a077de00162c5d0f7acc0badff225';
+type LocaleNamespaces = Record<string, Record<string, any>>
+
+const localeModules = import.meta.glob('../locales/*/*.json', { eager: true }) as Record<
+  string,
+  { default: Record<string, any> } | Record<string, any>
+>
+
+const resources = Object.entries(localeModules).reduce<LocaleNamespaces>((acc, [path, module]) => {
+  const match = path.match(/\/locales\/([^/]+)\/([^/]+)\.json$/)
+  if (!match) return acc
+
+  const [, lng, ns] = match
+  const dictionary = 'default' in module ? module.default : module
+
+  if (!acc[lng]) acc[lng] = {}
+  acc[lng][ns] = dictionary
+
+  return acc
+}, {})
 
 if (isEditMode) {
   // ====================================================
@@ -44,22 +61,13 @@ if (isEditMode) {
 
   withTolgee(i18n as any, tolgee);
   tolgee.run(); 
-} else {
-  // ====================================================
-  // РЕЖИМ ПОЛЬЗОВАТЕЛЯ (Подключаем плагин для MinIO ТОЛЬКО здесь)
-  // ====================================================
-  i18n.use(HttpBackend);
 }
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    // Передаем настройки backend тоже ТОЛЬКО для обычных пользователей
-    backend: !isEditMode ? {
-      loadPath: `${CDN_URL}/{{ns}}/{{lng}}.json`,
-      crossDomain: true 
-    } : undefined,
+    resources: resources as any,
     
     lng: 'ru',
     fallbackLng: 'ru',
