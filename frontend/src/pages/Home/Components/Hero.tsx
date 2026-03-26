@@ -2,163 +2,130 @@ import { useTranslation } from 'react-i18next'
 import bgMain from '@/assets/home/background_main.webp'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import { Link } from 'react-router-dom'
-
-//#F58322
-//#DB741F
+import PageContainer from '@/components/ui/PageContainer'
 
 const Hero = () => {
   const { t } = useTranslation()
 
   return (
-    <section className="relative h-screen text-white">
-
+    <section className="relative flex min-h-[100dvh] flex-col text-white">
       <img
         src={bgMain}
         alt=""
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className="absolute inset-0 z-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bg-black/55" />
+      <div className="absolute inset-0 z-10 bg-black/55" />
 
-      <div className="relative z-20 flex flex-col justify-between h-full">
-
-        <div
-          className="
-            absolute
-            xl:top-[216px] xl:left-[245px]
-            lg:top-[180px] lg:left-[120px]
-            md:top-[160px] md:left-[64px]
-            top-[120px] left-6
-            max-w-[900px]
-          "
-        >
-          <ScrollReveal delay={0.1}>
-            <h1
-              className="
-                font-oswald uppercase leading-[1.05]
-                xl:text-[82px]
-                lg:text-[64px]
-                md:text-[52px]
-                text-[38px]
-                font-semibold
-              "
-            >
-              {t('hero.title')}
-            </h1>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.25}>
-            <div
-              className="
-                flex flex-wrap items-center gap-4
-                mt-6 md:mt-8
-                text-gray-300 uppercase tracking-widest
-                text-[11px] md:text-sm
-                font-semibold
-              "
-            >
-              <span>{t('hero.tags.laser')}</span>
-              <span className="text-gray-500">/</span>
-              <span>{t('hero.tags.bending')}</span>
-              <span className="text-gray-500">/</span>
-              <span>{t('hero.tags.ventilation')}</span>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.4}>
-            <Link to={"/catalog"}>
-              <button
-                className="
-                  mt-8 md:mt-12
-                  bg-[#F58322] hover:bg-[#DB741F]
-                  px-8 md:px-10 py-3 md:py-4
-                  font-bold uppercase tracking-widest
-                  transition
-                  text-xs md:text-sm
-                  hover:shadow-lg hover:shadow-[#F05023]/20
-                "
-              >
-                {t('hero.buttons.catalog')}
-              </button>
-            </Link>
-          </ScrollReveal>
-        </div>
-
-        <div
-          className="
-            absolute
-            bottom-8 md:bottom-12 xl:bottom-[80px]
-            left-1/2 -translate-x-1/2
-            w-full
-            px-6
-          "
-        >
-          <ScrollReveal delay={0.5}>
-            <div
-              className="
-                flex flex-col lg:flex-row
-                items-start lg:items-end
-                justify-between
-                gap-6
-                md:px-[50px] lg:px-[100px] xl:px-[220px]
-              "
-            >
-              <p
-                className="
-                  max-w-[800px]
-                  text-white font-normal
-                  text-xs md:text-sm
-                  leading-7 md:leading-8
-                "
-              >
-                {t('hero.description')}
-              </p>
-
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    const contactSection = document.getElementById('contact-section')
-                    if (contactSection) {
-                      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                    }
-                  }}
+      <div className="relative z-20 flex flex-1 flex-col">
+        <PageContainer className="flex flex-1 flex-col">
+          <div
+            className="
+              flex flex-1 flex-col justify-between
+              pb-8 pt-[120px]
+              md:pb-12 md:pt-[160px]
+              lg:pt-[160px] 
+              xl:pb-[80px] xl:pt-[216px]
+            "
+          >
+            <div className="w-full">
+              <ScrollReveal delay={0.1}>
+                <h1
                   className="
-                    flex items-center gap-4
-                    border border-[#F58322]
-                    px-6 py-3
-                    bg-black/30 hover:bg-[#DB741F]
-                    transition group
-                    shrink-0
-                    font-oswald
+                    font-oswald text-[38px] font-semibold uppercase leading-[1.05]
+                    md:text-[52px]
+                    lg:text-[64px]
+                    xl:text-[82px]
                   "
                 >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="text-[#F58322] group-hover:text-white transition"
-                  >
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                    <path d="M15 3h6v6" />
-                    <path d="M10 14L21 3" />
-                  </svg>
+                  {t('hero.title')}
+                </h1>
+              </ScrollReveal>
 
-                  <span
+              <ScrollReveal delay={0.25}>
+                <div
+                  className="
+                    mt-6 flex flex-wrap items-center gap-4 text-[11px]
+                    font-semibold uppercase tracking-widest text-gray-300
+                    md:mt-8 md:text-sm
+                  "
+                >
+                  <span>{t('hero.tags.laser')}</span>
+                  <span className="text-gray-500">/</span>
+                  <span>{t('hero.tags.bending')}</span>
+                  <span className="text-gray-500">/</span>
+                  <span>{t('hero.tags.ventilation')}</span>
+                </div>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.4}>
+                <Link to="/catalog">
+                  <button
                     className="
-                      uppercase tracking-widest
-                      font-oswald font-400
-                      text-xs
+                      mt-8 bg-[#F58322] px-8 py-3 text-xs font-bold uppercase tracking-widest transition
+                      hover:bg-[#DB741F] hover:shadow-lg hover:shadow-[#F05023]/20
+                      md:mt-12 md:px-10 md:py-4 md:text-sm
                     "
                   >
-                    {t('hero.buttons.request')}
-                  </span>
-                </button>
+                    {t('hero.buttons.catalog')}
+                  </button>
+                </Link>
+              </ScrollReveal>
             </div>
-          </ScrollReveal>
-        </div>
 
+            <div className="mt-auto w-full pt-12">
+              <ScrollReveal delay={0.5}>
+                <div
+                  className="
+                    flex flex-col items-start justify-between gap-6
+                    lg:flex-row lg:items-end
+                  "
+                >
+                  <p
+                    className="
+                      w-full text-xs font-normal leading-7 text-white
+                      md:text-sm md:leading-8
+                      lg:max-w-[980px]
+                    "
+                  >
+                    {t('hero.description')}
+                  </p>
+
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      const contactSection = document.getElementById('contact-section')
+                      if (contactSection) {
+                        contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      }
+                    }}
+                    className="
+                      group flex shrink-0 items-center gap-4 border border-[#F58322] bg-black/30 px-6 py-3
+                      font-oswald transition hover:bg-[#DB741F]
+                    "
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#F58322] transition group-hover:text-white"
+                    >
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <path d="M15 3h6v6" />
+                      <path d="M10 14L21 3" />
+                    </svg>
+
+                    <span className="font-oswald text-xs font-normal uppercase tracking-widest">
+                      {t('hero.buttons.request')}
+                    </span>
+                  </button>
+                </div>
+              </ScrollReveal>
+            </div>
+          </div>
+        </PageContainer>
       </div>
     </section>
   )

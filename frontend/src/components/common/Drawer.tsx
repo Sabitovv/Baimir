@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import type { FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   isOpen: boolean
@@ -20,6 +21,8 @@ const Drawer: FC<Props> = ({
   widthClass = 'w-full md:w-[480px]',
   heightClass = 'h-auto md:h-[480px]',
 }) => {
+  const { t } = useTranslation()
+
   useEffect(() => {
     if (isOpen) {
       const scrollY = window.scrollY
@@ -76,7 +79,7 @@ const Drawer: FC<Props> = ({
               <h3 className="text-lg font-semibold">{title}</h3>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={onClose} aria-label="Закрыть" className="p-2 rounded hover:bg-gray-100">
+              <button onClick={onClose} aria-label={t('common.close')} className="p-2 rounded hover:bg-gray-100">
                 ✕
               </button>
             </div>

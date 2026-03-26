@@ -2,8 +2,11 @@ import PageContainer from '@/components/ui/PageContainer'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
 import Contact from '@/components/common/Contact'
 import demoImg from '@/assets/img_review.png'
+import { useTranslation } from 'react-i18next'
 
 const DemoInnerPage = () => {
+  const { t } = useTranslation()
+
   return (
     <PageContainer>
 
@@ -14,7 +17,7 @@ const DemoInnerPage = () => {
         </aside>
         <section className="max-w-[1000px]">
           <h1 className="font-oswald text-[40px] font-bold uppercase mb-6">
-            Работа станков в реальном производстве
+            {t('demoInner.title')}
           </h1>
           <div className="mb-12">
             <div className="bg-[#E5E5E5] h-[360px] mb-4 rounded-lg overflow-hidden">
@@ -44,46 +47,39 @@ const DemoInnerPage = () => {
 
             <div>
               <h2 className="font-oswald text-xl font-bold mb-2">
-                Увидеть станок в деле — значит убедиться в его эффективности
+                {t('demoInner.intro.title')}
               </h2>
 
               <p className="leading-[1.7] text-[15px]">
-                Выбор промышленного станка — это решение, которое влияет
-                на всё производство. Мы предлагаем посетить реальные цеха
-                наших партнёров.
+                {t('demoInner.intro.text')}
               </p>
             </div>
 
             <div>
               <h2 className="font-oswald text-xl font-bold mb-3">
-                Зачем это нужно?
+                {t('demoInner.why.title')}
               </h2>
 
               <ul className="list-disc pl-5 space-y-2 text-[15px] leading-[1.7]">
 
                 <li>
-                  <b>Работа в реальном режиме.</b> Вы увидите,
-                  как станок работает под нагрузкой.
+                  <b>{t('demoInner.why.items.1.title')}</b> {t('demoInner.why.items.1.text')}
                 </li>
 
                 <li>
-                  <b>Испытания своим материалом.</b>
-                  Привезите собственные заготовки.
+                  <b>{t('demoInner.why.items.2.title')}</b> {t('demoInner.why.items.2.text')}
                 </li>
 
                 <li>
-                  <b>Диалог с инженером.</b>
-                  Получите ответы на реальные вопросы.
+                  <b>{t('demoInner.why.items.3.title')}</b> {t('demoInner.why.items.3.text')}
                 </li>
 
                 <li>
-                  <b>Оценка эффективности.</b>
-                  Узнайте скорость, точность, ресурс.
+                  <b>{t('demoInner.why.items.4.title')}</b> {t('demoInner.why.items.4.text')}
                 </li>
 
                 <li>
-                  <b>Обоснованный выбор.</b>
-                  Решение на фактах, а не рекламе.
+                  <b>{t('demoInner.why.items.5.title')}</b> {t('demoInner.why.items.5.text')}
                 </li>
 
               </ul>
@@ -98,7 +94,7 @@ const DemoInnerPage = () => {
       <div className="mt-24 text-center max-w-[600px] mx-auto">
 
         <h2 className="font-oswald text-[42px] font-bold uppercase mb-8">
-          Есть вопросы? Оставьте заявку
+          {t('demoInner.contactTitle')}
         </h2>
 
         <Contact />

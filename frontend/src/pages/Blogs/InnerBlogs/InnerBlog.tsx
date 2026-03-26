@@ -85,12 +85,13 @@ const textWidthClassMap: Record<string, string> = {
 }
 
 const BlogProductsBlock = ({ productIds, layout }: { productIds: string[], layout: string }) => {
+  const { t } = useTranslation()
   const { data: products, isLoading, isError } = useGetProductsBatchQuery(productIds, {
     skip: !productIds.length,
   })
 
   if (!productIds.length) return null
-  if (isLoading) return <div className="py-8 text-center text-gray-500">Загрузка товаров...</div>
+  if (isLoading) return <div className="py-8 text-center text-gray-500">{t('innerBlog.loadingProducts')}</div>
   if (isError || !products?.length) return null
 
   const shouldUseCarousel = layout === 'carousel' || products.length > 3
@@ -120,6 +121,8 @@ const BlogProductsBlock = ({ productIds, layout }: { productIds: string[], layou
                 price={product.price}
                 oldPrice={product.oldPrice}
                 inStock={product.inStock}
+                categoryId={product.category?.id}
+                categoryName={product.category?.name}
               />
             </SwiperSlide>
           ))}
@@ -136,6 +139,8 @@ const BlogProductsBlock = ({ productIds, layout }: { productIds: string[], layou
               price={product.price}
               oldPrice={product.oldPrice}
               inStock={product.inStock}
+              categoryId={product.category?.id}
+              categoryName={product.category?.name}
             />
           ))}
         </div>

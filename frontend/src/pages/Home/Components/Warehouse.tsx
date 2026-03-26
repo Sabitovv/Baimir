@@ -9,7 +9,7 @@ import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
 
 type StatItem = {
-  value: string
+  valueKey: string
   unit?: string
   textKey: string
 }
@@ -20,9 +20,9 @@ const Warehouse = () => {
   const [imgChange, setImgChange] = useState(0);
 
   const stats: StatItem[] = [
-    { value: '5 500 м²', textKey: 'home.warehouse.stats.space' },
-    { value: '120+', textKey: 'home.warehouse.stats.staff' },
-    { value: '2012', textKey: 'home.warehouse.stats.since' }
+    { valueKey: 'home.warehouse.values.space', textKey: 'home.warehouse.stats.space' },
+    { valueKey: 'home.warehouse.values.staff', textKey: 'home.warehouse.stats.staff' },
+    { valueKey: 'home.warehouse.values.since', textKey: 'home.warehouse.stats.since' }
   ]
 
   const images = [CardImg, CardImg2, CardImg3]
@@ -91,7 +91,7 @@ const Warehouse = () => {
                     mb-2
                   "
                   >
-                    {item.value}
+                    {t(item.valueKey)}
 
                     {item.unit && (
                       <span className="text-xl md:text-2xl ml-1 font-oswald font-semibold">

@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
 import { useCartAnimation } from '../animations/useCartAnimation'
+import { addToCompare, removeFromCompare } from "@/features/compareSlice"
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 
 type KeyFeature = {
@@ -22,6 +25,8 @@ type ProductCardProps = {
   oldPrice?: number | null
   inStock?: boolean
   keyFeatures?: KeyFeature[] | null
+  categoryId?: number | null
+  categoryName?: string | null
 }
 
 const PLACEHOLDER_IMG = "https://via.placeholder.com/400x300?text=No+image"
@@ -51,13 +56,55 @@ const ProductCard: React.FC<ProductCardProps> = ({
   oldPrice,
   inStock,
   keyFeatures,
+  categoryId,
+  categoryName,
 }) => {
   const { t, i18n } = useTranslation()
   const dispatch = useAppDispatch()
   const items = useAppSelector((state) => state.cart.items)
+  const compareItems = useAppSelector((state) => state.compare.items)
+  const [compareError, setCompareError] = React.useState<string | null>(null)
   const cartItem = items.find((item) => item.id === id)
   const imgSrc = coverImage ?? PLACEHOLDER_IMG
   const { addAnimation } = useCartAnimation()
+
+  const isInCompare = compareItems.some((item) => item.id === id)
+
+  const handleCompareToggle = () => {
+    if (isInCompare) {
+      dispatch(removeFromCompare(id))
+      setCompareError(null)
+      return
+    }
+
+    const productCategoryId = Number(categoryId)
+    const isValidCategory = Number.isFinite(productCategoryId)
+
+    if (!isValidCategory) {
+      setCompareError(t('compare.categoryUnknown'))
+      return
+    }
+
+    const activeCategoryId = compareItems[0]?.categoryId
+
+    if (activeCategoryId && activeCategoryId !== productCategoryId) {
+      setCompareError(t('compare.onlyOneCategory'))
+      return
+    }
+
+    dispatch(
+      addToCompare({
+        id,
+        slug,
+        name,
+        image: imgSrc,
+        price: Number.isFinite(priceNumber) ? priceNumber : 0,
+        categoryId: productCategoryId,
+        categoryName: categoryName ?? '',
+      }),
+    )
+    setCompareError(null)
+  }
 
   const priceNumber =
     typeof price === "number"
@@ -118,8 +165,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {formattedPrice}
         </p>
 
+      <div className="flex gap-2 items-center">
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault()
+            handleCompareToggle()
+          }}
+          className={`flex w-1/5 items-center justify-center rounded-sm border py-2 text-xs font-bold uppercase${
+            isInCompare
+              ? 'border-[#F58322] bg-[#FFF4EA] text-[#DB741F]'
+              : 'border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]'
+          }`}
+        >
+          {isInCompare ? <CheckCircleIcon sx={{ fontSize: 16 }} /> : <CompareArrowsIcon sx={{ fontSize: 16 }} />}
+
+        </button>
+
+        {compareError && (
+          <p className="text-xs leading-tight text-red-600">{compareError}</p>
+        )}
+
         {cartItem ? (
-          <div className="flex items-center justify-between bg-[#F58322] rounded-sm">
+          <div className="flex w-full items-center justify-between bg-[#F58322] rounded-sm">
             <button
               type="button"
               className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
@@ -178,6 +246,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
           </button>
         )}
+        </div>
       </div>
     </Link>
   )

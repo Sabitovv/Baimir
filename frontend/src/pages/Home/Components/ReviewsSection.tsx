@@ -13,6 +13,7 @@ import reviewImg from '@/assets/home/reviewImg.webp'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import ScrollReveal from '@/components/animations/ScrollReveal'
+import PageContainer from '@/components/ui/PageContainer'
 
 import { useGetReviewsQuery } from '@/api/reviewsApi' 
 
@@ -29,17 +30,17 @@ const formatReviewDate = (iso?: string, lang?: string) => {
   })
 }
 
-const getSourceLabel = (profileUrl?: string) => {
-  if (!profileUrl) return '2GIS'
+const getSourceLabel = (profileUrl?: string, fallbackLabel = '2GIS', genericLabel = 'Source') => {
+  if (!profileUrl) return fallbackLabel
 
   try {
     const host = new URL(profileUrl).hostname.replace('www.', '').toLowerCase()
     if (host.includes('2gis')) return '2GIS'
     if (host.includes('google')) return 'Google'
     if (host.includes('yandex')) return 'Yandex'
-    return host.split('.')[0]?.toUpperCase() || 'Источник'
+    return host.split('.')[0]?.toUpperCase() || genericLabel
   } catch {
-    return '2GIS'
+    return fallbackLabel
   }
 }
 
@@ -64,7 +65,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
 
 
   if (isLoading) {
-    return <div className="py-24 text-center text-[#4B5563]">Загрузка отзывов...</div>
+    return <div className="py-24 text-center text-[#4B5563]">{t('home.reviews.loading')}</div>
   }
 
   if (isError || reviews.length === 0) {
@@ -73,7 +74,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
 
   return (
     <section className="py-16 md:py-20 xl:py-24 bg-[#F5F5F5] overflow-x-hidden">
-      <div className="max-w-[1920px] mx-auto px-6 md:px-[80px] xl:px-[250px]">
+      <PageContainer>
         <ScrollReveal>
           <h2
             className="
@@ -196,7 +197,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                           {formatReviewDate(review.reviewDate || review.createdAt, i18n.language)}
                         </span>
                         <span className="px-2 py-1 rounded-md bg-[#E8F6EF] text-[#047857] font-semibold whitespace-nowrap">
-                          {getSourceLabel(profileLink)}
+                          {getSourceLabel(profileLink, '2GIS', t('home.reviews.sourceGeneric'))}
                         </span>
                       </div>
 
@@ -207,7 +208,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 text-[#F59E0B] hover:text-[#DB741F] font-semibold whitespace-nowrap"
                         >
-                          Источник
+                          {t('home.reviews.source')}
                           <OpenInNewRoundedIcon sx={{ fontSize: 14 }} />
                         </a>
                       )}
@@ -249,10 +250,10 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
               text-white
             "
           >
-            Оставить отзыв
+            {t('home.reviews.leaveReview')}
           </button>
         </ScrollReveal>
-      </div>
+      </PageContainer>
     </section>
   )
 }

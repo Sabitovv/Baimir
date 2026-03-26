@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
-import CatalogCard from '@/pages/Catalog/components/CatalogCard'
+import ProductCard from '@/components/common/ProductCard'
 import PageContainer from '@/components/ui/PageContainer'
 import CatalogFilters from '@/pages/Catalog/components/CatalogFilter'
 import Drawer from '@/components/common/Drawer'
@@ -18,15 +18,6 @@ import { useAppDispatch } from '@/app/hooks'
 import Contact from '@/components/common/Contact'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import CategoryCalculator from './components/CategoryCalculator'
-
-type CatalogCardProduct = {
-  id: number
-  image: string
-  title: string
-  code: string
-  price: string
-  slug: string
-}
 
 type BreadcrumbItem = {
   id?: number | string
@@ -194,15 +185,6 @@ const CategoryPage = () => {
     return result
   }, [productsResponse?.filters, products])
 
-  const uiProducts: CatalogCardProduct[] = products.map((p) => ({
-    id: p.id,
-    image: p.coverImage || 'https://placehold.co/300x200?text=No+Image',
-    title: p.name ?? '',
-    code: p.sku ?? String(p.id),
-    price: `${(p.price ?? 0).toLocaleString()} ₸`,
-    slug: p.slug,
-  }))
-
   useEffect(() => {
     if (!categories.length) return
     if (!currentCategory) {
@@ -282,7 +264,7 @@ const CategoryPage = () => {
   if (isErrorCategories) return <PageContainer><p>{t('categoryPage.errorCategories')}</p></PageContainer>
 
   const hasSubcategories = (currentCategory?.children?.length ?? 0) > 0
-  const hasProducts = uiProducts.length > 0
+  const hasProducts = products.length > 0
 
   return (
     <PageContainer>
@@ -398,8 +380,18 @@ const CategoryPage = () => {
                   {!isLoadingProducts && !hasProducts && (
                     <p className="col-span-full text-center text-gray-500 py-10">{t('productPage.notFoundTitle')}</p>
                   )}
-                  {products.map((uiP) => (
-                    <CatalogCard key={uiP.id} product={uiP} />
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      id={product.id}
+                      slug={product.slug}
+                      name={product.name}
+                      coverImage={product.coverImage}
+                      price={product.price}
+                      inStock={product.inStock}
+                      categoryId={product.category?.id ?? activeId}
+                      categoryName={product.category?.name ?? currentCategory?.name ?? ''}
+                    />
                   ))}
                 </div>
 

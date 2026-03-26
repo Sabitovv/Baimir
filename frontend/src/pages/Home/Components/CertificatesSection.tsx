@@ -6,6 +6,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import 'swiper/css'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import { useGetCertificatesQuery } from '@/api/certificatesApi'
+import PageContainer from '@/components/ui/PageContainer'
 
 const CertificatesSection = () => {
   const { t } = useTranslation()
@@ -17,7 +18,7 @@ const CertificatesSection = () => {
 
   return (
     <section className="py-16 md:py-20 bg-white overflow-x-hidden">
-      <div className="max-w-[1920px] mx-auto px-6 md:px-[80px] xl:px-[250px]">
+      <PageContainer>
 
         <ScrollReveal>
           <h2 className="font-oswald font-bold uppercase text-[#111111] text-3xl md:text-4xl xl:text-5xl mb-10">
@@ -79,7 +80,7 @@ const CertificatesSection = () => {
 
           </div>
         </ScrollReveal>
-      </div>
+      </PageContainer>
     </section>
   )
 }

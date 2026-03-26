@@ -21,6 +21,53 @@
       "en": "English"
     }
   },
+  "common": {
+    "more": "More",
+    "close": "Close"
+  },
+  "home": {
+    "warehouse": {
+      "values": {
+        "space": "5,500 m2",
+        "staff": "120+",
+        "since": "2012"
+      }
+    },
+    "reviews": {
+      "title": "Customer reviews",
+      "loading": "Loading reviews...",
+      "source": "Source",
+      "sourceGeneric": "Source",
+      "leaveReview": "Leave a review"
+    },
+    "contact": {
+      "title": "Leave a request",
+      "fields": {
+        "name": "Your name",
+        "email": "Your email",
+        "phone": "Your phone",
+        "comment": "Comment (optional)"
+      },
+      "consent": "I agree to personal data processing",
+      "submit": "Submit",
+      "sending": "Sending...",
+      "thanks": "Thank you for your request.",
+      "thanks_short": "thank you for your request",
+      "manager_will_contact": "Our manager will contact you.",
+      "errors": {
+        "name": "Enter your name",
+        "name_too_long": "Name must be at most {{max}} characters",
+        "phone": "Enter your phone number",
+        "phone_too_long": "Phone number must be at most {{max}} characters",
+        "phone_format": "Invalid symbols in phone number",
+        "email_too_long": "Email must be at most {{max}} characters",
+        "email_invalid": "Invalid email format",
+        "message_too_long": "Message must be at most {{max}} characters",
+        "consent": "You must provide consent for data processing",
+        "network": "Network error - please check your connection"
+      }
+    }
+  },
   "blogPage": {
     "title": "Company blog",
     "subtitle": "We will select machines for your business",
@@ -41,6 +88,7 @@
   },
   "innerBlog": {
     "loading": "Loading article...",
+    "loadingProducts": "Loading products...",
     "notFoundTitle": "Article not found",
     "notFoundText": "Check the link or go back to the blog.",
     "backToBlog": "Back to blog",
@@ -122,10 +170,75 @@
     "decreaseQuantity": "Decrease quantity",
     "increaseQuantity": "Increase quantity",
     "remove": "Remove",
+    "itemsTotalLabel": "Total items:",
+    "pieces": "pcs.",
+    "totalToPay": "Total to pay:",
+    "orderSum": "Order amount:",
+    "requestTitle": "Request checkout",
+    "back": "Back",
+    "sending": "Sending...",
+    "submitErrorLog": "Error while submitting request:",
+    "submitError": "Failed to submit request. Please check your connection and try again.",
+    "successTitle": "Request sent!",
+    "successDescription": "Thank you for your order. Our manager will contact you soon to уточнить детали.",
+    "backToShopping": "Back to shopping",
+    "form": {
+      "name": "Your name",
+      "namePlaceholder": "John Doe",
+      "phone": "Phone number",
+      "phonePlaceholder": "+7 (___) ___-__-__",
+      "email": "Email",
+      "emailPlaceholder": "example@mail.com",
+      "comment": "Comment (optional)",
+      "commentPlaceholder": "Additional notes for the order..."
+    },
     "mockItems": {
       "firstTitle": "Laser cutting machine for metal sheets and tubes A3T6 - 3000W Bodor",
       "secondTitle": "CNC laser machine BODOR C3 1500W"
     }
+  },
+  "reviewForm": {
+    "title": "Leave a review",
+    "source": "Website",
+    "submitErrorLog": "Error while sending review:",
+    "submitError": "An error occurred while sending your review",
+    "success": "Thank you for your review! It will be moderated and published.",
+    "fields": {
+      "name": "Your name",
+      "review": "Your review",
+      "rating": "Rating"
+    },
+    "placeholders": {
+      "name": "John Doe",
+      "review": "Share your impression about our service..."
+    },
+    "rating": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "normal": "Average",
+      "bad": "Bad",
+      "veryBad": "Very bad"
+    },
+    "sending": "Sending...",
+    "submit": "Send review"
+  },
+  "demoInner": {
+    "title": "Machine performance in real production",
+    "intro": {
+      "title": "Seeing a machine in action means confidence in its efficiency",
+      "text": "Choosing an industrial machine is a decision that impacts the entire production process. We offer visits to real workshops of our partners."
+    },
+    "why": {
+      "title": "Why is this important?",
+      "items": {
+        "1": { "title": "Real operating mode.", "text": "You will see how the machine works under real load." },
+        "2": { "title": "Tests with your material.", "text": "Bring your own workpieces for testing." },
+        "3": { "title": "Engineer dialogue.", "text": "Get answers to practical production questions." },
+        "4": { "title": "Efficiency assessment.", "text": "Evaluate speed, accuracy, and machine resource." },
+        "5": { "title": "Informed choice.", "text": "Make decisions based on facts, not just marketing." }
+      }
+    },
+    "contactTitle": "Have questions? Leave a request"
   },
   "compare": {
     "title": "Product comparison",

@@ -109,8 +109,8 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
       
       dispatch(clearCart())
     } catch (error) {
-      console.error('Ошибка при отправке заявки:', error)
-      alert('Произошла ошибка при отправке. Пожалуйста, проверьте подключение и попробуйте позже.')
+      console.error(t('cart.submitErrorLog'), error)
+      alert(t('cart.submitError'))
     }
   }
 
@@ -168,11 +168,11 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
 
         <div className="border-t border-gray-200 p-4 space-y-3 bg-white relative z-10">
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>Всего товаров:</span>
-            <span>{itemsCount} шт.</span>
+            <span>{t('cart.itemsTotalLabel')}</span>
+            <span>{itemsCount} {t('cart.pieces')}</span>
           </div>
           <div className="flex items-center justify-between text-base font-semibold text-gray-900">
-            <span>Итого к оплате:</span>
+            <span>{t('cart.totalToPay')}</span>
             <span>{total.toLocaleString(i18n.language)} ₸</span>
           </div>
 
@@ -193,77 +193,77 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
           {isSuccess ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-gray-50">
               <CheckCircleIcon />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Заявка отправлена!</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('cart.successTitle')}</h3>
               <p className="text-gray-600 mb-8">
-                Спасибо за ваш заказ. Наш менеджер свяжется с вами в ближайшее время для уточнения деталей.
+                {t('cart.successDescription')}
               </p>
               <button
                 onClick={handleClose}
                 className="w-full max-w-xs rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F]"
               >
-                Вернуться к покупкам
+                {t('cart.backToShopping')}
               </button>
             </div>
           ) : (
             <>
               <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-gray-50">
-                <h3 className="text-xl font-semibold text-black">Оформление заявки</h3>
+                <h3 className="text-xl font-semibold text-black">{t('cart.requestTitle')}</h3>
                 <button 
                   onClick={() => setOpenUp(false)} 
                   className="text-sm font-medium text-gray-600 hover:text-black transition-colors"
                 >
-                  Назад
+                  {t('cart.back')}
                 </button>
               </div>
 
               <div className="flex-1 overflow-auto p-5">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ваше имя *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('cart.form.name')} *</label>
                     <input 
                       type="text" 
                       name="name" 
                       required
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
-                      placeholder="Иван Иванов"
+                      placeholder={t('cart.form.namePlaceholder')}
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Номер телефона *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('cart.form.phone')} *</label>
                     <input 
                       type="tel" 
                       name="phone" 
                       required
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
-                      placeholder="+7 (___) ___-__-__"
+                      placeholder={t('cart.form.phonePlaceholder')}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('cart.form.email')} *</label>
                     <input 
                       type="email" 
                       name="email" 
                       required
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
-                      placeholder="example@mail.com"
+                      placeholder={t('cart.form.emailPlaceholder')}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Комментарий (необязательно)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('cart.form.comment')}</label>
                     <textarea 
                       name="message" 
                       rows={4}
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all resize-none"
-                      placeholder="Дополнительные пожелания к заказу..."
+                      placeholder={t('cart.form.commentPlaceholder')}
                     />
                   </div>
 
                   <div className="pt-4 border-t border-gray-100 mt-6">
                     <div className="flex items-center justify-between text-base font-semibold text-gray-900 mb-4">
-                      <span>Сумма заказа:</span>
+                      <span>{t('cart.orderSum')}</span>
                       <span>{total.toLocaleString(i18n.language)} ₸</span>
                     </div>
                     <button
@@ -277,10 +277,10 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          Отправка...
+                          {t('cart.sending')}
                         </>
                       ) : (
-                        'Отправить заявку'
+                        t('cart.submitRequest')
                       )}
                     </button>
                   </div>

@@ -4,6 +4,7 @@ import { useGetBlogsQuery, type BlogContentBlock } from '@/api/blogsApi'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import PageContainer from '@/components/ui/PageContainer'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded'
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded'
@@ -91,7 +92,7 @@ const NewsSection = () => {
 
   return (
     <section className="py-16 md:py-20 bg-[#F5F5F5]">
-      <div className="max-w-[1920px] mx-auto px-6 md:px-[80px] xl:px-[250px]">
+      <PageContainer>
 
         <ScrollReveal>
           <h2 className="font-oswald font-bold uppercase text-[#111111]
@@ -160,7 +161,11 @@ const NewsSection = () => {
                             </div>
                             <div className="flex items-center gap-1">
                               <AccessTimeRoundedIcon sx={{ fontSize: 12, color: '#9CA3AF' }} />
-                              <span>{typeof readingTime === 'number' && readingTime > 0 ? `${readingTime} мин` : '—'}</span>
+                              <span>
+                                {typeof readingTime === 'number' && readingTime > 0
+                                  ? `${readingTime} ${t('blogCard.minutes')}`
+                                  : '—'}
+                              </span>
                             </div>
                             <div className="flex items-center gap-1">
                               <VisibilityRoundedIcon sx={{ fontSize: 12, color: '#9CA3AF' }} />
@@ -182,7 +187,7 @@ const NewsSection = () => {
           <p className="text-gray-500 text-center py-8">{t('blogPage.empty')}</p>
         )}
 
-      </div>
+      </PageContainer>
     </section>
   )
 }

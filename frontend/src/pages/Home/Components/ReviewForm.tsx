@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import { useCreateReviewMutation } from '@/api/reviewsApi'
+import PageContainer from '@/components/ui/PageContainer'
 
 type ReviewFormProps = {
   isModal?: boolean
@@ -8,6 +10,7 @@ type ReviewFormProps = {
 }
 
 const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
+  const { t } = useTranslation()
   const [createReview, { isLoading }] = useCreateReviewMutation()
   
   const [name, setName] = useState('')
@@ -27,7 +30,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
       authorName: name,
       text: review,
       rating,
-      source: 'Сайт',
+      source: t('reviewForm.source'),
       // image: photo,
     }
 
@@ -46,8 +49,8 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
         setTimeout(() => setSuccess(false), 5000)
       }
     } catch (err: any) {
-      console.error('Ошибка при отправке отзыва:', err)
-      setError(err?.data?.message || 'Произошла ошибка при отправке отзыва')
+      console.error(t('reviewForm.submitErrorLog'), err)
+      setError(err?.data?.message || t('reviewForm.submitError'))
     }
   }
 
@@ -57,7 +60,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
       tracking-tight
       ${isModal ? 'text-2xl md:text-3xl mb-6 md:mb-7 text-left' : 'text-3xl md:text-4xl xl:text-[54px] mb-10 md:mb-12 xl:mb-16 text-center'}
     `}>
-      Оставить отзыв
+      {t('reviewForm.title')}
     </h2>
   )
 
@@ -88,7 +91,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
 
             {success && (
               <div className="mb-6 p-4 bg-[#ECFDF3] border border-[#86EFAC] rounded-xl text-[#065F46] text-center">
-                Спасибо за ваш отзыв! Он будет проверен и опубликован.
+                {t('reviewForm.success')}
               </div>
             )}
             
@@ -105,7 +108,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                   <label htmlFor="name" className="
                     block text-sm font-medium text-[#374151] mb-2
                   ">
-                    Ваше имя *
+                    {t('reviewForm.fields.name')} *
                   </label>
                   <input
                     id="name"
@@ -114,7 +117,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className={inputClass}
-                    placeholder="Иван Иванов"
+                    placeholder={t('reviewForm.placeholders.name')}
                   />
                 </div>
               </div>
@@ -123,7 +126,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                 <label htmlFor="review" className="
                   block text-sm font-medium text-[#374151] mb-2
                 ">
-                  Ваш отзыв *
+                  {t('reviewForm.fields.review')} *
                 </label>
                 <textarea
                   id="review"
@@ -132,13 +135,13 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                   value={review}
                   onChange={(e) => setReview(e.target.value)}
                   className={`${inputClass} resize-none min-h-[140px]`}
-                  placeholder="Поделитесь вашими впечатлениями о работе компании..."
+                  placeholder={t('reviewForm.placeholders.review')}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-[#374151] mb-3">
-                  Оценка *
+                  {t('reviewForm.fields.rating')} *
                 </label>
                 <div className="flex items-center gap-1 flex-wrap">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -162,11 +165,11 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                     </button>
                   ))}
                   <span className="ml-2 md:ml-3 text-sm font-medium text-[#6B7280]">
-                    {rating === 5 && 'Отлично'}
-                    {rating === 4 && 'Хорошо'}
-                    {rating === 3 && 'Нормально'}
-                    {rating === 2 && 'Плохо'}
-                    {rating === 1 && 'Очень плохо'}
+                    {rating === 5 && t('reviewForm.rating.excellent')}
+                    {rating === 4 && t('reviewForm.rating.good')}
+                    {rating === 3 && t('reviewForm.rating.normal')}
+                    {rating === 2 && t('reviewForm.rating.bad')}
+                    {rating === 1 && t('reviewForm.rating.veryBad')}
                   </span>
                 </div>
               </div>
@@ -195,10 +198,10 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      Отправка...
+                      {t('reviewForm.sending')}
                     </span>
                   ) : (
-                    'Отправить отзыв'
+                    t('reviewForm.submit')
                   )}
                 </button>
               </div>
@@ -217,10 +220,10 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
 
   return (
     <section className="py-16 md:py-20 xl:py-24 bg-[#F5F5F5]">
-      <div className="max-w-[1920px] mx-auto px-6 md:px-[80px] xl:px-[250px]">
+      <PageContainer>
         <ScrollReveal>{title}</ScrollReveal>
         <ScrollReveal delay={0.1}>{formCard}</ScrollReveal>
-      </div>
+      </PageContainer>
     </section>
   )
 }
