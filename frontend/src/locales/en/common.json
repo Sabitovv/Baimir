@@ -21,12 +21,58 @@
       "en": "English"
     }
   },
+  "hero": {
+    "title": "Turnkey machines and equipment",
+    "tags": {
+      "laser": "laser machines",
+      "bending": "bending machines",
+      "ventilation": "ventilation machines"
+    },
+    "buttons": {
+      "catalog": "View assortment",
+      "request": "Leave a request"
+    },
+    "description": "Baymir is an official representative of Bodor laser machines. BODOR is one of the leading global suppliers of laser cutting equipment."
+  },
+  "footer": {
+    "company": {
+      "title": "Company",
+      "name": "BAYMIR LLP"
+    },
+    "address": {
+      "title": "Address",
+      "city": "Almaty, Alatau district,",
+      "street": "Rakhat microdistrict, 244a"
+    },
+    "phones": {
+      "title": "Phones",
+      "main": "+7 (727) 220-87-07",
+      "mobile": "+7-701-887-50-85"
+    },
+    "email": {
+      "title": "E-mail",
+      "value": "baymir@inbox.ru"
+    }
+  },
   "common": {
     "more": "More",
     "close": "Close"
   },
   "home": {
+    "catalog": {
+      "title": "Leading the industry",
+      "subtitle": "Technologies where we set market standards:",
+      "link": "Go to catalog"
+    },
+    "certificates": {
+      "title": "Certificates"
+    },
+    "clients": {
+      "title": "Benefits for our clients"
+    },
     "warehouse": {
+      "title": "Largest warehouse in Kazakhstan",
+      "imageAlt": "Company warehouse",
       "values": {
         "space": "5,500 m2",
         "staff": "120+",
@@ -39,6 +85,15 @@
       "source": "Source",
       "sourceGeneric": "Source",
       "leaveReview": "Leave a review"
+    },
+    "news": {
+      "title": "News"
+    },
+    "service": {
+      "title": "Turnkey service"
+    },
+    "why": {
+      "title": "Why clients choose us"
     },
     "contact": {
       "title": "Leave a request",
@@ -66,6 +121,53 @@
         "consent": "You must provide consent for data processing",
         "network": "Network error - please check your connection"
       }
+    }
+  },
+  "technology": {
+    "title": "Production technologies for your workshop",
+    "subTitle": "We select equipment and technological chains for small and medium production tasks",
+    "text": "Choose a direction and we will show equipment, solution examples, and recommendations."
+  },
+  "demo": {
+    "title": "VISIT OUR DEMO HALLS",
+    "subTitle": "We will select machines for your business",
+    "text": "Visit our demo halls to see machines in operation and run test operations for your needs.",
+    "videoSubText": "Subscribe if you want",
+    "why": "Why visit a demo hall?",
+    "work": "How it works?"
+  },
+  "service": {
+    "title": "BAYMIR service support",
+    "subTitle": "Service maintenance, repair and equipment support",
+    "team": {
+      "imageText": "BAYMIR service team. Engineers and technical specialists"
+    },
+    "services": {
+      "title": "Our service offerings",
+      "items": {
+        "setup": "Commissioning",
+        "repair": "Diagnostics and repair",
+        "maintenance": "Maintenance",
+        "training": "Training",
+        "materials": "Consumables",
+        "parts": "Spare parts"
+      }
+    },
+    "why": {
+      "title": "Our service works for your result",
+      "text1": "Clients choose us because we treat service as an obligation, not an option.",
+      "text2": "We provide commissioning, training, and support throughout the machine lifecycle."
+    },
+    "engineers": {
+      "title": "BAYMIR engineers - your protection from downtime"
+    },
+    "realObjects": {
+      "title": "Real sites. Real photos.",
+      "text": "We show real processes and photos from real sites.",
+      "cardTitle": "Process from warehouse"
+    },
+    "contact": {
+      "title": "Have questions? Leave a request"
     }
   },
   "blogPage": {
@@ -180,7 +282,7 @@
     "submitErrorLog": "Error while submitting request:",
     "submitError": "Failed to submit request. Please check your connection and try again.",
     "successTitle": "Request sent!",
-    "successDescription": "Thank you for your order. Our manager will contact you soon to уточнить детали.",
+    "successDescription": "Thank you for your order. Our manager will contact you shortly to confirm the details.",
     "backToShopping": "Back to shopping",
     "form": {
       "name": "Your name",
@@ -297,6 +399,11 @@
     "series": "Series"
   },
   "storage": {
+    "title": "BAYMIR has the largest warehouse in Kazakhstan",
+    "subTitle": "Your confidence is our priority.",
+    "subTitle2": "Own warehouse space and stable equipment stock.",
+    "other": "Other blog posts",
+    "contact": "Leave a request",
     "cards": {
       "1": "Demonstration of equipment loading before shipment",
       "2": "Organized machine storage by zones",
@@ -308,6 +415,35 @@
     }
   },
   "production": {
+    "title": "Machine operation in real production",
+    "subTitle": "See equipment in action before purchase.",
+    "text": "We show machine operation at partner workshops: speed, quality, staff, and real production cycle.",
+    "signUpDemo": "Sign up for a demo",
+    "textUnderPhoto": "Photos from our partners' production workshops.",
+    "youGet": {
+      "title": "What will you get from visiting production?",
+      "speed": {
+        "textB": "Real machine speed.",
+        "text": "You will see machine performance in conditions close to yours"
+      },
+      "quality": {
+        "textB": "Finished product quality.",
+        "text": "Review product samples and evaluate accuracy, speed and processing"
+      },
+      "employees": {
+        "textB": "Workshop staff work.",
+        "text": "Understand how the process is organized and how the team operates"
+      }
+    },
+    "howItWork": {
+      "title": "How it works?"
+    },
+    "benefits": {
+      "title": "Why is it useful for you?"
+    },
+    "platformsTitle": "Production sites for demonstration",
+    "platformsText": "Production sites for demonstration",
+    "contact": "Request a production visit",
     "platformCard": {
       "type": "Production type",
       "region": "Region, city"

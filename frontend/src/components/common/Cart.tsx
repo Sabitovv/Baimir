@@ -23,7 +23,6 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
   const items = useAppSelector((state) => state.cart.items)
   
   const [openUp, setOpenUp] = useState(false)
-  // Новое состояние для экрана успеха
   const [isSuccess, setIsSuccess] = useState(false)
 
   const [createInquiry, { isLoading }] = useCreateInquiryMutation()
@@ -181,7 +180,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
             className="w-full rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F] disabled:cursor-not-allowed disabled:bg-gray-300"
             onClick={() => setOpenUp(true)} 
           >
-            {t('cart.submitRequest', 'Оформить заявку')}
+            {t('cart.submitRequest')}
           </button>
         </div>
 
