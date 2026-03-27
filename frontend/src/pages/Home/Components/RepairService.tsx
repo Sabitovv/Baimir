@@ -5,19 +5,34 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { useTranslation } from 'react-i18next'
 
 const RepairService = () => {
+  const { t } = useTranslation()
+
+  const engineerBenefits = [
+    t('home.repair.engineer.text.line1'),
+    t('home.repair.engineer.text.line2'),
+    t('home.repair.engineer.text.line3'),
+    t('home.repair.engineer.text.line4'),
+  ]
+
+  const clientBenefits = [
+    t('home.repair.client.text.line1'),
+    t('home.repair.client.text.line2'),
+    t('home.repair.client.text.line3'),
+  ]
+
   return (
     <section className="py-24 bg-[#F5F7F8]">
       <PageContainer>
         <ScrollReveal>
           <h1 className="font-oswald text-[#0E1621] text-4xl min-[650px]:text-5xl min-[900px]:text-6xl font-bold uppercase mb-4">
-            СЕРВИС ПО РЕМОНТУ СТАНКОВ
+            {t('home.repair.title')}
           </h1>
 
           <p className="max-w-3xl text-[#4B5563] mb-16 text-sm min-[650px]:text-base">
-            Мы создали новый сервис. Наш сайт соединяет владельцев станков и
-            инженеров-ремонтников напрямую. Без посредников, без переплат, без ожидания.
+            {t('home.repair.description')}
           </p>
         </ScrollReveal>
 
@@ -30,15 +45,10 @@ const RepairService = () => {
               {/* Orange card – engineer */}
               <div className="bg-[#F58322] px-6 py-10 text-[#233337]">
                 <h3 className="font-oswald text-2xl uppercase mb-6 font-bold">
-                  ПЛЮСЫ ДЛЯ ИНЖЕНЕРА-РЕМОНТНИКА
+                  {t('home.repair.engineer.title')}
                 </h3>
                 <StaggerContainer staggerDelay={0.1} className="space-y-4 text-sm">
-                  {[
-                    'Сам назначаешь цену',
-                    'Заявки приходят сразу после регистрации',
-                    'Выбирай заказы рядом или по всей стране',
-                    'Рейтинг и отзывы повысят твою репутацию',
-                  ].map((item, i) => (
+                  {engineerBenefits.map((item, i) => (
                     <StaggerItem key={i}>
                       <li className="flex items-start gap-3 list-none">
                         <AddCircleOutlineOutlinedIcon fontSize="small" />
@@ -52,14 +62,10 @@ const RepairService = () => {
               {/* Dark card – client */}
               <div className="bg-[#233337] px-6 py-10 text-white">
                 <h3 className="font-oswald text-2xl uppercase mb-6 font-bold">
-                  ПЛЮСЫ ДЛЯ ЗАКАЗЧИКА
+                  {t('home.repair.client.title')}
                 </h3>
                 <StaggerContainer staggerDelay={0.1} className="space-y-4 text-sm text-gray-200 mb-8">
-                  {[
-                    'Поиск ремонтников по рейтингу и опыту',
-                    'Мгновенная связь и вызов',
-                    'Ищите ремонтника рядом, чтобы сэкономить на выезде',
-                  ].map((item, i) => (
+                  {clientBenefits.map((item, i) => (
                     <StaggerItem key={i}>
                       <li className="flex items-start gap-3 list-none">
                         <AddCircleOutlineOutlinedIcon fontSize="small" />
@@ -69,7 +75,7 @@ const RepairService = () => {
                   ))}
                 </StaggerContainer>
                 <button className="border border-white/60 px-8 py-3 uppercase text-sm hover:border-white hover:bg-white/10 transition w-full min-[400px]:w-auto">
-                  Перейти на сайт →
+                  {t('home.repair.cta')}
                 </button>
               </div>
             </div>
@@ -105,16 +111,11 @@ const RepairService = () => {
                 {/* Left column – engineer */}
                 <div className="w-full min-[650px]:w-[40%] px-6 min-[650px]:px-12 py-8 min-[650px]:py-12 text-[#233337] mt-6 min-[650px]:mt-10">
                   <h3 className="font-oswald text-3xl uppercase mb-6 font-bold">
-                    ПЛЮСЫ ДЛЯ ИНЖЕНЕРА-РЕМОНТНИКА
+                    {t('home.repair.engineer.title')}
                   </h3>
 
                   <StaggerContainer staggerDelay={0.1} className="space-y-4 text-sm">
-                    {[
-                      'Сам назначаешь цену',
-                      'Заявки приходят сразу после регистрации',
-                      'Выбирай заказы рядом или по всей стране',
-                      'Рейтинг и отзывы повысят твою репутацию',
-                    ].map((item, i) => (
+                    {engineerBenefits.map((item, i) => (
                       <StaggerItem key={i}>
                         <li className="flex items-start gap-3 list-none">
                           <AddCircleOutlineOutlinedIcon fontSize="small" />
@@ -129,18 +130,14 @@ const RepairService = () => {
                 <div className="w-full min-[650px]:flex-1 px-6 min-[650px]:px-16 py-8 min-[650px]:py-12 text-white flex flex-col justify-between text-end mt-6 min-[650px]:mt-10">
                   <div>
                     <h3 className="font-oswald text-3xl uppercase mb-6 font-bold">
-                      ПЛЮСЫ ДЛЯ ЗАКАЗЧИКА
+                      {t('home.repair.client.title')}
                     </h3>
 
                     <StaggerContainer
                       staggerDelay={0.1}
                       className="space-y-4 text-sm text-gray-200"
                     >
-                      {[
-                        'Поиск ремонтников по рейтингу и опыту',
-                        'Мгновенная связь и вызов',
-                        'Ищите ремонтника рядом, чтобы сэкономить на выезде',
-                      ].map((item, i) => (
+                      {clientBenefits.map((item, i) => (
                         <StaggerItem key={i}>
                           <li className="flex items-center justify-end gap-3 text-right list-none">
                             <AddCircleOutlineOutlinedIcon fontSize="small" />
@@ -153,7 +150,7 @@ const RepairService = () => {
 
                   <div className="flex justify-end">
                     <button className="border border-white/60 px-8 py-3 uppercase text-sm hover:border-white hover:bg-white/10 transition">
-                      Перейти на сайт →
+                      {t('home.repair.cta')}
                     </button>
                   </div>
                 </div>

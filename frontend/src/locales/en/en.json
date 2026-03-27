@@ -58,11 +58,36 @@
     "more": "More",
     "close": "Close"
   },
+  "app": {
+    "loadingTranslations": "Loading translations..."
+  },
   "home": {
     "catalog": {
       "title": "Leading the industry",
       "subtitle": "Technologies where we set market standards:",
       "link": "Go to catalog"
+    },
+    "repair": {
+      "title": "Machine repair service",
+      "description": "We created a new service. Our platform connects machine owners and repair engineers directly. No middlemen, no extra costs, no waiting.",
+      "engineer": {
+        "title": "Benefits for the engineer",
+        "text": {
+          "line1": "Set your own price.",
+          "line2": "Requests arrive right after registration.",
+          "line3": "Choose orders nearby or across the country.",
+          "line4": "Ratings and reviews help build your reputation."
+        }
+      },
+      "client": {
+        "title": "Benefits for the client",
+        "text": {
+          "line1": "Find repair specialists by rating and experience.",
+          "line2": "Instant contact and callout.",
+          "line3": "Find a specialist nearby to save on travel costs."
+        }
+      },
+      "cta": "Go to website ->"
     },
     "certificates": {
       "title": "Certificates"
@@ -134,7 +159,8 @@
     "text": "Visit our demo halls to see machines in operation and run test operations for your needs.",
     "videoSubText": "Subscribe if you want",
     "why": "Why visit a demo hall?",
-    "work": "How it works?"
+    "work": "How it works?",
+    "contactTitle": "Sign up for a demo hall"
   },
   "service": {
     "title": "BAYMIR service support",
@@ -258,7 +284,23 @@
     "loadingLinked": "Loading products...",
     "linkedNotFound": "Products for this block were not found",
     "showImage": "Show image {{index}}",
-    "pieces": "pcs"
+    "pieces": "pcs",
+    "modal": {
+      "close": "Close",
+      "retry": "Retry",
+      "deliveryMethods": "Delivery methods",
+      "freeDelivery": "Free delivery conditions",
+      "paymentMethods": "Payment methods",
+      "warranty": "Warranty",
+      "vat": "VAT, %",
+      "additionalInfo": "Additional delivery and payment info",
+      "deliveryRegions": "Delivery regions",
+      "moreDetails": "More details",
+      "scheduleLoading": "Loading work schedule...",
+      "scheduleLoadError": "Failed to load work schedule.",
+      "timezone": "Time zone",
+      "exceptions": "Exceptions"
+    }
   },
   "cart": {
     "title": "Cart",
@@ -346,7 +388,7 @@
     "title": "Product comparison",
     "open": "Open comparison",
     "emptyTitle": "Comparison list is empty",
-    "emptyDescription": "Add products from one category to compare their specifications.",
+    "emptyDescription": "Add products to compare their specifications.",
     "goToCatalog": "Go to catalog",
     "addToCompare": "Add to compare",
     "removeFromCompare": "Remove from compare",
@@ -358,7 +400,10 @@
     "loading": "Loading comparison...",
     "error": "Failed to load comparison. Please try again later.",
     "onlyOneCategory": "You can compare products only within the same category.",
-    "categoryUnknown": "Could not detect product category for comparison."
+    "categoryUnknown": "Could not detect product category for comparison.",
+    "allCharacteristics": "All characteristics",
+    "onlyDifferences": "Only differences",
+    "noDifferences": "No differing characteristics found"
   },
   "calculator": {
     "material": "Material",
@@ -490,6 +535,11 @@
       "title": "Working hours",
       "break": "Break",
       "closed": "Closed",
+      "loading": "Loading work schedule...",
+      "error": "Failed to load work schedule.",
+      "retry": "Retry",
+      "timezone": "Time zone",
+      "exceptions": "Exceptions",
       "days": {
         "monday": "Monday",
         "tuesday": "Tuesday",

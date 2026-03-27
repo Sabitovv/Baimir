@@ -65,7 +65,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
 
 
   if (isLoading) {
-    return <div className="py-24 text-center text-[#4B5563]">{t('home.reviews.loading')}</div>
+    return <div className="py-24 text-center text-[#4B5563]">{t('home.reviews.loading', { defaultValue: 'Загрузка отзывов...' })}</div>
   }
 
   if (isError || reviews.length === 0) {
@@ -197,7 +197,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                           {formatReviewDate(review.reviewDate || review.createdAt, i18n.language)}
                         </span>
                         <span className="px-2 py-1 rounded-md bg-[#E8F6EF] text-[#047857] font-semibold whitespace-nowrap">
-                          {getSourceLabel(profileLink, '2GIS', t('home.reviews.sourceGeneric'))}
+                          {getSourceLabel(profileLink, '2GIS', t('home.reviews.sourceGeneric', { defaultValue: 'Источник' }))}
                         </span>
                       </div>
 
@@ -208,7 +208,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 text-[#F59E0B] hover:text-[#DB741F] font-semibold whitespace-nowrap"
                         >
-                          {t('home.reviews.source')}
+                          {t('home.reviews.source', { defaultValue: 'Источник' })}
                           <OpenInNewRoundedIcon sx={{ fontSize: 14 }} />
                         </a>
                       )}
@@ -250,7 +250,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
               text-white
             "
           >
-            {t('home.reviews.leaveReview')}
+            {t('home.reviews.leaveReview', { defaultValue: 'Оставить отзыв' })}
           </button>
         </ScrollReveal>
       </PageContainer>

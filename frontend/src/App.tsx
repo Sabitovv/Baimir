@@ -1,14 +1,14 @@
 import { TolgeeProvider } from '@tolgee/react'
 import Layout from '@/components/layout/Layout'
 import AppRoutes from '@/routes/AppRoutes'
-import { tolgee } from '@/i18n' 
+import i18n, { tolgee } from '@/i18n'
 
 const App = () => {
   if (tolgee) {
     return (
-      <TolgeeProvider 
-        tolgee={tolgee} 
-        fallback={<div>Загрузка переводов...</div>} 
+      <TolgeeProvider
+        tolgee={tolgee}
+        fallback={<div>{i18n.t('app.loadingTranslations')}</div>}
       >
         <Layout>
           <AppRoutes />

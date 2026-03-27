@@ -5,9 +5,40 @@ import CategoriesMenu from '@/components/common/CategoriesMenu'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { useGetCompanySettingsQuery } from '@/api/productsApi'
+import type { WorkInterval, WorkScheduleDayKey } from '@/api/productsApi'
+
+const WORK_DAYS_ORDER: WorkScheduleDayKey[] = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+]
+
+const formatIntervals = (intervals: WorkInterval[] | undefined): string => {
+  if (!intervals || intervals.length === 0) return '-'
+  return intervals.map((interval) => `${interval.start} - ${interval.end}`).join(', ')
+}
+
+const formatExceptionDateRange = (startDate: string, endDate: string): string => {
+  if (!startDate && !endDate) return '-'
+  if (startDate === endDate) return startDate
+  return `${startDate} - ${endDate}`
+}
 
 const AboutPage = () => {
   const { t } = useTranslation()
+  const {
+    data: companySettingsData,
+    isFetching: isScheduleLoading,
+    isError: isScheduleError,
+    refetch: refetchSchedule,
+  } = useGetCompanySettingsQuery()
+
+  const workSchedule = companySettingsData?.COMPANY_WORK_SCHEDULE
 
   const stats = [
     { value: '15+', label: t('about.stats.years') },
@@ -35,15 +66,15 @@ const AboutPage = () => {
     },
   ]
 
-  const schedule = [
-    { day: t('about.schedule.days.monday'), hours: '08:00 - 17:00', breakTime: '13:00 - 14:00' },
-    { day: t('about.schedule.days.tuesday'), hours: '08:00 - 17:00', breakTime: '13:00 - 14:00' },
-    { day: t('about.schedule.days.wednesday'), hours: '08:00 - 17:00', breakTime: '13:00 - 14:00' },
-    { day: t('about.schedule.days.thursday'), hours: '08:00 - 17:00', breakTime: '13:00 - 14:00' },
-    { day: t('about.schedule.days.friday'), hours: '08:00 - 17:00', breakTime: '13:00 - 14:00' },
-    { day: t('about.schedule.days.saturday'), hours: t('about.schedule.closed') },
-    { day: t('about.schedule.days.sunday'), hours: t('about.schedule.closed') },
-  ]
+  const scheduleDayLabels: Record<WorkScheduleDayKey, string> = {
+    monday: t('about.schedule.days.monday'),
+    tuesday: t('about.schedule.days.tuesday'),
+    wednesday: t('about.schedule.days.wednesday'),
+    thursday: t('about.schedule.days.thursday'),
+    friday: t('about.schedule.days.friday'),
+    saturday: t('about.schedule.days.saturday'),
+    sunday: t('about.schedule.days.sunday'),
+  }
 
   return (
     <PageContainer>
@@ -187,17 +218,62 @@ const AboutPage = () => {
               <h2 className="font-oswald text-2xl sm:text-3xl uppercase text-gray-900">
                 {t('about.schedule.title')}
               </h2>
-              <div className="mt-6 space-y-3">
-                {schedule.map((item) => (
-                  <div key={item.day} className="grid grid-cols-[1fr_auto] gap-4 items-start border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
-                    <p className="font-semibold text-gray-900">{item.day}</p>
-                    <div className="text-right text-sm sm:text-base text-gray-700">
-                      <p>{item.hours}</p>
-                      {item.breakTime ? <p className="text-gray-500">{t('about.schedule.break')}: {item.breakTime}</p> : null}
-                    </div>
+              {isScheduleLoading ? (
+                <p className="mt-6 text-sm text-gray-600">{t('about.schedule.loading')}</p>
+              ) : isScheduleError ? (
+                <div className="mt-6 space-y-3">
+                  <p className="text-sm text-red-600">{t('about.schedule.error')}</p>
+                  <button
+                    type="button"
+                    onClick={() => refetchSchedule()}
+                    className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-[#F58322] hover:text-[#DB741F]"
+                  >
+                    {t('about.schedule.retry')}
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-6 space-y-4">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold text-gray-900">{t('about.schedule.timezone')}:</span>{' '}
+                    {workSchedule?.timezone || '-'}
+                  </p>
+
+                  <div className="space-y-3">
+                    {WORK_DAYS_ORDER.map((day) => {
+                      const daySchedule = workSchedule?.regular?.[day]
+                      const dayValue = daySchedule?.isDayOff
+                        ? t('about.schedule.closed')
+                        : formatIntervals(daySchedule?.intervals)
+
+                      return (
+                        <div key={day} className="grid grid-cols-[1fr_auto] gap-4 items-start border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
+                          <p className="font-semibold text-gray-900">{scheduleDayLabels[day]}</p>
+                          <div className="text-right text-sm sm:text-base text-gray-700">
+                            <p>{dayValue || '-'}</p>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
-                ))}
-              </div>
+
+                  {workSchedule?.exceptions && workSchedule.exceptions.length > 0 && (
+                    <div className="pt-2">
+                      <h3 className="text-sm font-semibold text-gray-900">{t('about.schedule.exceptions')}</h3>
+                      <ul className="mt-2 space-y-2">
+                        {workSchedule.exceptions.map((exception, idx) => (
+                          <li key={`${exception.startDate}-${exception.endDate}-${idx}`} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-gray-700">
+                            <p className="font-medium text-gray-900">
+                              {formatExceptionDateRange(exception.startDate, exception.endDate)}
+                            </p>
+                            {exception.note && <p>{exception.note}</p>}
+                            <p>{exception.isDayOff ? t('about.schedule.closed') : formatIntervals(exception.intervals)}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
             </ScrollReveal>
 
             <ScrollReveal delay={0.15} className="relative overflow-hidden bg-[#141414] text-white rounded-xl p-6 sm:p-8 border border-gray-700 shadow-[0_22px_35px_-24px_rgba(20,20,20,0.95)]">

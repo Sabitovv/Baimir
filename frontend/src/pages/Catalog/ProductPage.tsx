@@ -7,9 +7,16 @@ import PageContainer from '@/components/ui/PageContainer'
 import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { setBreadcrumbs } from '@/features/catalogSlice'
-import { productsApi, useGetProductBySlugQuery } from '@/api/productsApi'
+import { productsApi, useGetCompanySettingsQuery, useGetProductBySlugQuery } from '@/api/productsApi'
 import type { ProductContentBlock, GridCardItem, ProductDetail } from '@/api/productsApi'
-import type { ProductVariant, SpecificationAttribute, SpecificationGroup } from '@/api/productsApi'
+import type {
+  CompanyWorkSchedule,
+  ProductVariant,
+  SpecificationAttribute,
+  SpecificationGroup,
+  WorkInterval,
+  WorkScheduleDayKey,
+} from '@/api/productsApi'
 import { useGetCategoriesTreeQuery } from '@/api/categoriesApi'
 import type { Category } from '@/api/categoriesApi'
 
@@ -27,6 +34,27 @@ import { useCartAnimation } from '@/components/animations/useCartAnimation'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import Button from '@mui/material/Button'
+import {
+  DELIVERY_ADDITIONAL_INFO,
+  DELIVERY_DETAILS_URL,
+  DELIVERY_METHODS,
+  DELIVERY_PREPAYMENT_TEXT,
+  FREE_DELIVERY_CONDITIONS,
+  INTERNATIONAL_DELIVERY_REGIONS,
+  KAZAKHSTAN_DELIVERY_REGIONS,
+  PAYMENT_BANK_ACCOUNT,
+  PAYMENT_METHODS,
+  SALES_MANAGERS,
+  STORE_CONTACTS,
+  VAT_TEXT,
+  WARRANTY_TEXT,
+  type InfoModalType,
+} from './constants/productInfoContent'
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('ru-KZ', {
     style: 'currency',
@@ -150,6 +178,27 @@ const normalizeGallery = (
     .filter((item): item is GalleryItem => item !== null)
 
   return mapped.length > 0 ? mapped : [{ kind: 'image', url: PLACEHOLDER_IMG, preview: PLACEHOLDER_IMG }]
+}
+
+const WORK_DAYS_ORDER: WorkScheduleDayKey[] = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+]
+
+const formatIntervals = (intervals: WorkInterval[] | undefined): string => {
+  if (!intervals || intervals.length === 0) return '-'
+  return intervals.map((interval) => `${interval.start} - ${interval.end}`).join(', ')
+}
+
+const formatExceptionDateRange = (startDate: string, endDate: string): string => {
+  if (!startDate && !endDate) return '-'
+  if (startDate === endDate) return startDate
+  return `${startDate} - ${endDate}`
 }
 
 const imageWidthClassMap: Record<'1/3' | '1/2' | '2/3' | 'full', string> = {
@@ -751,10 +800,21 @@ const ProductPage = () => {
   const [activeImage, setActiveImage] = useState(0)
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'order'>('desc')
   const [compareError, setCompareError] = useState<string | null>(null)
+  const [infoModalType, setInfoModalType] = useState<InfoModalType | null>(null)
 
   const touchStartX = useRef<number | null>(null)
   const touchEndX = useRef<number | null>(null)
   const SWIPE_THRESHOLD = 50
+
+  const isScheduleModalOpen = infoModalType === 'schedule'
+  const {
+    data: companySettingsData,
+    isFetching: workScheduleLoading,
+    isError: isWorkScheduleError,
+    refetch: refetchWorkSchedule,
+  } = useGetCompanySettingsQuery(undefined, { skip: !isScheduleModalOpen })
+  const workSchedule: CompanyWorkSchedule | null = companySettingsData?.COMPANY_WORK_SCHEDULE ?? null
+  const workScheduleError = isWorkScheduleError ? t('productPage.modal.scheduleLoadError') : null
 
   const thumbsRef = useRef<HTMLDivElement | null>(null)
 
@@ -934,13 +994,6 @@ const ProductPage = () => {
       return
     }
 
-    const activeCategoryId = compareItems[0]?.categoryId
-
-    if (activeCategoryId && activeCategoryId !== productCategoryId) {
-      setCompareError(t('compare.onlyOneCategory'))
-      return
-    }
-
     dispatch(
       addToCompare({
         id: product.id,
@@ -962,6 +1015,227 @@ const ProductPage = () => {
     }),
     [product?.description],
   )
+
+  const scheduleDayLabels: Record<WorkScheduleDayKey, string> = {
+    monday: t('about.schedule.days.monday'),
+    tuesday: t('about.schedule.days.tuesday'),
+    wednesday: t('about.schedule.days.wednesday'),
+    thursday: t('about.schedule.days.thursday'),
+    friday: t('about.schedule.days.friday'),
+    saturday: t('about.schedule.days.saturday'),
+    sunday: t('about.schedule.days.sunday'),
+  }
+
+  const modalTitle =
+    infoModalType === 'delivery'
+      ? t('productPage.delive')
+      : infoModalType === 'payment'
+      ? t('productPage.pay')
+      : infoModalType === 'schedule'
+      ? t('productPage.work')
+      : infoModalType === 'address'
+      ? t('productPage.adress')
+      : ''
+
+  const renderInfoModalContent = () => {
+    if (infoModalType === 'delivery') {
+      return (
+        <div className="space-y-4 text-sm text-gray-700">
+          <p className="font-medium text-gray-900">{DELIVERY_PREPAYMENT_TEXT}</p>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.deliveryMethods')}</h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {DELIVERY_METHODS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.freeDelivery')}</h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {FREE_DELIVERY_CONDITIONS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )
+    }
+
+    if (infoModalType === 'payment') {
+      return (
+        <div className="space-y-4 text-sm text-gray-700">
+          <p className="font-medium text-gray-900">{DELIVERY_PREPAYMENT_TEXT}</p>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.deliveryMethods')}</h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {DELIVERY_METHODS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.paymentMethods')}</h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {PAYMENT_METHODS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <p className="mt-2">{PAYMENT_BANK_ACCOUNT}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.warranty')}</h4>
+            <p className="mt-2">{WARRANTY_TEXT}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.vat')}</h4>
+            <p className="mt-2">{VAT_TEXT}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.additionalInfo')}</h4>
+            <p className="mt-2">{DELIVERY_ADDITIONAL_INFO}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.deliveryRegions')}</h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {INTERNATIONAL_DELIVERY_REGIONS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+              <li>
+                Казахстан:
+                <ul className="mt-1 list-disc space-y-1 pl-5">
+                  {KAZAKHSTAN_DELIVERY_REGIONS.map((region) => (
+                    <li key={region.name}>
+                      {region.name}
+                      {region.cities && region.cities.length > 0 && (
+                        <ul className="mt-1 list-disc space-y-1 pl-5">
+                          {region.cities.map((city) => (
+                            <li key={`${region.name}-${city}`}>{city}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            </ul>
+            <p className="mt-3">
+              {t('productPage.modal.moreDetails')}:{' '}
+              <a href={DELIVERY_DETAILS_URL} target="_blank" rel="noreferrer" className="text-[#F58322] hover:underline">
+                {DELIVERY_DETAILS_URL}
+              </a>
+            </p>
+          </div>
+        </div>
+      )
+    }
+
+    if (infoModalType === 'schedule') {
+      if (workScheduleLoading) {
+        return <p className="text-sm text-gray-600">{t('productPage.modal.scheduleLoading')}</p>
+      }
+
+      if (workScheduleError) {
+        return (
+          <div className="space-y-3">
+            <p className="text-sm text-red-600">{workScheduleError}</p>
+            <Button variant="outlined" color="warning" onClick={() => refetchWorkSchedule()}>
+              {t('productPage.modal.retry')}
+            </Button>
+          </div>
+        )
+      }
+
+      return (
+        <div className="space-y-4 text-sm text-gray-700">
+          <p>
+            <span className="font-semibold text-gray-900">{t('productPage.modal.timezone')}:</span>{' '}
+            {workSchedule?.timezone || '-'}
+          </p>
+
+          <div className="overflow-x-auto rounded-xl border border-gray-200">
+            <table className="min-w-full border-collapse">
+              <tbody>
+                {WORK_DAYS_ORDER.map((day) => {
+                  const daySchedule = workSchedule?.regular?.[day]
+                  const dayValue = daySchedule?.isDayOff
+                    ? t('about.schedule.closed')
+                    : formatIntervals(daySchedule?.intervals)
+
+                  return (
+                    <tr key={day} className="border-b border-gray-200 last:border-b-0">
+                      <td className="px-4 py-2 font-medium text-gray-900">{scheduleDayLabels[day]}</td>
+                      <td className="px-4 py-2">{dayValue || '-'}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {workSchedule?.exceptions && workSchedule.exceptions.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-900">{t('productPage.modal.exceptions')}</h4>
+              <ul className="mt-2 space-y-2">
+                {workSchedule.exceptions.map((exception, idx) => (
+                  <li key={`${exception.startDate}-${exception.endDate}-${idx}`} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+                    <p className="font-medium text-gray-900">
+                      {formatExceptionDateRange(exception.startDate, exception.endDate)}
+                    </p>
+                    {exception.note && <p>{exception.note}</p>}
+                    <p>
+                      {exception.isDayOff ? t('about.schedule.closed') : formatIntervals(exception.intervals)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    if (infoModalType === 'address') {
+      return (
+        <div className="space-y-4 text-sm text-gray-700">
+          <p className="font-medium text-gray-900">{STORE_CONTACTS.title}</p>
+          <p>{STORE_CONTACTS.address}</p>
+
+          <div className="space-y-2">
+            {SALES_MANAGERS.map((manager) => (
+              <p key={manager.phone}>
+                <a href={`tel:${manager.phone.replace(/[^\d+]/g, '')}`} className="font-semibold text-[#F58322] hover:underline">
+                  {manager.phone}
+                </a>{' '}
+                - {manager.name}, {manager.role}
+              </p>
+            ))}
+          </div>
+
+          <p>
+            Email:{' '}
+            <a href={`mailto:${STORE_CONTACTS.email}`} className="text-[#F58322] hover:underline">
+              {STORE_CONTACTS.email}
+            </a>
+          </p>
+          <p>
+            Телефон:{' '}
+            <a href={`tel:${STORE_CONTACTS.phone}`} className="text-[#F58322] hover:underline">
+              {STORE_CONTACTS.phone}
+            </a>
+          </p>
+          <p>
+            Сайт:{' '}
+            <a href={STORE_CONTACTS.website} target="_blank" rel="noreferrer" className="text-[#F58322] hover:underline">
+              {STORE_CONTACTS.website}
+            </a>
+          </p>
+        </div>
+      )
+    }
+
+    return null
+  }
 
   if (isLoading) {
     return (
@@ -1106,9 +1380,7 @@ const ProductPage = () => {
                         {t("productPage.have")} {product.stockQuantity > 0 && `(${product.stockQuantity} ${t('productPage.pieces')})`}
                       </span>
                     ) : (
-                      <span className="text-gray-500 text-sm font-medium flex items-center gap-1 mb-5">
-                        {t("productPage.haveNot")}
-                      </span>
+                      <span className="mb-5 inline-block h-6" />
                     )}
                   </div>
                   {items.find((item) => item.id === product.id) ? (
@@ -1142,7 +1414,6 @@ const ProductPage = () => {
                     </div>
                   ) : (
                     <button
-                      disabled={!product.inStock}
                       onClick={(event) => {
                         addAnimation(product.id, cartImage, event)
                         dispatch(
@@ -1158,9 +1429,9 @@ const ProductPage = () => {
                         )
                       }}
                       className={`w-full px-10 py-3 text-white font-bold uppercase transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02]
-                        ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F]' : 'bg-gray-400 cursor-not-allowed'}`}
+                        ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F]' : 'bg-gray-400 hover:bg-gray-500'}`}
                     >
-                      {product.inStock ? t('productPage.buy') : t('productPage.notify')}
+                      {t('productPage.buy')}
                     </button>
                   )}
                   <button
@@ -1197,22 +1468,38 @@ const ProductPage = () => {
                 </div>
 
                 <div className="space-y-3 text-xs font-bold text-gray-500 uppercase mt-4">
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]">
+                  <button
+                    type="button"
+                    onClick={() => setInfoModalType('delivery')}
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                  >
                     <span className="text-[#F58322]"><img src={track} alt="" className="w-5 h-5" /></span> 
                     <span className="hover:text-[#DB741F] transition-colors">{t('productPage.delive')}</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]">
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInfoModalType('payment')}
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                  >
                     <span className="text-[#F58322]"><img src={delivery} alt="" className="w-5 h-5" /></span> 
                     <span className="hover:text-[#DB741F] transition-colors">{t('productPage.pay')}</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]">
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInfoModalType('schedule')}
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                  >
                     <span className="text-[#F58322]"><img src={calendar} alt="" className="w-5 h-5" /></span> 
                     <span className="hover:text-[#DB741F] transition-colors">{t('productPage.work')}</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]">
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInfoModalType('address')}
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                  >
                     <span className="text-[#F58322]"><img src={address} alt="" className="w-5 h-5" /></span> 
                     <span className="hover:text-[#DB741F] transition-colors">{t('productPage.adress')}</span>
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1405,6 +1692,23 @@ const ProductPage = () => {
           </div>
         </section>
       </div>
+
+      <Dialog
+        open={Boolean(infoModalType)}
+        onClose={() => setInfoModalType(null)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle className="font-bold text-gray-900">{modalTitle}</DialogTitle>
+        <DialogContent dividers>
+          <div className="max-h-[65vh] overflow-y-auto pr-1">{renderInfoModalContent()}</div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setInfoModalType(null)} variant="outlined" color="warning">
+            {t('productPage.modal.close')}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={Boolean(compareError)}

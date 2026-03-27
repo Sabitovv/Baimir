@@ -275,6 +275,43 @@ export type CompareGroup = {
   attributes: CompareAttribute[]
 }
 
+export type WorkScheduleDayKey =
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday'
+  | 'sunday'
+
+export type WorkInterval = {
+  start: string
+  end: string
+}
+
+export type WorkDaySchedule = {
+  isDayOff: boolean
+  intervals: WorkInterval[]
+}
+
+export type WorkScheduleException = {
+  startDate: string
+  endDate: string
+  isDayOff: boolean
+  intervals: WorkInterval[]
+  note?: string
+}
+
+export type CompanyWorkSchedule = {
+  timezone?: string
+  regular?: Partial<Record<WorkScheduleDayKey, WorkDaySchedule>>
+  exceptions?: WorkScheduleException[]
+}
+
+export type CompanySettingsResponse = {
+  COMPANY_WORK_SCHEDULE?: CompanyWorkSchedule
+}
+
 export type Meta = {
     currentPage: number
     pageSize: number
@@ -411,6 +448,12 @@ export const productsApi = createApi({
       transformResponse: (response: CompareGroup | CompareGroup[]) =>
         Array.isArray(response) ? response : [response],
     }),
+
+    getCompanySettings: builder.query<CompanySettingsResponse, void>({
+      query: () => ({
+        url: import.meta.env.VITE_COMPANY_SETTINGS_URL ?? 'http://89.207.255.17/api/v1/company-settings',
+      }),
+    }),
   }),
 })
 
@@ -423,4 +466,5 @@ export const {
     useGetPopularProductsQuery,
     useCreateInquiryMutation,
     useGetProductsCompareQuery,
+    useGetCompanySettingsQuery,
 } = productsApi

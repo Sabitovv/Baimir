@@ -84,7 +84,7 @@ const Hero = () => {
                     className="
                       w-full text-xs font-normal leading-7 text-white
                       md:text-sm md:leading-8
-                      lg:max-w-[980px]
+                      lg:max-w-none
                     "
                   >
                     {t('hero.description')}

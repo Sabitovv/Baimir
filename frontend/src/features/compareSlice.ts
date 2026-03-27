@@ -52,8 +52,6 @@ const compareSlice = createSlice({
       const exists = state.items.some((item) => item.id === action.payload.id)
       if (exists) return
 
-      if (state.items.length > 0 && state.items[0].categoryId !== action.payload.categoryId) return
-
       state.items.push(action.payload)
     },
     removeFromCompare(state, action: PayloadAction<number>) {

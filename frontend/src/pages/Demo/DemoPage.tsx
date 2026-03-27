@@ -138,7 +138,7 @@ const DemoPage = () => {
           <ScrollReveal y={40} className="mb-20 sm:mb-32 lg:mb-40 px-2 sm:px-0">
             <section>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-oswald font-semibold mb-8 sm:mb-10 text-center sm:text-left text-gray-900 uppercase">
-                Записаться в демозал
+                {t('demo.contactTitle')}
               </h2>
 
               <div className="max-w-xl mx-auto sm:mx-0">

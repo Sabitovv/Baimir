@@ -27,6 +27,7 @@ type ProductCardProps = {
   keyFeatures?: KeyFeature[] | null
   categoryId?: number | null
   categoryName?: string | null
+  showCompare?: boolean
 }
 
 const PLACEHOLDER_IMG = "https://via.placeholder.com/400x300?text=No+image"
@@ -58,6 +59,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   keyFeatures,
   categoryId,
   categoryName,
+  showCompare = true,
 }) => {
   const { t, i18n } = useTranslation()
   const dispatch = useAppDispatch()
@@ -69,6 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const { addAnimation } = useCartAnimation()
 
   const isInCompare = compareItems.some((item) => item.id === id)
+  const isOutOfStock = inStock === false
 
   const handleCompareToggle = () => {
     if (isInCompare) {
@@ -82,13 +85,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     if (!isValidCategory) {
       setCompareError(t('compare.categoryUnknown'))
-      return
-    }
-
-    const activeCategoryId = compareItems[0]?.categoryId
-
-    if (activeCategoryId && activeCategoryId !== productCategoryId) {
-      setCompareError(t('compare.onlyOneCategory'))
       return
     }
 
@@ -117,6 +113,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
     ? `${priceNumber.toLocaleString(i18n.language)} ₸`
     : "—"
 
+  const oldPriceNumber = typeof oldPrice === 'number' ? oldPrice : NaN
+  const showOldPrice = Number.isFinite(oldPriceNumber) && Number.isFinite(priceNumber) && oldPriceNumber < priceNumber
+  const formattedOldPrice = showOldPrice ? `${oldPriceNumber.toLocaleString(i18n.language)} ₸` : null
+
   const normalizedFeatures = React.useMemo(() => {
     return (keyFeatures ?? [])
       .map((f) => normalizeFeature(f))
@@ -127,13 +127,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <Link
       to={`/catalog/product/${slug}`}
-      className="bg-white border border-gray-200 p-4 rounded-sm hover:shadow-lg transition flex flex-col h-full group"
+      className={`bg-white border border-gray-200 p-4 rounded-sm transition flex flex-col h-full group ${
+        isOutOfStock ? 'border-gray-300' : 'hover:shadow-lg'
+      }`}
     >
-      <div className="h-40 flex items-center justify-center mb-4">
+      <div className="relative h-40 flex items-center justify-center mb-4">
         <img
           src={imgSrc}
           alt={name}
-          className="max-h-full object-contain"
+          className={`max-h-full object-contain ${isOutOfStock ? 'opacity-80 saturate-75' : ''}`}
           loading="lazy"
         />
       </div>
@@ -164,30 +166,32 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <p className="text-lg font-bold text-gray-900 mb-3">
           {formattedPrice}
         </p>
-
-      <div className="flex gap-2 items-center">
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault()
-            handleCompareToggle()
-          }}
-          className={`flex w-1/5 items-center justify-center rounded-sm border py-2 text-xs font-bold uppercase${
-            isInCompare
-              ? 'border-[#F58322] bg-[#FFF4EA] text-[#DB741F]'
-              : 'border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]'
-          }`}
-        >
-          {isInCompare ? <CheckCircleIcon sx={{ fontSize: 16 }} /> : <CompareArrowsIcon sx={{ fontSize: 16 }} />}
-
-        </button>
-
-        {compareError && (
-          <p className="text-xs leading-tight text-red-600">{compareError}</p>
+        {formattedOldPrice && (
+          <p className="-mt-2 mb-3 text-xs text-gray-400 line-through">{formattedOldPrice}</p>
         )}
 
-        {cartItem ? (
-          <div className="flex w-full items-center justify-between bg-[#F58322] rounded-sm">
+        <div className="flex gap-2 items-stretch">
+          {showCompare && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault()
+                handleCompareToggle()
+              }}
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border transition ${
+                isInCompare
+                  ? 'border-[#F58322] bg-[#FFF4EA] text-[#DB741F]'
+                  : 'border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]'
+              }`}
+              aria-label={isInCompare ? t('compare.removeFromCompare') : t('compare.addToCompare')}
+              title={isInCompare ? t('compare.removeFromCompare') : t('compare.addToCompare')}
+            >
+              {isInCompare ? <CheckCircleIcon sx={{ fontSize: 16 }} /> : <CompareArrowsIcon sx={{ fontSize: 16 }} />}
+            </button>
+          )}
+
+          {cartItem ? (
+            <div className="flex w-full items-center justify-between bg-[#F58322] rounded-sm">
             <button
               type="button"
               className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
@@ -213,40 +217,43 @@ const ProductCard: React.FC<ProductCardProps> = ({
             >
               +
             </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
-              inStock === false
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-[#F58322] text-white hover:bg-[#DB741F]"
-            }`}
-            disabled={inStock === false}
-            onClick={(event) => {
-              event.preventDefault()
+            </div>
+          ) : (
+            <button
+              type="button"
+              className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
+                isOutOfStock
+                  ? 'bg-gray-400 text-white hover:bg-gray-500'
+                  : "bg-[#F58322] text-white hover:bg-[#DB741F]"
+              }`}
+              onClick={(event) => {
+                event.preventDefault()
 
-              if (inStock === false || !Number.isFinite(priceNumber)) return
+                if (!Number.isFinite(priceNumber)) return
 
-              addAnimation(id, imgSrc, event)
-              
-              dispatch(
-                addToCart({
-                  id,
-                  slug,
-                  name,
-                  image: imgSrc,
-                  price: priceNumber,
-                  oldPrice,
-                  inStock,
-                })
-              )
-            }} 
-          >
-            {inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
-          </button>
-        )}
+                addAnimation(id, imgSrc, event)
+
+                dispatch(
+                  addToCart({
+                    id,
+                    slug,
+                    name,
+                    image: imgSrc,
+                    price: priceNumber,
+                    oldPrice,
+                    inStock,
+                  })
+                )
+              }}
+            >
+              {t('commonCatalog.buy')}
+            </button>
+          )}
         </div>
+
+        {showCompare && compareError && (
+          <p className="mt-2 text-xs leading-tight text-red-600">{compareError}</p>
+        )}
       </div>
     </Link>
   )

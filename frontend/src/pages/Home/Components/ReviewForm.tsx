@@ -30,7 +30,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
       authorName: name,
       text: review,
       rating,
-      source: t('reviewForm.source'),
+      source: t('reviewForm.source', { defaultValue: 'Website' }),
       // image: photo,
     }
 
@@ -49,8 +49,8 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
         setTimeout(() => setSuccess(false), 5000)
       }
     } catch (err: any) {
-      console.error(t('reviewForm.submitErrorLog'), err)
-      setError(err?.data?.message || t('reviewForm.submitError'))
+      console.error(t('reviewForm.submitErrorLog', { defaultValue: 'Error while sending review:' }), err)
+      setError(err?.data?.message || t('reviewForm.submitError', { defaultValue: 'An error occurred while sending your review' }))
     }
   }
 
@@ -60,7 +60,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
       tracking-tight
       ${isModal ? 'text-2xl md:text-3xl mb-6 md:mb-7 text-left' : 'text-3xl md:text-4xl xl:text-[54px] mb-10 md:mb-12 xl:mb-16 text-center'}
     `}>
-      {t('reviewForm.title')}
+      {t('reviewForm.title', { defaultValue: 'Leave a review' })}
     </h2>
   )
 
@@ -91,7 +91,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
 
             {success && (
               <div className="mb-6 p-4 bg-[#ECFDF3] border border-[#86EFAC] rounded-xl text-[#065F46] text-center">
-                {t('reviewForm.success')}
+                {t('reviewForm.success', { defaultValue: 'Thank you for your review! It will be moderated and published.' })}
               </div>
             )}
             
@@ -108,7 +108,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                   <label htmlFor="name" className="
                     block text-sm font-medium text-[#374151] mb-2
                   ">
-                    {t('reviewForm.fields.name')} *
+                    {t('reviewForm.fields.name', { defaultValue: 'Your name' })} *
                   </label>
                   <input
                     id="name"
@@ -117,7 +117,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className={inputClass}
-                    placeholder={t('reviewForm.placeholders.name')}
+                    placeholder={t('reviewForm.placeholders.name', { defaultValue: 'John Doe' })}
                   />
                 </div>
               </div>
@@ -126,7 +126,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                 <label htmlFor="review" className="
                   block text-sm font-medium text-[#374151] mb-2
                 ">
-                  {t('reviewForm.fields.review')} *
+                  {t('reviewForm.fields.review', { defaultValue: 'Your review' })} *
                 </label>
                 <textarea
                   id="review"
@@ -135,13 +135,13 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                   value={review}
                   onChange={(e) => setReview(e.target.value)}
                   className={`${inputClass} resize-none min-h-[140px]`}
-                  placeholder={t('reviewForm.placeholders.review')}
+                  placeholder={t('reviewForm.placeholders.review', { defaultValue: 'Share your impression about our service...' })}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-[#374151] mb-3">
-                  {t('reviewForm.fields.rating')} *
+                  {t('reviewForm.fields.rating', { defaultValue: 'Rating' })} *
                 </label>
                 <div className="flex items-center gap-1 flex-wrap">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -165,11 +165,11 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                     </button>
                   ))}
                   <span className="ml-2 md:ml-3 text-sm font-medium text-[#6B7280]">
-                    {rating === 5 && t('reviewForm.rating.excellent')}
-                    {rating === 4 && t('reviewForm.rating.good')}
-                    {rating === 3 && t('reviewForm.rating.normal')}
-                    {rating === 2 && t('reviewForm.rating.bad')}
-                    {rating === 1 && t('reviewForm.rating.veryBad')}
+                    {rating === 5 && t('reviewForm.rating.excellent', { defaultValue: 'Excellent' })}
+                    {rating === 4 && t('reviewForm.rating.good', { defaultValue: 'Good' })}
+                    {rating === 3 && t('reviewForm.rating.normal', { defaultValue: 'Average' })}
+                    {rating === 2 && t('reviewForm.rating.bad', { defaultValue: 'Bad' })}
+                    {rating === 1 && t('reviewForm.rating.veryBad', { defaultValue: 'Very bad' })}
                   </span>
                 </div>
               </div>
@@ -198,10 +198,10 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      {t('reviewForm.sending')}
+                      {t('reviewForm.sending', { defaultValue: 'Sending...' })}
                     </span>
                   ) : (
-                    t('reviewForm.submit')
+                    t('reviewForm.submit', { defaultValue: 'Send review' })
                   )}
                 </button>
               </div>

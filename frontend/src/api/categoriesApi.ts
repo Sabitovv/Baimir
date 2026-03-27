@@ -18,6 +18,7 @@ export type Product = {
   slug: string
   name: string
   price: number
+  oldPrice?: number | null
   coverImage?: string | null
   inStock: boolean
   sku?: string
