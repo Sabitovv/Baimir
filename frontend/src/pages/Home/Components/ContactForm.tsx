@@ -11,7 +11,7 @@ const ContactForm = () => {
   return (
     <PageContainer>
       <section id='contact-section' className="py-16 md:py-20"> 
-        <div className="mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-0">
 
           <ScrollReveal>
             <div className="w-full md:flex-1">

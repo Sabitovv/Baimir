@@ -3,17 +3,12 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 
-import { Tolgee, FormatSimple, BackendFetch } from '@tolgee/web';
-import { InContextTools } from '@tolgee/web/tools';
-import { withTolgee } from '@tolgee/i18next';
-
 const urlParams = new URLSearchParams(window.location.search);
 const keyFromUrl = urlParams.get('editor_key');
 const urlFromUrl = urlParams.get('tolgee_url');
 
 if (keyFromUrl) {
   sessionStorage.setItem('tolgeeApiKey', keyFromUrl);
-  // ИСПРАВЛЕНИЕ 1: Добавлены операторы || (ИЛИ)
   const apiUrlToSave = urlFromUrl || import.meta.env.VITE_TOLGEE_API_URL || 'http://localhost:8080';
   sessionStorage.setItem('tolgeeApiUrl', apiUrlToSave);
   window.history.replaceState({}, document.title, window.location.pathname);
@@ -22,19 +17,26 @@ if (keyFromUrl) {
 const savedApiKey = sessionStorage.getItem('tolgeeApiKey');
 const savedApiUrl = sessionStorage.getItem('tolgeeApiUrl');
 
-const isEditMode = Boolean(savedApiKey && savedApiUrl);
-
-export let tolgee: any = null;
+export const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
 const CDN_URL = 'http://89.207.255.17/minio/locales/182a077de00162c5d0f7acc0badff225';
 
-if (isEditMode) {
-  // ====================================================
-  // РЕЖИМ РЕДАКТОРА
-  // ====================================================
-  tolgee = Tolgee()
-    .use(InContextTools()) 
-    .use(BackendFetch())   
+if (!isEditMode) {
+  i18n.use(HttpBackend);
+}
+
+export const initializeTolgee = async () => {
+  if (!isEditMode) return null;
+
+  const [{ Tolgee, FormatSimple, BackendFetch }, { InContextTools }, { withTolgee }] = await Promise.all([
+    import('@tolgee/web'),
+    import('@tolgee/web/tools'),
+    import('@tolgee/i18next'),
+  ]);
+
+  const tolgee = Tolgee()
+    .use(InContextTools())
+    .use(BackendFetch())
     .use(FormatSimple())
     .init({
       apiUrl: savedApiUrl as string,
@@ -44,20 +46,16 @@ if (isEditMode) {
     });
 
   withTolgee(i18n as any, tolgee);
-  tolgee.run(); 
-} else {
-  // ====================================================
-  // РЕЖИМ ПОЛЬЗОВАТЕЛЯ (Подключаем плагин для MinIO ТОЛЬКО здесь)
-  // ====================================================
-  i18n.use(HttpBackend);
-}
+  tolgee.run();
+
+  return tolgee;
+};
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     backend: !isEditMode ? {
-      // ИСПРАВЛЕНИЕ 2: Добавлены обратные кавычки для шаблонной строки
       loadPath: `${CDN_URL}/{{ns}}/{{lng}}.json`,
       crossDomain: true 
     } : undefined,

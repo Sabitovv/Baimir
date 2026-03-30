@@ -1,16 +1,22 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import Hero from './Components/Hero'
 import IndustryCatalog from './Components/IndustryCatalog'
 import WhyChooseUs from './Components/WhyChooseUs'
 import Service from './Components/Service'
-import Warehouse from './Components/Warehouse'
-import ForClients from './Components/ForClients'
-import ReviewsSection from './Components/ReviewsSection'
-import ReviewForm from './Components/ReviewForm'
 import ContactForm from './Components/ContactForm'
-import RepairService from './Components/RepairService'
-import CertificateSection from './Components/CertificatesSection'
-import NewsSection from './Components/NewsSection'
+import DeferredSection from '@/components/common/DeferredSection'
+
+const Warehouse = lazy(() => import('./Components/Warehouse'))
+const ForClients = lazy(() => import('./Components/ForClients'))
+const ReviewsSection = lazy(() => import('./Components/ReviewsSection'))
+const ReviewForm = lazy(() => import('./Components/ReviewForm'))
+const RepairService = lazy(() => import('./Components/RepairService'))
+const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
+const NewsSection = lazy(() => import('./Components/NewsSection'))
+
+const SectionFallback = ({ heightClassName }: { heightClassName: string }) => (
+    <div className={`${heightClassName} animate-pulse bg-[#F7F7F7]`} />
+)
 
 const Home = () => {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
@@ -41,15 +47,44 @@ const Home = () => {
             <IndustryCatalog />
             <WhyChooseUs />
             <Service />
-            <Warehouse />
-            <ForClients />
-            <ReviewsSection onOpenReviewModal={() => setIsReviewModalOpen(true)} />
 
-            <RepairService />
+            <DeferredSection placeholderClassName="min-h-[520px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
+                    <Warehouse />
+                </Suspense>
+            </DeferredSection>
+
+            <DeferredSection placeholderClassName="min-h-[380px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[380px]" />}>
+                    <ForClients />
+                </Suspense>
+            </DeferredSection>
+
+            <DeferredSection placeholderClassName="min-h-[460px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[460px]" />}>
+                    <ReviewsSection onOpenReviewModal={() => setIsReviewModalOpen(true)} />
+                </Suspense>
+            </DeferredSection>
+
+            <DeferredSection placeholderClassName="min-h-[520px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
+                    <RepairService />
+                </Suspense>
+            </DeferredSection>
+
             <ContactForm />
 
-            <CertificateSection/>
-            <NewsSection/>
+            <DeferredSection placeholderClassName="min-h-[420px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[420px]" />}>
+                    <CertificateSection />
+                </Suspense>
+            </DeferredSection>
+
+            <DeferredSection placeholderClassName="min-h-[420px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[420px]" />}>
+                    <NewsSection />
+                </Suspense>
+            </DeferredSection>
 
             <div
                 className={`fixed inset-0 z-[130] transition-opacity duration-300 ease-out ${
@@ -85,7 +120,9 @@ const Home = () => {
                             ×
                         </button>
 
-                        <ReviewForm isModal onSuccess={() => setIsReviewModalOpen(false)} />
+                        <Suspense fallback={<div className="min-h-[280px] bg-white" />}>
+                            <ReviewForm isModal onSuccess={() => setIsReviewModalOpen(false)} />
+                        </Suspense>
                     </div>
                 </div>
             </div>
