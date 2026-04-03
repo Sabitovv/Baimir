@@ -19,7 +19,7 @@ const savedApiUrl = sessionStorage.getItem('tolgeeApiUrl');
 
 export const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
-const CDN_URL = 'http://89.207.255.17/minio/locales/182a077de00162c5d0f7acc0badff225';
+const CDN_URL = 'http://89.207.255.17/minio/locales/814bc1c3f9019b399682693b66a4ffa5';
 
 if (!isEditMode) {
   i18n.use(HttpBackend);
@@ -42,7 +42,6 @@ export const initializeTolgee = async () => {
       apiUrl: savedApiUrl as string,
       apiKey: savedApiKey as string,
       defaultLanguage: 'ru',
-      defaultNs: 'common',
     });
 
   withTolgee(i18n as any, tolgee);
@@ -56,14 +55,12 @@ i18n
   .use(initReactI18next)
   .init({
     backend: !isEditMode ? {
-      loadPath: `${CDN_URL}/{{ns}}/{{lng}}.json`,
+      loadPath: `${CDN_URL}/{{lng}}.json`,
       crossDomain: true 
     } : undefined,
     
     lng: 'ru',
     fallbackLng: 'ru',
-    defaultNS: 'common',
-    ns: ['common'],
     
     partialBundledLanguages: true, 
 
