@@ -45,7 +45,9 @@ export const initializeTolgee = async () => {
     });
 
   withTolgee(i18n as any, tolgee);
-  tolgee.run();
+  
+  // ДОБАВИТЬ AWAIT СЮДА:
+  await tolgee.run(); 
 
   return tolgee;
 };
