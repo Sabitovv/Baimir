@@ -366,10 +366,6 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               ))}
             </nav>
 
-            <button className="mt-6 border border-white py-4 uppercase font-oswald font-600 tracking-widest hover:bg-[#DB741F] transition-colors">
-              {t('header.cta')}
-            </button>
-
             <div className="flex items-center justify-center gap-6 mt-4 pt-6 border-t border-white/10">
               <button
                 onClick={() => { changeLanguage('ru'); setOpen(false); }}
