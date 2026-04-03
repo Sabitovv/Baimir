@@ -9,7 +9,7 @@ const urlFromUrl = urlParams.get('tolgee_url');
 
 if (keyFromUrl) {
   sessionStorage.setItem('tolgeeApiKey', keyFromUrl);
-  const apiUrlToSave = urlFromUrl || import.meta.env.VITE_TOLGEE_API_URL || 'http://localhost:8080';
+  const apiUrlToSave = urlFromUrl || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
   sessionStorage.setItem('tolgeeApiUrl', apiUrlToSave);
   window.history.replaceState({}, document.title, window.location.pathname);
 }
