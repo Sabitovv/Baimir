@@ -3,32 +3,42 @@ import InstagramIcon from '@mui/icons-material/Instagram'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import YouTubeIcon from '@mui/icons-material/YouTube'
+import TelegramIcon from '@mui/icons-material/Telegram'
+import LinkedIn from '@mui/icons-material/LinkedIn'
+import WebSite from '@mui/icons-material/Language';
 
-const SOCIAL_LINKS = [
-  {
-    name: 'Instagram',
-    href: 'https://www.instagram.com/baymir.kz?utm_source=qr&igsh=MWNvOWR2YjJvczhxNQ==',
-    icon: InstagramIcon,
-  },
-  {
-    name: 'WhatsApp',
-    href: 'https://wa.me/77080065085?text=%D0%94%D0%BE%D0%B1%D1%80%D1%8B%D0%B9%20%D0%B4%D0%B5%D0%BD%D1%8C!%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BF%D1%80%D0%B5%D0%B4%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D1%81%20%D0%92%D0%B0%D1%88%D0%B5%D0%B3%D0%BE%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0:%20https://baymir.kz/about_us',
-    icon: WhatsAppIcon,
-  },
-  {
-    name: 'Facebook',
-    href: 'https://www.facebook.com/tech.baymir/',
-    icon: FacebookIcon,
-  },
-  {
-    name: 'YouTube',
-    href: 'https://www.youtube.com/channel/UCEYv-_jo8UrIls7QiGUaGag ',
-    icon: YouTubeIcon,
-  },
-] as const
+import { useGetCompanySettingsQuery } from '@/api/productsApi'
+
+type CompanySocialLink = {
+  id: number | string
+  platform: string
+  url: string
+}
+
+type CompanySettingsWithSocial = {
+  COMPANY_SOCIAL_LINKS?: {
+    socials?: CompanySocialLink[]
+  }
+}
+
+const getSocialIcon = (platform: string) => {
+  const normalizedPlatform = platform.toLowerCase()
+
+  if (normalizedPlatform.includes('instagram')) return <InstagramIcon fontSize="small" />
+  if (normalizedPlatform.includes('whatsapp')) return <WhatsAppIcon fontSize="small" />
+  if (normalizedPlatform.includes('facebook')) return <FacebookIcon fontSize="small" />
+  if (normalizedPlatform.includes('youtube')) return <YouTubeIcon fontSize="small" />
+  if (normalizedPlatform.includes('telegram')) return <TelegramIcon fontSize="small" />
+  if (normalizedPlatform.includes('linkedin')) return <LinkedIn fontSize="small" />
+  if (normalizedPlatform.includes('website') || normalizedPlatform.includes('site')) return <WebSite fontSize="small" />
+
+  return <span className="text-xs font-semibold uppercase">{platform.slice(0, 1)}</span>
+}
 
 const Footer = () => {
   const { t } = useTranslation()
+  const {data: companySettingsData,} = useGetCompanySettingsQuery()
+  const social = (companySettingsData as CompanySettingsWithSocial | undefined)?.COMPANY_SOCIAL_LINKS?.socials ?? []
 // const year = new Date().getFullYear()
 
   return (
@@ -45,17 +55,17 @@ const Footer = () => {
             </p>
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3 md:justify-start">
-              {SOCIAL_LINKS.map(({ name, href, icon: Icon }) => (
+              {social.map((data) => (
                 <a
-                  key={name}
-                  href={href}
+                  key={data.id}
+                  href={data.url}
                   target="_blank"
                   rel="noreferrer"
-                  aria-label={name}
-                  title={name}
+                  aria-label={data.platform}
+                  title={data.platform}
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:border-[#F58322] hover:text-[#F58322]"
                 >
-                  <Icon fontSize="small" />
+                  {getSocialIcon(data.platform)}
                 </a>
               ))}
             </div>

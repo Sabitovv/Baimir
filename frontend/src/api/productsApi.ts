@@ -308,8 +308,31 @@ export type CompanyWorkSchedule = {
   exceptions?: WorkScheduleException[]
 }
 
+export type CompanyInfoLocalizedText = {
+  ru?: string
+  kk?: string
+  en?: string
+}
+
+export type CompanyInfoField = {
+  id: string
+  label?: CompanyInfoLocalizedText
+  value?: CompanyInfoLocalizedText
+}
+
+export type CompanyInfoSection = {
+  id: string
+  title?: CompanyInfoLocalizedText
+  fields?: CompanyInfoField[]
+}
+
+export type CompanyInfoSections = {
+  sections?: CompanyInfoSection[]
+}
+
 export type CompanySettingsResponse = {
   COMPANY_WORK_SCHEDULE?: CompanyWorkSchedule
+  COMPANY_INFO_SECTIONS?: CompanyInfoSections
 }
 
 export type Meta = {

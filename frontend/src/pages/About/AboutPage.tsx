@@ -6,7 +6,7 @@ import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
 import { useGetCompanySettingsQuery } from '@/api/productsApi'
-import type { WorkInterval, WorkScheduleDayKey } from '@/api/productsApi'
+import type { CompanyInfoLocalizedText, WorkInterval, WorkScheduleDayKey } from '@/api/productsApi'
 
 const WORK_DAYS_ORDER: WorkScheduleDayKey[] = [
   'monday',
@@ -29,8 +29,27 @@ const formatExceptionDateRange = (startDate: string, endDate: string): string =>
   return `${startDate} - ${endDate}`
 }
 
+type CompanyInfoLocale = 'ru' | 'kk' | 'en'
+
+const getCompanyInfoLocale = (language: string | undefined): CompanyInfoLocale => {
+  const normalizedLanguage = language?.toLowerCase() ?? 'ru'
+
+  if (normalizedLanguage.startsWith('kk')) return 'kk'
+  if (normalizedLanguage.startsWith('en')) return 'en'
+  return 'ru'
+}
+
+const getLocalizedCompanyInfoText = (
+  localizedText: CompanyInfoLocalizedText | undefined,
+  locale: CompanyInfoLocale,
+): string => {
+  if (!localizedText) return '-'
+
+  return localizedText[locale] || localizedText.ru || localizedText.en || localizedText.kk || '-'
+}
+
 const AboutPage = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const {
     data: companySettingsData,
     isFetching: isScheduleLoading,
@@ -39,6 +58,8 @@ const AboutPage = () => {
   } = useGetCompanySettingsQuery()
 
   const workSchedule = companySettingsData?.COMPANY_WORK_SCHEDULE
+  const companyInfoSections = companySettingsData?.COMPANY_INFO_SECTIONS?.sections ?? []
+  const companyInfoLocale = getCompanyInfoLocale(i18n.resolvedLanguage || i18n.language)
 
   const stats = [
     { value: '15+', label: t('about.stats.years') },
@@ -190,6 +211,39 @@ const AboutPage = () => {
               ))}
             </StaggerContainer>
           </section>
+
+          {companyInfoSections.length > 0 && (
+            <section className="mt-12 sm:mt-16 lg:mt-20">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {companyInfoSections.map((section) => (
+                  <StaggerItem
+                    key={section.id}
+                    className="bg-white border border-gray-200 rounded-xl p-6 sm:p-7 shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)]"
+                  >
+                    <h3 className="font-oswald text-xl sm:text-2xl uppercase text-gray-900">
+                      {getLocalizedCompanyInfoText(section.title, companyInfoLocale)}
+                    </h3>
+
+                    <div className="mt-5 space-y-3">
+                      {(section.fields ?? []).map((field) => (
+                        <div
+                          key={field.id}
+                          className="grid grid-cols-1 sm:grid-cols-[minmax(0,220px)_1fr] gap-1 sm:gap-4 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0"
+                        >
+                          <p className="text-sm sm:text-base font-semibold text-gray-900">
+                            {getLocalizedCompanyInfoText(field.label, companyInfoLocale)}
+                          </p>
+                          <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                            {getLocalizedCompanyInfoText(field.value, companyInfoLocale)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            </section>
+          )}
 
           <ScrollReveal className="mt-12 sm:mt-16 lg:mt-20 relative overflow-hidden bg-gradient-to-r from-[#141414] via-[#1d2328] to-[#0f1418] border border-gray-700 rounded-2xl p-6 sm:p-8">
             <div className="absolute -right-20 -top-20 w-56 h-56 rounded-full border border-[#F58322]/25" />
