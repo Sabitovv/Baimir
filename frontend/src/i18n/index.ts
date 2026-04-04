@@ -30,14 +30,14 @@ const CDN_URL = 'http://89.207.255.17/minio/locales/814bc1c3f9019b399682693b66a4
 if (isEditMode) {
   tolgee = Tolgee()
     .use(InContextTools()) 
-    .use(BackendFetch())   
+    // ИСПРАВЛЕНИЕ 1: Указываем Tolgee, что JSON файлы лежат на MinIO, а не на локалхосте
+    .use(BackendFetch({ prefix: CDN_URL }))   
     .use(FormatSimple())
     .init({
       apiUrl: savedApiUrl as string,
       apiKey: savedApiKey as string,
       defaultLanguage: 'ru',
-      // ИСПРАВЛЕНИЕ 1: Сообщаем Tolgee, что дефолтное пространство имен - 'translation' (как в i18next)
-      defaultNs: 'translation', 
+      defaultNs: 'translation',
     });
 
   withTolgee(i18n as any, tolgee);
@@ -46,25 +46,27 @@ if (isEditMode) {
 }
 
 export const setupI18n = async () => {
-  // ИСПРАВЛЕНИЕ 2: Ожидаем загрузки переводов из Tolgee до инициализации i18n
+  // ИСПРАВЛЕНИЕ 2: Изолируем ошибку Tolgee, чтобы она не ломала загрузку i18n
   if (isEditMode && tolgee) {
-    await tolgee.run();
+    try {
+      await tolgee.run();
+    } catch (error) {
+      console.warn('[I18N DEBUG] Tolgee failed to load static records. Continuing anyway...', error);
+    }
   }
 
+  // ТЕПЕРЬ этот код выполнится в любом случае, и ошибка react-i18next исчезнет
   await i18n
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
       backend: !isEditMode ? {
-        // ИСПРАВЛЕНИЕ 3: Убрали {{ns}}, так как у вас файлы лежат в корне (ru.json, kz.json)
         loadPath: `${CDN_URL}/{{lng}}.json`,
         crossDomain: true 
       } : undefined,
       
       lng: 'ru',
       fallbackLng: 'ru',
-      
-      // ИСПРАВЛЕНИЕ 4: i18next теперь тоже смотрит в 'translation' по умолчанию
       defaultNS: 'translation',
       ns: ['translation'],
       
