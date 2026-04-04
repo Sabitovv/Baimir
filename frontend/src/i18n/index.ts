@@ -61,10 +61,10 @@ export const setupI18n = async () => {
     .use(initReactI18next)
     .init({
       backend: !isEditMode ? {
-        loadPath: `${CDN_URL}/{{lng}}.json`, // Правильный путь без папки translation
-        crossDomain: true 
-      } : undefined,
-      
+      loadPath: `${CDN_URL}/{{ns}}/{{lng}}.json`, 
+      crossDomain: true 
+    } : undefined,
+          
       lng: 'ru',
       fallbackLng: 'ru',
       defaultNS: 'translation',
