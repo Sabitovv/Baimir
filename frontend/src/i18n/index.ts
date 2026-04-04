@@ -22,7 +22,7 @@ if (keyFromUrl) {
 const savedApiKey = sessionStorage.getItem('tolgeeApiKey');
 const savedApiUrl = sessionStorage.getItem('tolgeeApiUrl');
 
-const isEditMode = Boolean(savedApiKey && savedApiUrl);
+export const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
 export let tolgee: any = null;
 

@@ -8,10 +8,11 @@ import real2 from '@/assets/service/TwoImg.webp'
 
 import { useTranslation } from 'react-i18next'
 
-// Импорты компонентов анимации (убедитесь, что пути правильные)
+// Импорты компонентов анимации
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { EditableImage } from '@/zustand/EditableImage'
 
 const ServicePage = () => {
   const { t } = useTranslation()
@@ -48,8 +49,9 @@ const ServicePage = () => {
 
           <ScrollReveal delay={0.2}>
             <section className="mt-4 sm:mt-6">
-              <img
-                src={teamPhoto}
+              <EditableImage
+                imageKey="service_page_team_main"
+                fallbackSrc={teamPhoto}
                 className="w-full h-auto aspect-video sm:aspect-auto object-cover rounded-sm"
                 alt="service team"
               />
@@ -85,8 +87,10 @@ const ServicePage = () => {
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-6 sm:gap-8 items-start">
-                <img
-                  src={teamPhoto}
+                {/* ИЗМЕНЕНО: Вторая картинка - Блок "Почему мы" */}
+                <EditableImage
+                  imageKey="service_page_why_us"
+                  fallbackSrc={teamPhoto}
                   className="w-full max-w-[320px] mx-auto md:mx-0 object-cover rounded-sm"
                   alt="work"
                 />
@@ -124,8 +128,10 @@ const ServicePage = () => {
               </div>
 
               <ScrollReveal className="hidden lg:flex justify-center lg:justify-end order-first lg:order-last">
-                <img
-                  src={real2}
+                {/* ИЗМЕНЕНО: Третья картинка - Блок инженеров */}
+                <EditableImage
+                  imageKey="service_page_engineers"
+                  fallbackSrc={real2}
                   className="w-full max-w-[280px] sm:max-w-[350px] lg:max-w-full object-contain"
                   alt="engineers"
                 />
@@ -144,6 +150,7 @@ const ServicePage = () => {
             </ScrollReveal>
 
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
+              {/* ВНИМАНИЕ: Здесь используются компоненты Card. */}
               <StaggerItem>
                 <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} />
               </StaggerItem>
