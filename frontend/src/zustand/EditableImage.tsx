@@ -20,7 +20,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
 
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
     // Отлавливаем Shift + Click только в режиме редактирования
-    if (isEditMode && e.altKey) {
+    if (isEditMode && e.shiftKey) {
       e.preventDefault();
       openEditor(imageKey);
     }
@@ -36,7 +36,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
       src={currentSrc || fallbackSrc}
       className={`${className} ${editModeClasses}`}
       onClick={handleImageClick}
-      title={isEditMode ? 'Alt + Click для изменения' : undefined}
+      title={isEditMode ? 'Shift + Click для изменения' : undefined}
       {...props}
     />
   );
