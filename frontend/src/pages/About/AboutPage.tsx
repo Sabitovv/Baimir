@@ -6,7 +6,7 @@ import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
 import { useGetCompanySettingsQuery } from '@/api/productsApi'
-import type { CompanyInfoLocalizedText, WorkInterval, WorkScheduleDayKey } from '@/api/productsApi'
+import type { CompanyInfoLocalizedText, CompanyManager, WorkInterval, WorkScheduleDayKey } from '@/api/productsApi'
 
 const WORK_DAYS_ORDER: WorkScheduleDayKey[] = [
   'monday',
@@ -48,6 +48,20 @@ const getLocalizedCompanyInfoText = (
   return localizedText[locale] || localizedText.ru || localizedText.en || localizedText.kk || '-'
 }
 
+const getManagerFullName = (manager: CompanyManager): string => {
+  const firstName = manager.firstName?.trim() ?? ''
+  const lastName = manager.lastName?.trim() ?? ''
+  const fullName = `${firstName} ${lastName}`.trim()
+  return fullName || '-'
+}
+
+const getManagerInitials = (manager: CompanyManager): string => {
+  const first = manager.firstName?.trim().charAt(0) ?? ''
+  const last = manager.lastName?.trim().charAt(0) ?? ''
+  const initials = `${first}${last}`.toUpperCase()
+  return initials || 'M'
+}
+
 const AboutPage = () => {
   const { t, i18n } = useTranslation()
   const {
@@ -59,6 +73,7 @@ const AboutPage = () => {
 
   const workSchedule = companySettingsData?.COMPANY_WORK_SCHEDULE
   const companyInfoSections = companySettingsData?.COMPANY_INFO_SECTIONS?.sections ?? []
+  const companyManagers = companySettingsData?.COMPANY_MANAGERS?.managers ?? []
   const companyInfoLocale = getCompanyInfoLocale(i18n.resolvedLanguage || i18n.language)
 
   const stats = [
@@ -241,6 +256,57 @@ const AboutPage = () => {
                     </div>
                   </StaggerItem>
                 ))}
+              </StaggerContainer>
+            </section>
+          )}
+
+          {companyManagers.length > 0 && (
+            <section className="mt-12 sm:mt-16 lg:mt-20">
+              <ScrollReveal>
+                <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-gray-900">
+                  {t('about.managers.title')}
+                </h2>
+              </ScrollReveal>
+
+              <StaggerContainer className="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                {companyManagers.map((manager) => {
+                  const photoUrl = manager.photoUrl?.trim() ?? ''
+                  const managerName = getManagerFullName(manager)
+                  const managerPosition = manager.position?.trim() || '-'
+                  const managerPhone = manager.phone?.trim() || '-'
+
+                  return (
+                    <StaggerItem
+                      key={manager.id}
+                      className="rounded-xl border border-gray-200 bg-white p-5 sm:p-6 shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)]"
+                    >
+                      <div className="flex items-center gap-4">
+                        {photoUrl ? (
+                          <img
+                            src={photoUrl}
+                            alt={managerName}
+                            className="h-14 w-14 rounded-full object-cover border border-gray-200"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="h-14 w-14 rounded-full bg-[#FFF4EA] border border-[#F58322]/25 text-[#DB741F] font-semibold flex items-center justify-center">
+                            {getManagerInitials(manager)}
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-gray-900 leading-tight line-clamp-2">{managerName}</h3>
+                          <p className="mt-1 text-sm text-gray-600 line-clamp-2">{managerPosition}</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 border-t border-gray-100 pt-3">
+                        <p className="text-xs uppercase tracking-wide text-gray-500">{t('about.managers.phone')}</p>
+                        <p className="mt-1 text-sm sm:text-base font-medium text-gray-900 break-words">{managerPhone}</p>
+                      </div>
+                    </StaggerItem>
+                  )
+                })}
               </StaggerContainer>
             </section>
           )}

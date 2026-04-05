@@ -557,6 +557,10 @@
       "address": "Almaty, Alatau district, Rakhat microdistrict, 244",
       "cta": "Leave a request - we will select equipment for your task and budget, and calculate timelines and terms (installment/leasing)."
     },
+    "managers": {
+      "title": "Company managers",
+      "phone": "Phone"
+    },
     "map": {
       "title": "Find us on 2GIS",
       "openIn2gis": "Open in 2GIS"

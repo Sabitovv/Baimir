@@ -330,9 +330,23 @@ export type CompanyInfoSections = {
   sections?: CompanyInfoSection[]
 }
 
+export type CompanyManager = {
+  id: string
+  firstName?: string
+  lastName?: string
+  position?: string
+  phone?: string
+  photoUrl?: string
+}
+
+export type CompanyManagers = {
+  managers?: CompanyManager[]
+}
+
 export type CompanySettingsResponse = {
   COMPANY_WORK_SCHEDULE?: CompanyWorkSchedule
   COMPANY_INFO_SECTIONS?: CompanyInfoSections
+  COMPANY_MANAGERS?: CompanyManagers
 }
 
 export type Meta = {
