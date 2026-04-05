@@ -1,71 +1,55 @@
-import { useEffect, useState, type ComponentType, type ReactNode } from 'react'
-import Layout from '@/components/layout/Layout'
-import AppRoutes from '@/routes/AppRoutes'
-import i18n, { initializeTolgee, isEditMode } from '@/i18n'
+import { useEffect } from 'react'; // Добавили useEffect
+import { TolgeeProvider } from '@tolgee/react';
+import Layout from '@/components/layout/Layout';
+import AppRoutes from '@/routes/AppRoutes';
+import { tolgee, isEditMode } from '@/i18n'; 
+import { ImageEditorModal } from './zustand/ImageEditorModal';
 
-type TolgeeProviderProps = {
-  tolgee: unknown
-  fallback?: ReactNode
-  children: ReactNode
-}
+// Импорты для синхронизации данных
+import { useImageEditorStore } from './zustand/ImageEditorState';
+import { useGetStaticImagesQuery } from './zustand/staticImagesApi';
 
 const App = () => {
-  const [tolgee, setTolgee] = useState<unknown>(null)
-  const [TolgeeProvider, setTolgeeProvider] = useState<ComponentType<TolgeeProviderProps> | null>(null)
-  const [isTolgeeLoading, setIsTolgeeLoading] = useState(isEditMode)
+  const setImages = useImageEditorStore((state) => state.setImages);
 
+  // 1. Запускаем запрос к бэкенду. 
+  // Мы используем 'global_frontend_images', как в вашем хуке загрузки.
+  const { data: remoteImages, isLoading } = useGetStaticImagesQuery('global_frontend_images');
+
+  // 2. Как только данные загрузились, обновляем Zustand стор
   useEffect(() => {
-    if (!isEditMode) return
-
-    let isMounted = true
-
-    const loadTolgee = async () => {
-      try {
-        const [{ TolgeeProvider: LoadedTolgeeProvider }, tolgeeInstance] = await Promise.all([
-          import('@tolgee/react'),
-          initializeTolgee(),
-        ])
-
-        if (!isMounted) return
-
-        setTolgeeProvider(() => LoadedTolgeeProvider as ComponentType<TolgeeProviderProps>)
-        setTolgee(tolgeeInstance)
-      } finally {
-        if (isMounted) {
-          setIsTolgeeLoading(false)
-        }
-      }
+    if (remoteImages) {
+      setImages(remoteImages);
     }
+  }, [remoteImages, setImages]);
 
-    void loadTolgee()
-
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  if (isEditMode && isTolgeeLoading) {
-    return <div>{i18n.t('app.loadingTranslations')}</div>
-  }
-
-  if (isEditMode && tolgee && TolgeeProvider) {
-    return (
-      <TolgeeProvider
-        tolgee={tolgee}
-        fallback={<div>{i18n.t('app.loadingTranslations')}</div>}
-      >
-        <Layout>
-          <AppRoutes />
-        </Layout>
-      </TolgeeProvider>
-    )
+  // Пока данные загружаются (самый первый раз), можно показать спиннер
+  // Но обычно лучше рендерить Layout, а картинки подставятся позже (fallbackSrc сработает)
+  if (isLoading && !remoteImages) {
+    return <div className="h-screen flex items-center justify-center">Загрузка ресурсов...</div>;
   }
 
   return (
-    <Layout>
-      <AppRoutes />
-    </Layout>
-  )
-}
+    <>
+      {/* Модалка рендерится только в режиме редактирования */}
+      {isEditMode && <ImageEditorModal />}
+      
+      {tolgee ? (
+        <TolgeeProvider 
+          tolgee={tolgee} 
+          fallback={<div>Загрузка переводов...</div>} 
+        >
+          <Layout>
+            <AppRoutes />
+          </Layout>
+        </TolgeeProvider>
+      ) : (
+        <Layout>
+          <AppRoutes />
+        </Layout>
+      )}
+    </>
+  );
+};
 
-export default App
+export default App;

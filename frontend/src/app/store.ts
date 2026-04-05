@@ -1,17 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit'
-// import uiReducer from '@/features/uiSlice'
 import { categoriesApi } from '@/api/categoriesApi'
 import { productsApi } from '@/api/productsApi'
 import { blogsApi } from '@/api/blogsApi'
 import { reviewsApi } from '@/api/reviewsApi'
 import { certificatesApi } from '@/api/certificatesApi'
+
 import catalogReducer from "@/features/catalogSlice"
 import cartReducer from '@/features/cartSlice'
 import { writeCartStorage } from '@/utils/cartStorage'
 import compareReducer from '@/features/compareSlice'
 import { writeCompareStorage } from '@/utils/compareStorage'
-
-
+import { staticImagesApi } from '@/zustand/staticImagesApi'
 
 export const store = configureStore({
     reducer: {
@@ -24,6 +23,8 @@ export const store = configureStore({
         [blogsApi.reducerPath]: blogsApi.reducer,
         [reviewsApi.reducerPath]: reviewsApi.reducer,
         [certificatesApi.reducerPath]: certificatesApi.reducer,
+        [staticImagesApi.reducerPath]: staticImagesApi.reducer,
+
         catalog: catalogReducer,
         cart: cartReducer,
         compare: compareReducer,
@@ -34,7 +35,8 @@ export const store = configureStore({
             productsApi.middleware,
             blogsApi.middleware,
             reviewsApi.middleware,
-            certificatesApi.middleware
+            certificatesApi.middleware,
+            staticImagesApi.middleware
         ),
 });
 
