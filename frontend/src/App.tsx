@@ -23,8 +23,6 @@ const App = () => {
     }
   }, [remoteImages, setImages]);
 
-  // Пока данные загружаются (самый первый раз), можно показать спиннер
-  // Но обычно лучше рендерить Layout, а картинки подставятся позже (fallbackSrc сработает)
   if (isLoading && !remoteImages) {
     return <div className="h-screen flex items-center justify-center">Загрузка ресурсов...</div>;
   }

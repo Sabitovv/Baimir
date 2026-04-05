@@ -1337,7 +1337,7 @@ const ProductPage = () => {
           <Breadcrumbs />
         </div>
 
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase text-gray-900 mb-8 font-oswald leading-tight">
+        <h1 className="font-manrope text-2xl md:text-3xl lg:text-4xl font-bold uppercase text-gray-900 mb-8 leading-tight">
           {product.name}
         </h1>
 

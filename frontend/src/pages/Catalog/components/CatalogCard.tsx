@@ -113,7 +113,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
         />
       </div>
 
-      <h3 className="text-sm font-extrabold text-gray-800 leading-tight mb-3 group-hover:text-[#DB741F] transition-colors line-clamp-2">
+      <h3 className="font-manrope text-sm font-extrabold text-gray-800 leading-tight mb-3 group-hover:text-[#DB741F] transition-colors line-clamp-2">
         {product.name}
       </h3>
 
