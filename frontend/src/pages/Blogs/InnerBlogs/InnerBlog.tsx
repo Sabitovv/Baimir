@@ -7,6 +7,7 @@ import { useGetBlogBySlugQuery, type BlogContentBlock } from '@/api/blogsApi'
 import defaultImage from '@/assets/home/lazerStanok.webp'
 import { useGetProductsBatchQuery } from '@/api/productsApi'
 import ProductCard from '@/components/common/ProductCard'
+import { useImageEditorStore } from '@/zustand/ImageEditorState'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination } from 'swiper/modules'
 import 'swiper/css'
@@ -57,11 +58,11 @@ const getBlogImage = (value: {
   coverImageUrl?: string | null
   thumbnailUrl?: string | null
   contentBlocks?: BlogContentBlock[]
-}) => {
+}, fallbackImage: string) => {
   const direct = value.imageUrl || value.coverImage || value.coverImageUrl || value.thumbnailUrl
   if (direct && direct.trim()) return direct
   const fromBlocks = value.contentBlocks?.find((block) => Boolean(getBlockImage(block)))
-  return getBlockImage(fromBlocks) || defaultImage
+  return getBlockImage(fromBlocks) || fallbackImage
 }
 
 const imageRatioClassMap: Record<string, string> = {
@@ -383,6 +384,7 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
 const InnerBlog = () => {
   const { slug } = useParams()
   const { i18n, t } = useTranslation()
+  const fallbackBlogImage = useImageEditorStore((state) => state.images.inner_blog_default_image || defaultImage)
 
   const { data, isLoading, isError } = useGetBlogBySlugQuery(
     { slug: slug || '', lang: i18n.language },
@@ -415,7 +417,7 @@ const InnerBlog = () => {
   const title = pickLocalized(data.title, i18n.language) || t('innerBlog.untitled')
   const excerpt = pickLocalized(data.excerpt, i18n.language)
   const publishedAt = formatDate(data.publishedAt, i18n.language)
-  const heroImage = getBlogImage(data)
+  const heroImage = getBlogImage(data, fallbackBlogImage)
 
   return (
     <PageContainer>

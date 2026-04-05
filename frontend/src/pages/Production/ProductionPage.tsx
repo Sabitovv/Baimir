@@ -13,11 +13,30 @@ import four from '@/assets/demoZal/four.svg'
 import Contact from '@/components/common/Contact'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
+import { EditableImage } from '@/zustand/EditableImage'
+
+type ProductionImageItem = {
+  key: string
+  src: string
+}
 
 const ProductionPage = () => {
   const { t } = useTranslation()
+  const productionImages: ProductionImageItem[] = [
+    { key: 'production_page_main_1', src: photo },
+    { key: 'production_page_main_2', src: photo2 },
+    { key: 'production_page_main_3', src: photo3 },
+  ]
+
+  const stepIcons: ProductionImageItem[] = [
+    { key: 'production_page_step_icon_1', src: one },
+    { key: 'production_page_step_icon_2', src: two },
+    { key: 'production_page_step_icon_3', src: three },
+    { key: 'production_page_step_icon_4', src: four },
+  ]
+
   const [choose, setChoose] = useState(0)
-  const [activeImage, setActiveImage] = useState(photo)
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
 
   return (
     <PageContainer>
@@ -47,28 +66,30 @@ const ProductionPage = () => {
 
           <ScrollReveal delay={0.2}>
             <section className="mt-10 sm:mt-14 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-3 sm:gap-4 lg:gap-5">
-              <img
-                src={activeImage}
+              <EditableImage
+                imageKey={productionImages[activeImageIndex].key}
+                fallbackSrc={productionImages[activeImageIndex].src}
                 className="w-full h-[260px] sm:h-[400px] lg:h-full object-cover rounded-lg shadow-sm transition-opacity duration-300"
                 alt="production main"
               />
               <div className="grid grid-cols-3 lg:grid-cols-1 lg:grid-rows-3 gap-3 sm:gap-4 lg:gap-5">
-                {[photo, photo2, photo3].map((img, i) => {
+                {productionImages.map((img, i) => {
                   const index = i + 1;
                   return (
                     <div
                       key={i}
                       onClick={() => {
                         setChoose(index)
-                        setActiveImage(img)
+                        setActiveImageIndex(i)
                       }}
                       className={`cursor-pointer transition-all duration-300 rounded-lg p-1 ${choose === index
                         ? 'border-2 border-[#F58322] shadow-sm'
                         : 'border-2 border-transparent hover:border-gray-200'
                         }`}
                     >
-                      <img
-                        src={img}
+                      <EditableImage
+                        imageKey={img.key}
+                        fallbackSrc={img.src}
                         className="w-full h-24 sm:h-32 lg:h-full object-cover rounded-md"
                         alt={`detail ${index}`}
                       />
@@ -116,7 +137,7 @@ const ProductionPage = () => {
             </ScrollReveal>
 
             <StaggerContainer className="flex flex-col">
-              {[one, two, three, four].map((icon, i) => {
+              {stepIcons.map((icon, i) => {
                 const steps = ['step1', 'step2', 'step3', 'step4']
                 const stepKey = steps[i]
                 const isLast = i === 3
@@ -127,8 +148,9 @@ const ProductionPage = () => {
                     className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 py-6 ${!isLast ? 'border-b border-gray-200' : ''
                       }`}
                   >
-                    <img
-                      src={icon}
+                    <EditableImage
+                      imageKey={icon.key}
+                      fallbackSrc={icon.src}
                       className="w-12 sm:w-14 md:w-16 flex-shrink-0"
                       alt={`step ${i + 1}`}
                     />

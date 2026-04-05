@@ -8,6 +8,7 @@ import BlogCard from '@/components/common/BlogCardProps'
 import { useGetBlogsQuery, type BlogContentBlock } from '@/api/blogsApi'
 
 import img1 from '@/assets/home/lazerStanok.webp'
+import { useImageEditorStore } from '@/zustand/ImageEditorState'
 
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
@@ -43,11 +44,11 @@ const getBlogImage = (value: {
   coverImageUrl?: string | null
   thumbnailUrl?: string | null
   contentBlocks?: BlogContentBlock[]
-}) => {
+}, fallbackImage: string) => {
   const direct = value.imageUrl || value.coverImage || value.coverImageUrl || value.thumbnailUrl
   if (direct && direct.trim()) return direct
   const fromBlocks = value.contentBlocks?.find((block) => Boolean(getBlockImage(block)))
-  return getBlockImage(fromBlocks) || img1
+  return getBlockImage(fromBlocks) || fallbackImage
 }
 
 const formatDate = (iso?: string, lang?: string) => {
@@ -87,6 +88,7 @@ const BlogPage = () => {
   const [page, setPage] = useState(0)
   const pageSize = 12
   const { i18n, t } = useTranslation()
+  const fallbackBlogImage = useImageEditorStore((state) => state.images.blog_page_default_card || img1)
 
   const { data, isLoading, isError } = useGetBlogsQuery({
     page,
@@ -138,7 +140,7 @@ const BlogPage = () => {
                 const rawPost = post as unknown as Record<string, unknown>
                 const title = pickLocalized(post.title, i18n.language) || t('blogPage.untitled')
                 const excerpt = pickLocalized(post.excerpt, i18n.language)
-                const image = getBlogImage(post)
+                const image = getBlogImage(post, fallbackBlogImage)
                 const authorName = pickStringField(rawPost, ['authorName', 'author', 'author_name'])
                 const publishedRaw = pickStringField(rawPost, ['publishedAt', 'createdAt', 'created_at', 'date'])
                 const publishedAt = formatDate(publishedRaw, i18n.language)

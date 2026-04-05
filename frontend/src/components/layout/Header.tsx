@@ -11,6 +11,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { useAppSelector } from '@/app/hooks'
 import { useSearchProductsQuery } from '@/api/productsApi'
+import { EditableImage } from '@/zustand/EditableImage'
 //#F58322
 //#DB741F
 
@@ -182,7 +183,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
         <div className="flex items-center gap-4 2xl:gap-8">
           <Link to="/" className="shrink-0">
-            <img src={logo} alt="Baymir Logo" className="h-12 2xl:h-15" />
+            <EditableImage imageKey="header_main_logo" fallbackSrc={logo} alt="Baymir Logo" className="h-12 2xl:h-15" />
           </Link>
 
           <div
@@ -284,7 +285,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       </div>
       <div className="xl:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
         <Link to="/">
-          <img src={logo} alt="Baymir Logo" className="h-8" />
+          <EditableImage imageKey="header_mobile_logo" fallbackSrc={logo} alt="Baymir Logo" className="h-8" />
         </Link>
 
         <div className="flex items-center gap-3">
@@ -312,7 +313,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       {open && (
         <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">
           <div className="flex items-center justify-between h-[88px] px-4 border-b border-white/10">
-            <img src={logo} className="h-8" alt="Logo" />
+            <EditableImage imageKey="header_drawer_logo" fallbackSrc={logo} className="h-8" alt="Logo" />
             <button onClick={() => setOpen(false)}>
               <CloseIcon sx={{ fontSize: 28 }} />
             </button>

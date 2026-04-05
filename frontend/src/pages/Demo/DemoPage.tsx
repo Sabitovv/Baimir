@@ -13,9 +13,22 @@ import Contact from '@/components/common/Contact'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { EditableImage } from '@/zustand/EditableImage'
+
+type DemoStepIcon = {
+  key: string
+  src: string
+}
 
 const DemoPage = () => {
   const { t } = useTranslation()
+  const stepIcons: DemoStepIcon[] = [
+    { key: 'demo_page_step_icon_1', src: one },
+    { key: 'demo_page_step_icon_2', src: two },
+    { key: 'demo_page_step_icon_3', src: three },
+    { key: 'demo_page_step_icon_4', src: four },
+    { key: 'demo_page_step_icon_5', src: five },
+  ]
   // const videoRef = useRef<HTMLVideoElement | null>(null);
   // const [playing, setPlaying] = useState(false);
 
@@ -104,7 +117,7 @@ const DemoPage = () => {
             </ScrollReveal>
 
             <StaggerContainer className="flex flex-col">
-              {[one, two, three, four, five].map((icon, i) => {
+              {stepIcons.map((icon, i) => {
                 const isLast = i === 4;
 
                 return (
@@ -113,8 +126,9 @@ const DemoPage = () => {
                     className={`flex items-start sm:items-center gap-4 sm:gap-6 py-6 sm:py-8 ${!isLast ? 'border-b border-gray-200' : ''
                       }`}
                   >
-                    <img
-                      src={icon}
+                    <EditableImage
+                      imageKey={icon.key}
+                      fallbackSrc={icon.src}
                       className="w-12 sm:w-14 md:w-16 flex-shrink-0"
                       alt={`step ${i + 1}`}
                     />

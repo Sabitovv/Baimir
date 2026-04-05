@@ -152,13 +152,13 @@ const ServicePage = () => {
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
               {/* ВНИМАНИЕ: Здесь используются компоненты Card. */}
               <StaggerItem>
-                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} />
+                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} imageKey="service_page_real_objects_card_1" />
               </StaggerItem>
               <StaggerItem>
-                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} />
+                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} imageKey="service_page_real_objects_card_2" />
               </StaggerItem>
               <StaggerItem>
-                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} />
+                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} imageKey="service_page_real_objects_card_3" />
               </StaggerItem>
             </StaggerContainer>
           </section>

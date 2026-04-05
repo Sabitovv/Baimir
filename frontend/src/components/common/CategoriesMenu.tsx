@@ -4,6 +4,7 @@ import OpenButton from '@/assets/button1_for_sideBar.svg'
 import CloseButton from '@/assets/button2_for_sideBar.svg'
 import { useGetCategoriesTreeQuery, type Category } from '@/api/categoriesApi'
 import { useTranslation } from 'react-i18next'
+import { EditableImage } from '@/zustand/EditableImage'
 
 type TreeCategory = Category & {
     children: TreeCategory[]
@@ -150,7 +151,11 @@ const CategoriesMenu = () => {
 
                                 {cat.children && cat.children.length > 0 && (
                                     <button onClick={() => toggleCategory(Number(cat.id), rootCategories)} className="p-1">
-                                        <img src={isOpen ? CloseButton : OpenButton} alt="toggle" />
+                                        <EditableImage
+                                          imageKey={isOpen ? 'categories_menu_toggle_close' : 'categories_menu_toggle_open'}
+                                          fallbackSrc={isOpen ? CloseButton : OpenButton}
+                                          alt="toggle"
+                                        />
                                     </button>
                                 )}
                             </div>
@@ -185,7 +190,11 @@ const CategoriesMenu = () => {
                                                             }}
                                                             className="p-1"
                                                         >
-                                                            <img src={isChildOpen ? CloseButton : OpenButton} alt="toggle" />
+                                                            <EditableImage
+                                                              imageKey={isChildOpen ? 'categories_menu_child_toggle_close' : 'categories_menu_child_toggle_open'}
+                                                              fallbackSrc={isChildOpen ? CloseButton : OpenButton}
+                                                              alt="toggle"
+                                                            />
                                                         </button>
                                                     )}
                                                 </div>

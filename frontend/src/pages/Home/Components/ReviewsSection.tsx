@@ -9,7 +9,6 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import StarRoundedIcon from '@mui/icons-material/StarRounded'
 import StarBorderRoundedIcon from '@mui/icons-material/StarBorderRounded'
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded'
-import reviewImg from '@/assets/home/reviewImg.webp'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import ScrollReveal from '@/components/animations/ScrollReveal'
@@ -154,7 +153,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                     <div className="flex items-start gap-3">
                       {review.imageUrl ? (
                         <img
-                          src={review.imageUrl || reviewImg}
+                          src={review.imageUrl}
                           className="w-12 h-12 rounded-full object-cover"
                         />
                       ) : (

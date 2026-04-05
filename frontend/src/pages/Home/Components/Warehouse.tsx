@@ -7,6 +7,12 @@ import { useState } from 'react'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { EditableImage } from '@/zustand/EditableImage'
+
+type WarehouseImageItem = {
+  key: string
+  src: string
+}
 
 type StatItem = {
   valueKey: string
@@ -18,7 +24,7 @@ type StatItem = {
 const Warehouse = () => {
   const { t } = useTranslation()
 
-  const [imgChange, setImgChange] = useState(0);
+  const [imgChange, setImgChange] = useState(0)
 
   const stats: StatItem[] = [
     {
@@ -38,7 +44,11 @@ const Warehouse = () => {
     },
   ]
 
-  const images = [CardImg, CardImg2, CardImg3]
+  const images: WarehouseImageItem[] = [
+    { key: 'home_warehouse_main_1', src: CardImg },
+    { key: 'home_warehouse_main_2', src: CardImg2 },
+    { key: 'home_warehouse_main_3', src: CardImg3 },
+  ]
 
   return (
     <section className="py-16 md:py-20 bg-white">
@@ -61,8 +71,9 @@ const Warehouse = () => {
           <ScrollReveal className="flex-1">
 
             <div className="mb-4">
-              <img
-                src={images[imgChange]}
+              <EditableImage
+                imageKey={images[imgChange].key}
+                fallbackSrc={images[imgChange].src}
                 alt={t('home.warehouse.imageAlt')}
                 className="w-full h-[380px] object-cover"
               />
@@ -79,9 +90,10 @@ const Warehouse = () => {
                   cursor-pointer
                 `}
                 >
-                  <img
+                  <EditableImage
+                    imageKey={img.key}
+                    fallbackSrc={img.src}
                     onClick={() => setImgChange(index)}
-                    src={img}
                     alt={t('home.warehouse.imageAlt')}
                     className="w-full h-[110px] object-cover"
                   />

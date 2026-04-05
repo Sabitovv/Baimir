@@ -3,6 +3,7 @@ import CategoriesMenu from '@/components/common/CategoriesMenu'
 import Contact from '@/components/common/Contact'
 import demoImg from '@/assets/img_review.png'
 import { useTranslation } from 'react-i18next'
+import { EditableImage } from '@/zustand/EditableImage'
 
 const DemoInnerPage = () => {
   const { t } = useTranslation()
@@ -21,10 +22,7 @@ const DemoInnerPage = () => {
           </h1>
           <div className="mb-12">
             <div className="bg-[#E5E5E5] h-[360px] mb-4 rounded-lg overflow-hidden">
-              <img
-                src={demoImg}
-                className="w-full h-full object-cover"
-              />
+              <EditableImage imageKey="demo_inner_main_image" fallbackSrc={demoImg} className="w-full h-full object-cover" alt="demo" />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
@@ -33,10 +31,7 @@ const DemoInnerPage = () => {
                   key={i}
                   className="bg-[#E5E5E5] h-[120px] rounded-lg overflow-hidden"
                 >
-                  <img
-                    src={demoImg}
-                    className="w-full h-full object-cover"
-                  />
+                  <EditableImage imageKey={`demo_inner_thumb_${i}`} fallbackSrc={demoImg} className="w-full h-full object-cover" alt={`demo ${i}`} />
                 </div>
               ))}
             </div>

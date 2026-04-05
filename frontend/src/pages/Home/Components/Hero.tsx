@@ -3,14 +3,16 @@ import bgMain from '@/assets/home/background_main.webp'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import { Link } from 'react-router-dom'
 import PageContainer from '@/components/ui/PageContainer'
+import { EditableImage } from '@/zustand/EditableImage'
 
 const Hero = () => {
   const { t } = useTranslation()
 
   return (
     <section className="relative flex min-h-[100dvh] flex-col text-white">
-      <img
-        src={bgMain}
+      <EditableImage
+        imageKey="home_hero_background"
+        fallbackSrc={bgMain}
         alt=""
         loading="eager"
         fetchPriority="high"

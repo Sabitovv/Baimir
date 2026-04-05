@@ -55,6 +55,7 @@ import {
   WARRANTY_TEXT,
   type InfoModalType,
 } from './constants/productInfoContent'
+import { EditableImage } from '@/zustand/EditableImage'
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('ru-KZ', {
     style: 'currency',
@@ -1377,7 +1378,7 @@ const ProductPage = () => {
 
                     {product.inStock ? (
                       <span className="text-green-600 text-sm font-medium flex items-center gap-1 mb-5">
-                        {t("productPage.have")} {product.stockQuantity > 0 && `(${product.stockQuantity} ${t('productPage.pieces')})`}
+                        {t("productPage.have")} {product.stockQuantity > 0}
                       </span>
                     ) : (
                       <span className="mb-5 inline-block h-6" />
@@ -1428,8 +1429,7 @@ const ProductPage = () => {
                           })
                         )
                       }}
-                      className={`w-full px-10 py-3 text-white font-bold uppercase transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02]
-                        ${product.inStock ? 'bg-[#F58322] hover:bg-[#DB741F]' : 'bg-gray-400 hover:bg-gray-500'}`}
+                      className={`w-full px-10 py-3 text-white font-bold uppercase transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] bg-[#F58322] hover:bg-[#DB741F]`}
                     >
                       {t('productPage.buy')}
                     </button>
@@ -1473,7 +1473,7 @@ const ProductPage = () => {
                     onClick={() => setInfoModalType('delivery')}
                     className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
                   >
-                    <span className="text-[#F58322]"><img src={track} alt="" className="w-5 h-5" /></span> 
+                    <span className="text-[#F58322]"><EditableImage imageKey="product_page_info_delivery_icon" fallbackSrc={track} alt="" className="w-5 h-5" /></span>
                     <span className="hover:text-[#DB741F] transition-colors">{t('productPage.delive')}</span>
                   </button>
                   <button
@@ -1481,7 +1481,7 @@ const ProductPage = () => {
                     onClick={() => setInfoModalType('payment')}
                     className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
                   >
-                    <span className="text-[#F58322]"><img src={delivery} alt="" className="w-5 h-5" /></span> 
+                    <span className="text-[#F58322]"><EditableImage imageKey="product_page_info_payment_icon" fallbackSrc={delivery} alt="" className="w-5 h-5" /></span>
                     <span className="hover:text-[#DB741F] transition-colors">{t('productPage.pay')}</span>
                   </button>
                   <button
@@ -1489,7 +1489,7 @@ const ProductPage = () => {
                     onClick={() => setInfoModalType('schedule')}
                     className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
                   >
-                    <span className="text-[#F58322]"><img src={calendar} alt="" className="w-5 h-5" /></span> 
+                    <span className="text-[#F58322]"><EditableImage imageKey="product_page_info_schedule_icon" fallbackSrc={calendar} alt="" className="w-5 h-5" /></span>
                     <span className="hover:text-[#DB741F] transition-colors">{t('productPage.work')}</span>
                   </button>
                   <button
@@ -1497,7 +1497,7 @@ const ProductPage = () => {
                     onClick={() => setInfoModalType('address')}
                     className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
                   >
-                    <span className="text-[#F58322]"><img src={address} alt="" className="w-5 h-5" /></span> 
+                    <span className="text-[#F58322]"><EditableImage imageKey="product_page_info_address_icon" fallbackSrc={address} alt="" className="w-5 h-5" /></span>
                     <span className="hover:text-[#DB741F] transition-colors">{t('productPage.adress')}</span>
                   </button>
                 </div>
@@ -1687,7 +1687,7 @@ const ProductPage = () => {
               <Contact productId={product.id} />
             </div>
             <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0">
-              <img src={sampleImg} alt="machine" className="max-w-full w-72 sm:w-full object-contain" />
+              <EditableImage imageKey="catalog_product_bid_image" fallbackSrc={sampleImg} alt="machine" className="max-w-full w-72 sm:w-full object-contain" />
             </div>
           </div>
         </section>

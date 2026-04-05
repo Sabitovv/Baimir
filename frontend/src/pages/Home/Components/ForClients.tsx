@@ -3,12 +3,14 @@ import PageContainer from '@/components/ui/PageContainer'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { EditableImage } from '@/zustand/EditableImage'
 
 import Discount from '@/assets/home/handDiscount.webp'
 import Money from '@/assets/home/handMoney.webp'
 import Heart from '@/assets/home/handHeart.webp'
 
 type BenefitItem = {
+  key: string
   titleKey: string
   textKey: string
   image: string
@@ -19,20 +21,23 @@ const ForClients = () => {
 
   const benefits: BenefitItem[] = [
     {
+      key: 'home_clients_icon_discount',
       titleKey: 'home.clients.bonus.title',
       textKey: 'home.clients.bonus.text',
-      image: Discount
+      image: Discount,
     },
     {
+      key: 'home_clients_icon_money',
       titleKey: 'home.clients.leasing.title',
       textKey: 'home.clients.leasing.text',
-      image: Money
+      image: Money,
     },
     {
+      key: 'home_clients_icon_heart',
       titleKey: 'home.clients.loyalty.title',
       textKey: 'home.clients.loyalty.text',
-      image: Heart
-    }
+      image: Heart,
+    },
   ]
 
   return (
@@ -55,8 +60,9 @@ const ForClients = () => {
                   <h3 className="font-oswald font-bold text-xl md:text-2xl xl:text-3xl uppercase pr-2 min-w-0 break-words leading-tight">
                     {t(item.titleKey)}
                   </h3>
-                  <img
-                    src={item.image}
+                  <EditableImage
+                    imageKey={item.key}
+                    fallbackSrc={item.image}
                     className="w-10 h-10 md:w-14 md:h-14 max-w-full object-contain shrink-0"
                     alt=""
                   />

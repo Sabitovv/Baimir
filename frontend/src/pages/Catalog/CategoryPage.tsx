@@ -18,6 +18,7 @@ import { useAppDispatch } from '@/app/hooks'
 import Contact from '@/components/common/Contact'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import CategoryCalculator from './components/CategoryCalculator'
+import { EditableImage } from '@/zustand/EditableImage'
 
 type BreadcrumbItem = {
   id?: number | string
@@ -443,7 +444,7 @@ const CategoryPage = () => {
               <Contact />
             </div>
             <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0">
-              <img src={sampleImg} alt="machine" className="max-w-full w-72 sm:w-full object-contain" />
+              <EditableImage imageKey="catalog_category_bid_image" fallbackSrc={sampleImg} alt="machine" className="max-w-full w-72 sm:w-full object-contain" />
             </div>
           </div>
         </section>

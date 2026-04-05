@@ -5,6 +5,7 @@ import { useRef, useEffect } from 'react'
 import ProductCard from '@/components/common/ProductCard'
 import { useGetPopularProductsQuery } from '@/api/productsApi'
 import type { Product } from '@/api/productsApi'
+import { EditableImage } from '@/zustand/EditableImage'
 
 
 export const PopularProduct = () => {
@@ -58,7 +59,7 @@ export const PopularProduct = () => {
           onClick={scrollLeft}
           className="shrink-0 p-1 sm:p-3 z-10 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         >
-          <img src={LeftIcon} alt="Left" className="w-6 h-6 sm:w-10 sm:h-10" />
+          <EditableImage imageKey="catalog_popular_arrow_left" fallbackSrc={LeftIcon} alt="Left" className="w-6 h-6 sm:w-10 sm:h-10" />
         </button>
 
         <div
@@ -105,7 +106,7 @@ export const PopularProduct = () => {
           onClick={scrollRight}
           className="shrink-0 p-1 sm:p-3 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         >
-          <img src={RightIcon} alt="Right" className="w-6 h-6 sm:w-10 sm:h-10" />
+          <EditableImage imageKey="catalog_popular_arrow_right" fallbackSrc={RightIcon} alt="Right" className="w-6 h-6 sm:w-10 sm:h-10" />
         </button>
       </div>
     </section>

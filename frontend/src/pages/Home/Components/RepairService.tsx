@@ -6,6 +6,7 @@ import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
 import { useTranslation } from 'react-i18next'
+import { EditableImage } from '@/zustand/EditableImage'
 
 const RepairService = () => {
   const { t } = useTranslation()
@@ -84,8 +85,9 @@ const RepairService = () => {
             <div className="hidden min-[650px]:block relative min-h-[420px] bg-[#F58322]">
 
               {/* Left worker image — original positioning */}
-              <img
-                src={leftImg}
+              <EditableImage
+                imageKey="home_repair_left_worker"
+                fallbackSrc={leftImg}
                 alt=""
                 className="hidden min-[1000px]:block absolute left-1/2 top-1/2 w-[360px] h-[300px] object-cover
                            -translate-x-1/2 -translate-y-1/2 z-0"
@@ -97,8 +99,9 @@ const RepairService = () => {
                            bg-[#233337] -skew-x-[10deg] origin-left overflow-hidden z-10"
               >
                 {/* Right worker image — original positioning */}
-                <img
-                  src={rightImg}
+                <EditableImage
+                  imageKey="home_repair_right_worker"
+                  fallbackSrc={rightImg}
                   alt=""
                   className="hidden min-[1000px]:block absolute left-0 top-1/2 w-[360px] h-[300px] object-cover
                              skew-x-[10deg] -translate-x-1/2 -translate-y-1/2"

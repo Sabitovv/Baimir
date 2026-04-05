@@ -15,6 +15,7 @@ import StaggerItem from '@/components/animations/StaggerItem'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import { PopularProduct } from './components/PopularProduct'
 import { useTranslation } from 'react-i18next'
+import { EditableImage } from '@/zustand/EditableImage'
 
 const CatalogPage = () => {
   const { i18n, t } = useTranslation()
@@ -174,11 +175,12 @@ const CatalogPage = () => {
                 <Contact />
               </div>
               <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0 order-1 md:order-2">
-                  <img
-                    src={sampleImg}
-                    alt={t('catalogPage.sampleAlt')}
-                    loading="lazy"
-                    width="500"
+                <EditableImage
+                  imageKey="catalog_page_bid_image"
+                  fallbackSrc={sampleImg}
+                  alt={t('catalogPage.sampleAlt')}
+                  loading="lazy"
+                  width="500"
                   height="400"
                   className="max-w-full w-72 sm:w-full object-contain"
                 />

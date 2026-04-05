@@ -3,6 +3,7 @@ import ReviewImg from '@/assets/img_review.png'
 import Contact from '@/components/common/Contact'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import PageContainer from '@/components/ui/PageContainer'
+import { EditableImage } from '@/zustand/EditableImage'
 
 
 const ContactForm = () => {
@@ -28,8 +29,9 @@ const ContactForm = () => {
 
           <ScrollReveal delay={0.2}>
             <div className="hidden md:flex md:flex-none md:w-[520px] items-center justify-center">
-              <img
-                src={ReviewImg}
+              <EditableImage
+                imageKey="home_contact_review_image"
+                fallbackSrc={ReviewImg}
                 alt="review"
                 className="w-full h-auto object-contain"
               />

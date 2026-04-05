@@ -5,6 +5,7 @@ import { SvgIcon, type SvgIconProps } from '@mui/material'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { EditableImage } from '@/zustand/EditableImage'
 
 const Service = () => {
   const { t } = useTranslation()
@@ -31,12 +32,16 @@ const Service = () => {
 
 
   return (
-    <section
-      className="py-20 bg-cover bg-center"
-      style={{ backgroundImage: `url(${BgService})` }}
-    >
-      <PageContainer>
-        <div className="mb-10">
+    <section className="relative py-20 overflow-hidden">
+      <EditableImage
+        imageKey="home_service_background"
+        fallbackSrc={BgService}
+        className="absolute inset-0 w-full h-full object-cover"
+        alt=""
+      />
+      <div className="relative z-10">
+        <PageContainer>
+          <div className="mb-10">
           <ScrollReveal>
             <h1 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase text-white">
               {t('home.service.title')}
@@ -55,8 +60,9 @@ const Service = () => {
               </StaggerItem>
             ))}
           </StaggerContainer>
-        </div>
-      </PageContainer>
+          </div>
+        </PageContainer>
+      </div>
     </section>
   )
 }

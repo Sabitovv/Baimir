@@ -13,10 +13,23 @@ import { useTranslation } from 'react-i18next'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { EditableImage } from '@/zustand/EditableImage'
+
+type StorageImageItem = {
+  key: string
+  src: string
+}
 
 const StoragePage = () => {
+  const storageImages: StorageImageItem[] = [
+    { key: 'storage_page_main_photo_1', src: MainPhoto },
+    { key: 'storage_page_main_photo_2', src: Photo2 },
+    { key: 'storage_page_main_photo_3', src: Photo },
+    { key: 'storage_page_main_photo_4', src: Photo3 },
+  ]
+
   const [choose, setChoose] = useState(0)
-  const [activeImage, setActiveImage] = useState(MainPhoto)
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
 
   const { t } = useTranslation()
 
@@ -43,28 +56,30 @@ const StoragePage = () => {
 
             <section className="mt-6 sm:mt-8">
               <ScrollReveal delay={0.2}>
-                <img
-                  src={activeImage}
+                <EditableImage
+                  imageKey={storageImages[activeImageIndex].key}
+                  fallbackSrc={storageImages[activeImageIndex].src}
                   className="w-full h-auto aspect-video object-cover rounded-lg shadow-sm transition-opacity duration-300"
                   alt="storage main"
                 />
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 mt-4 sm:mt-6">
-                  {[Photo2, Photo, Photo3].map((img, i) => {
+                  {storageImages.slice(1).map((img, i) => {
                     const index = i + 1
                     return (
                       <div
                         key={i}
                         onClick={() => {
                           setChoose(index)
-                          setActiveImage(img)
+                          setActiveImageIndex(index)
                         }}
                         className={`cursor-pointer text-center transition-all duration-300 p-1 sm:p-2 rounded-lg ${choose === index
                           ? 'border-2 border-[#F58322] shadow-sm'
                           : 'border-2 border-transparent hover:border-gray-200'
                           }`}
                       >
-                        <img
-                          src={img}
+                        <EditableImage
+                          imageKey={img.key}
+                          fallbackSrc={img.src}
                           className="w-full h-auto aspect-[4/3] sm:aspect-video object-cover rounded-md mx-auto"
                           alt={`storage detail ${index}`}
                         />
@@ -88,13 +103,13 @@ const StoragePage = () => {
 
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
               <StaggerItem>
-                <Cart title={t('storage.cards.1')} image={Photo} />
+                <Cart title={t('storage.cards.1')} image={Photo} imageKey="storage_page_card_1" />
               </StaggerItem>
               <StaggerItem>
-                <Cart title={t('storage.cards.2')} image={Photo2} />
+                <Cart title={t('storage.cards.2')} image={Photo2} imageKey="storage_page_card_2" />
               </StaggerItem>
               <StaggerItem>
-                <Cart title={t('storage.cards.3')} image={Photo3} />
+                <Cart title={t('storage.cards.3')} image={Photo3} imageKey="storage_page_card_3" />
               </StaggerItem>
             </StaggerContainer>
 
@@ -119,8 +134,9 @@ const StoragePage = () => {
         </div>
 
         <div className="w-full lg:w-1/2 hidden lg:flex justify-center">
-          <img
-            src={bidImg}
+          <EditableImage
+            imageKey="storage_page_contact_bid"
+            fallbackSrc={bidImg}
             alt="contact"
             className="w-full max-w-md lg:max-w-full object-cover"
           />

@@ -221,11 +221,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <button
               type="button"
-              className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
-                isOutOfStock
-                  ? 'bg-gray-400 text-white hover:bg-gray-500'
-                  : "bg-[#F58322] text-white hover:bg-[#DB741F]"
-              }`}
+              className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition bg-[#F58322] text-white hover:bg-[#DB741F]`}
               onClick={(event) => {
                 event.preventDefault()
 
