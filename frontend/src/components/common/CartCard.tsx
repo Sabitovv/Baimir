@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 type CartCardProps = {
   image: string
   title: string
-  price: number
+  price?: number
   oldPrice?: number | null
   quantity: number
   onDecrement?: () => void
@@ -24,6 +24,9 @@ const CartCard = ({
   onRemove,
 }: CartCardProps) => {
   const { t, i18n } = useTranslation()
+  const hasValidPrice = typeof price === 'number' && Number.isFinite(price)
+  const priceText = hasValidPrice ? formatPrice(price, i18n.language) : t('commonCatalog.askPrice')
+  const showOldPrice = hasValidPrice && typeof oldPrice === 'number' && oldPrice > price
 
   return (
     <article className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
@@ -34,8 +37,8 @@ const CartCard = ({
           <h3 className="line-clamp-2 text-sm font-semibold text-gray-900">{title}</h3>
 
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-sm font-bold text-[#F58322]">{formatPrice(price, i18n.language)}</span>
-            {oldPrice && oldPrice > price && (
+            <span className="text-sm font-bold text-[#F58322]">{priceText}</span>
+            {showOldPrice && (
               <span className="text-xs text-gray-400 line-through">{formatPrice(oldPrice, i18n.language)}</span>
             )}
           </div>

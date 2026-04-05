@@ -109,9 +109,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       ? Number(price)
       : NaN
 
+  const cartPrice = Number.isFinite(priceNumber) ? priceNumber : undefined
+
   const formattedPrice = Number.isFinite(priceNumber)
     ? `${priceNumber.toLocaleString(i18n.language)} ₸`
-    : "—"
+    : t('commonCatalog.askPrice')
 
   const oldPriceNumber = typeof oldPrice === 'number' ? oldPrice : NaN
   const showOldPrice = Number.isFinite(oldPriceNumber) && Number.isFinite(priceNumber) && oldPriceNumber < priceNumber
@@ -225,8 +227,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
               onClick={(event) => {
                 event.preventDefault()
 
-                if (!Number.isFinite(priceNumber)) return
-
                 addAnimation(id, imgSrc, event)
 
                 dispatch(
@@ -235,7 +235,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     slug,
                     name,
                     image: imgSrc,
-                    price: priceNumber,
+                    price: cartPrice,
                     oldPrice,
                     inStock,
                   })

@@ -27,7 +27,10 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
 
   const [createInquiry, { isLoading }] = useCreateInquiryMutation()
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total = items.reduce((sum, item) => {
+    const itemPrice = typeof item.price === 'number' && Number.isFinite(item.price) ? item.price : 0
+    return sum + itemPrice * item.quantity
+  }, 0)
   const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
   const handleClose = () => {

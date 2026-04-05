@@ -83,9 +83,11 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
       ? Number(product.price)
       : NaN;
 
+  const cartPrice = Number.isFinite(priceNumber) ? priceNumber : undefined;
+
   const formattedPrice = Number.isFinite(priceNumber)
     ? `${priceNumber.toLocaleString(i18n.language)} ₸`
-    : "—";
+    : t('commonCatalog.askPrice');
 
   const normalizedFeatures = useMemo(() => {
     return (
@@ -175,7 +177,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
             onClick={(event) => {
               event.preventDefault()
 
-              if (product.inStock === false || !Number.isFinite(priceNumber)) return
+              if (product.inStock === false) return
 
               addAnimation(product.id, imgSrc, event)
 
@@ -185,7 +187,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
                   slug: product.slug,
                   name: product.name,
                   image: imgSrc,
-                  price: priceNumber,
+                  price: cartPrice,
                   oldPrice: product.oldPrice,
                   inStock: product.inStock,
                 })

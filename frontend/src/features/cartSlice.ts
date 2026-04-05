@@ -6,7 +6,7 @@ export type CartItem = {
     slug: string
     name: string
     image: string
-    price: number
+    price?: number
     oldPrice?: number | null
     quantity: number
     inStock?: boolean
@@ -27,7 +27,7 @@ const isCartItem = (value: unknown): value is CartItem => {
         typeof item.slug === 'string' &&
         typeof item.name === 'string' &&
         typeof item.image === 'string' &&
-        typeof item.price === 'number' &&
+        (item.price === undefined || typeof item.price === 'number') &&
         typeof item.quantity === 'number'
     )
 }

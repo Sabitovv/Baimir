@@ -95,10 +95,16 @@ const NewsSection = () => {
       <PageContainer>
 
         <ScrollReveal>
-          <h2 className="font-oswald font-bold uppercase text-[#111111]
-                        text-3xl md:text-4xl xl:text-5xl mb-10">
-            {t('home.news.title')}
-          </h2>
+          <div className='flex items-end justify-between'>
+            <h2 className="font-oswald font-bold uppercase text-[#111111]
+                text-3xl md:text-4xl xl:text-5xl mb-10">
+              {t('home.news.title')}
+            </h2>
+            <Link to="/Blog" className='font-manrope font-semibold uppercase text-[#111111] text-sm md:text-md xl:text-xl mb-10 hover:text-[#DB741F] hover:underline'>
+              {t('home.news.readmore')}
+            </Link>
+          </div>
+
         </ScrollReveal>
 
         {isLoading && (

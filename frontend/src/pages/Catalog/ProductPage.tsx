@@ -56,7 +56,9 @@ import {
   type InfoModalType,
 } from './constants/productInfoContent'
 import { EditableImage } from '@/zustand/EditableImage'
-const formatPrice = (price: number): string => {
+const formatPrice = (price: number | null | undefined, fallback: string): string => {
+  if (typeof price !== 'number' || !Number.isFinite(price)) return fallback
+
   return new Intl.NumberFormat('ru-KZ', {
     style: 'currency',
     currency: 'KZT',
@@ -534,7 +536,7 @@ const ProductLinksBlock = ({
               </div>
               <div className="p-4 space-y-2 flex flex-1 flex-col">
                 <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-[#F58322] transition-colors duration-300">{item.name}</h4>
-                <div className="mt-auto text-[#F58322] font-semibold">{formatPrice(item.price)}</div>
+                <div className="mt-auto text-[#F58322] font-semibold">{formatPrice(item.price, t('commonCatalog.askPrice'))}</div>
                 <div className={`text-xs ${item.inStock ? 'invisible' : 'text-gray-500'}`}>
                   {item.inStock ? t('commonCatalog.outOfStock') : t('commonCatalog.outOfStock')}
                 </div>
@@ -551,7 +553,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
   switch (block.type) {
     case 'heading': {
       if (!block.data.text?.trim()) return null
-      const HeadingTag = block.data.level === 1 ? 'h2' : block.data.level === 2 ? 'h3' : 'h4'
+      const HeadingTag = block.data.level === 1 ? 'h1' : block.data.level === 2 ? 'h2' : 'h3'
       return (
         <div key={block.id} className="space-y-2 border-l-4 border-[#F58322] pl-4 md:pl-5">
           <HeadingTag className="font-bold text-gray-900 text-xl md:text-2xl leading-tight">{block.data.text}</HeadingTag>
@@ -978,6 +980,10 @@ const ProductPage = () => {
   )
 
   const isInCompare = product ? compareItems.some((item) => item.id === product.id) : false
+  const productPrice =
+    typeof product?.price === 'number' && Number.isFinite(product.price)
+      ? product.price
+      : undefined
 
   const handleCompareToggle = () => {
     if (!product) return
@@ -1001,7 +1007,7 @@ const ProductPage = () => {
         slug: product.slug,
         name: product.name,
         image: cartImage,
-        price: product.price,
+        price: productPrice ?? 0,
         categoryId: productCategoryId,
         categoryName: product.category?.name ?? '',
       }),
@@ -1369,11 +1375,11 @@ const ProductPage = () => {
                   <div className="mb-4">
                     {product.oldPrice && (
                       <div className="text-gray-400 line-through text-lg font-medium">
-                        {formatPrice(product.oldPrice)}
+                        {formatPrice(product.oldPrice, t('commonCatalog.askPrice'))}
                       </div>
                     )}
                     <div className="text-3xl font-extrabold text-gray-900 mb-1">
-                      {formatPrice(product.price)}
+                      {formatPrice(product.price, t('commonCatalog.askPrice'))}
                     </div>
 
                     {product.inStock ? (
@@ -1423,7 +1429,7 @@ const ProductPage = () => {
                             slug: product.slug,
                             name: product.name,
                             image: cartImage,
-                            price: product.price,
+                            price: productPrice,
                             oldPrice: product.oldPrice,
                             inStock: product.inStock,
                           })
@@ -1560,7 +1566,7 @@ const ProductPage = () => {
                           <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
                         </div>
                         <div className="text-right text-sm font-bold text-gray-900 whitespace-nowrap">
-                          {formatPrice(variant.price)}
+                          {formatPrice(variant.price, t('commonCatalog.askPrice'))}
                         </div>
                       </div>
 
@@ -1594,7 +1600,7 @@ const ProductPage = () => {
                           <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
                         </td>
                         <td className="p-3 border-r border-gray-300 font-medium text-gray-700 whitespace-nowrap">
-                          {formatPrice(variant.price)}
+                          {formatPrice(variant.price, t('commonCatalog.askPrice'))}
                         </td>
                         {Object.keys(product.variants![0].attributes).map((attrKey) => (
                           <td key={attrKey} className="p-3 border-r border-gray-300 font-medium text-gray-700">

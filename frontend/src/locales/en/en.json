@@ -112,7 +112,8 @@
       "leaveReview": "Leave a review"
     },
     "news": {
-      "title": "News"
+      "title": "News",
+      "readmore": "others"
     },
     "service": {
       "title": "Turnkey service"
@@ -230,6 +231,7 @@
   "commonCatalog": {
     "catalog": "Catalog",
     "buy": "Add to cart",
+    "askPrice": "Request price",
     "notify": "Notify me",
     "inStock": "In stock",
     "outOfStock": "Out of stock",
@@ -270,7 +272,7 @@
     "work": "Working hours",
     "adress": "Store address",
     "descriprion": "Description",
-    "certificate": "Specification",
+    "certificate": "Characterization",
     "information": "Order information",
     "model": "Model range:",
     "sku": "Model / SKU",

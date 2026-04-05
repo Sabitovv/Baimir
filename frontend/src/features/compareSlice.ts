@@ -6,7 +6,7 @@ export type CompareItem = {
   slug: string
   name: string
   image: string
-  price: number
+  price: number | string
   categoryId: number
   categoryName: string
 }
