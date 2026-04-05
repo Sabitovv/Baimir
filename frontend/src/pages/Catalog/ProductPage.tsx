@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next'
 import { PopularProduct } from './components/PopularProduct'
 import sampleImg from '@/assets/catalog/sample_machine.png'
 import Contact from '@/components/common/Contact'
+import ProductCard from '@/components/common/ProductCard'
 import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
 import { addToCompare, removeFromCompare } from '@/features/compareSlice'
 import { useCartAnimation } from '@/components/animations/useCartAnimation'
@@ -402,9 +403,7 @@ const renderCardItem = (card: GridCardItem, idx: number, _ratio: 'square' | 'vid
   </article>
 )
 
-type LinkedProductCard = Pick<ProductDetail, 'id' | 'slug' | 'name' | 'price' | 'oldPrice' | 'media' | 'inStock' | 'category'>
-
-const getPrimaryImage = (media: LinkedProductCard['media']): string => {
+const getPrimaryImage = (media: ProductDetail['media']): string => {
   if (!media || media.length === 0) return PLACEHOLDER_IMG
   const firstImage = media.find((item) => String(item.type).toUpperCase().includes('IMAGE'))
   return firstImage?.url || media[0]?.url || PLACEHOLDER_IMG
@@ -417,8 +416,9 @@ const ProductLinksBlock = ({
 }) => {
   const dispatch = useAppDispatch()
   const { i18n, t } = useTranslation()
-  const [items, setItems] = useState<LinkedProductCard[]>([])
+  const [items, setItems] = useState<ProductDetail[]>([])
   const [loading, setLoading] = useState(false)
+  const [hasResolved, setHasResolved] = useState(false)
 
   useEffect(() => {
     if (!block.data.productIds?.length) {
@@ -426,15 +426,18 @@ const ProductLinksBlock = ({
     }
 
     let cancelled = false
+    setHasResolved(false)
     const loadingTimer = window.setTimeout(() => {
       if (!cancelled) setLoading(true)
     }, 0)
 
-    const ids: (string | number)[] = []
+    const ids: number[] = []
     const slugs: string[] = []
     
     block.data.productIds.forEach((value) => {
       const token = String(value).trim()
+      if (!token) return
+
       if (/^\d+$/.test(token)) {
         ids.push(Number(token))
       } else {
@@ -443,7 +446,7 @@ const ProductLinksBlock = ({
     })
 
     const subscriptions: any[] = []
-    const requests: Promise<any>[] = []
+    const requests: Array<Promise<ProductDetail[]>> = []
     
     if (ids.length > 0) {
       const sub = dispatch(productsApi.endpoints.getProductsBatch.initiate(ids))
@@ -452,11 +455,11 @@ const ProductLinksBlock = ({
         sub
           .then(res => {
             if (res.status === 'fulfilled') {
-              return res.data.map((p: ProductDetail) => ({ type: 'product' as const, product: p }))
+              return res.data
             }
-            return null
+            return []
           })
-          .catch(() => null)
+          .catch(() => [])
       )
     }
     
@@ -467,34 +470,51 @@ const ProductLinksBlock = ({
         sub
           .then(res => {
             if (res.status === 'fulfilled') {
-              return { type: 'product' as const, product: res.data }
+              return [res.data]
             }
-            return null
+            return []
           })
-          .catch(() => null)
+          .catch(() => [])
       )
     })
 
-    Promise.allSettled(requests)
+    Promise.all(requests)
       .then((results) => {
         if (cancelled) return
-        const loaded = results
-          .filter((res): res is PromiseFulfilledResult<any> => res.status === 'fulfilled' && res.value !== null)
-          .map((res) => res.value.product)
-          .map((prod) => ({
-            id: prod.id,
-            slug: prod.slug,
-            name: prod.name,
-            price: prod.price,
-            oldPrice: prod.oldPrice,
-            media: prod.media,
-            inStock: prod.inStock,
-            category: prod.category,
-          }))
+
+        const allProducts = results.flat()
+        const byId = new Map<number, ProductDetail>()
+        const bySlug = new Map<string, ProductDetail>()
+
+        allProducts.forEach((product) => {
+          byId.set(product.id, product)
+          bySlug.set(product.slug, product)
+        })
+
+        const loaded: ProductDetail[] = []
+        const seen = new Set<number>()
+
+        block.data.productIds.forEach((raw) => {
+          const token = String(raw).trim()
+          if (!token) return
+
+          const product = /^\d+$/.test(token)
+            ? byId.get(Number(token))
+            : bySlug.get(token)
+
+          if (!product || seen.has(product.id)) return
+
+          seen.add(product.id)
+          loaded.push(product)
+        })
+
         setItems(loaded)
       })
       .finally(() => {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+          setHasResolved(true)
+        }
       })
 
     return () => {
@@ -504,12 +524,41 @@ const ProductLinksBlock = ({
     }
   }, [block.data.productIds, dispatch, i18n.language])
 
-  const layoutClass =
-    block.data.layout === 'grid'
-      ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
-      : block.data.layout === 'carousel'
-        ? 'flex gap-4 overflow-x-auto pb-2 snap-x'
-        : 'grid grid-cols-1 gap-4'
+  const isCardLayout = block.data.layout === 'card'
+  const isCarouselLayout = block.data.layout === 'carousel'
+  const displayedItems = isCardLayout ? items.slice(0, 1) : items
+  const shouldRenderCarousel = isCarouselLayout && displayedItems.length >= 3
+
+  if (!block.data.productIds?.length) return null
+  if (hasResolved && displayedItems.length === 0) return null
+
+  if (isCardLayout && displayedItems[0]) {
+    const item = displayedItems[0]
+
+    return (
+      <section className="space-y-3">
+        <h3 className="text-lg font-semibold text-gray-900">{t('productPage.relatedProducts')}</h3>
+
+        {loading && <p className="text-sm text-gray-500">{t('productPage.loadingLinked')}</p>}
+
+        {!loading && (
+          <div className="max-w-[360px]">
+            <ProductCard
+              id={item.id}
+              slug={item.slug}
+              name={item.name}
+              coverImage={item.coverImage || getPrimaryImage(item.media)}
+              price={item.price}
+              oldPrice={item.oldPrice}
+              inStock={item.inStock}
+              categoryId={item.category?.id}
+              categoryName={item.category?.name ?? ''}
+            />
+          </div>
+        )}
+      </section>
+    )
+  }
 
   return (
     <section className="space-y-3">
@@ -517,38 +566,47 @@ const ProductLinksBlock = ({
 
       {loading && <p className="text-sm text-gray-500">{t('productPage.loadingLinked')}</p>}
 
-      {!loading && block.data.productIds?.length > 0 && items.length === 0 && (
-        <p className="text-sm text-gray-500">{t('productPage.linkedNotFound')}</p>
+      {displayedItems.length > 0 && shouldRenderCarousel && (
+        <div className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {displayedItems.map((item) => (
+            <div key={item.id} className="w-[260px] shrink-0 snap-start sm:w-[290px] lg:w-[320px]">
+              <ProductCard
+                id={item.id}
+                slug={item.slug}
+                name={item.name}
+                coverImage={item.coverImage || getPrimaryImage(item.media)}
+                price={item.price}
+                oldPrice={item.oldPrice}
+                inStock={item.inStock}
+                categoryId={item.category?.id}
+                categoryName={item.category?.name ?? ''}
+              />
+            </div>
+          ))}
+        </div>
       )}
 
-      {items.length > 0 && (
-        <div className={layoutClass}>
-          {items.map((item) => (
-            <Link
+      {displayedItems.length > 0 && !shouldRenderCarousel && (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {displayedItems.map((item) => (
+            <ProductCard
               key={item.id}
-              to={`/catalog/product/${item.slug}`}
-              className={`group rounded-2xl border border-gray-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] flex h-full flex-col ${
-                block.data.layout === 'carousel' ? 'min-w-[260px] snap-start' : ''
-              }`}
-            >
-              <div className="h-[220px] md:h-[240px] lg:h-[260px] bg-gray-100 overflow-hidden group-hover:scale-105 transition-transform duration-500">
-                <img src={getPrimaryImage(item.media)} alt={item.name} className="w-full h-full object-contain sm:object-cover transition duration-500 hover:scale-105" loading="lazy" />
-              </div>
-              <div className="p-4 space-y-2 flex flex-1 flex-col">
-                <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-[#F58322] transition-colors duration-300">{item.name}</h4>
-                <div className="mt-auto text-[#F58322] font-semibold">{formatPrice(item.price, t('commonCatalog.askPrice'))}</div>
-                <div className={`text-xs ${item.inStock ? 'invisible' : 'text-gray-500'}`}>
-                  {item.inStock ? t('commonCatalog.outOfStock') : t('commonCatalog.outOfStock')}
-                </div>
-              </div>
-            </Link>
+              id={item.id}
+              slug={item.slug}
+              name={item.name}
+              coverImage={item.coverImage || getPrimaryImage(item.media)}
+              price={item.price}
+              oldPrice={item.oldPrice}
+              inStock={item.inStock}
+              categoryId={item.category?.id}
+              categoryName={item.category?.name ?? ''}
+            />
           ))}
         </div>
       )}
     </section>
   )
 }
-
 const renderContentBlock = (block: ProductContentBlock) => {
   switch (block.type) {
     case 'heading': {
