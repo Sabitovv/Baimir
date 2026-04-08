@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom"
 import { EditableImage } from '@/zustand/EditableImage'
 
 type CategoryCardProps = {
