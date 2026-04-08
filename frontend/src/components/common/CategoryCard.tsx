@@ -15,7 +15,7 @@ const CategoryCard = ({
   onClick
 }: CategoryCardProps) => {
   return (
-    <Link to={`/Technology/${title}`}>
+    <div>
       
       <div
         onClick={onClick}
@@ -44,7 +44,7 @@ const CategoryCard = ({
         </div>
 
       </div>
-    </Link>
+    </div>
   )
 }
 

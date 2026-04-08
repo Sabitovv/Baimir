@@ -109,13 +109,15 @@ const CategoryPage = () => {
   const pageParam = Number(searchParams.get('page') ?? 1)
   const page = Number.isFinite(pageParam) ? Math.max(1, pageParam) : 1
   const limit = 12
+  const sortParam = searchParams.get('sort')
+  const effectiveSort = sortParam && sortParam.trim().length > 0 ? sortParam : 'price,ASC'
 
   const allParams = Object.fromEntries(searchParams.entries())
   const filters = { ...allParams }
   delete filters.page
   delete filters.categoryId
 
-  const queryArg = activeId ? { categoryId: activeId, page, limit, ...filters } : skipToken
+  const queryArg = activeId ? { categoryId: activeId, page, limit, ...filters, sort: effectiveSort } : skipToken
 
     const {
       data: productsResponse,
@@ -226,6 +228,13 @@ const CategoryPage = () => {
 
     return () => media.removeEventListener('change', updateViewport)
   }, [])
+
+  useEffect(() => {
+    if (sortParam && sortParam.trim()) return
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('sort', 'price,ASC')
+    setSearchParams(params, { replace: true })
+  }, [sortParam, searchParams, setSearchParams])
 
   const changePage = (newPage: number) => {
     const safePage = Math.max(1, Math.min(totalPages, newPage))

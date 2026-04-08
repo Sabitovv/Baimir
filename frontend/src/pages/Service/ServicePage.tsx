@@ -151,7 +151,7 @@ const ServicePage = () => {
 
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
               {/* ВНИМАНИЕ: Здесь используются компоненты Card. */}
-              <StaggerItem>
+              <StaggerItem className='disable'>
                 <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} imageKey="service_page_real_objects_card_1" />
               </StaggerItem>
               <StaggerItem>

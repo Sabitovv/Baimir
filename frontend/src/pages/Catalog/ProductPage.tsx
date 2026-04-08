@@ -1032,6 +1032,24 @@ const ProductPage = () => {
     })
   }, [specRows])
 
+  const specColumns = useMemo(() => {
+    const source = (product?.specifications as SpecGroup[] | undefined) ?? []
+    const columns: [SpecGroup[], SpecGroup[]] = [[], []]
+    const weights = [0, 0]
+
+    source.forEach((item) => {
+      const itemWeight = 'isHeader' in item && item.isHeader
+        ? 2
+        : Math.max(item.attributes?.length ?? 1, 1)
+      const columnIndex = weights[0] <= weights[1] ? 0 : 1
+
+      columns[columnIndex].push(item)
+      weights[columnIndex] += itemWeight
+    })
+
+    return columns
+  }, [product?.specifications])
+
   const normalizedContentBlocks = useMemo(
     () => normalizeContentBlocks(product?.contentBlocks),
     [product?.contentBlocks],
@@ -1678,51 +1696,55 @@ const ProductPage = () => {
           <div className="mt-4">
             {product.specifications && product.specifications.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                {(product.specifications as SpecGroup[]).map((item, blockIdx: number) => {
-                  if ('isHeader' in item && item.isHeader) {
-                    return (
-                      <div key={`header-${blockIdx}`} className="md:col-span-2 bg-gradient-to-r from-[#E6EDF5] to-[#F0F5FA] px-4 py-3 rounded-xl">
-                        <div className="font-bold text-xs uppercase text-gray-800">• {item.name}</div>
-                      </div>
-                    )
-                  }
+                {specColumns.map((column, columnIdx) => (
+                  <div key={`spec-column-${columnIdx}`} className="space-y-4">
+                    {column.map((item, blockIdx) => {
+                      if ('isHeader' in item && item.isHeader) {
+                        return (
+                          <div key={`header-${columnIdx}-${blockIdx}`} className="bg-gradient-to-r from-[#E6EDF5] to-[#F0F5FA] px-4 py-3 rounded-xl">
+                            <div className="font-bold text-xs uppercase text-gray-800">• {item.name}</div>
+                          </div>
+                        )
+                      }
 
-                  const mainIsGray = blockIdx % 2 === 0
-                  const mainBg = mainIsGray ? 'bg-[#F5F7FA]' : 'bg-white'
+                      const mainIsGray = blockIdx % 2 === 0
+                      const mainBg = mainIsGray ? 'bg-[#F5F7FA]' : 'bg-white'
 
-                  return (
-                    <div
-                      key={`block-${blockIdx}`}
-                      className={`${mainBg} self-start rounded-2xl border border-gray-100 overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg`}
-                    >
-                      {item.name && (
-                        <div className={`${mainBg} px-4 py-3 border-b border-gray-100`}>
-                          <div className="font-semibold text-gray-800">{item.name}</div>
-                        </div>
-                      )}
-                      <div>
-                        {item.attributes?.map((atr: SpecificationAttribute, aIdx: number) => {
-                          const childIsGray = mainIsGray ? (aIdx % 2 === 1) : (aIdx % 2 === 0)
-                          const childBg = childIsGray ? 'bg-[#F5F7FA]' : 'bg-white'
-
-                          return (
-                            <div
-                              key={`atr-${blockIdx}-${aIdx}`}
-                              className={`${childBg} px-4 py-3 flex justify-between items-start border-b border-gray-100 transition-colors hover:bg-gray-50`}
-                            >
-                              <div className="text-gray-600">• {atr.name}</div>
-                              <div className="font-medium text-gray-900 text-right max-w-[60%] whitespace-pre-wrap">
-                                {atr.value ?? '—'}
-                                {" "}
-                                {atr.unit}
-                              </div>
+                      return (
+                        <div
+                          key={`block-${columnIdx}-${blockIdx}`}
+                          className={`${mainBg} rounded-2xl border border-gray-100 overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg`}
+                        >
+                          {item.name && (
+                            <div className={`${mainBg} px-4 py-3 border-b border-gray-100`}>
+                              <div className="font-semibold text-gray-800">{item.name}</div>
                             </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )
-                })}
+                          )}
+                          <div>
+                            {item.attributes?.map((atr: SpecificationAttribute, aIdx: number) => {
+                              const childIsGray = mainIsGray ? (aIdx % 2 === 1) : (aIdx % 2 === 0)
+                              const childBg = childIsGray ? 'bg-[#F5F7FA]' : 'bg-white'
+
+                              return (
+                                <div
+                                  key={`atr-${columnIdx}-${blockIdx}-${aIdx}`}
+                                  className={`${childBg} px-4 py-3 flex justify-between items-start border-b border-gray-100 transition-colors hover:bg-gray-50`}
+                                >
+                                  <div className="text-gray-600">• {atr.name}</div>
+                                  <div className="font-medium text-gray-900 text-right max-w-[60%] whitespace-pre-wrap">
+                                    {atr.value ?? '—'}
+                                    {' '}
+                                    {atr.unit}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ))}
               </div>
             ) : (
               <p className="py-4 text-gray-500">{t('productPage.noChcaracter')}</p>
