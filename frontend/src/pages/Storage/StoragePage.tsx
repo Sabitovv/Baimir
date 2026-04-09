@@ -175,9 +175,6 @@ const StoragePage = () => {
             <ScrollReveal delay={0.3} y={20}>
               <Component />
               <Component />
-              <Component />
-              <Component />
-              <Component />
             </ScrollReveal>
 
             <div className="mt-24">

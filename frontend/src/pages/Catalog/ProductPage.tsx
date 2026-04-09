@@ -27,6 +27,7 @@ import address from '@/assets/catalog/icons/addres.svg'
 import { useTranslation } from 'react-i18next'
 import { PopularProduct } from './components/PopularProduct'
 import sampleImg from '@/assets/catalog/sample_machine.png'
+import productPlaceholder from '@/assets/catalog/productPlaceholder.svg'
 import Contact from '@/components/common/Contact'
 import ProductCard from '@/components/common/ProductCard'
 import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
@@ -84,7 +85,7 @@ const findCategoryById = (categories: Category[], id: number): Category | null =
   return null
 }
 
-const PLACEHOLDER_IMG = 'https://placehold.co/600x400?text=No+Image'
+const PLACEHOLDER_IMG = productPlaceholder
 
 type GalleryItem = {
   kind: 'image' | 'videoExternal' | 'videoFile'
@@ -107,6 +108,7 @@ type HeaderSpecGroup = {
 }
 
 type SpecGroup = SpecificationGroup | HeaderSpecGroup
+type StickyMode = 'static' | 'fixed' | 'bottom'
 
 const toYouTubeId = (url: string): string | null => {
   try {
@@ -386,6 +388,33 @@ const normalizeContentBlocks = (value: unknown): ProductContentBlock[] => {
     .filter((item): item is ProductContentBlock => item !== null)
 }
 
+const stripHtmlTags = (value: string): string => {
+  return value
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+const getContentBlockText = (block: ProductContentBlock): string => {
+  switch (block.type) {
+    case 'heading':
+      return `${block.data.text} ${block.data.subtitle ?? ''}`.trim()
+    case 'paragraph':
+      return block.data.text
+    case 'imageCard':
+      return `${block.data.title} ${block.data.description}`.trim()
+    case 'table':
+      return block.data.rows.flat().join(' ')
+    case 'list':
+      return block.data.items.join(' ')
+    case 'cardGrid':
+      return block.data.cards.map((card) => `${card.title} ${card.description}`.trim()).join(' ')
+    default:
+      return ''
+  }
+}
+
 const renderCardItem = (card: GridCardItem, idx: number, _ratio: 'square' | 'video' | 'portrait') => (
   <article key={`${card.title}-${idx}`} className="group rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl flex h-full flex-col">
     <div className="h-[220px] md:h-[240px] lg:h-[260px] bg-gray-100 overflow-hidden">
@@ -403,10 +432,41 @@ const renderCardItem = (card: GridCardItem, idx: number, _ratio: 'square' | 'vid
   </article>
 )
 
+const isMainSetHeading = (value?: string): boolean => {
+  if (!value) return false
+  const text = value.toLowerCase()
+  return text.includes('основная комплектация') || text.includes('main configuration') || text.includes('main package')
+}
+
+const renderMainSetItem = (card: GridCardItem, idx: number) => (
+  <article
+    key={`${card.title}-${idx}`}
+    className="rounded-2xl border border-gray-200 bg-white p-4 md:p-5 shadow-sm transition-all duration-300 hover:shadow-md"
+  >
+    <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_220px] gap-4 md:gap-5 items-start">
+      <div className="min-w-0">
+        <h4 className="font-semibold text-gray-900 leading-snug mb-2 text-base md:text-lg">{card.title}</h4>
+        <p className="text-sm md:text-base text-gray-700 whitespace-pre-line">{card.description}</p>
+      </div>
+
+      <div className="h-[180px] sm:h-[200px] bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+        <img
+          src={card.imageUrl || PLACEHOLDER_IMG}
+          alt={card.title}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  </article>
+)
+
 const getPrimaryImage = (media: ProductDetail['media']): string => {
   if (!media || media.length === 0) return PLACEHOLDER_IMG
-  const firstImage = media.find((item) => String(item.type).toUpperCase().includes('IMAGE'))
-  return firstImage?.url || media[0]?.url || PLACEHOLDER_IMG
+  const firstImage = media.find(
+    (item) => String(item.type).toUpperCase().includes('IMAGE') && typeof item.url === 'string' && item.url.trim().length > 0,
+  )
+  return firstImage?.url?.trim() || PLACEHOLDER_IMG
 }
 
 const ProductLinksBlock = ({
@@ -419,25 +479,50 @@ const ProductLinksBlock = ({
   const [items, setItems] = useState<ProductDetail[]>([])
   const [loading, setLoading] = useState(false)
   const [hasResolved, setHasResolved] = useState(false)
+  const requestNonceRef = useRef(0)
+
+  const productTokens = useMemo(() => {
+    const seen = new Set<string>()
+
+    return (block.data.productIds ?? [])
+      .map((value) => String(value).trim())
+      .filter((token) => {
+        if (!token || seen.has(token)) return false
+        seen.add(token)
+        return true
+      })
+  }, [block.data.productIds])
+
+  const productIdsKey = productTokens.join('|')
 
   useEffect(() => {
-    if (!block.data.productIds?.length) {
+    if (!productIdsKey) {
+      setItems([])
+      setLoading(false)
+      setHasResolved(true)
       return
     }
 
+    const REQUEST_TIMEOUT_MS = 10000
+    const requestNonce = ++requestNonceRef.current
     let cancelled = false
+
+    const tokens = productIdsKey.split('|').filter(Boolean)
+
     setHasResolved(false)
+    setLoading(false)
+
     const loadingTimer = window.setTimeout(() => {
-      if (!cancelled) setLoading(true)
-    }, 0)
+      if (!cancelled && requestNonceRef.current === requestNonce) {
+        setLoading(true)
+      }
+    }, 150)
 
     const ids: number[] = []
     const slugs: string[] = []
-    
-    block.data.productIds.forEach((value) => {
-      const token = String(value).trim()
-      if (!token) return
 
+    tokens.forEach((token) => {
+      
       if (/^\d+$/.test(token)) {
         ids.push(Number(token))
       } else {
@@ -445,21 +530,48 @@ const ProductLinksBlock = ({
       }
     })
 
-    const subscriptions: any[] = []
+    if (ids.length === 0 && slugs.length === 0) {
+      window.clearTimeout(loadingTimer)
+
+      if (!cancelled && requestNonceRef.current === requestNonce) {
+        setItems([])
+        setLoading(false)
+        setHasResolved(true)
+      }
+      return
+    }
+
+    const subscriptions: Array<{ unsubscribe: () => void; abort?: () => void }> = []
     const requests: Array<Promise<ProductDetail[]>> = []
+
+    const withTimeout = (promise: Promise<ProductDetail[]>, subscription: { abort?: () => void }): Promise<ProductDetail[]> =>
+      new Promise((resolve) => {
+        const timeoutId = window.setTimeout(() => {
+          if (typeof subscription.abort === 'function') {
+            subscription.abort()
+          }
+          resolve([])
+        }, REQUEST_TIMEOUT_MS)
+
+        promise
+          .then((result) => {
+            window.clearTimeout(timeoutId)
+            resolve(result)
+          })
+          .catch(() => {
+            window.clearTimeout(timeoutId)
+            resolve([])
+          })
+      })
     
     if (ids.length > 0) {
       const sub = dispatch(productsApi.endpoints.getProductsBatch.initiate(ids))
       subscriptions.push(sub)
       requests.push(
-        sub
-          .then(res => {
-            if (res.status === 'fulfilled') {
-              return res.data
-            }
-            return []
-          })
-          .catch(() => [])
+        withTimeout(
+          sub.unwrap().then((data) => (Array.isArray(data) ? data : [])),
+          sub,
+        )
       )
     }
     
@@ -467,20 +579,19 @@ const ProductLinksBlock = ({
       const sub = dispatch(productsApi.endpoints.getProductBySlug.initiate({ slug, lang: i18n.language }))
       subscriptions.push(sub)
       requests.push(
-        sub
-          .then(res => {
-            if (res.status === 'fulfilled') {
-              return [res.data]
-            }
-            return []
-          })
-          .catch(() => [])
+        withTimeout(
+          sub.unwrap().then((data) => (data ? [data] : [])),
+          sub,
+        )
       )
     })
 
-    Promise.all(requests)
-      .then((results) => {
-        if (cancelled) return
+    Promise.allSettled(requests)
+      .then((settledResults) => {
+        window.clearTimeout(loadingTimer)
+        if (cancelled || requestNonceRef.current !== requestNonce) return
+
+        const results = settledResults.map((result) => (result.status === 'fulfilled' ? result.value : []))
 
         const allProducts = results.flat()
         const byId = new Map<number, ProductDetail>()
@@ -494,9 +605,7 @@ const ProductLinksBlock = ({
         const loaded: ProductDetail[] = []
         const seen = new Set<number>()
 
-        block.data.productIds.forEach((raw) => {
-          const token = String(raw).trim()
-          if (!token) return
+        tokens.forEach((token) => {
 
           const product = /^\d+$/.test(token)
             ? byId.get(Number(token))
@@ -511,7 +620,8 @@ const ProductLinksBlock = ({
         setItems(loaded)
       })
       .finally(() => {
-        if (!cancelled) {
+        window.clearTimeout(loadingTimer)
+        if (!cancelled && requestNonceRef.current === requestNonce) {
           setLoading(false)
           setHasResolved(true)
         }
@@ -520,16 +630,20 @@ const ProductLinksBlock = ({
     return () => {
       cancelled = true
       window.clearTimeout(loadingTimer)
-      subscriptions.forEach((sub) => sub.unsubscribe())
+      subscriptions.forEach((sub) => {
+        if (typeof sub.abort === 'function') sub.abort()
+        sub.unsubscribe()
+      })
     }
-  }, [block.data.productIds, dispatch, i18n.language])
+  }, [dispatch, i18n.language, productIdsKey])
 
   const isCardLayout = block.data.layout === 'card'
   const isCarouselLayout = block.data.layout === 'carousel'
   const displayedItems = isCardLayout ? items.slice(0, 1) : items
   const shouldRenderCarousel = isCarouselLayout && displayedItems.length >= 3
+  const showLoading = loading && displayedItems.length === 0 && !hasResolved
 
-  if (!block.data.productIds?.length) return null
+  if (!productIdsKey) return null
   if (hasResolved && displayedItems.length === 0) return null
 
   if (isCardLayout && displayedItems[0]) {
@@ -539,9 +653,9 @@ const ProductLinksBlock = ({
       <section className="space-y-3">
         <h3 className="text-lg font-semibold text-gray-900">{t('productPage.relatedProducts')}</h3>
 
-        {loading && <p className="text-sm text-gray-500">{t('productPage.loadingLinked')}</p>}
+        {showLoading && <p className="text-sm text-gray-500">{t('productPage.loadingLinked')}</p>}
 
-        {!loading && (
+        {displayedItems.length > 0 && (
           <div className="max-w-[360px]">
             <ProductCard
               id={item.id}
@@ -564,7 +678,7 @@ const ProductLinksBlock = ({
     <section className="space-y-3">
       <h3 className="text-lg font-semibold text-gray-900">{t('productPage.relatedProducts')}</h3>
 
-      {loading && <p className="text-sm text-gray-500">{t('productPage.loadingLinked')}</p>}
+      {showLoading && <p className="text-sm text-gray-500">{t('productPage.loadingLinked')}</p>}
 
       {displayedItems.length > 0 && shouldRenderCarousel && (
         <div className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -580,6 +694,7 @@ const ProductLinksBlock = ({
                 inStock={item.inStock}
                 categoryId={item.category?.id}
                 categoryName={item.category?.name ?? ''}
+                showCompare={false}
               />
             </div>
           ))}
@@ -600,6 +715,7 @@ const ProductLinksBlock = ({
               inStock={item.inStock}
               categoryId={item.category?.id}
               categoryName={item.category?.name ?? ''}
+              showCompare={false}
             />
           ))}
         </div>
@@ -607,7 +723,7 @@ const ProductLinksBlock = ({
     </section>
   )
 }
-const renderContentBlock = (block: ProductContentBlock) => {
+const renderContentBlock = (block: ProductContentBlock, prevBlock?: ProductContentBlock) => {
   switch (block.type) {
     case 'heading': {
       if (!block.data.text?.trim()) return null
@@ -772,6 +888,7 @@ const renderContentBlock = (block: ProductContentBlock) => {
       const gridClass = block.data.layout === 'single' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
       const isSingleLayout = block.data.layout === 'single'
 
+      console.log(block.data.urls)
       return (
         <div key={block.id} className={`grid ${gridClass} gap-4`}>
           {block.data.urls.map((url, idx) => (
@@ -828,6 +945,17 @@ const renderContentBlock = (block: ProductContentBlock) => {
         4: 'md:grid-cols-2 lg:grid-cols-4',
       }
 
+      const prevHeading = prevBlock?.type === 'heading' ? prevBlock.data.text : undefined
+      const useMainSetLayout = isMainSetHeading(prevHeading)
+
+      if (useMainSetLayout) {
+        return (
+          <div key={block.id} className="space-y-4 md:space-y-5">
+            {block.data.cards.map((card, idx) => renderMainSetItem(card, idx))}
+          </div>
+        )
+      }
+
       return (
         <div key={block.id} className={`grid grid-cols-1 ${colsMap[block.data.columns]} gap-5`}>
           {block.data.cards.map((card, idx) => renderCardItem(card, idx, block.data.imageRatio))}
@@ -866,6 +994,12 @@ const ProductPage = () => {
   const touchStartX = useRef<number | null>(null)
   const touchEndX = useRef<number | null>(null)
   const SWIPE_THRESHOLD = 50
+  const descriptionGridRef = useRef<HTMLDivElement | null>(null)
+  const stickyColumnRef = useRef<HTMLElement | null>(null)
+  const stickyCardRef = useRef<HTMLDivElement | null>(null)
+  const [stickyMode, setStickyMode] = useState<StickyMode>('static')
+  const [stickyCardWidth, setStickyCardWidth] = useState<number | null>(null)
+  const [stickyCardHeight, setStickyCardHeight] = useState<number | null>(null)
 
   const isScheduleModalOpen = infoModalType === 'schedule'
   const {
@@ -1098,6 +1232,99 @@ const ProductPage = () => {
     }),
     [product?.description],
   )
+
+  const plainDescriptionText = useMemo(() => {
+    const htmlText = stripHtmlTags(safeDescriptionHtml)
+    const blockText = normalizedContentBlocks
+      .map((block) => getContentBlockText(block))
+      .join(' ')
+
+    return `${htmlText} ${blockText}`.replace(/\s+/g, ' ').trim()
+  }, [normalizedContentBlocks, safeDescriptionHtml])
+
+  const isLargeDescription = useMemo(() => {
+    const hasManyBlocks = normalizedContentBlocks.length >= 4
+    const hasLongText = plainDescriptionText.length >= 700
+
+    return hasManyBlocks || hasLongText
+  }, [normalizedContentBlocks.length, plainDescriptionText.length])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (activeTab !== 'desc') {
+      setStickyMode('static')
+      setStickyCardWidth(null)
+      setStickyCardHeight(null)
+      return
+    }
+
+    const mediaQuery = window.matchMedia('(min-width: 768px)')
+
+    const updateStickyState = () => {
+      const grid = descriptionGridRef.current
+      const column = stickyColumnRef.current
+      const card = stickyCardRef.current
+
+      if (!grid || !column || !card) {
+        setStickyMode('static')
+        return
+      }
+
+      if (!mediaQuery.matches) {
+        setStickyMode('static')
+        setStickyCardWidth(null)
+        setStickyCardHeight(null)
+        return
+      }
+
+      const topOffset = 96
+      const gridRect = grid.getBoundingClientRect()
+      const columnRect = column.getBoundingClientRect()
+      const cardHeight = card.offsetHeight
+      const canStayFixed = gridRect.bottom - topOffset > cardHeight
+
+      setStickyCardWidth(columnRect.width)
+      setStickyCardHeight(cardHeight)
+
+      if (gridRect.top > topOffset) {
+        setStickyMode('static')
+        return
+      }
+
+      if (canStayFixed) {
+        setStickyMode('fixed')
+        return
+      }
+
+      setStickyMode('bottom')
+    }
+
+    updateStickyState()
+    window.addEventListener('scroll', updateStickyState, { passive: true })
+    window.addEventListener('resize', updateStickyState)
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', updateStickyState)
+    } else {
+      mediaQuery.addListener(updateStickyState)
+    }
+
+    return () => {
+      window.removeEventListener('scroll', updateStickyState)
+      window.removeEventListener('resize', updateStickyState)
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', updateStickyState)
+      } else {
+        mediaQuery.removeListener(updateStickyState)
+      }
+    }
+  }, [
+    activeTab,
+    normalizedContentBlocks.length,
+    plainDescriptionText.length,
+    product?.id,
+    product?.variants?.length,
+  ])
 
   const scheduleDayLabels: Record<WorkScheduleDayKey, string> = {
     monday: t('about.schedule.days.monday'),
@@ -1617,78 +1844,113 @@ const ProductPage = () => {
 
         {activeTab === 'desc' && (
           <div className="animate-fade-in text-gray-800 product-content-adaptive">
-            {normalizedContentBlocks.length > 0 ? (
-              <div className="space-y-6 mb-8">
-                {normalizedContentBlocks.map((block) => renderContentBlock(block))}
-              </div>
-            ) : (
-              <div className="mb-8">
-                <div
-                  className="prose max-w-none text-sm leading-relaxed text-gray-700"
-                  dangerouslySetInnerHTML={{ __html: safeDescriptionHtml }}
-                />
-              </div>
-            )}
+            <div ref={descriptionGridRef} className="relative grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+              <div className="md:col-span-2">
+                {normalizedContentBlocks.length > 0 ? (
+                  <div className="space-y-6 mb-8">
+                    {normalizedContentBlocks.map((block, index) => renderContentBlock(block, normalizedContentBlocks[index - 1]))}
+                  </div>
+                ) : (
+                  <div className="mb-8">
+                    <div
+                      className="prose max-w-none text-sm leading-relaxed text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: safeDescriptionHtml }}
+                    />
+                  </div>
+                )}
 
-            {product.variants && product.variants.length > 0 && (
-              <div className="mt-12 overflow-x-auto">
-                <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">{t('productPage.model')}</h4>
-                <div className="md:hidden space-y-3">
-                  {product.variants.map((variant: ProductVariant) => (
-                    <article key={variant.id} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md">
-                      <div className="flex items-start justify-between gap-3 mb-3">
-                        <div>
-                          <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
-                          <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
-                        </div>
-                        <div className="text-right text-sm font-bold text-gray-900 whitespace-nowrap">
-                          {formatPrice(variant.price, t('commonCatalog.askPrice'))}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 rounded-xl border border-gray-100 bg-[#FAFAFA] p-3">
-                        {Object.entries(variant.attributes ?? {}).map(([attrKey, attrValue]) => (
-                          <div key={`${variant.id}-${attrKey}`} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-3 border-t border-gray-100 pt-2 first:border-t-0 first:pt-0 text-sm">
-                            <span className="text-gray-500">{formatAttributeLabel(attrKey)}</span>
-                            <span className="font-medium text-gray-900 text-right break-words">{String(attrValue ?? '—')}</span>
+                {product.variants && product.variants.length > 0 && (
+                  <div className="mt-12 overflow-x-auto">
+                    <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">{t('productPage.model')}</h4>
+                    <div className="md:hidden space-y-3">
+                      {product.variants.map((variant: ProductVariant) => (
+                        <article key={variant.id} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md">
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div>
+                              <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
+                              <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
+                            </div>
+                            <div className="text-right text-sm font-bold text-gray-900 whitespace-nowrap">
+                              {formatPrice(variant.price, t('commonCatalog.askPrice'))}
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </article>
-                  ))}
-                </div>
 
-                <table className="hidden md:table w-full min-w-[900px] border-collapse text-[13px] text-center border border-gray-300">
-                  <thead>
-                    <tr className="bg-white text-gray-800 font-bold border-b border-gray-300">
-                      <th className="p-3 border-r border-gray-300 text-left w-[180px]">{t('productPage.sku')}</th>
-                      <th className="p-3 border-r border-gray-300">{t('filters.price')}</th>
-                      {Object.keys(product.variants[0].attributes).map(attrName => (
-                        <th key={attrName} className="p-3 border-r border-gray-300">{formatAttributeLabel(attrName)}</th>
+                          <div className="space-y-2 rounded-xl border border-gray-100 bg-[#FAFAFA] p-3">
+                            {Object.entries(variant.attributes ?? {}).map(([attrKey, attrValue]) => (
+                              <div key={`${variant.id}-${attrKey}`} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-3 border-t border-gray-100 pt-2 first:border-t-0 first:pt-0 text-sm">
+                                <span className="text-gray-500">{formatAttributeLabel(attrKey)}</span>
+                                <span className="font-medium text-gray-900 text-right break-words">{String(attrValue ?? '—')}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </article>
                       ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {product.variants.map((variant: ProductVariant) => (
-                      <tr key={variant.id} className="border-b border-gray-300 last:border-0 hover:bg-gray-50 transition-colors">
-                        <td className="p-3 border-r border-gray-300 text-left align-top">
-                          <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
-                          <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
-                        </td>
-                        <td className="p-3 border-r border-gray-300 font-medium text-gray-700 whitespace-nowrap">
-                          {formatPrice(variant.price, t('commonCatalog.askPrice'))}
-                        </td>
-                        {Object.keys(product.variants![0].attributes).map((attrKey) => (
-                          <td key={attrKey} className="p-3 border-r border-gray-300 font-medium text-gray-700">
-                            {variant.attributes[attrKey] ?? '—'}
-                          </td>
+                    </div>
+
+                    <table className="hidden md:table w-full min-w-[900px] border-collapse text-[13px] text-center border border-gray-300">
+                      <thead>
+                        <tr className="bg-white text-gray-800 font-bold border-b border-gray-300">
+                          <th className="p-3 border-r border-gray-300 text-left w-[180px]">{t('productPage.sku')}</th>
+                          <th className="p-3 border-r border-gray-300">{t('filters.price')}</th>
+                          {Object.keys(product.variants[0].attributes).map(attrName => (
+                            <th key={attrName} className="p-3 border-r border-gray-300">{formatAttributeLabel(attrName)}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {product.variants.map((variant: ProductVariant) => (
+                          <tr key={variant.id} className="border-b border-gray-300 last:border-0 hover:bg-gray-50 transition-colors">
+                            <td className="p-3 border-r border-gray-300 text-left align-top">
+                              <div className="text-[#F58322] font-bold leading-tight">{variant.name}</div>
+                              <div className="text-gray-400 text-xs mt-1">{variant.sku}</div>
+                            </td>
+                            <td className="p-3 border-r border-gray-300 font-medium text-gray-700 whitespace-nowrap">
+                              {formatPrice(variant.price, t('commonCatalog.askPrice'))}
+                            </td>
+                            {Object.keys(product.variants![0].attributes).map((attrKey) => (
+                              <td key={attrKey} className="p-3 border-r border-gray-300 font-medium text-gray-700">
+                                {variant.attributes[attrKey] ?? '—'}
+                              </td>
+                            ))}
+                          </tr>
                         ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-            )}
+              <aside
+                ref={stickyColumnRef}
+                className="md:col-span-1 self-start relative"
+                style={stickyCardHeight ? { minHeight: stickyCardHeight } : undefined}
+              >
+                <div
+                  ref={stickyCardRef}
+                  className="rounded-2xl border border-gray-200 bg-white p-4 md:p-5 shadow-sm z-20"
+                  style={
+                    stickyMode === 'fixed'
+                      ? {
+                        position: 'fixed',
+                        top: 96,
+                        width: stickyCardWidth ?? undefined,
+                      }
+                      : stickyMode === 'bottom'
+                        ? {
+                          position: 'absolute',
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                        }
+                        : undefined
+                  }
+                >
+                  <h3 className="font-oswald text-2xl font-bold uppercase mb-5 text-gray-900">
+                    {t('catalogPage.bid')}
+                  </h3>
+                  <Contact productId={product.id} />
+                </div>
+              </aside>
+            </div>
           </div>
         )}
 
@@ -1751,6 +2013,7 @@ const ProductPage = () => {
             )}
           </div>
         )}
+
         {activeTab === 'order' && (
           <div className="animate-fade-in text-gray-800 py-4">
             <p className="mb-4">{t('productPage.forOrder')}</p>
@@ -1764,19 +2027,21 @@ const ProductPage = () => {
           </div>
         )}
         <PopularProduct />
-        <section className='mb-16'>
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="px-2 md:px-0">
-              <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
-                {t("catalogPage.bid")}
-              </h3>
-              <Contact productId={product.id} />
+        {!isLargeDescription && (
+          <section className='mb-16'>
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="px-2 md:px-0">
+                <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
+                  {t("catalogPage.bid")}
+                </h3>
+                <Contact productId={product.id} />
+              </div>
+              <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0">
+                <EditableImage imageKey="catalog_product_bid_image" fallbackSrc={sampleImg} alt="machine" className="max-w-full w-72 sm:w-full object-contain" />
+              </div>
             </div>
-            <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0">
-              <EditableImage imageKey="catalog_product_bid_image" fallbackSrc={sampleImg} alt="machine" className="max-w-full w-72 sm:w-full object-contain" />
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
       </div>
 
       <Dialog

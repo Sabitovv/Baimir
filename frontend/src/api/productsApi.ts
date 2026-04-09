@@ -413,7 +413,7 @@ export const productsApi = createApi({
   getProductsBatch: builder.query<ProductDetail[], (string | number)[]>({
     query: (ids) => {
       const params = new URLSearchParams()
-      ids.forEach(id => params.append('ids[]', String(id)))
+      ids.forEach(id => params.append('ids', String(id)))
       
       return {
         url: `/products/batch?${params.toString()}`,

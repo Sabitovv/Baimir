@@ -6,6 +6,7 @@ import StaggerItem from '@/components/animations/StaggerItem'
 import photo from '@/assets/production/photo_stanok.webp'
 import photo2 from '@/assets/production/photoStanok2.webp'
 import photo3 from '@/assets/production/photoStanok3.webp'
+import platformPlaceholder from '@/assets/production/platformPlaceholder.svg'
 import one from '@/assets/demoZal/one.svg'
 import two from '@/assets/demoZal/two.svg'
 import three from '@/assets/demoZal/three.svg'
@@ -35,8 +36,14 @@ const ProductionPage = () => {
     { key: 'production_page_step_icon_4', src: four },
   ]
 
+  const platformLogos: ProductionImageItem[] = Array.from({ length: 6 }, (_, i) => ({
+    key: `production_page_platform_logo_${i + 1}`,
+    src: platformPlaceholder,
+  }))
+
   const [choose, setChoose] = useState(0)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [activePlatformLogo, setActivePlatformLogo] = useState<ProductionImageItem | null>(null)
 
   return (
     <PageContainer>
@@ -202,19 +209,55 @@ const ProductionPage = () => {
           </p>
         </ScrollReveal>
 
-        <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
-          {Array.from({ length: 12 }).map((_, i) => (
+        <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
+          {platformLogos.map((logo, i) => (
             <StaggerItem key={i} className="flex flex-col group">
-              <div className="p-6 sm:p-8 mb-4 bg-gray-50 group-hover:bg-gray-100 transition-colors rounded-sm flex items-center justify-center aspect-square border border-gray-100">
-                <span className="text-gray-400 font-bold text-xs sm:text-sm tracking-widest">
-                  LOGO
-                </span>
+              <div
+                className="p-6 sm:p-8 mb-4 bg-gray-50 group-hover:bg-gray-100 transition-colors rounded-sm flex items-center justify-center aspect-square border border-gray-100 cursor-zoom-in"
+                onClick={(e) => {
+                  if (e.shiftKey) return
+                  setActivePlatformLogo(logo)
+                }}
+              >
+                <EditableImage
+                  imageKey={logo.key}
+                  fallbackSrc={logo.src}
+                  alt={`platform logo ${i + 1}`}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <p className="font-medium text-gray-800 text-sm">{t('production.platformCard.type')}</p>
               <p className="font-light text-xs sm:text-sm text-gray-500 mt-1 mb-6 sm:mb-8">{t('production.platformCard.region')}</p>
             </StaggerItem>
           ))}
         </StaggerContainer>
+
+        {activePlatformLogo && (
+          <div
+            className="fixed inset-0 z-50 bg-black/70 p-4 sm:p-8 flex items-center justify-center"
+            onClick={() => setActivePlatformLogo(null)}
+          >
+            <div
+              className="relative bg-white rounded-lg p-4 sm:p-6 w-full max-w-3xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => setActivePlatformLogo(null)}
+                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl leading-none"
+                aria-label="Close image preview"
+              >
+                ×
+              </button>
+              <EditableImage
+                imageKey={activePlatformLogo.key}
+                fallbackSrc={activePlatformLogo.src}
+                alt="platform logo preview"
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       <ScrollReveal y={40} className="my-20 sm:my-28 px-4">

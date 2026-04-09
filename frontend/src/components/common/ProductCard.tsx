@@ -7,6 +7,7 @@ import { useCartAnimation } from '../animations/useCartAnimation'
 import { addToCompare, removeFromCompare } from "@/features/compareSlice"
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import productPlaceholder from '@/assets/catalog/productPlaceholder.svg'
 
 
 type KeyFeature = {
@@ -30,7 +31,7 @@ type ProductCardProps = {
   showCompare?: boolean
 }
 
-const PLACEHOLDER_IMG = "https://via.placeholder.com/400x300?text=No+image"
+const PLACEHOLDER_IMG = productPlaceholder
 
 const normalizeFeature = (feature: KeyFeature): { label?: string; value: string; unit?: string } | null => {
   if (!feature) return null
@@ -67,8 +68,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const compareItems = useAppSelector((state) => state.compare.items)
   const [compareError, setCompareError] = React.useState<string | null>(null)
   const cartItem = items.find((item) => item.id === id)
-  const imgSrc = coverImage ?? PLACEHOLDER_IMG
+  const imgSrc = typeof coverImage === 'string' && coverImage.trim().length > 0 ? coverImage : PLACEHOLDER_IMG
+  const [resolvedImgSrc, setResolvedImgSrc] = React.useState(imgSrc)
   const { addAnimation } = useCartAnimation()
+
+  React.useEffect(() => {
+    setResolvedImgSrc(imgSrc)
+  }, [imgSrc])
 
   const isInCompare = compareItems.some((item) => item.id === id)
   const isOutOfStock = inStock === false
@@ -135,10 +141,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     >
       <div className="relative h-40 flex items-center justify-center mb-4">
         <img
-          src={imgSrc}
+          src={resolvedImgSrc}
           alt={name}
           className={`max-h-full object-contain ${isOutOfStock ? 'opacity-80 saturate-75' : ''}`}
           loading="lazy"
+          onError={() => setResolvedImgSrc(PLACEHOLDER_IMG)}
         />
       </div>
 

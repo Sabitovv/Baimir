@@ -57,7 +57,7 @@ export const PopularProduct = () => {
         <button
           aria-label="scroll left"
           onClick={scrollLeft}
-          className="shrink-0 p-1 sm:p-3 z-10 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+          className="hidden sm:flex shrink-0 p-3 z-10 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         >
           <EditableImage imageKey="catalog_popular_arrow_left" fallbackSrc={LeftIcon} alt="Left" className="w-6 h-6 sm:w-10 sm:h-10" />
         </button>
@@ -104,7 +104,7 @@ export const PopularProduct = () => {
         <button
           aria-label="scroll right"
           onClick={scrollRight}
-          className="shrink-0 p-1 sm:p-3 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+          className="hidden sm:flex shrink-0 p-3 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         >
           <EditableImage imageKey="catalog_popular_arrow_right" fallbackSrc={RightIcon} alt="Right" className="w-6 h-6 sm:w-10 sm:h-10" />
         </button>
