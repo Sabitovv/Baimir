@@ -343,7 +343,17 @@ export type CompanyManagers = {
   managers?: CompanyManager[]
 }
 
+export type CompanyContactPhone = {
+  id?: string | number
+  phone?: string
+}
+
+export type CompanyContactPhones = {
+  phones?: CompanyContactPhone[]
+}
+
 export type CompanySettingsResponse = {
+  COMPANY_CONTACT_PHONES?: CompanyContactPhones
   COMPANY_WORK_SCHEDULE?: CompanyWorkSchedule
   COMPANY_INFO_SECTIONS?: CompanyInfoSections
   COMPANY_MANAGERS?: CompanyManagers

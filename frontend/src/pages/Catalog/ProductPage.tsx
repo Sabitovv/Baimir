@@ -10,6 +10,7 @@ import { setBreadcrumbs } from '@/features/catalogSlice'
 import { productsApi, useGetCompanySettingsQuery, useGetProductBySlugQuery } from '@/api/productsApi'
 import type { ProductContentBlock, GridCardItem, ProductDetail } from '@/api/productsApi'
 import type {
+  CompanyManager,
   CompanyWorkSchedule,
   ProductVariant,
   SpecificationAttribute,
@@ -72,6 +73,18 @@ const formatAttributeLabel = (key: string): string => {
   const normalized = key.replace(/[_-]+/g, ' ').trim().replace(/\s+/g, ' ')
   if (!normalized) return key
   return normalized.charAt(0).toUpperCase() + normalized.slice(1)
+}
+
+const getManagerFullName = (manager: CompanyManager): string => {
+  const firstName = manager.firstName?.trim() ?? ''
+  const lastName = manager.lastName?.trim() ?? ''
+  const fullName = `${firstName} ${lastName}`.trim()
+  return fullName || '-'
+}
+
+const normalizePhoneHref = (phone: string): string => {
+  const normalized = phone.replace(/[^\d+]/g, '')
+  return normalized.startsWith('+') ? normalized : `+${normalized}`
 }
 
 const findCategoryById = (categories: Category[], id: number): Category | null => {
@@ -1001,14 +1014,25 @@ const ProductPage = () => {
   const [stickyCardWidth, setStickyCardWidth] = useState<number | null>(null)
   const [stickyCardHeight, setStickyCardHeight] = useState<number | null>(null)
 
-  const isScheduleModalOpen = infoModalType === 'schedule'
   const {
     data: companySettingsData,
     isFetching: workScheduleLoading,
     isError: isWorkScheduleError,
     refetch: refetchWorkSchedule,
-  } = useGetCompanySettingsQuery(undefined, { skip: !isScheduleModalOpen })
+  } = useGetCompanySettingsQuery()
   const workSchedule: CompanyWorkSchedule | null = companySettingsData?.COMPANY_WORK_SCHEDULE ?? null
+  const companyPhones = companySettingsData?.COMPANY_CONTACT_PHONES?.phones
+    ?.map((entry) => entry.phone?.trim() ?? '')
+    .filter((phone) => phone.length > 0) ?? []
+  const companyManagers = companySettingsData?.COMPANY_MANAGERS?.managers ?? []
+  const effectiveManagers = companyManagers.length > 0 ? companyManagers : SALES_MANAGERS.map((manager, idx) => ({
+    id: `fallback-manager-${idx}`,
+    firstName: manager.name,
+    lastName: '',
+    phone: manager.phone,
+    position: manager.role,
+  }))
+  const storeAddress = STORE_CONTACTS.address
   const workScheduleError = isWorkScheduleError ? t('productPage.modal.scheduleLoadError') : null
 
   const thumbsRef = useRef<HTMLDivElement | null>(null)
@@ -1509,18 +1533,41 @@ const ProductPage = () => {
       return (
         <div className="space-y-4 text-sm text-gray-700">
           <p className="font-medium text-gray-900">{STORE_CONTACTS.title}</p>
-          <p>{STORE_CONTACTS.address}</p>
+          <p>{storeAddress}</p>
 
           <div className="space-y-2">
-            {SALES_MANAGERS.map((manager) => (
-              <p key={manager.phone}>
-                <a href={`tel:${manager.phone.replace(/[^\d+]/g, '')}`} className="font-semibold text-[#F58322] hover:underline">
-                  {manager.phone}
-                </a>{' '}
-                - {manager.name}, {manager.role}
-              </p>
-            ))}
+            {effectiveManagers.map((manager) => {
+              const managerName = getManagerFullName(manager)
+              const managerPhone = manager.phone?.trim() ?? ''
+              const managerPosition = manager.position?.trim() || t('about.managers.phone')
+
+              if (!managerPhone) return null
+
+              return (
+                <p key={manager.id || managerPhone}>
+                  <a href={`tel:${normalizePhoneHref(managerPhone)}`} className="font-semibold text-[#F58322] hover:underline">
+                    {managerPhone}
+                  </a>{' '}
+                  - {managerName}, {managerPosition}
+                </p>
+              )
+            })}
           </div>
+
+          {companyPhones.length > 0 && (
+            <div>
+              <p className="font-medium text-gray-900 mb-1">{t('footer.phones.title')}</p>
+              <div className="space-y-1">
+                {companyPhones.map((phone) => (
+                  <p key={phone}>
+                    <a href={`tel:${normalizePhoneHref(phone)}`} className="text-[#F58322] hover:underline">
+                      {phone}
+                    </a>
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
 
           <p>
             Email:{' '}
@@ -1528,12 +1575,14 @@ const ProductPage = () => {
               {STORE_CONTACTS.email}
             </a>
           </p>
-          <p>
-            Телефон:{' '}
-            <a href={`tel:${STORE_CONTACTS.phone}`} className="text-[#F58322] hover:underline">
-              {STORE_CONTACTS.phone}
-            </a>
-          </p>
+          {companyPhones[0] && (
+            <p>
+              Телефон:{' '}
+              <a href={`tel:${normalizePhoneHref(companyPhones[0])}`} className="text-[#F58322] hover:underline">
+                {companyPhones[0]}
+              </a>
+            </p>
+          )}
           <p>
             Сайт:{' '}
             <a href={STORE_CONTACTS.website} target="_blank" rel="noreferrer" className="text-[#F58322] hover:underline">
@@ -2018,9 +2067,37 @@ const ProductPage = () => {
           <div className="animate-fade-in text-gray-800 py-4">
             <p className="mb-4">{t('productPage.forOrder')}</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li>{t('productPage.phone')} <a href="tel:+77777777777" className="text-[#F58322] font-bold">+7 (777) 777-77-77</a></li>
+              {companyPhones.map((phone) => (
+                <li key={phone}>
+                  {t('productPage.phone')} <a href={`tel:${normalizePhoneHref(phone)}`} className="text-[#F58322] font-bold">{phone}</a>
+                </li>
+              ))}
               <li>{t('productPage.Email')} <a href="mailto:sales@example.com" className="text-[#F58322] font-bold">sales@example.com</a></li>
+              <li>
+                {t('productPage.adress')}: <span className="font-medium text-gray-700">{storeAddress}</span>
+              </li>
             </ul>
+            {effectiveManagers.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-sm font-semibold text-gray-900">{t('about.managers.title')}</p>
+                {effectiveManagers.map((manager) => {
+                  const managerName = getManagerFullName(manager)
+                  const managerPhone = manager.phone?.trim() ?? ''
+                  const managerPosition = manager.position?.trim() ?? ''
+
+                  if (!managerPhone) return null
+
+                  return (
+                    <p key={manager.id || managerPhone} className="text-sm text-gray-700">
+                      <a href={`tel:${normalizePhoneHref(managerPhone)}`} className="text-[#F58322] font-semibold hover:underline">
+                        {managerPhone}
+                      </a>{' '}
+                      - {managerName}{managerPosition ? `, ${managerPosition}` : ''}
+                    </p>
+                  )
+                })}
+              </div>
+            )}
             <p className="mt-4 text-sm text-gray-500">
               {t('productPage.artic')}: <span className="font-bold text-gray-900">{product.sku}</span>
             </p>
