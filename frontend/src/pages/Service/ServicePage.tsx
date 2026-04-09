@@ -7,6 +7,7 @@ import teamPhoto from '@/assets/service/groupImg.webp'
 import real2 from '@/assets/service/TwoImg.webp'
 
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
 
 // Импорты компонентов анимации
 import ScrollReveal from '@/components/animations/ScrollReveal'
@@ -16,6 +17,11 @@ import { EditableImage } from '@/zustand/EditableImage'
 
 const ServicePage = () => {
   const { t } = useTranslation()
+  const [activeRealObjectCard, setActiveRealObjectCard] = useState<{
+    title: string
+    image: string
+    imageKey: string
+  } | null>(null)
 
   const services = [
     t('service.services.items.setup'),
@@ -24,6 +30,12 @@ const ServicePage = () => {
     t('service.services.items.training'),
     t('service.services.items.materials'),
     t('service.services.items.parts')
+  ]
+
+  const realObjectCards = [
+    { title: t('service.realObjects.cardTitle'), image: teamPhoto, imageKey: 'service_page_real_objects_card_1' },
+    { title: t('service.realObjects.cardTitle'), image: teamPhoto, imageKey: 'service_page_real_objects_card_2' },
+    { title: t('service.realObjects.cardTitle'), image: teamPhoto, imageKey: 'service_page_real_objects_card_3' },
   ]
 
   return (
@@ -150,16 +162,16 @@ const ServicePage = () => {
             </ScrollReveal>
 
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
-              {/* ВНИМАНИЕ: Здесь используются компоненты Card. */}
-              <StaggerItem className='disable'>
-                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} imageKey="service_page_real_objects_card_1" />
-              </StaggerItem>
-              <StaggerItem>
-                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} imageKey="service_page_real_objects_card_2" />
-              </StaggerItem>
-              <StaggerItem>
-                <Card title={t('service.realObjects.cardTitle')} image={teamPhoto} imageKey="service_page_real_objects_card_3" />
-              </StaggerItem>
+              {realObjectCards.map((card, index) => (
+                <StaggerItem key={card.imageKey} className={index === 0 ? 'disable' : ''}>
+                  <Card
+                    title={card.title}
+                    image={card.image}
+                    imageKey={card.imageKey}
+                    onClick={() => setActiveRealObjectCard(card)}
+                  />
+                </StaggerItem>
+              ))}
             </StaggerContainer>
           </section>
 
@@ -178,6 +190,38 @@ const ServicePage = () => {
 
         </main>
       </div>
+
+      {activeRealObjectCard && (
+        <div
+          className="fixed inset-0 z-50 bg-black/75 p-4 sm:p-8 flex items-center justify-center"
+          onClick={() => setActiveRealObjectCard(null)}
+        >
+          <div
+            className="relative bg-white rounded-xl p-4 sm:p-6 w-full max-w-5xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setActiveRealObjectCard(null)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl leading-none"
+              aria-label="Close image preview"
+            >
+              ×
+            </button>
+
+            <EditableImage
+              imageKey={activeRealObjectCard.imageKey}
+              fallbackSrc={activeRealObjectCard.image}
+              alt={activeRealObjectCard.title}
+              className="w-full max-h-[80vh] object-contain rounded-lg"
+            />
+
+            <p className="mt-4 text-sm sm:text-base text-gray-700 font-semibold">
+              {activeRealObjectCard.title}
+            </p>
+          </div>
+        </div>
+      )}
     </PageContainer>
   )
 }

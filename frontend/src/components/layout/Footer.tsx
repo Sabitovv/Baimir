@@ -8,7 +8,7 @@ import LinkedIn from '@mui/icons-material/LinkedIn'
 import WebSite from '@mui/icons-material/Language';
 
 import { useGetCompanySettingsQuery } from '@/api/productsApi'
-import type { CompanyInfoLocalizedText, CompanyManager, CompanySettingsResponse } from '@/api/productsApi'
+import type { CompanyInfoLocalizedText, CompanySettingsResponse } from '@/api/productsApi'
 
 type CompanySocialLink = {
   id: number | string
@@ -39,12 +39,6 @@ const getLocalizedCompanyInfoText = (
   if (!localizedText) return ''
 
   return localizedText[locale] || localizedText.ru || localizedText.en || localizedText.kk || ''
-}
-
-const getManagerFullName = (manager: CompanyManager): string => {
-  const firstName = manager.firstName?.trim() ?? ''
-  const lastName = manager.lastName?.trim() ?? ''
-  return `${firstName} ${lastName}`.trim()
 }
 
 const normalizePhoneHref = (phone: string): string => {
@@ -110,7 +104,6 @@ const Footer = () => {
   const phones = settings?.COMPANY_CONTACT_PHONES?.phones
     ?.map((entry) => entry.phone?.trim() ?? '')
     .filter((phone) => phone.length > 0) ?? []
-  const managers = settings?.COMPANY_MANAGERS?.managers ?? []
 // const year = new Date().getFullYear()
 
   return (
@@ -181,7 +174,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-display text-xs font-bold uppercase tracking-[0.16em] text-gray-400">{t('about.managers.title')}</h4>
+            {/* <h4 className="font-display text-xs font-bold uppercase tracking-[0.16em] text-gray-400">{t('about.managers.title')}</h4>
             {managers.length > 0 ? (
               <div className="mt-3 space-y-2 text-sm text-gray-200">
                 {managers.map((manager) => {
@@ -207,7 +200,7 @@ const Footer = () => {
               </div>
             ) : (
               <p className="mt-3 text-sm text-gray-300">—</p>
-            )}
+            )} */}
 
             <h4 className="mt-6 font-display text-xs font-bold uppercase tracking-[0.16em] text-gray-400">
               {t('footer.email.title')}

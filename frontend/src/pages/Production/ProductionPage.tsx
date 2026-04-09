@@ -13,7 +13,7 @@ import three from '@/assets/demoZal/three.svg'
 import four from '@/assets/demoZal/four.svg'
 import Contact from '@/components/common/Contact'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { EditableImage } from '@/zustand/EditableImage'
 
 type ProductionImageItem = {
@@ -44,6 +44,17 @@ const ProductionPage = () => {
   const [choose, setChoose] = useState(0)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [activePlatformLogo, setActivePlatformLogo] = useState<ProductionImageItem | null>(null)
+  const productionContactRef = useRef<HTMLElement | null>(null)
+
+  const scrollToProductionContact = () => {
+    const section = productionContactRef.current
+    if (!section) return
+
+    const headerOffset = 96
+    const targetY = window.scrollY + section.getBoundingClientRect().top - headerOffset
+
+    window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' })
+  }
 
   return (
     <PageContainer>
@@ -65,7 +76,11 @@ const ProductionPage = () => {
               <p className="text-gray-600 mt-3 sm:mt-4 max-w-3xl font-light text-sm sm:text-base leading-relaxed">
                 {t('production.text')}
               </p>
-              <button className="mt-8 sm:mt-10 bg-[#F58322] w-full sm:w-auto px-8 py-3 text-white font-medium hover:bg-[#DB741F] transition-colors rounded-sm shadow-sm">
+              <button
+                type="button"
+                onClick={scrollToProductionContact}
+                className="mt-8 sm:mt-10 bg-[#F58322] w-full sm:w-auto px-8 py-3 text-white font-medium hover:bg-[#DB741F] transition-colors rounded-sm shadow-sm"
+              >
                 {t('production.signUpDemo')}
               </button>
             </section>
@@ -261,7 +276,7 @@ const ProductionPage = () => {
       </section>
 
       <ScrollReveal y={40} className="my-20 sm:my-28 px-4">
-        <section>
+        <section ref={productionContactRef}>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-oswald font-semibold mb-8 sm:mb-12 text-center uppercase text-gray-900">
             {t('production.contact')}
           </h2>

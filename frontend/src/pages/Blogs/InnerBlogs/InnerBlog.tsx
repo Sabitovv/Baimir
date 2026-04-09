@@ -427,7 +427,7 @@ const InnerBlog = () => {
         </aside>
 
         <article className="max-w-[900px] mb-16">
-          <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase mb-5">
+          <h1 className="font-manrope font-bold text-3xl md:text-4xl xl:text-5xl uppercase mb-5">
             {title}
           </h1>
 

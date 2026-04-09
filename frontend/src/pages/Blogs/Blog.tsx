@@ -111,7 +111,7 @@ const BlogPage = () => {
 
         <section>
           <ScrollReveal>
-            <h1 className="font-oswald font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F58322]">
+            <h1 className="font-manrope font-bold text-3xl md:text-4xl xl:text-5xl uppercase text-[#F58322]">
               {t('blogPage.title')}
             </h1>
 
