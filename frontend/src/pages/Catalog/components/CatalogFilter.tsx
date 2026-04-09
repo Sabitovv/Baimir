@@ -11,19 +11,62 @@ type CatalogFiltersProps = {
 }
 
 type RangeValues = { from: string; to: string }
+const SLIDER_STEPS_FLOAT = 1000
+const SLIDER_STEPS_PRICE = 100
+
+const isPriceRangeFilter = (filter: Filter): boolean => {
+  const code = String(filter.code ?? '').toLowerCase()
+  const name = String(filter.name ?? '').toLowerCase()
+  return code.includes('price') || name.includes('price') || name.includes('цена')
+}
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v))
 
-const valueToSlider = (value: number, min: number, max: number): number => {
-  const range = max - min
-  if (range === 0) return 0
-  return Math.round(((value - min) / range) * 100)
+const getDecimalPlaces = (value: number): number => {
+  if (!Number.isFinite(value)) return 0
+  const asString = value.toString().toLowerCase()
+
+  if (!asString.includes('e')) {
+    const [, fraction = ''] = asString.split('.')
+    return fraction.length
+  }
+
+  const [base, exponentRaw] = asString.split('e')
+  const exponent = Number(exponentRaw)
+  const [, fraction = ''] = base.split('.')
+
+  if (exponent >= 0) return Math.max(0, fraction.length - exponent)
+  return fraction.length + Math.abs(exponent)
 }
 
-const sliderToValue = (sliderValue: number, min: number, max: number): number => {
+const formatNumber = (value: number, precision: number): string => {
+  if (!Number.isFinite(value)) return ''
+  const fixed = precision > 0 ? value.toFixed(precision) : String(Math.round(value))
+  return fixed.replace(/\.0+$/, '').replace(/(\.\d*?[1-9])0+$/, '$1')
+}
+
+const toNumber = (value: string): number => {
+  return Number(String(value).replace(/[^\d.-]/g, ''))
+}
+
+const roundToStep = (value: number, min: number, step: number, precision: number): number => {
+  if (!Number.isFinite(step) || step <= 0) {
+    return Number(value.toFixed(precision))
+  }
+  const stepped = min + Math.round((value - min) / step) * step
+  return Number(stepped.toFixed(precision))
+}
+
+const valueToSlider = (value: number, min: number, max: number, sliderSteps: number): number => {
+  const range = max - min
+  if (range === 0) return 0
+  return Math.round(((value - min) / range) * sliderSteps)
+}
+
+const sliderToValue = (sliderValue: number, min: number, max: number, sliderSteps: number): number => {
   const range = max - min
   if (range === 0) return min
-  return Math.round(min + (sliderValue / 100) * range)
+  return min + (sliderValue / sliderSteps) * range
 }
 
 const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogFiltersProps) => {
@@ -40,7 +83,27 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
     const fallback = bounds[f.code]
     const rawMin = f.range?.min ?? fallback?.min ?? 0
     const rawMax = f.range?.max ?? fallback?.max ?? 0
-    return { min: Math.floor(Number(rawMin)), max: Math.ceil(Number(rawMax)) }
+    const min = Number(rawMin)
+    const max = Number(rawMax)
+    const stepCandidate = Number(f.range?.step ?? 1)
+    const step = Number.isFinite(stepCandidate) && stepCandidate > 0 ? stepCandidate : 1
+    const safeMin = Math.min(min, max)
+    const safeMax = Math.max(min, max)
+    const useIntegerRange = isPriceRangeFilter(f)
+    const precision = useIntegerRange
+      ? 0
+      : Math.max(getDecimalPlaces(safeMin), getDecimalPlaces(safeMax), getDecimalPlaces(step))
+
+    const normalizedMin = useIntegerRange ? Math.floor(safeMin) : safeMin
+    const normalizedMax = useIntegerRange ? Math.ceil(safeMax) : safeMax
+    const normalizedStep = useIntegerRange ? 1 : step
+
+    return {
+      min: normalizedMin,
+      max: normalizedMin === normalizedMax ? normalizedMin + normalizedStep : normalizedMax,
+      step: normalizedStep,
+      precision,
+    }
   }, [bounds])
 
   const baseRanges = useMemo(() => {
@@ -51,10 +114,13 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
       const raw = searchParams.get(f.code) ?? ''
 
       if (!raw) {
-        nextRanges[f.code] = { from: String(min), to: String(max) }
+        nextRanges[f.code] = { from: formatNumber(min, getLimits(f).precision), to: formatNumber(max, getLimits(f).precision) }
       } else {
         const parts = raw.split(',', 2)
-        nextRanges[f.code] = { from: parts[0] ?? String(min), to: parts[1] ?? String(max) }
+        nextRanges[f.code] = {
+          from: parts[0] ?? formatNumber(min, getLimits(f).precision),
+          to: parts[1] ?? formatNumber(max, getLimits(f).precision),
+        }
       }
     })
 
@@ -64,18 +130,61 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
   const ranges = useMemo(() => ({ ...baseRanges, ...draftRanges }), [baseRanges, draftRanges])
 
   const setRange = (code: string, part: 'from' | 'to', value: string) => {
-    setDraftRanges((prev) => ({
-      ...prev,
-      [code]: { ...(ranges[code] ?? { from: '', to: '' }), [part]: value },
-    }))
+    const filter = (filters ?? []).find((x) => x.code === code)
+    if (!filter) return
+
+    const { min, max, step, precision } = getLimits(filter)
+    const isInteger = precision === 0
+    const normalizedRaw = String(value).replace(/,/g, '.')
+
+    let sanitized = isInteger
+      ? normalizedRaw.replace(/\D/g, '')
+      : normalizedRaw
+          .replace(/[^\d.]/g, '')
+          .replace(/\.(?=.*\.)/g, '')
+
+    if (!sanitized) {
+      sanitized = formatNumber(min, precision)
+    }
+
+    let nextNumber = Number(sanitized)
+    if (!Number.isFinite(nextNumber)) {
+      nextNumber = min
+    }
+
+    nextNumber = clamp(nextNumber, min, max)
+    nextNumber = roundToStep(nextNumber, min, step, precision)
+
+    const nextValue = formatNumber(nextNumber, precision)
+
+    setDraftRanges((prev) => {
+      const current = prev[code] ?? ranges[code] ?? { from: formatNumber(min, precision), to: formatNumber(max, precision) }
+      const next = { ...current, [part]: nextValue }
+
+      const fromValue = Number.isFinite(toNumber(next.from)) ? toNumber(next.from) : min
+      const toValue = Number.isFinite(toNumber(next.to)) ? toNumber(next.to) : max
+
+      if (fromValue > toValue) {
+        if (part === 'from') {
+          next.to = next.from
+        } else {
+          next.from = next.to
+        }
+      }
+
+      return {
+        ...prev,
+        [code]: next,
+      }
+    })
   }
 
   const normalizeRange = (f: Filter, value: RangeValues | undefined): RangeValues => {
-    const { min: safeMin, max: safeMax } = getLimits(f)
+    const { min: safeMin, max: safeMax, step, precision } = getLimits(f)
     const rawFrom = value?.from ?? ''
     const rawTo = value?.to ?? ''
-    let numFrom = Number(String(rawFrom).replace(/[^\d-]/g, ''))
-    let numTo = Number(String(rawTo).replace(/[^\d-]/g, ''))
+    let numFrom = toNumber(rawFrom)
+    let numTo = toNumber(rawTo)
 
     if (Number.isNaN(numFrom)) numFrom = safeMin
     if (Number.isNaN(numTo)) numTo = safeMax
@@ -83,9 +192,15 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
     numFrom = clamp(numFrom, safeMin, safeMax)
     numTo = clamp(numTo, safeMin, safeMax)
 
+    numFrom = roundToStep(numFrom, safeMin, step, precision)
+    numTo = roundToStep(numTo, safeMin, step, precision)
+
     if (numFrom > numTo) numTo = numFrom
 
-    return { from: String(numFrom), to: String(numTo) }
+    return {
+      from: formatNumber(numFrom, precision),
+      to: formatNumber(numTo, precision),
+    }
   }
 
   const commitAndNormalize = (code: string) => {
@@ -101,14 +216,15 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
 
     rangeFilters.forEach((f) => {
       const normalized = normalizeRange(f, ranges[f.code])
-      const { min, max } = getLimits(f)
-      const cleanFrom = Number(String(normalized.from).replace(/[^\d-]/g, '')) || min
-      const cleanTo = Number(String(normalized.to).replace(/[^\d-]/g, '')) || max
+      const { min, max, precision } = getLimits(f)
+      const cleanFrom = Number.isFinite(toNumber(normalized.from)) ? toNumber(normalized.from) : min
+      const cleanTo = Number.isFinite(toNumber(normalized.to)) ? toNumber(normalized.to) : max
+      const epsilon = Math.pow(10, -(precision + 2))
 
-      if (cleanFrom === min && cleanTo === max) {
+      if (Math.abs(cleanFrom - min) <= epsilon && Math.abs(cleanTo - max) <= epsilon) {
         params.delete(f.code)
       } else {
-        params.set(f.code, `${cleanFrom},${cleanTo}`)
+        params.set(f.code, `${formatNumber(cleanFrom, precision)},${formatNumber(cleanTo, precision)}`)
       }
     })
 
@@ -162,38 +278,44 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
               </h4>
 
               {f.uiType === 'RANGE_SLIDER' && (() => {
-                const { min: safeMin, max: safeMax } = getLimits(f)
+                const { min: safeMin, max: safeMax, step, precision } = getLimits(f)
+                const sliderSteps = isPriceRangeFilter(f) ? SLIDER_STEPS_PRICE : SLIDER_STEPS_FLOAT
                 if (safeMin === 0 && safeMax === 0) return null
 
-                const fromStr = ranges[f.code]?.from ?? String(safeMin)
-                const toStr = ranges[f.code]?.to ?? String(safeMax)
-                const numericFrom = Number(String(fromStr).replace(/[^\d-]/g, '')) || safeMin
-                const numericTo = Number(String(toStr).replace(/[^\d-]/g, '')) || safeMax
+                const fromStr = ranges[f.code]?.from ?? formatNumber(safeMin, precision)
+                const toStr = ranges[f.code]?.to ?? formatNumber(safeMax, precision)
+                const parsedFrom = toNumber(fromStr)
+                const parsedTo = toNumber(toStr)
+                const numericFrom = Number.isFinite(parsedFrom) ? parsedFrom : safeMin
+                const numericTo = Number.isFinite(parsedTo) ? parsedTo : safeMax
 
-                const percentFrom = valueToSlider(numericFrom, safeMin, safeMax)
-                const percentTo = valueToSlider(numericTo, safeMin, safeMax)
+                const percentFrom = valueToSlider(numericFrom, safeMin, safeMax, sliderSteps)
+                const percentTo = valueToSlider(numericTo, safeMin, safeMax, sliderSteps)
+                const fromThumbOnTop = percentFrom >= percentTo
 
                 const handleSliderFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   const sliderVal = Number(e.target.value)
-                  const realVal = sliderToValue(sliderVal, safeMin, safeMax)
-                  setRange(f.code, 'from', String(realVal))
+                  const rawVal = sliderToValue(sliderVal, safeMin, safeMax, sliderSteps)
+                  const realVal = roundToStep(rawVal, safeMin, step, precision)
+                  setRange(f.code, 'from', formatNumber(realVal, precision))
                 }
 
                 const handleSliderToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   const sliderVal = Number(e.target.value)
-                  const realVal = sliderToValue(sliderVal, safeMin, safeMax)
-                  setRange(f.code, 'to', String(realVal))
+                  const rawVal = sliderToValue(sliderVal, safeMin, safeMax, sliderSteps)
+                  const realVal = roundToStep(rawVal, safeMin, step, precision)
+                  setRange(f.code, 'to', formatNumber(realVal, precision))
                 }
 
                 return (
                   <div key={`range-${f.code}`}>
                     <div className="flex gap-2 mb-4">
                       <div className="relative flex-1">
-                        <input type="number" value={fromStr} onChange={(e) => setRange(f.code, 'from', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors" />
+                        <input type="number" inputMode={precision === 0 ? 'numeric' : 'decimal'} pattern={precision === 0 ? '[0-9]*' : '[0-9]*[.,]?[0-9]*'} min={safeMin} max={safeMax} step={step > 0 ? step : 'any'} value={fromStr} onChange={(e) => setRange(f.code, 'from', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors" />
                         {f.unitCode != null && f.unitCode !== '' && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">{f.unitCode}</span>}
                       </div>
                       <div className="relative flex-1">
-                        <input type="number" value={toStr} onChange={(e) => setRange(f.code, 'to', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors" />
+                        <input type="number" inputMode={precision === 0 ? 'numeric' : 'decimal'} pattern={precision === 0 ? '[0-9]*' : '[0-9]*[.,]?[0-9]*'} min={safeMin} max={safeMax} step={step > 0 ? step : 'any'} value={toStr} onChange={(e) => setRange(f.code, 'to', e.target.value)} onBlur={() => commitAndNormalize(f.code)} className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors" />
                         {f.unitCode != null && f.unitCode !== '' && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">{f.unitCode}</span>}
                       </div>
                     </div>
@@ -203,28 +325,22 @@ const CatalogFilters = ({ onClose, filters, bounds, inDrawer = false }: CatalogF
                       <input 
                         type="range" 
                         min={0} 
-                        max={100} 
-                        value={percentFrom} 
+                          max={sliderSteps} 
+                          value={percentFrom} 
                         onChange={handleSliderFromChange} 
                         onPointerUp={() => commitAndNormalize(f.code)} 
-                        className="absolute w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-auto z-30 h-6 cursor-pointer" 
-                        style={{ 
-                          background: 'transparent',
-                          clipPath: 'inset(0 50% 0 0)',
-                        }} 
+                        className={`absolute w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-none h-6 cursor-pointer ${fromThumbOnTop ? 'z-30' : 'z-20'}`}
+                        style={{ background: 'transparent' }}
                       />
                       <input 
                         type="range" 
                         min={0} 
-                        max={100} 
-                        value={percentTo} 
+                          max={sliderSteps} 
+                          value={percentTo} 
                         onChange={handleSliderToChange} 
                         onPointerUp={() => commitAndNormalize(f.code)} 
-                        className="absolute w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-auto z-20 h-6 cursor-pointer" 
-                        style={{ 
-                          background: 'transparent',
-                          clipPath: 'inset(0 0 0 50%)',
-                        }} 
+                        className={`absolute w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-none h-6 cursor-pointer ${fromThumbOnTop ? 'z-20' : 'z-30'}`}
+                        style={{ background: 'transparent' }}
                       />
                     </div>
                   </div>

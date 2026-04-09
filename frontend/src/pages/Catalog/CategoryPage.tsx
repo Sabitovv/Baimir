@@ -42,6 +42,12 @@ type ProductForFilter = {
   specifications?: ProductSpecGroup[]
 }
 
+const isPriceRangeFilter = (filter: Filter): boolean => {
+  const code = String(filter.code ?? '').toLowerCase()
+  const name = String(filter.name ?? '').toLowerCase()
+  return code.includes('price') || name.includes('price') || name.includes('цена')
+}
+
 const findCategoryById = (categories: Category[], id: number): Category | null => {
   for (const cat of categories) {
     if (Number(cat.id) === id) return cat
@@ -179,10 +185,23 @@ const CategoryPage = () => {
       const maxFromProducts = values.length ? Math.max(...values) : undefined
 
       const minCandidate = Number(f.range?.min ?? (minFromProducts ?? 0))
-      const maxCandidate = Number(f.range?.max ?? (maxFromProducts ?? (minCandidate + 1)))
+      const maxCandidate = Number(f.range?.max ?? (maxFromProducts ?? minCandidate))
+      const stepCandidate = Number(f.range?.step ?? 1)
+      const safeStep = Number.isFinite(stepCandidate) && stepCandidate > 0 ? stepCandidate : 1
+      const useIntegerRange = isPriceRangeFilter(f)
 
-      const min = Math.floor(Math.min(minCandidate, maxCandidate))
-      const max = Math.ceil(Math.max(maxCandidate, min + 1))
+      let min = Math.min(minCandidate, maxCandidate)
+      let max = Math.max(minCandidate, maxCandidate)
+
+      if (useIntegerRange) {
+        min = Math.floor(min)
+        max = Math.ceil(max)
+      }
+
+      if (min === max) {
+        max = min + (useIntegerRange ? 1 : safeStep)
+      }
+
       result[f.code] = { min, max }
     })
     return result
