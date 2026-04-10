@@ -152,7 +152,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
       .filter((f): f is { label?: string; value: string; unit?: string } => !!f)
       .slice(0, 3);
   }, [keyFeatures]);
-
   return (
     <Link
       to={`/catalog/product/${slug}`}
@@ -161,6 +160,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }`}
     >
       <div className="relative h-40 flex items-center justify-center mb-4">
+        {isNew === true && !isOutOfStock && (
+          <span className="absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
+            {t("commonCatalog.new")}
+          </span>
+        )}
         <img
           src={resolvedImgSrc}
           alt={name}
@@ -186,11 +190,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
             ? t("commonCatalog.outOfStock")
             : t("commonCatalog.inStock")}
         </span>
-        {isNew === true && (
-          <span className="inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
-            {t("commonCatalog.new")}
-          </span>
-        )}
       </div>
 
       {normalizedFeatures.length > 0 && (

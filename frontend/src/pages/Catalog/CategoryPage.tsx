@@ -517,7 +517,7 @@ const CategoryPage = () => {
                       price={product.price}
                       oldPrice={product.oldPrice}
                       inStock={product.inStock}
-                      isNew={product.new}
+                      isNew={product.newProduct ?? product.new}
                       categoryId={product.category?.id ?? activeId}
                       categoryName={
                         product.category?.name ?? currentCategory?.name ?? ""

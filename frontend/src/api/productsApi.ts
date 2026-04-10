@@ -158,6 +158,7 @@ export type ProductDetail = {
   oldPrice: number | null;
   discountPercent: number | null;
   inStock: boolean;
+  newProduct?: boolean;
   new?: boolean;
   stockQuantity: number;
   media: ProductMedia[] | null;
@@ -178,6 +179,7 @@ export type Product = {
   description: string;
   sku?: string;
   inStock: boolean;
+  newProduct?: boolean;
   new?: boolean;
   stockQuantity: number;
 

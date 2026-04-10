@@ -825,7 +825,7 @@ const ProductLinksBlock = ({
               price={item.price}
               oldPrice={item.oldPrice}
               inStock={item.inStock}
-              isNew={item.new}
+              isNew={item.newProduct}
               categoryId={item.category?.id}
               categoryName={item.category?.name ?? ""}
             />
@@ -862,7 +862,7 @@ const ProductLinksBlock = ({
                 price={item.price}
                 oldPrice={item.oldPrice}
                 inStock={item.inStock}
-                isNew={item.new}
+                isNew={item.newProduct ?? item.new}
                 categoryId={item.category?.id}
                 categoryName={item.category?.name ?? ""}
                 showCompare={false}
@@ -884,7 +884,7 @@ const ProductLinksBlock = ({
               price={item.price}
               oldPrice={item.oldPrice}
               inStock={item.inStock}
-              isNew={item.new}
+              isNew={item.newProduct ?? item.new}
               categoryId={item.category?.id}
               categoryName={item.category?.name ?? ""}
               showCompare={false}
@@ -2166,11 +2166,12 @@ const ProductPage = () => {
                           ? t("productPage.have")
                           : t("productPage.haveNot")}
                       </span>
-                      {product.new === true && (
-                        <span className="inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
-                          {t("commonCatalog.new")}
-                        </span>
-                      )}
+                      {(product.newProduct ?? product.new) === true &&
+                        product.inStock && (
+                          <span className="inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
+                            {t("commonCatalog.new")}
+                          </span>
+                        )}
                     </div>
                   </div>
                   {items.find((item) => item.id === product.id) ? (

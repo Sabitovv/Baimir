@@ -50,7 +50,15 @@ const formatNumber = (value: number, precision: number): string => {
 };
 
 const toNumber = (value: string): number => {
-  return Number(String(value).replace(/[^\d.-]/g, ""));
+  const normalized = String(value ?? "")
+    .trim()
+    .replace(/,/g, ".")
+    .replace(/[^\d.-]/g, "")
+    .replace(/(?!^)-/g, "")
+    .replace(/(\..*)\./g, "$1");
+
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : Number.NaN;
 };
 
 const roundToStep = (
@@ -74,7 +82,8 @@ const valueToSlider = (
 ): number => {
   const range = max - min;
   if (range === 0) return 0;
-  return Math.round(((value - min) / range) * sliderSteps);
+  const ratio = ((value - min) / range) * sliderSteps;
+  return clamp(Math.round(ratio), 0, sliderSteps);
 };
 
 const sliderToValue = (
@@ -266,6 +275,8 @@ const CatalogFilters = ({
   const applyRanges = () => {
     const params = new URLSearchParams(searchParams);
 
+    rangeFilters.forEach((f) => params.delete(f.code));
+
     rangeFilters.forEach((f) => {
       const normalized = normalizeRange(f, ranges[f.code]);
       const { min, max, precision } = getLimits(f);
@@ -315,8 +326,12 @@ const CatalogFilters = ({
   };
 
   const clearAll = () => {
-    const params = new URLSearchParams(searchParams);
-    (filters ?? []).forEach((f) => params.delete(f.code));
+    const params = new URLSearchParams();
+    const categoryId = searchParams.get("categoryId");
+    const sort = searchParams.get("sort");
+
+    if (categoryId) params.set("categoryId", categoryId);
+    params.set("sort", sort && sort.trim() ? sort : "price,ASC");
     params.set("page", "1");
     setSearchParams(params, { replace: false });
     setDraftRanges({});
@@ -364,7 +379,7 @@ const CatalogFilters = ({
                   const sliderSteps = isPriceRangeFilter(f)
                     ? SLIDER_STEPS_PRICE
                     : SLIDER_STEPS_FLOAT;
-                    console.log(sliderSteps)
+
                   if (safeMin === 0 && safeMax === 0) return null;
 
                   const fromStr =

@@ -156,7 +156,7 @@ const BlogProductsBlock = ({
                 price={product.price}
                 oldPrice={product.oldPrice}
                 inStock={product.inStock}
-                isNew={product.new}
+                isNew={product.newProduct ?? product.new}
                 categoryId={product.category?.id}
                 categoryName={product.category?.name}
               />
@@ -175,7 +175,7 @@ const BlogProductsBlock = ({
               price={product.price}
               oldPrice={product.oldPrice}
               inStock={product.inStock}
-              isNew={product.new}
+              isNew={product.newProduct ?? product.new}
               categoryId={product.category?.id}
               categoryName={product.category?.name}
             />

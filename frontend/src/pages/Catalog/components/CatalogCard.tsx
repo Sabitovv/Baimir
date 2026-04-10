@@ -34,6 +34,7 @@ type Product = {
   oldPrice?: number | null;
   keyFeatures?: Feature[] | null;
   inStock?: boolean;
+  newProduct?: boolean;
   new?: boolean;
 };
 
@@ -111,6 +112,12 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
       aria-label={product.name}
     >
       <div className="h-40 flex items-center justify-center mb-4 relative">
+        {(product.newProduct ?? product.new) === true &&
+          product.inStock !== false && (
+            <span className="absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
+              {t("commonCatalog.new")}
+            </span>
+          )}
         <img
           src={imgSrc}
           alt={product.name ?? "product image"}
@@ -135,11 +142,6 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
             ? t("commonCatalog.outOfStock")
             : t("commonCatalog.inStock")}
         </span>
-        {product.new === true && (
-          <span className="inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
-            {t("commonCatalog.new")}
-          </span>
-        )}
       </div>
 
       {normalizedFeatures.length > 0 && (

@@ -22,6 +22,7 @@ export type Product = {
   oldPrice?: number | null;
   coverImage?: string | null;
   inStock: boolean;
+  newProduct?: boolean;
   new?: boolean;
   sku?: string;
   category?: ProductCategoryShort;
