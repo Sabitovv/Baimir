@@ -34,7 +34,7 @@ const getDecimalPlaces = (value: number): number => {
     return fraction.length;
   }
 
-  const [base, exponentRaw] = asString.split("e");
+  const [base = "", exponentRaw = "0"] = asString.split("e");
   const exponent = Number(exponentRaw);
   const [, fraction = ""] = base.split(".");
 

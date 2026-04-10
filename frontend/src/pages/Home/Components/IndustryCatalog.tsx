@@ -1,42 +1,54 @@
-import { useTranslation } from 'react-i18next'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination } from 'swiper/modules'
-import PageContainer from '@/components/ui/PageContainer'
-import ScrollReveal from '@/components/animations/ScrollReveal'
-import StaggerContainer from '@/components/animations/StaggerContainer'
-import StaggerItem from '@/components/animations/StaggerItem'
-import { useGetCategoriesTreeQuery } from '@/api/categoriesApi'
-import { Link } from 'react-router-dom'
-import 'swiper/css'
-import 'swiper/css/pagination'
+import { useTranslation } from "react-i18next";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+import PageContainer from "@/components/ui/PageContainer";
+import ScrollReveal from "@/components/animations/ScrollReveal";
+import StaggerContainer from "@/components/animations/StaggerContainer";
+import StaggerItem from "@/components/animations/StaggerItem";
+import { useGetCategoriesTreeQuery } from "@/api/categoriesApi";
+import { Link } from "react-router-dom";
+import "swiper/css";
+import "swiper/css/pagination";
+
+type CatalogCardItem = {
+  title: string;
+  image?: string;
+  path: string;
+};
 
 const IndustryCatalog = () => {
-  const { t } = useTranslation()
-  const { i18n } = useTranslation()
+  const { t } = useTranslation();
+  const { i18n } = useTranslation();
 
-  const { data } = useGetCategoriesTreeQuery({lang: i18n.language})
-  const cards = data
-  ? [
-      { title: data[0].name, image: data[0].imageUrl, path: "catalog/metalworking?categoryId=19"},
-      { title: data[1].name, image: data[1].imageUrl, path: "catalog/metalworking?categoryId=8"},
-      { title: data[2].name, image: data[2].imageUrl, path: "catalog/metalworking?categoryId=20"},
-      { title: data[3].name, image: data[3].imageUrl, path: "catalog/metalworking?categoryId=21"}
-    ]
-  : []
+  const { data } = useGetCategoriesTreeQuery({ lang: i18n.language });
+  const cards: CatalogCardItem[] = [];
+  if (data) {
+    [
+      { index: 0, path: "catalog/metalworking?categoryId=19" },
+      { index: 1, path: "catalog/metalworking?categoryId=8" },
+      { index: 2, path: "catalog/metalworking?categoryId=20" },
+      { index: 3, path: "catalog/metalworking?categoryId=21" },
+    ].forEach(({ index, path }) => {
+      const category = data[index];
+      if (!category) return;
+      cards.push({ title: category.name, image: category.imageUrl, path });
+    });
+  }
 
   return (
     <section className="py-16 md:py-20 bg-white">
       <PageContainer>
-
         <ScrollReveal>
           <div className="mb-8 md:mb-10">
             <h1 className="font-oswald font-semibold uppercase text-[#111111] text-4xl md:text-5xl xl:text-6xl">
-              {t('home.catalog.title')}
+              {t("home.catalog.title")}
             </h1>
 
-            <p className="text-gray-500 mt-2
-                          text-lg md:text-xl xl:text-2xl">
-              {t('home.catalog.subtitle')}
+            <p
+              className="text-gray-500 mt-2
+                          text-lg md:text-xl xl:text-2xl"
+            >
+              {t("home.catalog.subtitle")}
             </p>
           </div>
         </ScrollReveal>
@@ -83,7 +95,6 @@ const IndustryCatalog = () => {
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {cards.map((card, index) => (
               <StaggerItem key={index} className="flex flex-col">
-
                 <div
                   className="
                     bg-[#F9F9F9]
@@ -125,17 +136,15 @@ const IndustryCatalog = () => {
                     hover:underline
                   "
                 >
-                  {t('home.catalog.link')} &gt;
+                  {t("home.catalog.link")} &gt;
                 </Link>
-
               </StaggerItem>
             ))}
           </StaggerContainer>
         </div>
-
       </PageContainer>
     </section>
-  )
-}
+  );
+};
 
-export default IndustryCatalog
+export default IndustryCatalog;

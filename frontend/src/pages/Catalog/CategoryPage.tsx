@@ -319,8 +319,11 @@ const CategoryPage = () => {
     const arr = Array.from(pages).sort((a, b) => a - b);
     const result: (number | null)[] = [];
     for (let i = 0; i < arr.length; i++) {
-      result.push(arr[i]);
-      if (i < arr.length - 1 && arr[i + 1] - arr[i] > 1) result.push(null);
+      const current = arr[i];
+      const next = arr[i + 1];
+      if (current == null) continue;
+      result.push(current);
+      if (next != null && next - current > 1) result.push(null);
     }
     return result;
   };

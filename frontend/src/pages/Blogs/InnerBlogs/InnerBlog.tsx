@@ -309,6 +309,7 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
     const rows = Array.isArray(block.data?.rows) ? block.data.rows : [];
     if (!rows.length) return null;
     const [head, ...body] = rows;
+    if (!head) return null;
 
     return (
       <div

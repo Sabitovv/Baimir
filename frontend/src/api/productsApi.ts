@@ -249,6 +249,11 @@ export type InquiryRequest = {
   sourceUrl: string;
 };
 
+export type InquiryResponse = {
+  id?: number;
+  message?: string;
+};
+
 export type CompareAttribute = {
   attributeName: string;
   values: Record<string, string>;
@@ -516,7 +521,7 @@ export const productsApi = createApi({
           : [{ type: "Product", id: "POPULAR" }],
     }),
 
-    createInquiry: builder.mutation<any, InquiryRequest>({
+    createInquiry: builder.mutation<InquiryResponse, InquiryRequest>({
       query: (body) => ({
         url: "/inquiries",
         method: "POST",

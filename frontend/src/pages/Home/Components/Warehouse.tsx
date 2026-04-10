@@ -1,59 +1,59 @@
-import { useTranslation } from 'react-i18next'
-import PageContainer from '@/components/ui/PageContainer'
-import CardImg from '@/assets/home/sklad1.webp'
-import CardImg2 from '@/assets/home/sklad2.webp'
-import CardImg3 from '@/assets/home/sklad3.webp'
-import { useState } from 'react'
-import ScrollReveal from '@/components/animations/ScrollReveal'
-import StaggerContainer from '@/components/animations/StaggerContainer'
-import StaggerItem from '@/components/animations/StaggerItem'
-import { EditableImage } from '@/zustand/EditableImage'
+import { useTranslation } from "react-i18next";
+import PageContainer from "@/components/ui/PageContainer";
+import CardImg from "@/assets/home/sklad1.webp";
+import CardImg2 from "@/assets/home/sklad2.webp";
+import CardImg3 from "@/assets/home/sklad3.webp";
+import { useState } from "react";
+import ScrollReveal from "@/components/animations/ScrollReveal";
+import StaggerContainer from "@/components/animations/StaggerContainer";
+import StaggerItem from "@/components/animations/StaggerItem";
+import { EditableImage } from "@/zustand/EditableImage";
 
 type WarehouseImageItem = {
-  key: string
-  src: string
-}
+  key: string;
+  src: string;
+};
 
 type StatItem = {
-  valueKey: string
-  fallbackValue: string
-  unit?: string
-  textKey: string
-}
+  valueKey: string;
+  fallbackValue: string;
+  unit?: string;
+  textKey: string;
+};
 
 const Warehouse = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const [imgChange, setImgChange] = useState(0)
+  const [imgChange, setImgChange] = useState(0);
 
   const stats: StatItem[] = [
     {
-      valueKey: 'home.warehouse.values.space',
-      fallbackValue: '5 500 m2',
-      textKey: 'home.warehouse.stats.space',
+      valueKey: "home.warehouse.values.space",
+      fallbackValue: "5 500 m2",
+      textKey: "home.warehouse.stats.space",
     },
     {
-      valueKey: 'home.warehouse.values.staff',
-      fallbackValue: '120+',
-      textKey: 'home.warehouse.stats.staff',
+      valueKey: "home.warehouse.values.staff",
+      fallbackValue: "120+",
+      textKey: "home.warehouse.stats.staff",
     },
     {
-      valueKey: 'home.warehouse.values.since',
-      fallbackValue: '2012',
-      textKey: 'home.warehouse.stats.since',
+      valueKey: "home.warehouse.values.since",
+      fallbackValue: "2012",
+      textKey: "home.warehouse.stats.since",
     },
-  ]
+  ];
 
   const images: WarehouseImageItem[] = [
-    { key: 'home_warehouse_main_1', src: CardImg },
-    { key: 'home_warehouse_main_2', src: CardImg2 },
-    { key: 'home_warehouse_main_3', src: CardImg3 },
-  ]
+    { key: "home_warehouse_main_1", src: CardImg },
+    { key: "home_warehouse_main_2", src: CardImg2 },
+    { key: "home_warehouse_main_3", src: CardImg3 },
+  ];
+  const activeImage = images[imgChange] ?? images[0];
 
   return (
     <section className="py-16 md:py-20 bg-white">
       <PageContainer>
-
         <ScrollReveal>
           <h1
             className="
@@ -62,21 +62,21 @@ const Warehouse = () => {
             mb-10
           "
           >
-            {t('home.warehouse.title')}
+            {t("home.warehouse.title")}
           </h1>
         </ScrollReveal>
 
         <div className="flex flex-col lg:flex-row gap-10">
-
           <ScrollReveal className="flex-1">
-
             <div className="mb-4">
-              <EditableImage
-                imageKey={images[imgChange].key}
-                fallbackSrc={images[imgChange].src}
-                alt={t('home.warehouse.imageAlt')}
-                className="w-full h-[380px] object-cover"
-              />
+              {activeImage && (
+                <EditableImage
+                  imageKey={activeImage.key}
+                  fallbackSrc={activeImage.src}
+                  alt={t("home.warehouse.imageAlt")}
+                  className="w-full h-[380px] object-cover"
+                />
+              )}
             </div>
 
             <div className="grid grid-cols-3 gap-3">
@@ -85,7 +85,7 @@ const Warehouse = () => {
                   key={index}
                   className={`
                   border-2
-                  ${imgChange == index ? 'border-[#F58322]' : 'border-none'}
+                  ${imgChange == index ? "border-[#F58322]" : "border-none"}
                   transition
                   cursor-pointer
                 `}
@@ -94,17 +94,18 @@ const Warehouse = () => {
                     imageKey={img.key}
                     fallbackSrc={img.src}
                     onClick={() => setImgChange(index)}
-                    alt={t('home.warehouse.imageAlt')}
+                    alt={t("home.warehouse.imageAlt")}
                     className="w-full h-[110px] object-cover"
                   />
                 </div>
               ))}
             </div>
-
           </ScrollReveal>
 
-          <StaggerContainer staggerDelay={0.15} className="w-full lg:w-[420px] flex flex-col gap-8">
-
+          <StaggerContainer
+            staggerDelay={0.15}
+            className="w-full lg:w-[420px] flex flex-col gap-8"
+          >
             {stats.map((item, index) => (
               <StaggerItem key={index}>
                 <div>
@@ -131,15 +132,11 @@ const Warehouse = () => {
                 </div>
               </StaggerItem>
             ))}
-
           </StaggerContainer>
-
         </div>
-
       </PageContainer>
     </section>
-  )
+  );
+};
 
-}
-
-export default Warehouse
+export default Warehouse;

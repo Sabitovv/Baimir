@@ -1019,6 +1019,7 @@ const renderContentBlock = (
     case "table": {
       if (!block.data.rows?.length) return null;
       const [header, ...body] = block.data.rows;
+      if (!header) return null;
       return (
         <div
           key={block.id}
@@ -1433,11 +1434,15 @@ const ProductPage = () => {
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.changedTouches[0].clientX;
+    const touch = e.changedTouches.item(0);
+    if (!touch) return;
+    touchStartX.current = touch.clientX;
     touchEndX.current = null;
   };
   const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.changedTouches[0].clientX;
+    const touch = e.changedTouches.item(0);
+    if (!touch) return;
+    touchEndX.current = touch.clientX;
   };
   const handleTouchEnd = () => {
     if (touchStartX.current === null || touchEndX.current === null) return;
@@ -1502,14 +1507,14 @@ const ProductPage = () => {
   const specColumns = useMemo(() => {
     const source = (product?.specifications as SpecGroup[] | undefined) ?? [];
     const columns: [SpecGroup[], SpecGroup[]] = [[], []];
-    const weights = [0, 0];
+    const weights: [number, number] = [0, 0];
 
     source.forEach((item) => {
       const itemWeight =
         "isHeader" in item && item.isHeader
           ? 2
           : Math.max(item.attributes?.length ?? 1, 1);
-      const columnIndex = weights[0] <= weights[1] ? 0 : 1;
+      const columnIndex: 0 | 1 = weights[0] <= weights[1] ? 0 : 1;
 
       columns[columnIndex].push(item);
       weights[columnIndex] += itemWeight;
@@ -2461,16 +2466,16 @@ const ProductPage = () => {
                           <th className="p-3 border-r border-gray-300">
                             {t("filters.price")}
                           </th>
-                          {Object.keys(product.variants[0].attributes).map(
-                            (attrName) => (
-                              <th
-                                key={attrName}
-                                className="p-3 border-r border-gray-300"
-                              >
-                                {formatAttributeLabel(attrName)}
-                              </th>
-                            ),
-                          )}
+                          {Object.keys(
+                            product.variants[0]?.attributes ?? {},
+                          ).map((attrName) => (
+                            <th
+                              key={attrName}
+                              className="p-3 border-r border-gray-300"
+                            >
+                              {formatAttributeLabel(attrName)}
+                            </th>
+                          ))}
                         </tr>
                       </thead>
                       <tbody>
@@ -2493,16 +2498,16 @@ const ProductPage = () => {
                                 t("commonCatalog.askPrice"),
                               )}
                             </td>
-                            {Object.keys(product.variants![0].attributes).map(
-                              (attrKey) => (
-                                <td
-                                  key={attrKey}
-                                  className="p-3 border-r border-gray-300 font-medium text-gray-700"
-                                >
-                                  {variant.attributes[attrKey] ?? "—"}
-                                </td>
-                              ),
-                            )}
+                            {Object.keys(
+                              product.variants[0]?.attributes ?? {},
+                            ).map((attrKey) => (
+                              <td
+                                key={attrKey}
+                                className="p-3 border-r border-gray-300 font-medium text-gray-700"
+                              >
+                                {variant.attributes[attrKey] ?? "—"}
+                              </td>
+                            ))}
                           </tr>
                         ))}
                       </tbody>
