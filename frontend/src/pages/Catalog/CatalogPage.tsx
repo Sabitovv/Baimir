@@ -103,6 +103,17 @@ const CatalogPage = () => {
   const hasChildren = (id: number | string) => {
     return data?.some((item) => item.parentId === id);
   };
+
+  const resolveProductCount = (value: {
+    productCount?: number | string;
+    productsCount?: number | string;
+    count?: number | string;
+  }): number | null => {
+    const raw = value.productCount ?? value.productsCount ?? value.count;
+    const parsed = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+
   if (!data) return null;
 
   return (
@@ -128,55 +139,60 @@ const CatalogPage = () => {
               key={location.pathname}
               className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6"
             >
-              {visibleCategories.map((item) => (
-                <StaggerItem key={item.id}>
-                  <div
-                    onClick={() => {
-                      const isLeaf = !hasChildren(item.id);
-                      if (isLeaf) {
-                        navigate(
-                          `/catalog/${item.slug}/products/${item.id}?categoryId=${item.id}`,
-                        );
-                      } else {
-                        navigate(`/catalog/${item.slug}?categoryId=${item.id}`);
-                      }
-                    }}
-                    className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 
+              {visibleCategories.map((item) => {
+                const productCountValue = resolveProductCount(item);
+
+                return (
+                  <StaggerItem key={item.id}>
+                    <div
+                      onClick={() => {
+                        const isLeaf = !hasChildren(item.id);
+                        if (isLeaf) {
+                          navigate(
+                            `/catalog/${item.slug}/products/${item.id}?categoryId=${item.id}`,
+                          );
+                        } else {
+                          navigate(
+                            `/catalog/${item.slug}?categoryId=${item.id}`,
+                          );
+                        }
+                      }}
+                      className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 
                               transition-all duration-300 rounded-lg cursor-pointer 
                               flex flex-col items-center p-6 h-[240px] overflow-hidden group"
-                  >
-                    {/* фиксированная зона изображения */}
-                    <div
-                      className="w-full h-[130px] flex items-center justify-center 
-                                    overflow-hidden shrink-0"
                     >
-                      <img
-                        src={item.imageUrl}
-                        alt={item.name}
-                        loading="lazy"
-                        width={130}
-                        height={130}
-                        className="w-full h-full object-contain transition-transform 
+                      {/* фиксированная зона изображения */}
+                      <div
+                        className="relative w-full h-[130px] flex items-center justify-center 
+                                    overflow-hidden shrink-0"
+                      >
+                        {productCountValue !== null && (
+                          <span className="absolute left-2 top-2 z-10 inline-flex items-center rounded-full bg-white/95 px-2 py-1 text-xs font-semibold text-gray-700 shadow-sm">
+                            {productCountValue}{" "}
+                            {t("catalogPage.productsCountUnit")}
+                          </span>
+                        )}
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          loading="lazy"
+                          width={130}
+                          height={130}
+                          className="w-full h-full object-contain transition-transform 
                                   group-hover:scale-105"
-                      />
-                    </div>
+                        />
+                      </div>
 
-                    {/* текстовая часть фиксированной высоты */}
-                    <div className="mt-4 text-center h-[64px] flex flex-col items-center justify-center overflow-hidden">
-                      <p className="font-semibold text-gray-800 line-clamp-2">
-                        {item.name}
-                      </p>
-                      {typeof item.productCount === "number" && (
-                        <p className="mt-1 text-xs text-gray-500">
-                          {t("catalogPage.productsCount", {
-                            count: item.productCount,
-                          })}
+                      {/* текстовая часть фиксированной высоты */}
+                      <div className="mt-4 text-center h-[64px] flex flex-col items-center justify-center overflow-hidden">
+                        <p className="font-semibold text-gray-800 line-clamp-2">
+                          {item.name}
                         </p>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                </StaggerItem>
-              ))}
+                  </StaggerItem>
+                );
+              })}
               {visibleCategories.length === 0 && (
                 <div className="col-span-full text-center py-10 text-gray-500">
                   {t("catalogPage.noSubcategories")}

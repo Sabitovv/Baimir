@@ -250,6 +250,7 @@
     "noSubcategories": "There are no subcategories in this section yet.",
     "noPopularProducts": "No popular products",
     "productsCount": "{{count}} pcs",
+    "productsCountUnit": "pcs",
     "sampleAlt": "Laser machine sample"
   },
   "categoryPage": {

@@ -516,6 +516,7 @@
     "noSubcategories": "В этой категории пока нет подкатегорий.",
     "noPopularProducts": "Нет популярных товаров",
     "productsCount": "{{count}} шт.",
+    "productsCountUnit": "шт.",
     "sampleAlt": "Лазерный станок - пример"
   },
   "categoryPage": {

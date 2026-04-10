@@ -447,6 +447,7 @@
     "noSubcategories": "Бұл санатта әзірге ішкі санаттар жоқ.",
     "noPopularProducts": "Танымал тауарлар жоқ",
     "productsCount": "{{count}} дана",
+    "productsCountUnit": "дана",
     "sampleAlt": "Лазерлік станок - мысал"
   },
   "categoryPage": {

@@ -9,7 +9,9 @@ export type Category = {
   children?: Category[];
   isActive?: boolean;
   imageUrl?: string;
-  productCount?: number;
+  productCount?: number | string;
+  productsCount?: number | string;
+  count?: number | string;
 };
 
 export type ProductCategoryShort = { id: number; slug: string; name: string };
