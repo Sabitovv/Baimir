@@ -1,9 +1,14 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useTranslation } from 'react-i18next'
-import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { addToCart, incrementQuantity, decrementQuantity, removeFromCart } from '@/features/cartSlice'
-import { useCartAnimation } from '@/components/animations/useCartAnimation'
+import { useTranslation } from "react-i18next";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import {
+  addToCart,
+  incrementQuantity,
+  decrementQuantity,
+  removeFromCart,
+} from "@/features/cartSlice";
+import { useCartAnimation } from "@/components/animations/useCartAnimation";
 
 type RawFeatureObject = {
   label?: string | null;
@@ -15,9 +20,9 @@ type RawFeatureObject = {
 type Feature = string | RawFeatureObject | null | undefined;
 
 type NormalizedFeature = {
-  label?: string; 
+  label?: string;
   value: string;
-  unit?: string; 
+  unit?: string;
 };
 
 type Product = {
@@ -29,6 +34,7 @@ type Product = {
   oldPrice?: number | null;
   keyFeatures?: Feature[] | null;
   inStock?: boolean;
+  new?: boolean;
 };
 
 const PLACEHOLDER_IMG = "https://via.placeholder.com/400x300?text=No+image";
@@ -39,7 +45,7 @@ const normalizeFeature = (feature: Feature): NormalizedFeature | null => {
   if (typeof feature === "string") {
     const trimmed = feature.trim();
     if (!trimmed) return null;
-    return { value: trimmed }; 
+    return { value: trimmed };
   }
 
   if (typeof feature === "object") {
@@ -69,25 +75,25 @@ const normalizeFeature = (feature: Feature): NormalizedFeature | null => {
 };
 
 const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
-  const { t, i18n } = useTranslation()
-  const dispatch = useAppDispatch()
-  const items = useAppSelector((state) => state.cart.items)
-  const cartItem = items.find((item) => item.id === product.id)
+  const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+  const items = useAppSelector((state) => state.cart.items);
+  const cartItem = items.find((item) => item.id === product.id);
   const imgSrc = product.coverImage ?? PLACEHOLDER_IMG;
-  const { addAnimation } = useCartAnimation()
+  const { addAnimation } = useCartAnimation();
 
   const priceNumber =
     typeof product.price === "number"
       ? product.price
       : typeof product.price === "string"
-      ? Number(product.price)
-      : NaN;
+        ? Number(product.price)
+        : NaN;
 
   const cartPrice = Number.isFinite(priceNumber) ? priceNumber : undefined;
 
   const formattedPrice = Number.isFinite(priceNumber)
     ? `${priceNumber.toLocaleString(i18n.language)} ₸`
-    : t('commonCatalog.askPrice');
+    : t("commonCatalog.askPrice");
 
   const normalizedFeatures = useMemo(() => {
     return (
@@ -117,43 +123,61 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
         {product.name}
       </h3>
 
-        {normalizedFeatures.length > 0 && (
-          <div className="mb-3 space-y-1.5">
-            {normalizedFeatures.map((nf, idx) => (
-              <div key={idx} className="flex items-center text-xs gap-2">
-                {nf.label && (
-                  <span className="text-gray-500 font-medium whitespace-nowrap">
-                    {nf.label}:
-                  </span>
-                )}
-
-                <span
-                  className="text-gray-800 font-semibold truncate min-w-0 flex-1"
-                  title={`${nf.value}${nf.unit ? ` ${nf.unit}` : ""}`}
-                >
-                  {nf.value}
-                  {nf.unit ? ` ${nf.unit}` : ""}
-                </span>
-
-              </div>
-            ))}
-          </div>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <span
+          className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+            product.inStock === false
+              ? "bg-gray-100 text-gray-600"
+              : "bg-green-50 text-green-700"
+          }`}
+        >
+          {product.inStock === false
+            ? t("commonCatalog.outOfStock")
+            : t("commonCatalog.inStock")}
+        </span>
+        {product.new === true && (
+          <span className="inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
+            {t("commonCatalog.new")}
+          </span>
         )}
+      </div>
+
+      {normalizedFeatures.length > 0 && (
+        <div className="mb-3 space-y-1.5">
+          {normalizedFeatures.map((nf, idx) => (
+            <div key={idx} className="flex items-center text-xs gap-2">
+              {nf.label && (
+                <span className="text-gray-500 font-medium whitespace-nowrap">
+                  {nf.label}:
+                </span>
+              )}
+
+              <span
+                className="text-gray-800 font-semibold truncate min-w-0 flex-1"
+                title={`${nf.value}${nf.unit ? ` ${nf.unit}` : ""}`}
+              >
+                {nf.value}
+                {nf.unit ? ` ${nf.unit}` : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="mt-auto">
         <p className="text-lg font-bold text-gray-900 mb-3">{formattedPrice}</p>
-        
+
         {cartItem ? (
           <div className="flex items-center justify-between bg-[#F58322] rounded-sm">
             <button
               type="button"
               className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
               onClick={(event) => {
-                event.preventDefault()
+                event.preventDefault();
                 if (cartItem.quantity <= 1) {
-                  dispatch(removeFromCart(product.id))
+                  dispatch(removeFromCart(product.id));
                 } else {
-                  dispatch(decrementQuantity(product.id))
+                  dispatch(decrementQuantity(product.id));
                 }
               }}
             >
@@ -164,8 +188,8 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
               type="button"
               className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
               onClick={(event) => {
-                event.preventDefault()
-                dispatch(incrementQuantity(product.id))
+                event.preventDefault();
+                dispatch(incrementQuantity(product.id));
               }}
             >
               +
@@ -175,11 +199,11 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
           <button
             type="button"
             onClick={(event) => {
-              event.preventDefault()
+              event.preventDefault();
 
-              if (product.inStock === false) return
+              if (product.inStock === false) return;
 
-              addAnimation(product.id, imgSrc, event)
+              addAnimation(product.id, imgSrc, event);
 
               dispatch(
                 addToCart({
@@ -190,8 +214,8 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
                   price: cartPrice,
                   oldPrice: product.oldPrice,
                   inStock: product.inStock,
-                })
-              )
+                }),
+              );
             }}
             className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
               product.inStock === false
@@ -200,7 +224,9 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
             }`}
             disabled={product.inStock === false}
           >
-            {product.inStock === false ? t('commonCatalog.outOfStock') : t('commonCatalog.buy')}
+            {product.inStock === false
+              ? t("commonCatalog.outOfStock")
+              : t("commonCatalog.buy")}
           </button>
         )}
       </div>

@@ -1,56 +1,55 @@
-import RightIcon from '@/assets/catalog/right.svg'
-import LeftIcon from '@/assets/catalog/left.svg'
-import { useTranslation } from 'react-i18next'
-import { useRef, useEffect } from 'react'
-import ProductCard from '@/components/common/ProductCard'
-import { useGetPopularProductsQuery } from '@/api/productsApi'
-import type { Product } from '@/api/productsApi'
-import { EditableImage } from '@/zustand/EditableImage'
-
+import RightIcon from "@/assets/catalog/right.svg";
+import LeftIcon from "@/assets/catalog/left.svg";
+import { useTranslation } from "react-i18next";
+import { useRef, useEffect } from "react";
+import ProductCard from "@/components/common/ProductCard";
+import { useGetPopularProductsQuery } from "@/api/productsApi";
+import type { Product } from "@/api/productsApi";
+import { EditableImage } from "@/zustand/EditableImage";
 
 export const PopularProduct = () => {
-  const { t } = useTranslation()
-  const scrollerRef = useRef<HTMLDivElement | null>(null)
+  const { t } = useTranslation();
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
 
-  const { data, isLoading, error } = useGetPopularProductsQuery({})
-  const SCROLL_STEP_PX = 320
+  const { data, isLoading, error } = useGetPopularProductsQuery({});
+  const SCROLL_STEP_PX = 320;
 
   const scrollLeft = () => {
     scrollerRef.current?.scrollBy({
       left: -SCROLL_STEP_PX,
-      behavior: 'smooth',
-    })
-  }
+      behavior: "smooth",
+    });
+  };
 
   const scrollRight = () => {
     scrollerRef.current?.scrollBy({
       left: SCROLL_STEP_PX,
-      behavior: 'smooth',
-    })
-  }
+      behavior: "smooth",
+    });
+  };
 
   const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'ArrowLeft') {
-      e.preventDefault()
-      scrollLeft()
-    } else if (e.key === 'ArrowRight') {
-      e.preventDefault()
-      scrollRight()
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      scrollLeft();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      scrollRight();
     }
-  }
+  };
 
   useEffect(() => {
-    const el = scrollerRef.current
-    if (!el) return
-    el.style.setProperty('-webkit-overflow-scrolling', 'touch')
-  }, [])
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.style.setProperty("-webkit-overflow-scrolling", "touch");
+  }, []);
 
-  const products = data?.content ?? []
+  const products = data?.content ?? [];
 
   return (
     <section className="mb-24 mt-12 px-2 sm:px-0">
       <h2 className="font-oswald text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-6 ml-2 sm:ml-4">
-        {t('catalogPage.popular')}
+        {t("catalogPage.popular")}
       </h2>
 
       <div className="flex items-center gap-1 sm:gap-3 w-full">
@@ -59,7 +58,12 @@ export const PopularProduct = () => {
           onClick={scrollLeft}
           className="hidden sm:flex shrink-0 p-3 z-10 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         >
-          <EditableImage imageKey="catalog_popular_arrow_left" fallbackSrc={LeftIcon} alt="Left" className="w-6 h-6 sm:w-10 sm:h-10" />
+          <EditableImage
+            imageKey="catalog_popular_arrow_left"
+            fallbackSrc={LeftIcon}
+            alt="Left"
+            className="w-6 h-6 sm:w-10 sm:h-10"
+          />
         </button>
 
         <div
@@ -71,11 +75,15 @@ export const PopularProduct = () => {
           [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {isLoading ? (
-            <div className="text-gray-500 px-4">{t('commonCatalog.loading')}</div>
+            <div className="text-gray-500 px-4">
+              {t("commonCatalog.loading")}
+            </div>
           ) : error ? (
-            <div className="text-red-500 px-4">{t('commonCatalog.error')}</div>
+            <div className="text-red-500 px-4">{t("commonCatalog.error")}</div>
           ) : products.length === 0 ? (
-            <div className="text-gray-500 px-4">{t('catalogPage.noPopularProducts')}</div>
+            <div className="text-gray-500 px-4">
+              {t("catalogPage.noPopularProducts")}
+            </div>
           ) : (
             products.map((product: Product) => (
               <div
@@ -91,6 +99,7 @@ export const PopularProduct = () => {
                   price={product.price}
                   oldPrice={product.oldPrice}
                   inStock={product.inStock}
+                  isNew={product.new}
                   keyFeatures={product.keyFeatures}
                   categoryId={product.category?.id}
                   categoryName={product.category?.name}
@@ -106,9 +115,14 @@ export const PopularProduct = () => {
           onClick={scrollRight}
           className="hidden sm:flex shrink-0 p-3 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         >
-          <EditableImage imageKey="catalog_popular_arrow_right" fallbackSrc={RightIcon} alt="Right" className="w-6 h-6 sm:w-10 sm:h-10" />
+          <EditableImage
+            imageKey="catalog_popular_arrow_right"
+            fallbackSrc={RightIcon}
+            alt="Right"
+            className="w-6 h-6 sm:w-10 sm:h-10"
+          />
         </button>
       </div>
     </section>
-  )
-}
+  );
+};

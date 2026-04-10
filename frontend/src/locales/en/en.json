@@ -234,6 +234,7 @@
     "askPrice": "Request price",
     "notify": "Notify me",
     "inStock": "In stock",
+    "new": "New",
     "outOfStock": "Out of stock",
     "code": "Code",
     "sku": "SKU",
@@ -248,6 +249,7 @@
     "bid": "LEAVE A REQUEST",
     "noSubcategories": "There are no subcategories in this section yet.",
     "noPopularProducts": "No popular products",
+    "productsCount": "{{count}} pcs",
     "sampleAlt": "Laser machine sample"
   },
   "categoryPage": {
@@ -377,11 +379,26 @@
     "why": {
       "title": "Why is this important?",
       "items": {
-        "1": { "title": "Real operating mode.", "text": "You will see how the machine works under real load." },
-        "2": { "title": "Tests with your material.", "text": "Bring your own workpieces for testing." },
-        "3": { "title": "Engineer dialogue.", "text": "Get answers to practical production questions." },
-        "4": { "title": "Efficiency assessment.", "text": "Evaluate speed, accuracy, and machine resource." },
-        "5": { "title": "Informed choice.", "text": "Make decisions based on facts, not just marketing." }
+        "1": {
+          "title": "Real operating mode.",
+          "text": "You will see how the machine works under real load."
+        },
+        "2": {
+          "title": "Tests with your material.",
+          "text": "Bring your own workpieces for testing."
+        },
+        "3": {
+          "title": "Engineer dialogue.",
+          "text": "Get answers to practical production questions."
+        },
+        "4": {
+          "title": "Efficiency assessment.",
+          "text": "Evaluate speed, accuracy, and machine resource."
+        },
+        "5": {
+          "title": "Informed choice.",
+          "text": "Make decisions based on facts, not just marketing."
+        }
       }
     },
     "contactTitle": "Have questions? Leave a request"
