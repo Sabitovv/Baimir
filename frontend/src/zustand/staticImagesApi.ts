@@ -4,6 +4,14 @@ export type UploadStaticImageArg = {
   settingKey: string
   imageKey: string
   file: File
+  alt?: string // Добавили опциональный alt text
+}
+
+// Новый тип для обновления только alt текста
+export type UpdateStaticImageAltArg = {
+  settingKey: string
+  imageKey: string
+  alt: string
 }
 
 export const staticImagesApi = createApi({
@@ -11,7 +19,6 @@ export const staticImagesApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL,
     prepareHeaders: (headers) => {
-      // Если для /admin/ роутов нужен токен авторизации, добавь его сюда
       const token = localStorage.getItem('accessToken')
       if (token) headers.set('Authorization', `Bearer ${token}`)
       return headers
@@ -25,9 +32,9 @@ export const staticImagesApi = createApi({
       providesTags: ['StaticImages'],
     }),
 
-    // POST /api/v1/admin/settings/static-images/{settingKey}/{imageKey}/upload
+    // POST /api/v1/admin/settings/static-images/{settingKey}/{imageKey}/upload?alt={altText}
     uploadStaticImage: builder.mutation<string, UploadStaticImageArg>({
-      query: ({ settingKey, imageKey, file }) => {
+      query: ({ settingKey, imageKey, file, alt }) => {
         const formData = new FormData()
         formData.append('file', file)
 
@@ -35,13 +42,30 @@ export const staticImagesApi = createApi({
           url: `/admin/settings/static-images/${settingKey}/${imageKey}/upload`,
           method: 'POST',
           body: formData,
-          responseHandler: 'text', // Бэкенд возвращает просто строку (ResponseEntity<String>)
+          // Если alt передан, RTK Query автоматически добавит его в URL как ?alt=...
+          params: alt ? { alt } : undefined, 
+          responseHandler: 'text', 
         }
       },
-      // Автоматически инвалидируем кэш, чтобы getStaticImages запросил свежий словарь
+      invalidatesTags: ['StaticImages'], 
+    }),
+
+    // PATCH /api/v1/admin/settings/static-images/{settingKey}/{imageKey}/alt?alt={altText}
+    updateStaticImageAlt: builder.mutation<string, UpdateStaticImageAltArg>({
+      query: ({ settingKey, imageKey, alt }) => ({
+        url: `/admin/settings/static-images/${settingKey}/${imageKey}/alt`,
+        method: 'PATCH',
+        // Передаем alt как query-параметр
+        params: { alt },
+        responseHandler: 'text', // Добавлено на случай, если бэкенд тоже возвращает строку
+      }),
       invalidatesTags: ['StaticImages'], 
     }),
   }),
 })
 
-export const { useGetStaticImagesQuery, useUploadStaticImageMutation } = staticImagesApi
+export const { 
+  useGetStaticImagesQuery, 
+  useUploadStaticImageMutation,
+  useUpdateStaticImageAltMutation
+} = staticImagesApi
