@@ -10,12 +10,12 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   imageKey, 
   fallbackSrc = '', 
   className = '', 
-  ...props 
+  alt: propsAlt, // 1. Вытаскиваем alt из пропсов под именем propsAlt
+  ...restProps   // 2. В restProps теперь лежат все пропсы КРОМЕ alt
 }) => {
   const isEditMode = useImageEditorStore((state) => state.isEditMode);
   const openEditor = useImageEditorStore((state) => state.openEditor);
   
-  // Достаем объект с данными
   const imageData = useImageEditorStore((state) => state.images[imageKey]);
 
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
@@ -25,17 +25,19 @@ export const EditableImage: React.FC<EditableImageProps> = ({
     }
   };
 
-  // Безопасное извлечение на случай, если данные еще в старом строковом формате
   const src = typeof imageData === 'string' ? imageData : imageData?.url;
   const altText = typeof imageData === 'string' ? '' : imageData?.alt;
 
+  // Логика приоритета: сначала из базы, потом из пропсов, потом пустота
+  const finalAlt = altText || propsAlt || '';
+
   return (
     <img
+      {...restProps} // 3. Распаковываем безопасные пропсы первыми
       src={src || fallbackSrc}
-      alt={altText || props.alt || ''}
+      alt={finalAlt} // 4. Наш вычисленный alt ставим жестко, его никто не перепишет
       className={`${className} ${isEditMode ? 'hover:outline hover:outline-4 hover:outline-blue-500 cursor-pointer' : ''}`}
       onClick={handleImageClick}
-      {...props}
     />
   );
 };
