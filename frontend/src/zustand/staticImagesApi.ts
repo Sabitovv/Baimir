@@ -27,10 +27,10 @@ export const staticImagesApi = createApi({
   tagTypes: ['StaticImages'],
   endpoints: (builder) => ({
     // GET /api/v1/settings/static-images/{settingKey}
-    getStaticImages: builder.query<Record<string, string>, string>({
-      query: (settingKey) => `/settings/static-images/${settingKey}`,
-      providesTags: ['StaticImages'],
-    }),
+    getStaticImages: builder.query<Record<string, { url: string; alt: string }>, string>({
+    query: (settingKey) => `/settings/static-images/${settingKey}`,
+    providesTags: ['StaticImages'],
+  }),
 
     // POST /api/v1/admin/settings/static-images/{settingKey}/{imageKey}/upload?alt={altText}
     uploadStaticImage: builder.mutation<string, UploadStaticImageArg>({

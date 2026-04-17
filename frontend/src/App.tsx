@@ -12,25 +12,18 @@ import { useGetStaticImagesQuery } from './zustand/staticImagesApi';
 const App = () => {
   const setImages = useImageEditorStore((state) => state.setImages);
 
-  // 1. Запускаем запрос к бэкенду. 
   const { data: remoteImages, isLoading } = useGetStaticImagesQuery('global_frontend_images');
 
-  // 2. Как только данные загрузились, обновляем Zustand стор
-  useEffect(() => {
-    if (remoteImages) {
-      // Преобразуем Record<string, string> в Record<string, { url: string, alt: string }>
-      const formattedImages = Object.entries(remoteImages).reduce((acc, [key, url]) => {
-        acc[key] = { url, alt: '' }; // Задаем пустой alt, пока бэкенд отдает только ссылки
-        return acc;
-      }, {} as Record<string, { url: string; alt: string }>);
+  // 2. Как только данные загрузились, обновляем Zustand стор напрямую!
+    useEffect(() => {
+      if (remoteImages) {
+        setImages(remoteImages); // <--- Передаем данные без изменений
+      }
+    }, [remoteImages, setImages]);
 
-      setImages(formattedImages);
+    if (isLoading && !remoteImages) {
+      return <div className="h-screen flex items-center justify-center">Загрузка ресурсов...</div>;
     }
-  }, [remoteImages, setImages]);
-
-  if (isLoading && !remoteImages) {
-    return <div className="h-screen flex items-center justify-center">Загрузка ресурсов...</div>;
-  }
 
   return (
     <>
