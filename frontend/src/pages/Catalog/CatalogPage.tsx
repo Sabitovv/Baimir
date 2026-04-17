@@ -141,7 +141,6 @@ const CatalogPage = () => {
             >
               {visibleCategories.map((item) => {
                 const productCountValue = resolveProductCount(item);
-
                 return (
                   <StaggerItem key={item.id}>
                     <div
@@ -159,19 +158,15 @@ const CatalogPage = () => {
                       }}
                       className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 
                               transition-all duration-300 rounded-lg cursor-pointer 
-                              flex flex-col items-center p-6 h-[240px] overflow-hidden group"
+                              flex flex-col items-center p-6 h-[240px] overflow-hidden group relative"
                     >
-                      {/* фиксированная зона изображения */}
-                      <div
-                        className="relative w-full h-[130px] flex items-center justify-center 
-                                    overflow-hidden shrink-0"
-                      >
-                        {productCountValue !== null && (
-                          <span className="absolute left-2 top-2 z-10 inline-flex items-center rounded-full bg-white/95 px-2 py-1 text-xs font-semibold text-gray-700 shadow-sm">
-                            {productCountValue}{" "}
-                            {t("catalogPage.productsCountUnit")}
-                          </span>
-                        )}
+                      {productCountValue !== null && (
+                        <span className="absolute left-3 top-3 z-10 inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-700">
+                          {productCountValue}{" "}
+                          {t("catalogPage.productsCountUnit")}
+                        </span>
+                      )}
+                      <div className="relative w-full h-[130px] flex items-center justify-center overflow-hidden shrink-0">
                         <img
                           src={item.imageUrl}
                           alt={item.name}

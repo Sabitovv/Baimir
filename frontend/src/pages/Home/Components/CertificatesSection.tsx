@@ -101,7 +101,7 @@ const CertificatesSection = () => {
             </Swiper>
 
             <button
-              className="cert-next hidden xl:flex absolute -right-16 md:-right-4 top-1/2 -translate-y-1/2
+              className="cert-next hidden xl:flex absolute -right-16 md:-right-8 top-1/2 -translate-y-1/2
                         w-12 h-12 rounded-full border border-gray-400 items-center justify-center
                         hover:bg-black hover:text-white transition z-20"
               aria-label="Next"
