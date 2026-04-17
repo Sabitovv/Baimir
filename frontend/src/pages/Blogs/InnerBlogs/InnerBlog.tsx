@@ -593,7 +593,12 @@ const InnerBlog = () => {
     pickLocalized(data.title, i18n.language) || t("innerBlog.untitled");
   const excerpt = pickLocalized(data.excerpt, i18n.language);
   const publishedAt = formatDate(data.publishedAt, i18n.language);
-  const heroImage = getBlogImage(data, fallbackBlogImage);
+  const heroImage = getBlogImage(
+  data, 
+  typeof fallbackBlogImage === 'string' 
+    ? fallbackBlogImage 
+    : fallbackBlogImage?.url || ''
+);
 
   return (
     <PageContainer>

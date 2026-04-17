@@ -140,7 +140,12 @@ const BlogPage = () => {
                 const rawPost = post as unknown as Record<string, unknown>
                 const title = pickLocalized(post.title, i18n.language) || t('blogPage.untitled')
                 const excerpt = pickLocalized(post.excerpt, i18n.language)
-                const image = getBlogImage(post, fallbackBlogImage)
+                const image = getBlogImage(
+  post, 
+  typeof fallbackBlogImage === 'string' 
+    ? fallbackBlogImage 
+    : fallbackBlogImage?.url || ''
+);
                 const authorName = pickStringField(rawPost, ['authorName', 'author', 'author_name'])
                 const publishedRaw = pickStringField(rawPost, ['publishedAt', 'createdAt', 'created_at', 'date'])
                 const publishedAt = formatDate(publishedRaw, i18n.language)

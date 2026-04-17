@@ -3,7 +3,7 @@ import { useImageEditorStore } from './ImageEditorState';
 
 interface EditableImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   imageKey: string;
-  fallbackSrc?: string; // На случай, если JSON еще не загрузился или ключа нет
+  fallbackSrc?: string;
 }
 
 export const EditableImage: React.FC<EditableImageProps> = ({ 
@@ -15,28 +15,26 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   const isEditMode = useImageEditorStore((state) => state.isEditMode);
   const openEditor = useImageEditorStore((state) => state.openEditor);
   
-  // Достаем только конкретный URL, чтобы избежать лишних рендеров
-  const currentSrc = useImageEditorStore((state) => state.images[imageKey]);
+  // Достаем объект с данными
+  const imageData = useImageEditorStore((state) => state.images[imageKey]);
 
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
-    // Отлавливаем Shift + Click только в режиме редактирования
     if (isEditMode && e.shiftKey) {
       e.preventDefault();
       openEditor(imageKey);
     }
   };
 
-  // Стили для визуального отклика
-  const editModeClasses = isEditMode 
-    ? 'hover:outline hover:outline-4 hover:outline-blue-500 hover:outline-offset-2 hover:cursor-pointer transition-all duration-200' 
-    : '';
+  // Безопасное извлечение на случай, если данные еще в старом строковом формате
+  const src = typeof imageData === 'string' ? imageData : imageData?.url;
+  const altText = typeof imageData === 'string' ? '' : imageData?.alt;
 
   return (
     <img
-      src={currentSrc || fallbackSrc}
-      className={`${className} ${editModeClasses}`}
+      src={src || fallbackSrc}
+      alt={altText || props.alt || ''}
+      className={`${className} ${isEditMode ? 'hover:outline hover:outline-4 hover:outline-blue-500 cursor-pointer' : ''}`}
       onClick={handleImageClick}
-      title={isEditMode ? 'Shift + Click для изменения' : undefined}
       {...props}
     />
   );

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'; // Добавили useEffect
+import { useEffect } from 'react';
 import { TolgeeProvider } from '@tolgee/react';
 import Layout from '@/components/layout/Layout';
 import AppRoutes from '@/routes/AppRoutes';
@@ -13,13 +13,18 @@ const App = () => {
   const setImages = useImageEditorStore((state) => state.setImages);
 
   // 1. Запускаем запрос к бэкенду. 
-  // Мы используем 'global_frontend_images', как в вашем хуке загрузки.
   const { data: remoteImages, isLoading } = useGetStaticImagesQuery('global_frontend_images');
 
   // 2. Как только данные загрузились, обновляем Zustand стор
   useEffect(() => {
     if (remoteImages) {
-      setImages(remoteImages);
+      // Преобразуем Record<string, string> в Record<string, { url: string, alt: string }>
+      const formattedImages = Object.entries(remoteImages).reduce((acc, [key, url]) => {
+        acc[key] = { url, alt: '' }; // Задаем пустой alt, пока бэкенд отдает только ссылки
+        return acc;
+      }, {} as Record<string, { url: string; alt: string }>);
+
+      setImages(formattedImages);
     }
   }, [remoteImages, setImages]);
 
