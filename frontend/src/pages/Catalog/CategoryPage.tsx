@@ -10,6 +10,7 @@ import PageContainer from "@/components/ui/PageContainer";
 import CatalogFilters from "@/pages/Catalog/components/CatalogFilter";
 import Drawer from "@/components/common/Drawer";
 import { PopularProduct } from "./components/PopularProduct";
+import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import sampleImg from "@/assets/catalog/sample_machine.png";
 
 import {
@@ -568,6 +569,7 @@ const CategoryPage = () => {
         </div>
 
         <PopularProduct />
+        <RecentlyViewedProducts />
 
         <section className="mb-16">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">

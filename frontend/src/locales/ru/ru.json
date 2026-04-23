@@ -512,9 +512,11 @@
   "catalogPage": {
     "title": "Каталог товаров",
     "popular": "ПОПУЛЯРНЫЕ ТОВАРЫ",
+    "recentlyViewed": "НЕДАВНО ПРОСМОТРЕННЫЕ",
     "bid": "ОСТАВИТЬ ЗАЯВКУ",
     "noSubcategories": "В этой категории пока нет подкатегорий.",
     "noPopularProducts": "Нет популярных товаров",
+    "noRecentlyViewedProducts": "Нет недавно просмотренных товаров",
     "productsCount": "{{count}} шт.",
     "productsCountUnit": "шт.",
     "sampleAlt": "Лазерный станок - пример"

@@ -443,9 +443,11 @@
   "catalogPage": {
     "title": "Тауарлар каталогы",
     "popular": "ТАНЫМАЛ ТАУАРЛАР",
+    "recentlyViewed": "СОҢҒЫ ҚАРАЛҒАН ТАУАРЛАР",
     "bid": "ӨТІНІМ ҚАЛДЫРЫҢЫЗ",
     "noSubcategories": "Бұл санатта әзірге ішкі санаттар жоқ.",
     "noPopularProducts": "Танымал тауарлар жоқ",
+    "noRecentlyViewedProducts": "Жуырда қаралған тауарлар жоқ",
     "productsCount": "{{count}} дана",
     "productsCountUnit": "дана",
     "sampleAlt": "Лазерлік станок - мысал"

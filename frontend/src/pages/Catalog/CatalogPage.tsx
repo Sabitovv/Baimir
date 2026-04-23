@@ -14,6 +14,7 @@ import StaggerItem from "@/components/animations/StaggerItem";
 
 import sampleImg from "@/assets/catalog/sample_machine.png";
 import { PopularProduct } from "./components/PopularProduct";
+import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
 
@@ -197,6 +198,7 @@ const CatalogPage = () => {
           </main>
         </div>
         <PopularProduct />
+        <RecentlyViewedProducts />
         <ScrollReveal>
           <section className="mb-16">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">

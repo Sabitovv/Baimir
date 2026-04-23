@@ -9,6 +9,7 @@ import {
   removeFromCart,
 } from "@/features/cartSlice";
 import { useCartAnimation } from "@/components/animations/useCartAnimation";
+import { addRecentlyViewedProductId } from "@/utils/recentlyViewedStorage";
 
 type RawFeatureObject = {
   label?: string | null;
@@ -108,6 +109,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
   return (
     <Link
       to={`/catalog/product/${product.slug}`}
+      onClick={() => addRecentlyViewedProductId(product.id)}
       className="bg-white border border-gray-200 p-4 rounded-sm hover:shadow-lg transition flex flex-col h-full group"
       aria-label={product.name}
     >

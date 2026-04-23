@@ -35,6 +35,7 @@ import calendar from "@/assets/catalog/icons/calendar.svg";
 import address from "@/assets/catalog/icons/addres.svg";
 import { useTranslation } from "react-i18next";
 import { PopularProduct } from "./components/PopularProduct";
+import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import sampleImg from "@/assets/catalog/sample_machine.png";
 import productPlaceholder from "@/assets/catalog/productPlaceholder.svg";
 import Contact from "@/components/common/Contact";
@@ -72,6 +73,7 @@ import {
   type InfoModalType,
 } from "./constants/productInfoContent";
 import { EditableImage } from "@/zustand/EditableImage";
+import { addRecentlyViewedProductId } from "@/utils/recentlyViewedStorage";
 const formatPrice = (
   price: number | null | undefined,
   fallback: string,
@@ -1379,6 +1381,11 @@ const ProductPage = () => {
         block: "nearest",
       });
     }, 80);
+  }, [product?.id]);
+
+  useEffect(() => {
+    if (!product?.id) return;
+    addRecentlyViewedProductId(product.id);
   }, [product?.id]);
 
   useEffect(() => {
@@ -2697,6 +2704,7 @@ const ProductPage = () => {
           </div>
         )}
         <PopularProduct />
+        <RecentlyViewedProducts />
         {!isLargeDescription && (
           <section className="mb-16">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
