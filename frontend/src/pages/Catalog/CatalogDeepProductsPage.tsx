@@ -13,13 +13,6 @@ import { useMemo, useRef, type KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 
-type ProductFeature = {
-  code: string;
-  label: string;
-  value: string | number;
-  unit?: string;
-};
-
 const SCROLL_STEP_PX = 320;
 type CatalogDeepProductsPageProps = {
   embedded?: boolean;
@@ -55,55 +48,6 @@ const findCategoryBySlug = (
   return null;
 };
 
-const normalizeKeyFeatures = (raw: unknown): ProductFeature[] | undefined => {
-  if (!Array.isArray(raw)) return undefined;
-
-  const normalized = raw
-    .map((item, index) => {
-      if (!item || typeof item !== "object") return null;
-
-      const candidate = item as {
-        code?: unknown;
-        label?: unknown;
-        value?: unknown;
-        unit?: unknown;
-      };
-
-      if (candidate.value === null || candidate.value === undefined) {
-        return null;
-      }
-
-      const label =
-        typeof candidate.label === "string" && candidate.label.trim().length > 0
-          ? candidate.label
-          : "";
-
-      const code =
-        typeof candidate.code === "string" && candidate.code.trim().length > 0
-          ? candidate.code
-          : `feature_${index}`;
-
-      const value =
-        typeof candidate.value === "number" || typeof candidate.value === "string"
-          ? candidate.value
-          : String(candidate.value);
-
-      const feature: ProductFeature = {
-        code,
-        label,
-        value,
-      };
-
-      if (typeof candidate.unit === "string" && candidate.unit.trim().length > 0) {
-        feature.unit = candidate.unit;
-      }
-
-      return feature;
-    })
-    .filter((feature): feature is ProductFeature => feature !== null);
-
-  return normalized.length > 0 ? normalized : undefined;
-};
 
 const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
   const { t } = useTranslation();
@@ -188,7 +132,6 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
                   price={product.price}
                   oldPrice={product.oldPrice}
                   inStock={product.inStock}
-                  keyFeatures={normalizeKeyFeatures(product.keyFeatures)}
                   categoryId={group.category.id}
                   categoryName={group.category.name}
                   showCompare={false}
