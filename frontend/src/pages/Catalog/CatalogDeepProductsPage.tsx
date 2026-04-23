@@ -52,7 +52,7 @@ const findCategoryBySlug = (
 const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
   const { t } = useTranslation();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const categoryLink = `/catalog/${group.category.slug}?categoryId=${group.category.id}`;
+  const categoryLink = `/catalog/${group.category.slug}/products/${group.category.id}?categoryId=${group.category.id}&sort=price,ASC`;
 
   const scrollLeft = () => {
     scrollerRef.current?.scrollBy({ left: -SCROLL_STEP_PX, behavior: "smooth" });

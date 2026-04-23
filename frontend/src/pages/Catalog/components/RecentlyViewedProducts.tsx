@@ -115,7 +115,6 @@ export const RecentlyViewedProducts = () => {
                   isNew={product.newProduct ?? product.new}
                   categoryId={product.category?.id}
                   categoryName={product.category?.name}
-                  showCompare={false}
                 />
               </div>
             ))
