@@ -134,7 +134,6 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
                   inStock={product.inStock}
                   categoryId={group.category.id}
                   categoryName={group.category.name}
-                  showCompare={false}
                 />
               </div>
             ))
