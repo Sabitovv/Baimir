@@ -443,10 +443,13 @@
   "catalogPage": {
     "title": "Тауарлар каталогы",
     "popular": "ТАНЫМАЛ ТАУАРЛАР",
+    "deepProductsTitle": "САНАТТАР БОЙЫНША ТАУАРЛАР",
     "recentlyViewed": "СОҢҒЫ ҚАРАЛҒАН ТАУАРЛАР",
     "bid": "ӨТІНІМ ҚАЛДЫРЫҢЫЗ",
     "noSubcategories": "Бұл санатта әзірге ішкі санаттар жоқ.",
     "noPopularProducts": "Танымал тауарлар жоқ",
+    "noDeepProducts": "Таңдалған санаттарда тауарлар табылмады",
+    "goToCategory": "Санатқа өту",
     "noRecentlyViewedProducts": "Жуырда қаралған тауарлар жоқ",
     "productsCount": "{{count}} дана",
     "productsCountUnit": "дана",

@@ -398,6 +398,12 @@ interface PageResponse<T> {
   number: number;
 }
 
+export type CategoryProductGroup = {
+  category: ProductCategory & { productCount: number };
+  products: Product[];
+  totalProducts: number;
+};
+
 export const productsApi = createApi({
   reducerPath: "productsApi",
   baseQuery: fetchBaseQuery({
@@ -549,6 +555,33 @@ export const productsApi = createApi({
           "http://89.207.255.17/api/v1/company-settings",
       }),
     }),
+
+    getProductsDeep: builder.query<
+      PageResponse<CategoryProductGroup>,
+      { categoryId?: number; page?: number; size?: number; sort?: string }
+    >({
+      query: ({ categoryId, page = 0, size = 10, sort = "id,ASC" }) => ({
+        url: "/products/category/deep",
+        params: {
+          ...(categoryId !== undefined && { categoryId }),
+          page,
+          size,
+          sort,
+        },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.content.flatMap((group) =>
+                group.products.map((prod) => ({
+                  type: "Product" as const,
+                  id: prod.id,
+                })),
+              ),
+              { type: "Product", id: "DEEP" },
+            ]
+          : [{ type: "Product", id: "DEEP" }],
+    }),
   }),
 });
 
@@ -562,4 +595,5 @@ export const {
   useCreateInquiryMutation,
   useGetProductsCompareQuery,
   useGetCompanySettingsQuery,
+  useGetProductsDeepQuery,
 } = productsApi;

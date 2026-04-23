@@ -512,10 +512,13 @@
   "catalogPage": {
     "title": "Каталог товаров",
     "popular": "ПОПУЛЯРНЫЕ ТОВАРЫ",
+    "deepProductsTitle": "ТОВАРЫ ПО КАТЕГОРИЯМ",
     "recentlyViewed": "НЕДАВНО ПРОСМОТРЕННЫЕ",
     "bid": "ОСТАВИТЬ ЗАЯВКУ",
     "noSubcategories": "В этой категории пока нет подкатегорий.",
     "noPopularProducts": "Нет популярных товаров",
+    "noDeepProducts": "Нет товаров в выбранных категориях",
+    "goToCategory": "Перейти в категорию",
     "noRecentlyViewedProducts": "Нет недавно просмотренных товаров",
     "productsCount": "{{count}} шт.",
     "productsCountUnit": "шт.",

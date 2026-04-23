@@ -14,6 +14,7 @@ const StoragePage = lazy(() => import('@/pages/Storage/StoragePage'))
 const ServicePage = lazy(() => import('@/pages/Service/ServicePage'))
 const AboutPage = lazy(() => import('@/pages/About/AboutPage'))
 const CatalogPage = lazy(() => import('@/pages/Catalog/CatalogPage'))
+const CatalogDeepProductsPage = lazy(() => import('@/pages/Catalog/CatalogDeepProductsPage'))
 const CategoryPage = lazy(() => import('@/pages/Catalog/CategoryPage'))
 const ProductPage = lazy(() => import('@/pages/Catalog/ProductPage'))
 const ComparePage = lazy(() => import('@/pages/Compare/ComparePage'))
@@ -44,6 +45,9 @@ const AppRoutes = () => (
             <Route path="/catalog/product/:productSlug" element={<ProductPage />} />
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/catalog/:categorySlug/products/:categoryId" element={<CategoryPage />} />
+            <Route path="/catalog/deep-products" element={<CatalogDeepProductsPage />} />
+            <Route path="/catalog/:categorySlug/deep-products" element={<CatalogDeepProductsPage />} />
+            <Route path="/catalog/:categorySlug/deep-products/:categoryId" element={<CatalogDeepProductsPage />} />
             <Route path="/catalog/*" element={<CatalogPage />} />
         </Routes>
     </Suspense>

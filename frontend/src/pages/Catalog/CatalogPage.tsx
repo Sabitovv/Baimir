@@ -13,10 +13,10 @@ import StaggerContainer from "@/components/animations/StaggerContainer";
 import StaggerItem from "@/components/animations/StaggerItem";
 
 import sampleImg from "@/assets/catalog/sample_machine.png";
-import { PopularProduct } from "./components/PopularProduct";
 import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
+import CatalogDeepProductsPage from "./CatalogDeepProductsPage";
 
 const CatalogPage = () => {
   const { i18n, t } = useTranslation();
@@ -197,7 +197,14 @@ const CatalogPage = () => {
             </StaggerContainer>
           </main>
         </div>
-        <PopularProduct />
+        <CatalogDeepProductsPage
+          embedded
+          categoryId={
+            currentCategory && Number.isFinite(Number(currentCategory.id))
+              ? Number(currentCategory.id)
+              : null
+          }
+        />
         <RecentlyViewedProducts />
         <ScrollReveal>
           <section className="mb-16">

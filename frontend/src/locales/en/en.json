@@ -246,10 +246,13 @@
   "catalogPage": {
     "title": "Product catalog",
     "popular": "POPULAR PRODUCTS",
+    "deepProductsTitle": "PRODUCTS BY CATEGORIES",
     "recentlyViewed": "RECENTLY VIEWED",
     "bid": "LEAVE A REQUEST",
     "noSubcategories": "There are no subcategories in this section yet.",
     "noPopularProducts": "No popular products",
+    "noDeepProducts": "No products found in selected categories",
+    "goToCategory": "Go to category",
     "noRecentlyViewedProducts": "No recently viewed products",
     "productsCount": "{{count}} pcs",
     "productsCountUnit": "pcs",
