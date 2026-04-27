@@ -358,33 +358,33 @@ const CategoryPage = () => {
 
   return (
     <PageContainer>
-      <div className="px-4 md:px-6 lg:px-0 mb-14 sm:mb-20">
+      <div className="px-4 md:px-5 lg:px-0 mb-12 sm:mb-16 md:mb-20">
         <div className="my-4 sm:my-5">
           <ScrollReveal key={activeId ?? "catalog-title"}>
-            <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-5xl font-bold uppercase text-gray-900">
+            <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
               {currentCategory?.name ?? t("commonCatalog.catalog")}
             </h1>
           </ScrollReveal>
           <Breadcrumbs />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr] gap-6 md:gap-7 lg:gap-8 mt-4">
           <aside className="hidden lg:block space-y-2 pr-4">
             <CategoriesMenu />
           </aside>
 
           <main>
             {!isLoadingProducts && !hasProducts && hasSubcategories ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 md:gap-4 lg:gap-5 xl:gap-6">
                 {currentCategory?.children?.map((sub: Category) => (
                   <div
                     key={sub.id}
                     onClick={() =>
                       navigate(`/catalog/${sub.slug}?categoryId=${sub.id}`)
                     }
-                    className="cursor-pointer group border rounded-lg p-2.5 sm:p-4 min-h-[76px] sm:min-h-[96px] flex items-center justify-center hover:shadow-lg transition bg-white text-center"
+                    className="cursor-pointer group border rounded-lg p-2.5 sm:p-3.5 md:p-3 lg:p-4 min-h-[76px] sm:min-h-[88px] md:min-h-[78px] lg:min-h-[84px] xl:min-h-[96px] flex items-center justify-center hover:shadow-lg transition bg-white text-center"
                   >
-                    <h3 className="font-bold text-[13px] leading-snug sm:text-lg group-hover:text-[#DB741F] transition">
+                    <h3 className="font-bold text-[13px] leading-snug sm:text-base md:text-sm lg:text-base group-hover:text-[#DB741F] transition">
                       {sub.name}
                     </h3>
                   </div>
@@ -499,7 +499,7 @@ const CategoryPage = () => {
                 {/* products grid */}
                 <div
                   key={`products-${activeId}-${page}`}
-                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
+                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-3.5 lg:gap-4"
                 >
                   {isLoadingProducts && (
                     <p className="col-span-full text-center">
@@ -571,10 +571,10 @@ const CategoryPage = () => {
         <PopularProduct />
         <RecentlyViewedProducts />
 
-        <section className="mb-16">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <section className="mb-12 sm:mb-14 md:mb-16">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-7 lg:gap-8 items-center">
             <div className="px-2 md:px-0">
-              <h3 className="font-oswald text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">
+              <h3 className="font-oswald text-2xl sm:text-4xl md:text-[40px] lg:text-5xl font-bold uppercase mb-5 sm:mb-7 md:mb-8 ml-2 sm:ml-4">
                 {t("catalogPage.bid")}
               </h3>
               <Contact />
@@ -584,7 +584,7 @@ const CategoryPage = () => {
                 imageKey="catalog_category_bid_image"
                 fallbackSrc={sampleImg}
                 alt="machine"
-                className="max-w-full w-72 sm:w-full object-contain"
+                className="max-w-full w-72 sm:w-full md:w-[88%] lg:w-full object-contain"
               />
             </div>
           </div>

@@ -66,12 +66,12 @@ export const RecentlyViewedProducts = () => {
   if (!isLoading && !error && products.length === 0) return null
 
   return (
-    <section className='mb-16 sm:mb-24 mt-8 sm:mt-12 px-0 sm:px-0'>
-      <h2 className='font-oswald text-lg sm:text-3xl md:text-4xl lg:text-5xl font-bold uppercase mb-4 sm:mb-6 ml-1 sm:ml-4'>
+    <section className='mb-12 sm:mb-16 md:mb-20 mt-8 sm:mt-10 md:mt-12 px-0 sm:px-0'>
+      <h2 className='font-oswald text-lg sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase mb-4 sm:mb-5 md:mb-6 ml-1 sm:ml-4'>
         {t('catalogPage.recentlyViewed')}
       </h2>
 
-      <div className='flex items-center gap-1 sm:gap-3 w-full'>
+      <div className='flex items-center gap-1 sm:gap-2.5 md:gap-2 lg:gap-3 w-full'>
         <button
           aria-label='scroll left'
           onClick={scrollLeft}
@@ -90,7 +90,7 @@ export const RecentlyViewedProducts = () => {
           role='list'
           tabIndex={0}
           onKeyDown={handleKey}
-          className='flex-1 flex gap-3 sm:gap-4 overflow-x-auto py-2 px-0 sm:px-1 scroll-smooth snap-x snap-mandatory
+          className='flex-1 flex gap-3 sm:gap-3 md:gap-2.5 lg:gap-3 overflow-x-auto py-2 px-0 sm:px-1 scroll-smooth snap-x snap-mandatory
           [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'
         >
           {isLoading ? (
@@ -102,7 +102,7 @@ export const RecentlyViewedProducts = () => {
               <div
                 key={product.id}
                 role='listitem'
-                className='snap-center shrink-0 w-[calc((100%-1.5rem)/2.5)] min-w-[136px] max-w-[176px] sm:w-64 sm:min-w-0 sm:max-w-none md:w-72 lg:w-80'
+                className='snap-center shrink-0 w-[calc((100%-1.5rem)/2.5)] min-w-[136px] max-w-[176px] sm:w-52 sm:min-w-0 sm:max-w-none md:w-56 lg:w-60 xl:w-64'
               >
                 <ProductCard
                   id={product.id}

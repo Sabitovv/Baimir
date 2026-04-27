@@ -9,6 +9,7 @@ import {
   Alert,
   Button,
   Box,
+  useMediaQuery,
 } from '@mui/material'
 
 import { useCreateInquiryMutation } from '@/api/categoriesApi' 
@@ -51,6 +52,7 @@ type ContactProps = {
 
 const Contact: React.FC<ContactProps> = ({ productId }) => {
   const { t } = useTranslation()
+  const isMobile = useMediaQuery('(max-width:640px)')
 
   const [form, setForm] = useState<FormState>({
     name: '',
@@ -178,9 +180,10 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
   }
 
   return (
-    <Box className="w-full max-w-xl px-4" component="section" aria-labelledby="contact-heading">
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+    <Box className="w-full max-w-xl px-3 sm:px-4" component="section" aria-labelledby="contact-heading">
+      <form className="flex flex-col gap-3 sm:gap-4" onSubmit={handleSubmit} noValidate>
         <TextField
+          size={isMobile ? 'small' : 'medium'}
           required
           id="contact-name"
           label={t('home.contact.fields.name', { defaultValue: 'Имя' })}
@@ -197,6 +200,7 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
         />
 
         <TextField
+          size={isMobile ? 'small' : 'medium'}
           required
           id="contact-phone"
           label={t('home.contact.fields.phone', { defaultValue: 'Телефон' })}
@@ -212,6 +216,7 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
         />
 
         <TextField
+          size={isMobile ? 'small' : 'medium'}
           id="contact-email"
           type="email"
           label={t('home.contact.fields.email', { defaultValue: 'Email (необязательно)' })}
@@ -228,13 +233,14 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
         />
 
         <TextField
+          size={isMobile ? 'small' : 'medium'}
           id="contact-message"
           label={t('home.contact.fields.comment', { defaultValue: 'Комментарий (необязательно)' })}
           value={form.message}
           onChange={handleChange('message')}
           variant="outlined"
           multiline
-          rows={4}
+          rows={isMobile ? 3 : 4}
           error={Boolean(errors.message)}
           helperText={errors.message ?? `${form.message.length}/${LIMITS.MESSAGE}`}
           inputProps={{ maxLength: LIMITS.MESSAGE }}
@@ -253,14 +259,21 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
               sx={{ color: '#F58322', '&.Mui-checked': { color: '#F58322' } }}
             />
           }
-          label={<span className="text-xs md:text-sm text-gray-600">{t('home.contact.consent', { defaultValue: 'Я даю согласие на обработку данных' })}</span>}
+          label={<span className="text-xs sm:text-sm text-gray-600">{t('home.contact.consent', { defaultValue: 'Я даю согласие на обработку данных' })}</span>}
         />
 
         <Box className="flex justify-start">
           <Button
             type="submit"
             variant="contained"
-            sx={{ backgroundColor: '#F58322', '&:hover': { backgroundColor: '#DB741F' }, textTransform: 'uppercase' }}
+            fullWidth={isMobile}
+            sx={{
+              backgroundColor: '#F58322',
+              '&:hover': { backgroundColor: '#DB741F' },
+              textTransform: 'uppercase',
+              fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+              py: { xs: 1, sm: 1.25 },
+            }}
             disabled={isLoading}
           >
             {isLoading ? t('home.contact.sending', { defaultValue: 'Отправка...' }) : t('home.contact.submit', { defaultValue: 'Отправить' })}
@@ -272,7 +285,7 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
         open={snack.open}
         autoHideDuration={4000}
         onClose={closeSnack}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: isMobile ? 'center' : 'right' }}
       >
         <Alert onClose={closeSnack} severity={snack.severity} sx={{ width: '100%' }}>
           {snack.message}

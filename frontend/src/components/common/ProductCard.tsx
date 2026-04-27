@@ -155,11 +155,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <Link
       to={`/catalog/product/${slug}`}
-      className={`bg-white border border-gray-200 p-2.5 sm:p-4 rounded-md sm:rounded-sm transition flex flex-col h-full group ${
+      className={`bg-white border border-gray-200 p-2.5 sm:p-3 md:p-2.5 lg:p-3 xl:p-4 rounded-md sm:rounded-sm transition flex flex-col h-full group ${
         isOutOfStock ? "border-gray-300" : "hover:shadow-lg"
       }`}
     >
-      <div className="relative h-28 sm:h-40 flex items-center justify-center mb-2 sm:mb-4">
+      <div className="relative h-28 sm:h-32 md:h-28 lg:h-32 xl:h-40 flex items-center justify-center mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 xl:mb-4">
         {isNew === true && !isOutOfStock && (
           <span className="absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-[#DB741F]">
             {t("commonCatalog.new")}
@@ -174,11 +174,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
       </div>
 
-      <h3 className="font-manrope text-xs sm:text-sm font-extrabold text-gray-800 leading-snug sm:leading-tight mb-1.5 sm:mb-2 group-hover:text-[#DB741F] transition-colors line-clamp-2">
+      <h3 className="font-manrope text-xs sm:text-sm md:text-[13px] lg:text-sm font-extrabold text-gray-800 leading-snug sm:leading-tight mb-1.5 sm:mb-2 group-hover:text-[#DB741F] transition-colors line-clamp-2">
         {name}
       </h3>
 
-      <div className="mb-2 sm:mb-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
+      <div className="mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
         <span
           className={`inline-flex items-center rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold ${
             isOutOfStock
@@ -193,11 +193,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {normalizedFeatures.length > 0 && (
-        <div className="mb-2 sm:mb-3 space-y-1">
+        <div className="mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 space-y-1">
           {normalizedFeatures.map((nf, idx) => (
             <div
               key={idx}
-              className={`items-center text-[10px] sm:text-xs gap-1 ${idx > 1 ? "hidden sm:flex" : "flex"}`}
+              className={`items-center text-[10px] sm:text-xs md:text-[11px] gap-1 ${idx > 1 ? "hidden sm:flex" : "flex"}`}
             >
               {nf.label && (
                 <span className="text-gray-500 font-medium whitespace-nowrap">
@@ -214,11 +214,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       )}
 
       <div className="mt-auto">
-        <p className="text-base sm:text-lg font-bold text-gray-900 mb-2.5 sm:mb-3">
+        <p className="text-base sm:text-[17px] md:text-base lg:text-[17px] xl:text-lg font-bold text-gray-900 mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3">
           {formattedPrice}
         </p>
         {formattedOldPrice && (
-          <p className="-mt-1.5 sm:-mt-2 mb-2.5 sm:mb-3 text-[11px] sm:text-xs text-gray-400 line-through">
+          <p className="-mt-1.5 sm:-mt-2 mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3 text-[11px] sm:text-xs text-gray-400 line-through">
             {formattedOldPrice}
           </p>
         )}
@@ -288,7 +288,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <button
               type="button"
-              className={`w-full py-2 text-[11px] sm:text-sm font-extrabold uppercase rounded-sm transition bg-[#F58322] text-white hover:bg-[#DB741F]`}
+              className={`w-full py-2 text-[11px] sm:text-[13px] md:text-xs lg:text-sm font-extrabold uppercase rounded-sm transition bg-[#F58322] text-white hover:bg-[#DB741F]`}
               onClick={(event) => {
                 event.preventDefault();
 

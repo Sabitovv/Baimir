@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Link, useParams, useSearchParams, useLocation } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import OpenButton from '@/assets/button1_for_sideBar.svg'
 import CloseButton from '@/assets/button2_for_sideBar.svg'
 import { useGetCategoriesTreeQuery, type Category } from '@/api/categoriesApi'
@@ -15,12 +15,9 @@ const CategoriesMenu = () => {
     const { data: categories = [] } = useGetCategoriesTreeQuery({lang: i18n.language})
     const { categoryId } = useParams<{ categoryId: string }>()
     const [searchParams] = useSearchParams()
-    const location = useLocation()
 
     const rawActiveId = categoryId ?? searchParams.get('categoryId')
     const activeId = rawActiveId ? Number(rawActiveId) : null
-
-    const isRootCatalog = location.pathname === '/catalog' && !location.search
 
     const [openCategories, setOpenCategories] = useState<Record<number, boolean>>({})
 
@@ -45,7 +42,7 @@ const CategoriesMenu = () => {
     }, [categories])
 
     const activeParentsChain = useMemo(() => {
-        if (isRootCatalog || !activeId || categories.length === 0) return new Set<number>()
+        if (!activeId || categories.length === 0) return new Set<number>()
 
         const parentsChain = new Set<number>()
         const hasChildren = categories.some(c => Number(c.parentId) === activeId)
@@ -61,26 +58,15 @@ const CategoriesMenu = () => {
         }
 
         return parentsChain
-    }, [activeId, categories, isRootCatalog])
+    }, [activeId, categories])
 
     const effectiveOpenCategories = useMemo(() => {
-        if (isRootCatalog) return {}
-
         const derivedState = { ...openCategories }
-        Object.keys(derivedState).forEach((key) => {
-            const id = Number(key)
-            if (!activeParentsChain.has(id) && !derivedState[id]) {
-                return
-            }
-            if (!activeParentsChain.has(id)) {
-                derivedState[id] = false
-            }
-        })
         activeParentsChain.forEach((id) => {
             derivedState[id] = true
         })
         return derivedState
-    }, [activeParentsChain, isRootCatalog, openCategories])
+    }, [activeParentsChain, openCategories])
 
     const getAllDescendantIds = (parentId: number, allCats: Category[]) => {
         let ids: number[] = []

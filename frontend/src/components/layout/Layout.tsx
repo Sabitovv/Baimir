@@ -11,7 +11,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <CartAnimationProvider>
             <div className="min-h-screen flex flex-col">
                 <Header setIsCartOpen={setIsCartOpen} />
-                <main className="flex-1">{children}</main>
+                <main className="flex-1 pt-[88px]">{children}</main>
                 <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
                 <CartAnimation />
                 <Footer />

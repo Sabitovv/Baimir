@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/hooks";
 import { clearBreadcrumbs, setBreadcrumbs } from "@/features/catalogSlice";
@@ -17,6 +17,50 @@ import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
 import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
+
+interface CategoryImageProps {
+  src?: string | null;
+  alt: string;
+}
+
+const CategoryImage = ({ src, alt }: CategoryImageProps) => {
+  const [resolvedSrc, setResolvedSrc] = useState(src || sampleImg);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setResolvedSrc(src || sampleImg);
+    setIsLoaded(false);
+  }, [src]);
+
+  return (
+    <div className="relative w-full h-[100px] sm:h-[130px] flex items-center justify-center overflow-hidden shrink-0">
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 bg-gray-100 transition-opacity duration-300 ${
+          isLoaded ? "opacity-0" : "opacity-100"
+        }`}
+      />
+      <img
+        src={resolvedSrc}
+        alt={alt}
+        loading="lazy"
+        width={130}
+        height={130}
+        onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          if (resolvedSrc !== sampleImg) {
+            setResolvedSrc(sampleImg);
+            return;
+          }
+          setIsLoaded(true);
+        }}
+        className={`w-full h-full object-contain transition-all duration-300 group-hover:scale-105 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    </div>
+  );
+};
 
 const CatalogPage = () => {
   const { i18n, t } = useTranslation();
@@ -167,17 +211,7 @@ const CatalogPage = () => {
                           {t("catalogPage.productsCountUnit")}
                         </span>
                       )}
-                      <div className="relative w-full h-[100px] sm:h-[130px] flex items-center justify-center overflow-hidden shrink-0">
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          loading="lazy"
-                          width={130}
-                          height={130}
-                          className="w-full h-full object-contain transition-transform 
-                                  group-hover:scale-105"
-                        />
-                      </div>
+                      <CategoryImage src={item.imageUrl} alt={item.name} />
 
                       {/* текстовая часть фиксированной высоты */}
                       <div className="mt-3 sm:mt-4 text-center h-[56px] sm:h-[64px] flex flex-col items-center justify-center overflow-hidden">

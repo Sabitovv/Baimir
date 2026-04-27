@@ -142,7 +142,7 @@ type HeaderSpecGroup = {
 };
 
 type SpecGroup = SpecificationGroup | HeaderSpecGroup;
-type StickyMode = "static" | "fixed" | "bottom";
+type StickyMode = "static" | "fixedTop" | "fixedBottom";
 
 const toYouTubeId = (url: string): string | null => {
   try {
@@ -543,9 +543,9 @@ const renderCardItem = (
 ) => (
   <article
     key={`${card.title}-${idx}`}
-    className="group rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl flex h-full flex-col"
+    className="group rounded-xl sm:rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl flex h-full flex-col"
   >
-    <div className="h-[220px] md:h-[240px] lg:h-[260px] bg-gray-100 overflow-hidden">
+    <div className="h-[170px] sm:h-[200px] md:h-[240px] lg:h-[260px] bg-gray-100 overflow-hidden">
       <img
         src={card.imageUrl || PLACEHOLDER_IMG}
         alt={card.title}
@@ -553,11 +553,11 @@ const renderCardItem = (
         loading="lazy"
       />
     </div>
-    <div className="p-4 sm:p-5 space-y-2 flex flex-1 flex-col">
+    <div className="p-3 sm:p-5 space-y-1.5 sm:space-y-2 flex flex-1 flex-col">
       <h4 className="font-semibold text-gray-900 leading-snug line-clamp-2">
         {card.title}
       </h4>
-      <p className="text-sm text-gray-600 whitespace-pre-line line-clamp-4">
+      <p className="text-xs sm:text-sm text-gray-600 whitespace-pre-line line-clamp-4">
         {card.description}
       </p>
     </div>
@@ -577,19 +577,19 @@ const isMainSetHeading = (value?: string): boolean => {
 const renderMainSetItem = (card: GridCardItem, idx: number) => (
   <article
     key={`${card.title}-${idx}`}
-    className="rounded-2xl border border-gray-200 bg-white p-4 md:p-5 shadow-sm transition-all duration-300 hover:shadow-md"
+    className="rounded-xl sm:rounded-2xl border border-gray-200 bg-white p-3 sm:p-4 md:p-5 shadow-sm transition-all duration-300 hover:shadow-md"
   >
-    <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_220px] gap-4 md:gap-5 items-start">
+    <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_220px] gap-3 sm:gap-4 md:gap-5 items-start">
       <div className="min-w-0">
-        <h4 className="font-semibold text-gray-900 leading-snug mb-2 text-base md:text-lg">
+        <h4 className="font-semibold text-gray-900 leading-snug mb-1.5 sm:mb-2 text-[15px] sm:text-base md:text-lg">
           {card.title}
         </h4>
-        <p className="text-sm md:text-base text-gray-700 whitespace-pre-line">
+        <p className="text-xs sm:text-sm md:text-base text-gray-700 whitespace-pre-line">
           {card.description}
         </p>
       </div>
 
-      <div className="h-[180px] sm:h-[200px] bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+      <div className="h-[150px] sm:h-[200px] bg-gray-100 rounded-lg sm:rounded-xl overflow-hidden border border-gray-100">
         <img
           src={card.imageUrl || PLACEHOLDER_IMG}
           alt={card.title}
@@ -806,8 +806,8 @@ const ProductLinksBlock = ({
     const item = displayedItems[0];
 
     return (
-      <section className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-900">
+      <section className="space-y-2 sm:space-y-3">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
           {t("productPage.relatedProducts")}
         </h3>
 
@@ -838,8 +838,8 @@ const ProductLinksBlock = ({
   }
 
   return (
-    <section className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-900">
+    <section className="space-y-2 sm:space-y-3">
+      <h3 className="text-base sm:text-lg font-semibold text-gray-900">
         {t("productPage.relatedProducts")}
       </h3>
 
@@ -850,11 +850,11 @@ const ProductLinksBlock = ({
       )}
 
       {displayedItems.length > 0 && shouldRenderCarousel && (
-        <div className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-1 flex snap-x snap-mandatory gap-3 sm:gap-4 overflow-x-auto px-1 pb-2 sm:pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {displayedItems.map((item) => (
             <div
               key={item.id}
-              className="w-[260px] shrink-0 snap-start sm:w-[290px] lg:w-[320px]"
+              className="w-[220px] shrink-0 snap-start sm:w-[290px] lg:w-[320px]"
             >
               <ProductCard
                 id={item.id}
@@ -875,7 +875,7 @@ const ProductLinksBlock = ({
       )}
 
       {displayedItems.length > 0 && !shouldRenderCarousel && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {displayedItems.map((item) => (
             <ProductCard
               key={item.id}
@@ -909,13 +909,13 @@ const renderContentBlock = (
       return (
         <div
           key={block.id}
-          className="space-y-2 border-l-4 border-[#F58322] pl-4 md:pl-5"
+          className="space-y-1.5 sm:space-y-2 border-l-4 border-[#F58322] pl-3 sm:pl-4 md:pl-5"
         >
-          <HeadingTag className="font-bold text-gray-900 text-xl md:text-2xl leading-tight">
+          <HeadingTag className="font-bold text-gray-900 text-lg sm:text-xl md:text-2xl leading-tight">
             {block.data.text}
           </HeadingTag>
           {block.data.subtitle && (
-            <p className="text-sm text-gray-500 md:text-base">
+            <p className="text-xs sm:text-sm text-gray-500 md:text-base">
               {block.data.subtitle}
             </p>
           )}
@@ -927,7 +927,7 @@ const renderContentBlock = (
       return (
         <p
           key={block.id}
-          className="text-gray-700 leading-relaxed whitespace-pre-line text-[15px] md:text-base"
+          className="text-gray-700 leading-relaxed whitespace-pre-line text-sm md:text-base"
         >
           {block.data.text}
         </p>
@@ -949,7 +949,7 @@ const renderContentBlock = (
       const hasDescription = Boolean(block.data.description?.trim());
       const isFullWidthImage = block.data.imageWidth === "full";
       const mediaFrameClass = isFullWidthImage
-        ? "h-[clamp(360px,50vw,700px)]"
+        ? "h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)]"
         : imageRatioClassMap[block.data.imageRatio];
       const imageFitClass = isFullWidthImage
         ? "object-cover object-center"
@@ -961,7 +961,7 @@ const renderContentBlock = (
       return (
         <section
           key={block.id}
-          className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-5 rounded-2xl border border-gray-200 p-5 md:p-6 bg-gradient-to-b from-white to-gray-50/70 shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.01]`}
+          className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-3 sm:gap-4 md:gap-5 rounded-xl sm:rounded-2xl border border-gray-200 p-3 sm:p-4 md:p-6 bg-gradient-to-b from-white to-gray-50/70 shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.01]`}
         >
           <div
             className={`w-full ${imageWidthClassMap[block.data.imageWidth]}`}
@@ -978,14 +978,14 @@ const renderContentBlock = (
             </div>
           </div>
           {(hasTitle || hasDescription) && (
-            <div className="flex-1 space-y-2">
+            <div className="flex-1 space-y-1.5 sm:space-y-2">
               {hasTitle && (
-                <h3 className="font-semibold text-lg text-gray-900 md:text-xl">
+                <h3 className="font-semibold text-base sm:text-lg text-gray-900 md:text-xl">
                   {block.data.title}
                 </h3>
               )}
               {hasDescription && (
-                <p className="text-sm text-gray-600 whitespace-pre-line md:text-base">
+                <p className="text-xs sm:text-sm text-gray-600 whitespace-pre-line md:text-base">
                   {block.data.description}
                 </p>
               )}
@@ -1025,15 +1025,15 @@ const renderContentBlock = (
       return (
         <div
           key={block.id}
-          className="overflow-x-auto border border-gray-200 rounded-2xl shadow-md bg-white"
+          className="overflow-x-auto rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-md shadow-gray-200/60"
         >
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-700">
+          <table className="w-full min-w-[560px] text-xs sm:text-sm">
+            <thead className="bg-gradient-to-b from-gray-50 to-gray-100/80 text-gray-700">
               <tr>
                 {header.map((cell, idx) => (
                   <th
                     key={idx}
-                    className="px-4 py-3 text-left font-semibold border-b border-gray-200 whitespace-nowrap"
+                    className="px-3 sm:px-4 py-2.5 sm:py-3 text-left font-semibold border-b border-gray-200 whitespace-nowrap first:rounded-tl-xl last:rounded-tr-xl [&:not(:last-child)]:border-r [&:not(:last-child)]:border-gray-200/80"
                   >
                     {cell}
                   </th>
@@ -1044,10 +1044,13 @@ const renderContentBlock = (
               {body.map((row, rowIdx) => (
                 <tr
                   key={rowIdx}
-                  className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
+                  className="border-b border-gray-100 last:border-b-0 odd:bg-white even:bg-gray-50/55 hover:bg-[#FFF6EF] transition-colors"
                 >
                   {row.map((cell, cellIdx) => (
-                    <td key={cellIdx} className="px-4 py-3 text-gray-700">
+                    <td
+                      key={cellIdx}
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 align-top [&:not(:last-child)]:border-r [&:not(:last-child)]:border-gray-100"
+                    >
                       {cell}
                     </td>
                   ))}
@@ -1064,12 +1067,12 @@ const renderContentBlock = (
         return (
           <div
             key={block.id}
-            className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory"
+            className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory"
           >
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="group snap-start min-w-[78%] sm:min-w-[56%] lg:min-w-[40%] rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+                className="group snap-start min-w-[72%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
@@ -1087,12 +1090,12 @@ const renderContentBlock = (
         return (
           <div
             key={block.id}
-            className="columns-1 sm:columns-2 lg:columns-3 gap-4"
+            className="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4"
           >
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="mb-4 break-inside-avoid rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+                className="mb-3 sm:mb-4 break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
@@ -1108,11 +1111,11 @@ const renderContentBlock = (
 
       if (block.data.layout === "featured") {
         return (
-          <div key={block.id} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div key={block.id} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className={`group rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
+                className={`group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
@@ -1132,20 +1135,19 @@ const renderContentBlock = (
           : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
       const isSingleLayout = block.data.layout === "single";
 
-      console.log(block.data.urls);
       return (
-        <div key={block.id} className={`grid ${gridClass} gap-4`}>
+        <div key={block.id} className={`grid ${gridClass} gap-3 sm:gap-4`}>
           {block.data.urls.map((url, idx) => (
             <div
               key={`${url}-${idx}`}
-              className="group rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+              className="group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
             >
               <img
                 src={url || PLACEHOLDER_IMG}
                 alt={`gallery-${idx + 1}`}
                 className={
                   isSingleLayout
-                    ? "w-full h-[clamp(360px,50vw,700px)] object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+                    ? "w-full h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)] object-cover object-center transition duration-500 group-hover:scale-[1.02]"
                     : "w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110"
                 }
                 loading="lazy"
@@ -1161,7 +1163,7 @@ const renderContentBlock = (
         return (
           <ol
             key={block.id}
-            className="list-decimal pl-6 space-y-2 text-gray-700 marker:font-semibold marker:text-[#F58322]"
+            className="list-decimal pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 text-gray-700 marker:font-semibold marker:text-[#F58322]"
           >
             {block.data.items.map((item, idx) => (
               <li key={idx}>{item}</li>
@@ -1182,11 +1184,11 @@ const renderContentBlock = (
       const marker = markerByStyle[block.data.style];
 
       return (
-        <ul key={block.id} className="space-y-2 text-gray-700">
+        <ul key={block.id} className="space-y-1.5 sm:space-y-2 text-gray-700">
           {block.data.items.map((item, idx) => (
             <li
               key={idx}
-              className="flex gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 transition-all duration-300"
+              className="flex gap-2 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 hover:bg-gray-100 transition-all duration-300"
             >
               <span className="text-[#F58322] font-semibold">{marker}</span>
               <span className="flex-1">{item}</span>
@@ -1208,7 +1210,7 @@ const renderContentBlock = (
 
       if (useMainSetLayout) {
         return (
-          <div key={block.id} className="space-y-4 md:space-y-5">
+          <div key={block.id} className="space-y-3 sm:space-y-4 md:space-y-5">
             {block.data.cards.map((card, idx) => renderMainSetItem(card, idx))}
           </div>
         );
@@ -1217,7 +1219,7 @@ const renderContentBlock = (
       return (
         <div
           key={block.id}
-          className={`grid grid-cols-1 ${colsMap[block.data.columns]} gap-5`}
+          className={`grid grid-cols-1 ${colsMap[block.data.columns]} gap-3 sm:gap-4 md:gap-5`}
         >
           {block.data.cards.map((card, idx) =>
             renderCardItem(card, idx, block.data.imageRatio),
@@ -1270,6 +1272,7 @@ const ProductPage = () => {
   const stickyCardRef = useRef<HTMLDivElement | null>(null);
   const [stickyMode, setStickyMode] = useState<StickyMode>("static");
   const [stickyCardWidth, setStickyCardWidth] = useState<number | null>(null);
+  const [stickyCardLeft, setStickyCardLeft] = useState<number | null>(null);
   const [stickyCardHeight, setStickyCardHeight] = useState<number | null>(null);
 
   const {
@@ -1616,6 +1619,7 @@ const ProductPage = () => {
     if (activeTab !== "desc") {
       setStickyMode("static");
       setStickyCardWidth(null);
+      setStickyCardLeft(null);
       setStickyCardHeight(null);
       return;
     }
@@ -1635,6 +1639,7 @@ const ProductPage = () => {
       if (!mediaQuery.matches) {
         setStickyMode("static");
         setStickyCardWidth(null);
+        setStickyCardLeft(null);
         setStickyCardHeight(null);
         return;
       }
@@ -1646,6 +1651,7 @@ const ProductPage = () => {
       const canStayFixed = gridRect.bottom - topOffset > cardHeight;
 
       setStickyCardWidth(columnRect.width);
+      setStickyCardLeft(columnRect.left);
       setStickyCardHeight(cardHeight);
 
       if (gridRect.top > topOffset) {
@@ -1654,11 +1660,11 @@ const ProductPage = () => {
       }
 
       if (canStayFixed) {
-        setStickyMode("fixed");
+        setStickyMode("fixedTop");
         return;
       }
 
-      setStickyMode("bottom");
+      setStickyMode("fixedBottom");
     };
 
     updateStickyState();
@@ -2394,11 +2400,11 @@ const ProductPage = () => {
           <div className="animate-fade-in text-gray-800 product-content-adaptive">
             <div
               ref={descriptionGridRef}
-              className="relative grid grid-cols-1 md:grid-cols-3 gap-8 items-start"
+              className="relative grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8 items-start"
             >
               <div className="md:col-span-2">
                 {normalizedContentBlocks.length > 0 ? (
-                  <div className="space-y-6 mb-8">
+                  <div className="space-y-4 sm:space-y-5 md:space-y-6 mb-6 sm:mb-8">
                     {normalizedContentBlocks.map((block, index) =>
                       renderContentBlock(
                         block,
@@ -2524,7 +2530,7 @@ const ProductPage = () => {
               </div>
               <aside
                 ref={stickyColumnRef}
-                className="md:col-span-1 self-start relative"
+                className="md:col-span-1 relative md:self-stretch"
                 style={
                   stickyCardHeight ? { minHeight: stickyCardHeight } : undefined
                 }
@@ -2533,13 +2539,14 @@ const ProductPage = () => {
                   ref={stickyCardRef}
                   className="rounded-2xl border border-gray-200 bg-white p-4 md:p-5 shadow-sm z-20"
                   style={
-                    stickyMode === "fixed"
+                    stickyMode === "fixedTop"
                       ? {
                           position: "fixed",
                           top: 96,
+                          left: stickyCardLeft ?? undefined,
                           width: stickyCardWidth ?? undefined,
                         }
-                      : stickyMode === "bottom"
+                      : stickyMode === "fixedBottom"
                         ? {
                             position: "absolute",
                             left: 0,
