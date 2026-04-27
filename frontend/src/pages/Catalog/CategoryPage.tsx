@@ -358,10 +358,10 @@ const CategoryPage = () => {
 
   return (
     <PageContainer>
-      <div className="px-4 md:px-6 lg:px-0 mb-20">
-        <div className="my-5">
+      <div className="px-4 md:px-6 lg:px-0 mb-14 sm:mb-20">
+        <div className="my-4 sm:my-5">
           <ScrollReveal key={activeId ?? "catalog-title"}>
-            <h1 className="font-oswald text-3xl md:text-5xl font-bold uppercase text-gray-900">
+            <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-5xl font-bold uppercase text-gray-900">
               {currentCategory?.name ?? t("commonCatalog.catalog")}
             </h1>
           </ScrollReveal>
@@ -375,16 +375,16 @@ const CategoryPage = () => {
 
           <main>
             {!isLoadingProducts && !hasProducts && hasSubcategories ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-6">
                 {currentCategory?.children?.map((sub: Category) => (
                   <div
                     key={sub.id}
                     onClick={() =>
                       navigate(`/catalog/${sub.slug}?categoryId=${sub.id}`)
                     }
-                    className="cursor-pointer group border rounded-lg p-4 hover:shadow-lg transition bg-white text-center"
+                    className="cursor-pointer group border rounded-lg p-2.5 sm:p-4 min-h-[76px] sm:min-h-[96px] flex items-center justify-center hover:shadow-lg transition bg-white text-center"
                   >
-                    <h3 className="font-bold text-lg group-hover:text-[#DB741F] transition">
+                    <h3 className="font-bold text-[13px] leading-snug sm:text-lg group-hover:text-[#DB741F] transition">
                       {sub.name}
                     </h3>
                   </div>
@@ -393,20 +393,20 @@ const CategoryPage = () => {
             ) : (
               <>
                 {/* controls */}
-                <div className="bg-[#F2F4F7] p-2 rounded-lg mb-6 flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 flex-wrap">
+                <div className="bg-[#F2F4F7] p-2 sm:p-2.5 rounded-lg mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                     <button
                       onClick={toggleFilter}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-md transition font-medium text-sm ${isFilterOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
+                      className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md transition font-medium text-xs sm:text-sm ${isFilterOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
                     >
                       {t("filters.showFilter")}
                     </button>
 
                     <div
-                      className="flex items-center gap-3 px-3 py-2 bg-[#E4E7EC] rounded-md cursor-pointer select-none"
+                      className="flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#E4E7EC] rounded-md cursor-pointer select-none"
                       onClick={toggleStock}
                     >
-                      <span className="text-sm text-gray-700">
+                      <span className="text-xs sm:text-sm text-gray-700">
                         {t("filters.have")}
                       </span>
                       <div
@@ -499,7 +499,7 @@ const CategoryPage = () => {
                 {/* products grid */}
                 <div
                   key={`products-${activeId}-${page}`}
-                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
+                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
                 >
                   {isLoadingProducts && (
                     <p className="col-span-full text-center">
@@ -531,11 +531,11 @@ const CategoryPage = () => {
                 </div>
 
                 {hasProducts && (
-                  <div className="mt-12 flex justify-center items-center gap-2">
+                  <div className="mt-8 sm:mt-12 flex justify-center items-center gap-1.5 sm:gap-2">
                     <button
                       disabled={page === 1}
                       onClick={() => changePage(page - 1)}
-                      className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100 disabled:opacity-40"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-sm sm:text-base flex items-center justify-center border rounded hover:bg-gray-100 disabled:opacity-40"
                     >
                       ‹
                     </button>
@@ -548,7 +548,7 @@ const CategoryPage = () => {
                         <button
                           key={pNum}
                           onClick={() => changePage(pNum)}
-                          className={`w-8 h-8 flex items-center justify-center border ${pNum === page ? "bg-black text-white" : ""}`}
+                          className={`w-7 h-7 sm:w-8 sm:h-8 text-xs sm:text-sm flex items-center justify-center border ${pNum === page ? "bg-black text-white" : ""}`}
                         >
                           {pNum}
                         </button>
@@ -557,7 +557,7 @@ const CategoryPage = () => {
                     <button
                       disabled={page === totalPages}
                       onClick={() => changePage(page + 1)}
-                      className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100 disabled:opacity-40"
+                      className="w-7 h-7 sm:w-8 sm:h-8 text-sm sm:text-base flex items-center justify-center border rounded hover:bg-gray-100 disabled:opacity-40"
                     >
                       ›
                     </button>
@@ -574,7 +574,7 @@ const CategoryPage = () => {
         <section className="mb-16">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="px-2 md:px-0">
-              <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
+              <h3 className="font-oswald text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">
                 {t("catalogPage.bid")}
               </h3>
               <Contact />

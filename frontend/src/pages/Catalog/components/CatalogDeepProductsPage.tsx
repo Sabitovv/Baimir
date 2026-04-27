@@ -76,20 +76,25 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
   };
 
   return (
-    <section className="mb-7 sm:mb-8 rounded-2xl border border-gray-100 bg-gradient-to-b from-white to-gray-50/60 p-3 sm:p-4">
-      <div className="mb-4 flex items-center justify-between gap-3 px-1 sm:px-2">
+    <section className="-mx-4 sm:mx-0 mb-6 sm:mb-8 rounded-none sm:rounded-2xl border-x-0 sm:border-x border-y border-gray-100 bg-gradient-to-b from-white to-gray-50/60 p-2.5 sm:p-4">
+      <div className="mb-3 sm:mb-4 flex items-center justify-between gap-2 sm:gap-3 px-1 sm:px-2">
         <div className="min-w-0">
-          <h2 className="font-oswald text-xl sm:text-2xl md:text-3xl font-bold uppercase text-gray-900 truncate">
+          <h2 className="font-oswald text-sm sm:text-2xl md:text-3xl font-bold uppercase text-gray-900 truncate">
             {group.category.name}
           </h2>
-          <div className="mt-1 h-[3px] w-16 rounded-full bg-[#F58322]" />
+          <div className="mt-1 h-[3px] w-12 sm:w-16 rounded-full bg-[#F58322]" />
         </div>
 
         <Link
           to={categoryLink}
-          className="shrink-0 rounded-full border border-[#F3C9A8] bg-[#FFF4EA] px-4 py-2 text-xs sm:text-sm font-semibold uppercase tracking-wide text-[#DB741F] hover:bg-[#FFE9D8] transition-colors"
+          className="shrink-0 rounded-full border border-[#F3C9A8] bg-[#FFF4EA] w-8 h-8 sm:w-auto sm:h-auto px-0 sm:px-4 py-0 sm:py-2 flex items-center justify-center text-[10px] sm:text-sm font-semibold uppercase tracking-wide text-[#DB741F] hover:bg-[#FFE9D8] transition-colors"
+          aria-label={t("catalogPage.goToCategory")}
+          title={t("catalogPage.goToCategory")}
         >
-          {t("catalogPage.goToCategory")}
+          <span className="sm:hidden" aria-hidden="true">
+            →
+          </span>
+          <span className="hidden sm:inline">{t("catalogPage.goToCategory")}</span>
         </Link>
       </div>
 
@@ -113,7 +118,7 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
           role="list"
           tabIndex={0}
           onKeyDown={handleKey}
-          className="flex-1 flex gap-3 sm:gap-4 overflow-x-auto py-2 px-1 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex-1 flex gap-3 sm:gap-4 overflow-x-auto py-2 px-0 sm:px-1 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {group.products.length === 0 ? (
             <div className="text-gray-500 px-4">{t("catalogPage.noDeepProducts")}</div>
@@ -122,7 +127,7 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
               <div
                 key={product.id}
                 role="listitem"
-                className="snap-center shrink-0 w-[260px] xs:w-[280px] sm:w-64 md:w-72 lg:w-80"
+                className="snap-center shrink-0 w-[calc((100%-1.5rem)/2.5)] min-w-[136px] max-w-[176px] sm:w-64 sm:min-w-0 sm:max-w-none md:w-72 lg:w-80"
               >
                 <ProductCard
                   id={product.id}
@@ -268,12 +273,12 @@ const CatalogDeepProductsPage = ({
 
   if (embedded) {
     return (
-      <section className="mt-10 sm:mt-12">
+      <section className="mt-8 sm:mt-12">
         <div className="mb-6 sm:mb-7 px-1 sm:px-2">
-          <h2 className="font-oswald text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold uppercase text-gray-900">
+          <h2 className="font-oswald text-base sm:text-3xl md:text-4xl lg:text-5xl font-bold uppercase text-gray-900">
             {t("catalogPage.deepProductsTitle")}
           </h2>
-          <div className="mt-2 h-1 w-28 rounded-full bg-[#F58322]" />
+          <div className="mt-2 h-1 w-20 sm:w-28 rounded-full bg-[#F58322]" />
         </div>
         {content}
       </section>
@@ -282,8 +287,8 @@ const CatalogDeepProductsPage = ({
 
   return (
     <PageContainer>
-      <div className="mt-12 px-4 md:px-6 lg:px-0">
-        <div className="mb-4 text-sm text-gray-500">
+      <div className="mt-8 sm:mt-12 px-4 md:px-6 lg:px-0">
+        <div className="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500">
           <Link to="/catalog" className="hover:text-[#DB741F] transition-colors">
             {t("commonCatalog.catalog")}
           </Link>
@@ -291,7 +296,7 @@ const CatalogDeepProductsPage = ({
           <span>{pageTitle}</span>
         </div>
 
-        <h1 className="font-oswald text-3xl md:text-4xl font-bold uppercase mb-10">
+        <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
           {pageTitle}
         </h1>
 

@@ -155,13 +155,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <Link
       to={`/catalog/product/${slug}`}
-      className={`bg-white border border-gray-200 p-4 rounded-sm transition flex flex-col h-full group ${
+      className={`bg-white border border-gray-200 p-2.5 sm:p-4 rounded-md sm:rounded-sm transition flex flex-col h-full group ${
         isOutOfStock ? "border-gray-300" : "hover:shadow-lg"
       }`}
     >
-      <div className="relative h-40 flex items-center justify-center mb-4">
+      <div className="relative h-28 sm:h-40 flex items-center justify-center mb-2 sm:mb-4">
         {isNew === true && !isOutOfStock && (
-          <span className="absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
+          <span className="absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-[#DB741F]">
             {t("commonCatalog.new")}
           </span>
         )}
@@ -174,13 +174,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
       </div>
 
-      <h3 className="font-manrope text-sm font-extrabold text-gray-800 leading-tight mb-2 group-hover:text-[#DB741F] transition-colors line-clamp-2">
+      <h3 className="font-manrope text-xs sm:text-sm font-extrabold text-gray-800 leading-snug sm:leading-tight mb-1.5 sm:mb-2 group-hover:text-[#DB741F] transition-colors line-clamp-2">
         {name}
       </h3>
 
-      <div className="mb-3 flex flex-wrap items-center gap-2">
+      <div className="mb-2 sm:mb-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
         <span
-          className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+          className={`inline-flex items-center rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold ${
             isOutOfStock
               ? "bg-gray-100 text-gray-600"
               : "bg-green-50 text-green-700"
@@ -193,9 +193,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {normalizedFeatures.length > 0 && (
-        <div className="mb-3 space-y-1">
+        <div className="mb-2 sm:mb-3 space-y-1">
           {normalizedFeatures.map((nf, idx) => (
-            <div key={idx} className="flex items-center text-xs gap-1">
+            <div
+              key={idx}
+              className={`items-center text-[10px] sm:text-xs gap-1 ${idx > 1 ? "hidden sm:flex" : "flex"}`}
+            >
               {nf.label && (
                 <span className="text-gray-500 font-medium whitespace-nowrap">
                   {nf.label}:
@@ -211,9 +214,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       )}
 
       <div className="mt-auto">
-        <p className="text-lg font-bold text-gray-900 mb-3">{formattedPrice}</p>
+        <p className="text-base sm:text-lg font-bold text-gray-900 mb-2.5 sm:mb-3">
+          {formattedPrice}
+        </p>
         {formattedOldPrice && (
-          <p className="-mt-2 mb-3 text-xs text-gray-400 line-through">
+          <p className="-mt-1.5 sm:-mt-2 mb-2.5 sm:mb-3 text-[11px] sm:text-xs text-gray-400 line-through">
             {formattedOldPrice}
           </p>
         )}
@@ -226,7 +231,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 event.preventDefault();
                 handleCompareToggle();
               }}
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border transition ${
+              className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-sm border transition ${
                 isInCompare
                   ? "border-[#F58322] bg-[#FFF4EA] text-[#DB741F]"
                   : "border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]"
@@ -243,9 +248,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
               }
             >
               {isInCompare ? (
-                <CheckCircleIcon sx={{ fontSize: 16 }} />
+                <CheckCircleIcon sx={{ fontSize: 15 }} />
               ) : (
-                <CompareArrowsIcon sx={{ fontSize: 16 }} />
+                <CompareArrowsIcon sx={{ fontSize: 15 }} />
               )}
             </button>
           )}
@@ -254,7 +259,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="flex w-full items-center justify-between bg-[#F58322] rounded-sm">
               <button
                 type="button"
-                className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
                 onClick={(event) => {
                   event.preventDefault();
                   if (cartItem.quantity <= 1) {
@@ -266,10 +271,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
               >
                 −
               </button>
-              <span className="text-white font-bold">{cartItem.quantity}</span>
+              <span className="text-white text-sm sm:text-base font-bold">
+                {cartItem.quantity}
+              </span>
               <button
                 type="button"
-                className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
                 onClick={(event) => {
                   event.preventDefault();
                   dispatch(incrementQuantity(id));
@@ -281,7 +288,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <button
               type="button"
-              className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition bg-[#F58322] text-white hover:bg-[#DB741F]`}
+              className={`w-full py-2 text-[11px] sm:text-sm font-extrabold uppercase rounded-sm transition bg-[#F58322] text-white hover:bg-[#DB741F]`}
               onClick={(event) => {
                 event.preventDefault();
 

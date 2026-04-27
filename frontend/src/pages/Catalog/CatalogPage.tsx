@@ -16,7 +16,7 @@ import sampleImg from "@/assets/catalog/sample_machine.png";
 import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
-import CatalogDeepProductsPage from "./CatalogDeepProductsPage";
+import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
 
 const CatalogPage = () => {
   const { i18n, t } = useTranslation();
@@ -119,14 +119,14 @@ const CatalogPage = () => {
 
   return (
     <PageContainer>
-      <div className="mt-12 px-4 md:px-6 lg:px-0">
+      <div className="mt-8 sm:mt-12 px-4 md:px-6 lg:px-0">
         <ScrollReveal>
-          <h1 className="font-oswald text-3xl md:text-4xl font-bold uppercase mb-10">
+          <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
             {t("catalogPage.title")}
           </h1>
         </ScrollReveal>
 
-        <div className="my-4 text-sm text-gray-500">
+        <div className="my-3 sm:my-4 text-xs sm:text-sm text-gray-500">
           <Breadcrumbs />
         </div>
 
@@ -138,7 +138,7 @@ const CatalogPage = () => {
           <main className="ml-0 lg:ml-5">
             <StaggerContainer
               key={location.pathname}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6"
+              className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
             >
               {visibleCategories.map((item) => {
                 const productCountValue = resolveProductCount(item);
@@ -159,15 +159,15 @@ const CatalogPage = () => {
                       }}
                       className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 
                               transition-all duration-300 rounded-lg cursor-pointer 
-                              flex flex-col items-center p-6 h-[240px] overflow-hidden group relative"
+                              flex flex-col items-center p-3 sm:p-6 h-[210px] sm:h-[240px] overflow-hidden group relative"
                     >
                       {productCountValue !== null && (
-                        <span className="absolute left-3 top-3 z-10 inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-700">
+                        <span className="absolute left-2.5 top-2.5 z-10 inline-flex items-center rounded-full bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-700">
                           {productCountValue}{" "}
                           {t("catalogPage.productsCountUnit")}
                         </span>
                       )}
-                      <div className="relative w-full h-[130px] flex items-center justify-center overflow-hidden shrink-0">
+                      <div className="relative w-full h-[100px] sm:h-[130px] flex items-center justify-center overflow-hidden shrink-0">
                         <img
                           src={item.imageUrl}
                           alt={item.name}
@@ -180,8 +180,8 @@ const CatalogPage = () => {
                       </div>
 
                       {/* текстовая часть фиксированной высоты */}
-                      <div className="mt-4 text-center h-[64px] flex flex-col items-center justify-center overflow-hidden">
-                        <p className="font-semibold text-gray-800 line-clamp-2">
+                      <div className="mt-3 sm:mt-4 text-center h-[56px] sm:h-[64px] flex flex-col items-center justify-center overflow-hidden">
+                        <p className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2">
                           {item.name}
                         </p>
                       </div>
@@ -210,7 +210,7 @@ const CatalogPage = () => {
           <section className="mb-16">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="px-2 md:px-0 order-2 md:order-1">
-                <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
+                <h3 className="font-oswald text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">
                   {t("catalogPage.bid")}
                 </h3>
                 <Contact />
