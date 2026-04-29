@@ -11,12 +11,14 @@ import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import StaggerContainer from "@/components/animations/StaggerContainer";
 import StaggerItem from "@/components/animations/StaggerItem";
+import StrategicCollectionBannerCarousel from "@/components/collections/StrategicCollectionBannerCarousel";
 
 import sampleImg from "@/assets/catalog/sample_machine.png";
 import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
 import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
+import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
 
 interface CategoryImageProps {
   src?: string | null;
@@ -128,23 +130,6 @@ const CatalogPage = () => {
       : data.filter((item) => item.parentId === null);
   }, [data, currentCategory]);
 
-  // const products = useMemo(() => Array.from({ length: 8 }).map((_, i) => ({
-  //   id: i + 1,
-  //   title: `Лазерный станок модель ${i + 1}`,
-  //   price: '10 500 000 ₸',
-  //   image: prodImg
-  // })), [])
-
-  // const scrollBy = (dir: 'left' | 'right') => {
-  //   const sc = scrollerRef.current
-  //   if (!sc) return
-  //   const step = sc.clientWidth * 0.7
-  //   sc.scrollTo({
-  //     left: dir === 'left' ? sc.scrollLeft - step : sc.scrollLeft + step,
-  //     behavior: 'smooth'
-  //   })
-  // }
-
   const hasChildren = (id: number | string) => {
     return data?.some((item) => item.parentId === id);
   };
@@ -172,6 +157,10 @@ const CatalogPage = () => {
 
         <div className="my-3 sm:my-4 text-xs sm:text-sm text-gray-500">
           <Breadcrumbs />
+        </div>
+
+        <div className="mb-5 sm:mb-7">
+          <StrategicCollectionBannerCarousel />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
@@ -213,7 +202,6 @@ const CatalogPage = () => {
                       )}
                       <CategoryImage src={item.imageUrl} alt={item.name} />
 
-                      {/* текстовая часть фиксированной высоты */}
                       <div className="mt-3 sm:mt-4 text-center h-[56px] sm:h-[64px] flex flex-col items-center justify-center overflow-hidden">
                         <p className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2">
                           {item.name}
@@ -231,6 +219,24 @@ const CatalogPage = () => {
             </StaggerContainer>
           </main>
         </div>
+
+        {/* Общий заголовок для секций Коллекций и Deep Products */}
+        <div className="mt-12 sm:mt-16 mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
+          <h2 className="font-oswald text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
+            {t("catalogPage.deepProductsTitle")}
+          </h2>
+          <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
+        </div>
+
+        <div className="mb-6 sm:mb-8">
+          <ProductCollectionRenderer
+            placement="CATEGORY_INLINE_COLLECTION"
+            layout="carousel"
+            maxItems={12}
+            skeletonCount={4}
+          />
+        </div>
+
         <CatalogDeepProductsPage
           embedded
           categoryId={
@@ -239,9 +245,13 @@ const CatalogPage = () => {
               : null
           }
         />
-        <RecentlyViewedProducts />
+
+        <div className="mt-8">
+          <RecentlyViewedProducts />
+        </div>
+
         <ScrollReveal>
-          <section className="mb-16">
+          <section className="mb-16 mt-8">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="px-2 md:px-0 order-2 md:order-1">
                 <h3 className="font-oswald text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">

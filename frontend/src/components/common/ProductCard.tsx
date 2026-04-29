@@ -34,6 +34,7 @@ type ProductCardProps = {
   categoryId?: number | null;
   categoryName?: string | null;
   showCompare?: boolean;
+  variant?: "default" | "compact";
 };
 
 const PLACEHOLDER_IMG = productPlaceholder;
@@ -74,6 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   categoryId,
   categoryName,
   showCompare = true,
+  variant = "default",
 }) => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
@@ -152,16 +154,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
       .filter((f): f is { label?: string; value: string; unit?: string } => !!f)
       .slice(0, 3);
   }, [keyFeatures]);
+  const isCompact = variant === "compact";
+
   return (
     <Link
       to={`/catalog/product/${slug}`}
-      className={`bg-white border border-gray-200 p-2.5 sm:p-3 md:p-2.5 lg:p-3 xl:p-4 rounded-md sm:rounded-sm transition flex flex-col h-full group ${
+      className={`bg-white border border-gray-200 ${isCompact ? "p-2 sm:p-2.5 md:p-2.5 lg:p-3 rounded-md" : "p-2.5 sm:p-3 md:p-2.5 lg:p-3 xl:p-4 rounded-md sm:rounded-sm"} transition flex flex-col h-full group ${
         isOutOfStock ? "border-gray-300" : "hover:shadow-lg"
       }`}
     >
-      <div className="relative h-28 sm:h-32 md:h-28 lg:h-32 xl:h-40 flex items-center justify-center mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 xl:mb-4">
+      <div className={`relative flex items-center justify-center ${isCompact ? "h-24 sm:h-28 md:h-28 lg:h-32 mb-1.5 sm:mb-2 md:mb-2 lg:mb-2.5" : "h-28 sm:h-32 md:h-28 lg:h-32 xl:h-40 mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 xl:mb-4"}`}>
         {isNew === true && !isOutOfStock && (
-          <span className="absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-[#DB741F]">
+          <span className={`absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] text-[#DB741F] font-semibold ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"}`}>
             {t("commonCatalog.new")}
           </span>
         )}
@@ -174,13 +178,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
       </div>
 
-      <h3 className="font-manrope text-xs sm:text-sm md:text-[13px] lg:text-sm font-extrabold text-gray-800 leading-snug sm:leading-tight mb-1.5 sm:mb-2 group-hover:text-[#DB741F] transition-colors line-clamp-2">
+      <h3 className={`font-manrope font-extrabold text-gray-800 leading-snug sm:leading-tight group-hover:text-[#DB741F] transition-colors line-clamp-2 ${isCompact ? "text-[11px] sm:text-xs md:text-[13px] mb-1 sm:mb-1.5" : "text-xs sm:text-sm md:text-[13px] lg:text-sm mb-1.5 sm:mb-2"}`}>
         {name}
       </h3>
 
-      <div className="mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
+      <div className={`flex flex-wrap items-center ${isCompact ? "mb-1.5 sm:mb-2 gap-1.5" : "mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 gap-1.5 sm:gap-2"}`}>
         <span
-          className={`inline-flex items-center rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold ${
+          className={`inline-flex items-center rounded-full font-semibold ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"} ${
             isOutOfStock
               ? "bg-gray-100 text-gray-600"
               : "bg-green-50 text-green-700"
@@ -193,11 +197,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {normalizedFeatures.length > 0 && (
-        <div className="mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 space-y-1">
+        <div className={`${isCompact ? "mb-1.5 sm:mb-2 space-y-0.5" : "mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 space-y-1"}`}>
           {normalizedFeatures.map((nf, idx) => (
             <div
               key={idx}
-              className={`items-center text-[10px] sm:text-xs md:text-[11px] gap-1 ${idx > 1 ? "hidden sm:flex" : "flex"}`}
+              className={`items-center gap-1 ${isCompact ? "text-[9px] sm:text-[10px] md:text-[11px]" : "text-[10px] sm:text-xs md:text-[11px]"} ${idx > 1 ? "hidden sm:flex" : "flex"}`}
             >
               {nf.label && (
                 <span className="text-gray-500 font-medium whitespace-nowrap">
@@ -214,11 +218,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       )}
 
       <div className="mt-auto">
-        <p className="text-base sm:text-[17px] md:text-base lg:text-[17px] xl:text-lg font-bold text-gray-900 mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3">
+        <p className={`font-bold text-gray-900 ${isCompact ? "text-[15px] sm:text-base md:text-[17px] mb-1.5 sm:mb-2" : "text-base sm:text-[17px] md:text-base lg:text-[17px] xl:text-lg mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3"}`}>
           {formattedPrice}
         </p>
         {formattedOldPrice && (
-          <p className="-mt-1.5 sm:-mt-2 mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3 text-[11px] sm:text-xs text-gray-400 line-through">
+          <p className={`${isCompact ? "-mt-1 mb-1.5 sm:mb-2 text-[10px] sm:text-xs" : "-mt-1.5 sm:-mt-2 mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3 text-[11px] sm:text-xs"} text-gray-400 line-through`}>
             {formattedOldPrice}
           </p>
         )}
@@ -231,7 +235,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 event.preventDefault();
                 handleCompareToggle();
               }}
-              className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-sm border transition ${
+              className={`flex shrink-0 items-center justify-center rounded-sm border transition ${isCompact ? "h-8 w-8 sm:h-9 sm:w-9" : "h-9 w-9 sm:h-10 sm:w-10"} ${
                 isInCompare
                   ? "border-[#F58322] bg-[#FFF4EA] text-[#DB741F]"
                   : "border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]"
@@ -259,7 +263,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="flex w-full items-center justify-between bg-[#F58322] rounded-sm">
               <button
                 type="button"
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+                className={`${isCompact ? "w-8 h-8 sm:w-9 sm:h-9 text-sm" : "w-9 h-9 sm:w-10 sm:h-10"} flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition`}
                 onClick={(event) => {
                   event.preventDefault();
                   if (cartItem.quantity <= 1) {
@@ -271,12 +275,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
               >
                 −
               </button>
-              <span className="text-white text-sm sm:text-base font-bold">
+              <span className={`${isCompact ? "text-xs sm:text-sm" : "text-sm sm:text-base"} text-white font-bold`}>
                 {cartItem.quantity}
               </span>
               <button
                 type="button"
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+                className={`${isCompact ? "w-8 h-8 sm:w-9 sm:h-9 text-sm" : "w-9 h-9 sm:w-10 sm:h-10"} flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition`}
                 onClick={(event) => {
                   event.preventDefault();
                   dispatch(incrementQuantity(id));
@@ -288,7 +292,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <button
               type="button"
-              className={`w-full py-2 text-[11px] sm:text-[13px] md:text-xs lg:text-sm font-extrabold uppercase rounded-sm transition bg-[#F58322] text-white hover:bg-[#DB741F]`}
+              className={`w-full font-extrabold uppercase rounded-sm transition bg-[#F58322] text-white hover:bg-[#DB741F] ${isCompact ? "py-1.5 sm:py-2 text-[10px] sm:text-xs md:text-[13px]" : "py-2 text-[11px] sm:text-[13px] md:text-xs lg:text-sm"}`}
               onClick={(event) => {
                 event.preventDefault();
 

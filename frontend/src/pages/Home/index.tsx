@@ -5,6 +5,8 @@ import WhyChooseUs from './Components/WhyChooseUs'
 import Service from './Components/Service'
 import ContactForm from './Components/ContactForm'
 import DeferredSection from '@/components/common/DeferredSection'
+import PageContainer from '@/components/ui/PageContainer'
+import ProductCollectionRenderer from '@/components/collections/ProductCollectionRenderer'
 
 const Warehouse = lazy(() => import('./Components/Warehouse'))
 const ForClients = lazy(() => import('./Components/ForClients'))
@@ -44,6 +46,24 @@ const Home = () => {
     return (
         <>
             <Hero />
+            <PageContainer className="py-6 md:py-8">
+                <ProductCollectionRenderer
+                    placement="HOME_HERO_COLLECTION"
+                    layout="carousel"
+                    maxItems={12}
+                    skeletonCount={4}
+                />
+            </PageContainer>
+            <PageContainer className="pb-6 md:pb-10">
+                <ProductCollectionRenderer
+                    placement="HOME_PERSONALIZED_RECOMMENDATIONS"
+                    layout="carousel"
+                    variant="recommendations"
+                    title="Персональные рекомендации"
+                    maxItems={12}
+                    skeletonCount={4}
+                />
+            </PageContainer>
             <IndustryCatalog />
             <WhyChooseUs />
             <Service />

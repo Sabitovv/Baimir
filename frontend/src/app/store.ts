@@ -4,6 +4,7 @@ import { productsApi } from '@/api/productsApi'
 import { blogsApi } from '@/api/blogsApi'
 import { reviewsApi } from '@/api/reviewsApi'
 import { certificatesApi } from '@/api/certificatesApi'
+import { productCollectionsApi } from '@/api/productCollectionsApi'
 
 import catalogReducer from "@/features/catalogSlice"
 import cartReducer from '@/features/cartSlice'
@@ -23,6 +24,7 @@ export const store = configureStore({
         [blogsApi.reducerPath]: blogsApi.reducer,
         [reviewsApi.reducerPath]: reviewsApi.reducer,
         [certificatesApi.reducerPath]: certificatesApi.reducer,
+        [productCollectionsApi.reducerPath]: productCollectionsApi.reducer,
         [staticImagesApi.reducerPath]: staticImagesApi.reducer,
 
         catalog: catalogReducer,
@@ -36,6 +38,7 @@ export const store = configureStore({
             blogsApi.middleware,
             reviewsApi.middleware,
             certificatesApi.middleware,
+            productCollectionsApi.middleware,
             staticImagesApi.middleware
         ),
 });

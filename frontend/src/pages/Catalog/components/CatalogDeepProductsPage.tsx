@@ -275,15 +275,10 @@ const CatalogDeepProductsPage = ({
     groups.map((group) => <CategoryCarousel key={group.category.id} group={group} />)
   );
 
+  // Убрали заголовок отсюда для embedded режима
   if (embedded) {
     return (
-      <section className="mt-8 sm:mt-10 md:mt-11 lg:mt-12">
-        <div className="mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
-          <h2 className="font-oswald text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
-            {t("catalogPage.deepProductsTitle")}
-          </h2>
-          <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
-        </div>
+      <section className="mt-4 sm:mt-6 md:mt-8">
         {content}
       </section>
     );
