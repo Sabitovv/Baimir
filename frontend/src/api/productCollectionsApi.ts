@@ -139,7 +139,7 @@ export const productCollectionsApi = createApi({
         }
 
         const data: ResolvedPlacementCollection[] = sortedCollections.map((collection, index) => {
-          const detail = detailsResults[index].data as ProductCollectionBySlug
+          const detail = detailsResults[index]?.data as ProductCollectionBySlug | undefined
           return {
             ...collection,
             products: detail?.products ?? [],
