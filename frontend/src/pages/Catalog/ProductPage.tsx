@@ -34,12 +34,12 @@ import delivery from "@/assets/catalog/icons/time.svg";
 import calendar from "@/assets/catalog/icons/calendar.svg";
 import address from "@/assets/catalog/icons/addres.svg";
 import { useTranslation } from "react-i18next";
-import { PopularProduct } from "./components/PopularProduct";
 import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import sampleImg from "@/assets/catalog/sample_machine.png";
 import productPlaceholder from "@/assets/catalog/productPlaceholder.svg";
 import Contact from "@/components/common/Contact";
 import ProductCard from "@/components/common/ProductCard";
+import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
 import {
   addToCart,
   incrementQuantity,
@@ -2710,7 +2710,11 @@ const ProductPage = () => {
             </p>
           </div>
         )}
-        <PopularProduct />
+        <ProductCollectionRenderer
+          placement="PRODUCT_ALTERNATIVES_COLLECTION"
+          layout="carousel"
+          className="mt-8 sm:mt-10 md:mt-12 mb-12 sm:mb-16 md:mb-20"
+        />
         <RecentlyViewedProducts />
         {!isLargeDescription && (
           <section className="mb-16">

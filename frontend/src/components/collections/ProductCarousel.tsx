@@ -5,9 +5,16 @@ import type { CollectionProduct } from '@/api/productCollectionsApi'
 type ProductCarouselProps = {
   products: CollectionProduct[]
   className?: string
+  itemClassName?: string
+  cardVariant?: 'compact' | 'mini'
 }
 
-const ProductCarousel: FC<ProductCarouselProps> = ({ products, className }) => {
+const ProductCarousel: FC<ProductCarouselProps> = ({
+  products,
+  className,
+  itemClassName,
+  cardVariant = 'compact',
+}) => {
   return (
     <div className={className}>
       <div
@@ -16,7 +23,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ products, className }) => {
         {products.map((product) => (
           <div
             key={product.id}
-            className='w-[86%] min-w-[198px] snap-start sm:w-[50%] sm:min-w-[248px] lg:w-[32%] xl:w-[25%]'
+            className={`w-[86%] min-w-[198px] snap-start sm:w-[50%] sm:min-w-[248px] lg:w-[32%] xl:w-[25%] ${itemClassName ?? ''}`}
           >
             <ProductCard
               id={product.id}
@@ -29,7 +36,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ products, className }) => {
               isNew={product.newProduct}
               keyFeatures={null}
               categoryName={product.categoryName}
-              variant='compact'
+              variant={cardVariant}
             />
           </div>
         ))}

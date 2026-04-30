@@ -66,16 +66,19 @@ export const RecentlyViewedProducts = () => {
   if (!isLoading && !error && products.length === 0) return null
 
   return (
-    <section className='mb-12 sm:mb-16 md:mb-20 mt-8 sm:mt-10 md:mt-12 px-0 sm:px-0'>
-      <h2 className='font-oswald text-lg sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase mb-4 sm:mb-5 md:mb-6 ml-1 sm:ml-4'>
-        {t('catalogPage.recentlyViewed')}
-      </h2>
+    <section className='mt-10 mb-12 sm:mt-14 sm:mb-16 md:mt-16 md:mb-20'>
+      <div className='mb-5 sm:mb-6 md:mb-7 px-1 sm:px-2'>
+        <h2 className='font-oswald text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900'>
+          {t('catalogPage.recentlyViewed')}
+        </h2>
+        <div className='mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]' />
+      </div>
 
       <div className='flex items-center gap-1 sm:gap-2.5 md:gap-2 lg:gap-3 w-full'>
         <button
           aria-label='scroll left'
           onClick={scrollLeft}
-          className='hidden sm:flex shrink-0 p-3 z-10 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer'
+          className='hidden sm:flex shrink-0 p-3 z-10 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer rounded-full border border-[#E6EAF0] bg-white shadow-sm'
         >
           <EditableImage
             imageKey='catalog_recently_viewed_arrow_left'
@@ -124,7 +127,7 @@ export const RecentlyViewedProducts = () => {
         <button
           aria-label='scroll right'
           onClick={scrollRight}
-          className='hidden sm:flex shrink-0 p-3 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer'
+          className='hidden sm:flex shrink-0 p-3 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer rounded-full border border-[#E6EAF0] bg-white shadow-sm'
         >
           <EditableImage
             imageKey='catalog_recently_viewed_arrow_right'

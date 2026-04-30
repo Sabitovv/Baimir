@@ -14,10 +14,10 @@ import StaggerItem from "@/components/animations/StaggerItem";
 import StrategicCollectionBannerCarousel from "@/components/collections/StrategicCollectionBannerCarousel";
 
 import sampleImg from "@/assets/catalog/sample_machine.png";
-import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
 import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
+import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
 
 interface CategoryImageProps {
@@ -246,9 +246,7 @@ const CatalogPage = () => {
           }
         />
 
-        <div className="mt-8">
-          <RecentlyViewedProducts />
-        </div>
+        <RecentlyViewedProducts />
 
         <ScrollReveal>
           <section className="mb-16 mt-8">

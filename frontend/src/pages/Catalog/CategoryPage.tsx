@@ -9,7 +9,6 @@ import ProductCard from "@/components/common/ProductCard";
 import PageContainer from "@/components/ui/PageContainer";
 import CatalogFilters from "@/pages/Catalog/components/CatalogFilter";
 import Drawer from "@/components/common/Drawer";
-import { PopularProduct } from "./components/PopularProduct";
 import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import sampleImg from "@/assets/catalog/sample_machine.png";
 
@@ -25,6 +24,7 @@ import Contact from "@/components/common/Contact";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import CategoryCalculator from "./components/CategoryCalculator";
 import { EditableImage } from "@/zustand/EditableImage";
+import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
 
 type BreadcrumbItem = {
   id?: number | string;
@@ -507,9 +507,20 @@ const CategoryPage = () => {
                     </p>
                   )}
                   {!isLoadingProducts && !hasProducts && (
-                    <p className="col-span-full text-center text-gray-500 py-10">
-                      {t("productPage.notFoundTitle")}
-                    </p>
+                    <div className="col-span-full py-8">
+                      <p className="text-center text-gray-500 pb-5">
+                        {t("productPage.notFoundTitle")}
+                      </p>
+                      <p className="text-center text-sm sm:text-base font-semibold text-gray-900 pb-4">
+                        Может вас заинтересует
+                      </p>
+                      <ProductCollectionRenderer
+                        placement="SEARCH_EMPTY_STATE_COLLECTION"
+                        layout="carousel"
+                        variant="recommendations"
+                        maxItems={8}
+                      />
+                    </div>
                   )}
                   {products.map((product) => (
                     <ProductCard
@@ -568,7 +579,6 @@ const CategoryPage = () => {
           </main>
         </div>
 
-        <PopularProduct />
         <RecentlyViewedProducts />
 
         <section className="mb-12 sm:mb-14 md:mb-16">

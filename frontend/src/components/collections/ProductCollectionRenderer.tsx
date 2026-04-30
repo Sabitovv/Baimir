@@ -21,6 +21,8 @@ type ProductCollectionRendererProps = {
   title?: string
   maxItems?: number
   className?: string
+  carouselItemClassName?: string
+  carouselCardVariant?: 'compact' | 'mini'
   skeletonCount?: number
   errorMessage?: string
 }
@@ -44,6 +46,8 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
   title,
   maxItems,
   className,
+  carouselItemClassName,
+  carouselCardVariant,
   skeletonCount = 4,
   errorMessage,
 }) => {
@@ -64,7 +68,13 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
       return <ProductGrid products={products} />
     }
 
-    return <ProductCarousel products={products} />
+    return (
+      <ProductCarousel
+        products={products}
+        itemClassName={carouselItemClassName}
+        cardVariant={carouselCardVariant}
+      />
+    )
   }
 
   const visibleCollections = collections.filter(

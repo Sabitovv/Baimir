@@ -10,7 +10,8 @@ import logo from '@/assets/header/oldBg.svg'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { useAppSelector } from '@/app/hooks'
-import { useSearchProductsQuery } from '@/api/productsApi'
+import { useGetPopularProductsQuery, useSearchProductsQuery } from '@/api/productsApi'
+import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import { EditableImage } from '@/zustand/EditableImage'
 //#F58322
 //#DB741F
@@ -74,13 +75,32 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     }
   }, [])
 
-  const shouldSearch = debouncedQuery.length >= 2
+  const shouldSearch = debouncedQuery.length >= 1
   const { data: searchData, isFetching: isSearchFetching } = useSearchProductsQuery(
     shouldSearch
       ? { query: debouncedQuery, page: 0, size: 20, sort: 'id,DESC' }
       : skipToken,
   )
   const searchResults = (searchData?.content ?? []).slice(0, 8)
+  const shouldLoadEmptySuggestions =
+    isSearchOpen && (!shouldSearch || (shouldSearch && !isSearchFetching && searchResults.length === 0))
+  const {
+    products: emptyStateProducts,
+    isFetching: isEmptyStateFetching,
+  } = useProductCollectionPlacement('SEARCH_EMPTY_STATE_COLLECTION', {
+    lang: i18n.language,
+    maxItems: 8,
+    skip: !shouldLoadEmptySuggestions,
+  })
+  const { data: randomProductsData, isFetching: isRandomProductsFetching } =
+    useGetPopularProductsQuery(
+      shouldLoadEmptySuggestions ? { page: 0, size: 12 } : skipToken,
+    )
+  const randomProducts = randomProductsData?.content ?? []
+  const shouldShowFallbackProducts = emptyStateProducts.length < 3
+  const fallbackProducts = randomProducts
+    .filter((product) => !emptyStateProducts.some((item) => item.id === product.id))
+    .slice(0, Math.max(0, 8 - emptyStateProducts.length))
 
   const navItems = [
     { id: 'catalog', path: '/catalog' },
@@ -120,12 +140,12 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     const rect = inputRef.current.getBoundingClientRect()
     const viewportHeight = window.innerHeight
     const maxHeight = viewportHeight - rect.bottom - 16
-    
+
     return {
       top: rect.bottom + 8,
       left: rect.left,
-      right: window.innerWidth - rect.right,
-      maxHeight: `${Math.min(maxHeight, 500)}px`,
+      width: rect.width,
+      maxHeight: `${Math.max(220, Math.min(maxHeight, 500))}px`,
     }
   }
 
@@ -136,29 +156,102 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
 
     return (
       <div 
-        className="fixed z-[100] rounded-xl border border-gray-200 bg-white text-gray-900 shadow-2xl"
+        className='fixed z-[100] overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-2xl'
         style={dropdownStyle}
       >
-        {!shouldSearch && (
-          <div className="px-4 py-3 text-sm text-gray-500">{t('header.searchStartTyping')}</div>
-        )}
-
         {shouldSearch && isSearchFetching && (
           <div className="px-4 py-3 text-sm text-gray-500">{t('header.searchLoading')}</div>
         )}
 
-        {shouldSearch && !isSearchFetching && searchResults.length === 0 && (
-          <div className="px-4 py-3 text-sm text-gray-500">{t('header.searchNoResults')}</div>
+        {shouldLoadEmptySuggestions && (
+          <div className='px-3 py-3'>
+            {shouldSearch && !isSearchFetching && searchResults.length === 0 && (
+              <p className='px-1 text-sm text-gray-500'>{t('header.searchNoResults')}</p>
+            )}
+            <p className='px-1 pt-2 pb-2 text-xs font-semibold uppercase tracking-[0.05em] text-gray-800'>
+              Может вас заинтересует
+            </p>
+            <div className='max-h-[280px] overflow-y-auto pr-1'>
+              {isEmptyStateFetching && (
+                <div className='px-2 py-2 text-xs text-gray-500'>{t('header.searchLoading')}</div>
+              )}
+              {!isEmptyStateFetching && emptyStateProducts.length > 0 && (
+                <ul className='overflow-y-auto py-1'>
+                  {emptyStateProducts.map((product) => (
+                    <li key={product.id}>
+                      <button
+                        type='button'
+                        onClick={() => handleSearchSelect(product.slug)}
+                        className='flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-gray-100'
+                      >
+                        <img
+                          src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                          alt={product.name}
+                          className='h-12 w-12 rounded-lg object-cover'
+                        />
+                        <span className='min-w-0 flex-1'>
+                          <span className='block truncate text-sm font-semibold text-gray-900'>
+                            {product.name}
+                          </span>
+                          <span className='block text-xs text-[#DB741F]'>
+                            {formatPrice(product.price)}
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {shouldShowFallbackProducts && (
+                <>
+                  <p className='px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-700'>
+                    Остальное
+                  </p>
+                  {isRandomProductsFetching && (
+                    <div className='px-2 py-2 text-xs text-gray-500'>{t('header.searchLoading')}</div>
+                  )}
+                  {!isRandomProductsFetching && fallbackProducts.length > 0 && (
+                    <ul className='overflow-y-auto py-1'>
+                      {fallbackProducts.map((product) => (
+                        <li key={product.id}>
+                          <button
+                            type='button'
+                            onClick={() => handleSearchSelect(product.slug)}
+                            className='flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-gray-100'
+                          >
+                            <img
+                              src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                              alt={product.name}
+                              className='h-12 w-12 rounded-lg object-cover'
+                            />
+                            <span className='min-w-0 flex-1'>
+                              <span className='block truncate text-sm font-semibold text-gray-900'>
+                                {product.name}
+                              </span>
+                              <span className='block text-xs text-[#DB741F]'>
+                                {formatPrice(product.price)}
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
         )}
 
         {shouldSearch && !isSearchFetching && searchResults.length > 0 && (
-          <ul className="overflow-y-auto py-2">
+          <ul className='max-h-[360px] overflow-y-auto py-2 pr-1'>
             {searchResults.map((product) => (
               <li key={product.id}>
                 <button
                   type="button"
                   onClick={() => handleSearchSelect(product.slug)}
-                  className="flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-gray-100"
+                  className='flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-gray-100'
                 >
                   <img
                     src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
@@ -172,6 +265,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                 </button>
               </li>
             ))}
+            <li className='h-2' aria-hidden='true' />
           </ul>
         )}
       </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CartCard from "./CartCard";
+import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
   clearCart,
@@ -150,13 +151,13 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
         }`}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
-          <h2 className="text-2xl font-semibold text-black">
+        <div className="relative flex items-center justify-center px-4 py-4 border-b border-gray-200">
+          <h2 className="text-2xl font-semibold text-black text-center">
             {t("cart.title")}
           </h2>
           <button
             onClick={handleClose}
-            className="text-sm font-medium text-gray-600 hover:text-black transition-colors"
+            className="absolute right-4 text-sm font-medium text-gray-600 hover:text-black transition-colors"
           >
             {t("cart.close")}
           </button>
@@ -198,6 +199,19 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
           )}
         </div>
 
+        {items.length > 0 && (
+          <div className="px-4 pb-2 bg-white max-h-[33vh] overflow-y-auto">
+            <ProductCollectionRenderer
+              placement="CART_CROSS_SELL_COLLECTION"
+              layout="carousel"
+              variant="recommendations"
+              carouselCardVariant="mini"
+              className="p-1 [&_h2]:text-xs [&_p]:hidden"
+              carouselItemClassName="w-[46%] min-w-[120px] sm:w-[38%] sm:min-w-[140px]"
+            />
+          </div>
+        )}
+
         <div className="border-t border-gray-200 p-4 space-y-3 bg-white relative z-10">
           <div className="flex items-center justify-between text-sm text-gray-600">
             <span>{t("cart.itemsTotalLabel")}</span>
@@ -225,20 +239,39 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
           }`}
         >
           {isSuccess ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-gray-50">
+            <div className="flex-1 bg-gray-50 p-4 sm:p-6">
+              <div className="mx-auto flex h-full w-full max-w-sm flex-col items-center justify-center text-center">
               <CheckCircleIcon />
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
                 {t("cart.successTitle")}
               </h3>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 mb-6">
                 {t("cart.successDescription")}
               </p>
+
+              <div className="w-full rounded-2xl border border-[#FDE4CF] bg-gradient-to-b from-[#FFF8F1] to-white p-3 shadow-[0_8px_18px_rgba(245,131,34,0.10)] text-left">
+                <div className="mb-2.5 flex items-center justify-between border-b border-[#F7DCC3] pb-2">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#C96A1D]">
+                    Рекомендуем к следующей покупке
+                  </p>
+                </div>
+                <ProductCollectionRenderer
+                  placement="POST_PURCHASE_NEXT_BUY_COLLECTION"
+                  layout="carousel"
+                  variant="recommendations"
+                  carouselCardVariant="mini"
+                  className="border-0 bg-transparent p-0 shadow-none [&_h2]:hidden [&_p]:hidden"
+                  carouselItemClassName="w-[46%] min-w-[120px]"
+                />
+              </div>
+
               <button
                 onClick={handleClose}
-                className="w-full max-w-xs rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F]"
+                className="mt-4 w-full rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F]"
               >
                 {t("cart.backToShopping")}
               </button>
+              </div>
             </div>
           ) : (
             <>
