@@ -1,15 +1,12 @@
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  type CollectionPlacementType,
-} from '@/api/productCollectionsApi'
+// ДОБАВЛЕН ИМПОРТ useNavigate
+import { useNavigate } from 'react-router-dom' 
+import { type CollectionPlacementType } from '@/api/productCollectionsApi'
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import ProductCarousel from './ProductCarousel'
 import ProductGrid from './ProductGrid'
-import {
-  CollectionError,
-  CollectionSkeleton,
-} from './CollectionStates'
+import { CollectionError, CollectionSkeleton } from './CollectionStates'
 
 type CollectionLayout = 'carousel' | 'grid'
 type CollectionVariant = 'hero' | 'recommendations'
@@ -21,7 +18,6 @@ type ProductCollectionRendererProps = {
   title?: string
   maxItems?: number
   className?: string
-  carouselItemClassName?: string
   carouselCardVariant?: 'compact' | 'mini'
   skeletonCount?: number
   errorMessage?: string
@@ -46,12 +42,13 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
   title,
   maxItems,
   className,
-  carouselItemClassName,
   carouselCardVariant,
   skeletonCount = 4,
   errorMessage,
 }) => {
   const { i18n } = useTranslation()
+  // ИНИЦИАЛИЗИРУЕМ НАВИГАЦИЮ
+  const navigate = useNavigate()
 
   const {
     collections,
@@ -71,7 +68,6 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
     return (
       <ProductCarousel
         products={products}
-        itemClassName={carouselItemClassName}
         cardVariant={carouselCardVariant}
       />
     )
@@ -86,9 +82,10 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
   }
 
   const isRecommendations = variant === 'recommendations'
+  
   const sectionClassName = isRecommendations
-    ? 'rounded-xl border border-[#EEF1F4] bg-white p-3 sm:p-4'
-    : 'rounded-2xl border border-[#E9EDF2] bg-gradient-to-b from-[#FFFFFF] via-[#FBFCFD] to-[#F7F9FB] p-4 shadow-[0_8px_24px_rgba(17,24,39,0.05)] sm:p-6 lg:p-7'
+    ? '-mx-4 sm:mx-0 rounded-none sm:rounded-xl border-y sm:border-x border-[#EEF1F4] bg-white p-3 sm:p-4'
+    : '-mx-4 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-[#E9EDF2] bg-gradient-to-b from-[#FFFFFF] via-[#FBFCFD] to-[#F7F9FB] p-4 shadow-[0_8px_24px_rgba(17,24,39,0.05)] sm:p-6 lg:p-7'
 
   return (
     <section
@@ -134,21 +131,11 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
                         {(collection.startDate || collection.endDate) && (
                           <p className='mt-1.5 inline-flex max-w-full items-center rounded-full border border-[#FFD7B8] bg-[#FFF4EA] px-2 py-0.5 text-[9px] font-semibold text-[#B45309] sm:mt-2 sm:px-3 sm:py-1 sm:text-xs'>
                             {(() => {
-                              const startLabel = formatPromoDate(
-                                collection.startDate,
-                                i18n.language,
-                              )
-                              const endLabel = formatPromoDate(
-                                collection.endDate,
-                                i18n.language,
-                              )
+                              const startLabel = formatPromoDate(collection.startDate, i18n.language)
+                              const endLabel = formatPromoDate(collection.endDate, i18n.language)
 
-                              if (startLabel && endLabel) {
-                                return `Акция: ${startLabel} - ${endLabel}`
-                              }
-                              if (startLabel) {
-                                return `Акция с ${startLabel}`
-                              }
+                              if (startLabel && endLabel) return `Акция: ${startLabel} - ${endLabel}`
+                              if (startLabel) return `Акция с ${startLabel}`
                               return `Акция до ${endLabel}`
                             })()}
                           </p>
@@ -156,6 +143,8 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
                       </div>
                       <button
                         type='button'
+                        // ДОБАВЛЕН ОБРАБОТЧИК КЛИКА (перенаправляем на страницу коллекции)
+                        onClick={() => navigate(`/collections/${collection.id}`)}
                         className='shrink-0 rounded-full border border-[#F58322] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] text-[#DB741F] transition hover:bg-[#FFF4EA] sm:px-4 sm:py-1.5 sm:text-xs'
                       >
                         Смотреть все

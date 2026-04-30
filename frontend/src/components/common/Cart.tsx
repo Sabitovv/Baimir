@@ -207,7 +207,6 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
               variant="recommendations"
               carouselCardVariant="mini"
               className="p-1 [&_h2]:text-xs [&_p]:hidden"
-              carouselItemClassName="w-[46%] min-w-[120px] sm:w-[38%] sm:min-w-[140px]"
             />
           </div>
         )}
@@ -261,7 +260,6 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                   variant="recommendations"
                   carouselCardVariant="mini"
                   className="border-0 bg-transparent p-0 shadow-none [&_h2]:hidden [&_p]:hidden"
-                  carouselItemClassName="w-[46%] min-w-[120px]"
                 />
               </div>
 

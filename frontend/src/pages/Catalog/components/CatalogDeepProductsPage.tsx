@@ -1,19 +1,15 @@
-import LeftIcon from "@/assets/catalog/left.svg";
-import RightIcon from "@/assets/catalog/right.svg";
 import { useGetCategoriesTreeQuery, type Category } from "@/api/categoriesApi";
 import {
   useGetProductsDeepQuery,
   type CategoryProductGroup,
-  type Product,
 } from "@/api/productsApi";
-import ProductCard from "@/components/common/ProductCard";
 import PageContainer from "@/components/ui/PageContainer";
-import { EditableImage } from "@/zustand/EditableImage";
-import { useMemo, useRef, type KeyboardEvent } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import ProductCarousel from "@/components/collections/ProductCarousel";
+import type { CollectionProduct } from "@/api/productCollectionsApi";
 
-const SCROLL_STEP_PX = 320;
 type CatalogDeepProductsPageProps = {
   embedded?: boolean;
   categoryId?: number | null;
@@ -48,36 +44,23 @@ const findCategoryBySlug = (
   return null;
 };
 
-
 const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
   const { t } = useTranslation();
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  
   const categoryHasProducts =
     Number(group.category.productCount ?? group.totalProducts ?? group.products.length) > 0;
+    
   const categoryLink = categoryHasProducts
     ? `/catalog/${group.category.slug}/products/${group.category.id}?categoryId=${group.category.id}&sort=price,ASC`
     : `/catalog/${group.category.slug}?categoryId=${group.category.id}`;
 
-  const scrollLeft = () => {
-    scrollerRef.current?.scrollBy({ left: -SCROLL_STEP_PX, behavior: "smooth" });
-  };
-
-  const scrollRight = () => {
-    scrollerRef.current?.scrollBy({ left: SCROLL_STEP_PX, behavior: "smooth" });
-  };
-
-  const handleKey = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      scrollLeft();
-      return;
-    }
-
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      scrollRight();
-    }
-  };
+  const carouselProducts = useMemo<CollectionProduct[]>(() => {
+    return group.products.map(p => ({
+      ...p,
+      categoryName: group.category.name,
+      newProduct: false,
+    } as unknown as CollectionProduct));
+  }, [group.products, group.category.name]);
 
   return (
     <section className="-mx-4 sm:mx-0 mb-5 sm:mb-6 md:mb-7 lg:mb-8 rounded-none sm:rounded-2xl border-x-0 sm:border-x border-y border-gray-100 bg-gradient-to-b from-white to-gray-50/60 p-2.5 sm:p-3.5 md:p-3 lg:p-4">
@@ -102,66 +85,16 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
         </Link>
       </div>
 
-      <div className="flex items-center gap-1 sm:gap-2.5 md:gap-2 lg:gap-3 w-full">
-        <button
-          type="button"
-          aria-label="scroll left"
-          onClick={scrollLeft}
-          className="hidden sm:flex shrink-0 p-3 z-10 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
-        >
-          <EditableImage
-            imageKey={`catalog_deep_${group.category.id}_arrow_left`}
-            fallbackSrc={LeftIcon}
-            alt="Left"
-            className="w-6 h-6 sm:w-10 sm:h-10"
+      <div className="w-full">
+        {group.products.length === 0 ? (
+          <div className="text-gray-500 px-4">{t("catalogPage.noDeepProducts")}</div>
+        ) : (
+          <ProductCarousel
+            products={carouselProducts}
+            className="w-full"
+            cardVariant="compact"
           />
-        </button>
-
-        <div
-          ref={scrollerRef}
-          role="list"
-          tabIndex={0}
-          onKeyDown={handleKey}
-          className="flex-1 flex gap-3 sm:gap-3 md:gap-2.5 lg:gap-3 overflow-x-auto py-2 px-0 sm:px-1 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-        >
-          {group.products.length === 0 ? (
-            <div className="text-gray-500 px-4">{t("catalogPage.noDeepProducts")}</div>
-          ) : (
-            group.products.map((product: Product) => (
-              <div
-                key={product.id}
-                role="listitem"
-                className="snap-center shrink-0 w-[calc((100%-1.5rem)/2.5)] min-w-[136px] max-w-[176px] sm:w-52 sm:min-w-0 sm:max-w-none md:w-56 lg:w-60 xl:w-64"
-              >
-                <ProductCard
-                  id={product.id}
-                  slug={product.slug}
-                  name={product.name}
-                  coverImage={product.coverImage}
-                  price={product.price}
-                  oldPrice={product.oldPrice}
-                  inStock={product.inStock}
-                  categoryId={group.category.id}
-                  categoryName={group.category.name}
-                />
-              </div>
-            ))
-          )}
-        </div>
-
-        <button
-          type="button"
-          aria-label="scroll right"
-          onClick={scrollRight}
-          className="hidden sm:flex shrink-0 p-3 items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
-        >
-          <EditableImage
-            imageKey={`catalog_deep_${group.category.id}_arrow_right`}
-            fallbackSrc={RightIcon}
-            alt="Right"
-            className="w-6 h-6 sm:w-10 sm:h-10"
-          />
-        </button>
+        )}
       </div>
     </section>
   );
@@ -275,7 +208,6 @@ const CatalogDeepProductsPage = ({
     groups.map((group) => <CategoryCarousel key={group.category.id} group={group} />)
   );
 
-  // Убрали заголовок отсюда для embedded режима
   if (embedded) {
     return (
       <section className="mt-4 sm:mt-6 md:mt-8">
