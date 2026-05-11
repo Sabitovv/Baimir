@@ -26,29 +26,14 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
   const isPointerDownRef = useRef(false)
   const hasDraggedRef = useRef(false)
   const suppressClickRef = useRef(false)
-  const suppressClickTimeoutRef = useRef<number | null>(null)
   const dragStartXRef = useRef(0)
+  const dragStartYRef = useRef(0)
   const dragStartScrollLeftRef = useRef(0)
   const [isDragging, setIsDragging] = useState(false)
-  const dragThreshold = 6
+  const dragThreshold = 10
 
   const clearSuppressClick = () => {
-    if (suppressClickTimeoutRef.current) {
-      window.clearTimeout(suppressClickTimeoutRef.current)
-      suppressClickTimeoutRef.current = null
-    }
     suppressClickRef.current = false
-  }
-
-  const scheduleSuppressClickClear = () => {
-    if (suppressClickTimeoutRef.current) {
-      window.clearTimeout(suppressClickTimeoutRef.current)
-    }
-
-    suppressClickTimeoutRef.current = window.setTimeout(() => {
-      suppressClickRef.current = false
-      suppressClickTimeoutRef.current = null
-    }, 120)
   }
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -59,6 +44,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
     hasDraggedRef.current = false
     clearSuppressClick()
     dragStartXRef.current = event.clientX
+    dragStartYRef.current = event.clientY
     dragStartScrollLeftRef.current = scrollRef.current.scrollLeft
     scrollRef.current.setPointerCapture(event.pointerId)
   }
@@ -68,7 +54,12 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
     if (event.pointerType !== 'mouse') return
 
     const deltaX = event.clientX - dragStartXRef.current
-    if (Math.abs(deltaX) > dragThreshold) {
+    const deltaY = event.clientY - dragStartYRef.current
+
+    if (
+      Math.abs(deltaX) > dragThreshold
+      && Math.abs(deltaX) > Math.abs(deltaY)
+    ) {
       hasDraggedRef.current = true
       suppressClickRef.current = true
       setIsDragging(true)
@@ -82,10 +73,6 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
 
   const stopDragging = () => {
     if (!enableMouseDrag) return
-
-    if (hasDraggedRef.current) {
-      scheduleSuppressClickClear()
-    }
 
     isPointerDownRef.current = false
     hasDraggedRef.current = false
