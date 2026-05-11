@@ -69,6 +69,7 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
       <ProductCarousel
         products={products}
         cardVariant={carouselCardVariant}
+        enableMouseDrag
       />
     )
   }

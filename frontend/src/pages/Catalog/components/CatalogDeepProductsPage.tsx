@@ -93,6 +93,7 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
             products={carouselProducts}
             className="w-full"
             cardVariant="compact"
+            enableMouseDrag
           />
         )}
       </div>

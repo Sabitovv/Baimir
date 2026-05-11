@@ -44,7 +44,7 @@ export const RecentlyViewedProducts = () => {
         ) : error ? (
           <div className='text-red-500 px-4'>{t('commonCatalog.error')}</div>
         ) : (
-          <ProductCarousel products={products as any} /> 
+          <ProductCarousel products={products as any} enableMouseDrag /> 
         )}
       </div>
     </section>

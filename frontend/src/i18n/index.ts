@@ -26,7 +26,7 @@ export const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
 export let tolgee: any = null;
 
-const CDN_URL = 'http://89.207.255.17/minio/locales/814bc1c3f9019b399682693b66a4ffa5';
+const CDN_URL = 'https://baytech.kz/minio/locales/814bc1c3f9019b399682693b66a4ffa5';
 
 if (isEditMode) {
   tolgee = Tolgee()

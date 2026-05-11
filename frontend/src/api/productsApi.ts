@@ -552,7 +552,7 @@ export const productsApi = createApi({
       query: () => ({
         url:
           import.meta.env.VITE_COMPANY_SETTINGS_URL ??
-          "http://89.207.255.17/api/v1/company-settings",
+          "https://baytech.kz/api/v1/company-settings",
       }),
     }),
 
