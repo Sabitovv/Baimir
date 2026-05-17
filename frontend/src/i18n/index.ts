@@ -2,8 +2,6 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
-
-// ИСПРАВЛЕНИЕ 1: Убрали BackendFetch из импорта
 import { Tolgee, FormatSimple } from '@tolgee/web';
 import { InContextTools } from '@tolgee/web/tools';
 import { withTolgee } from '@tolgee/i18next';
@@ -57,58 +55,59 @@ export let tolgee: any = null;
 
 const CDN_URL = 'https://baytech.kz/minio/locales/814bc1c3f9019b399682693b66a4ffa5';
 
-if (isEditMode) {
-  tolgee = Tolgee()
-    .use(InContextTools()) 
-    // ИСПРАВЛЕНИЕ 2: Полностью удалили строку .use(BackendFetch(...))
-    .use(FormatSimple())
-    .init({
-      apiUrl: savedApiUrl as string,
-      apiKey: savedApiKey as string,
-      defaultLanguage: 'ru',
-      defaultNs: 'translation',
-    });
-
-  withTolgee(i18n as any, tolgee);
-} else {
-  // В обычном режиме за загрузку файлов отвечает i18next-http-backend
-  i18n.use(HttpBackend);
-}
-
-export const setupI18n = async () => {
-  if (isEditMode && tolgee) {
-    try {
-      // Теперь Tolgee не будет искать файлы на MinIO, а сразу обратится к своему API
-      await tolgee.run();
-    } catch (error) {
-      console.warn('[I18N DEBUG] Tolgee failed to load API records. Continuing anyway...', error);
-    }
+const initI18next = async (useHttpBackend: boolean) => {
+  if (useHttpBackend) {
+    i18n.use(HttpBackend);
   }
 
   await i18n
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
-      backend: !isEditMode ? {
-      loadPath: `${CDN_URL}/{{ns}}/{{lng}}.json`, 
-      crossDomain: true 
-    } : undefined,
-          
+      backend: useHttpBackend
+        ? {
+            loadPath: `${CDN_URL}/{{ns}}/{{lng}}.json`,
+            crossDomain: true,
+          }
+        : undefined,
       lng: 'ru',
       fallbackLng: 'ru',
       defaultNS: 'translation',
       ns: ['translation'],
-      
-      partialBundledLanguages: true, 
-
+      partialBundledLanguages: true,
       interpolation: {
-        escapeValue: false
+        escapeValue: false,
       },
       detection: {
         order: ['localStorage', 'cookie', 'navigator'],
         caches: ['localStorage', 'cookie'],
-      }
+      },
     });
+};
+
+export const setupI18n = async () => {
+  if (isEditMode) {
+    tolgee = Tolgee()
+      .use(InContextTools())
+      .use(FormatSimple())
+      .init({
+        apiUrl: savedApiUrl as string,
+        apiKey: savedApiKey as string,
+        defaultLanguage: 'ru',
+        defaultNs: 'translation',
+      });
+
+    try {
+      await tolgee.run();
+      withTolgee(i18n as any, tolgee);
+      await initI18next(false);
+      return;
+    } catch (error) {
+      console.warn('[I18N DEBUG] Tolgee failed, falling back to CDN translations.', error);
+    }
+  }
+
+  await initI18next(true);
 };
 
 export default i18n;
