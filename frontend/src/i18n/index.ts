@@ -7,18 +7,26 @@ import { InContextTools } from '@tolgee/web/tools';
 import { withTolgee } from '@tolgee/i18next';
 
 const BAYTECH_BASE_URL = 'https://baytech.kz';
+const TOLGEE_BASE_URL = 'https://tolgee.baytech.kz';
 
 const isIpHost = (host: string) => /^(?:\d{1,3}\.){3}\d{1,3}$/.test(host);
 
 const normalizeTolgeeApiUrl = (raw?: string | null) => {
-  const fallback = import.meta.env.VITE_TOLGEE_API_URL || BAYTECH_BASE_URL;
+  const fallback = import.meta.env.VITE_TOLGEE_API_URL || TOLGEE_BASE_URL;
   const candidate = raw?.trim() || fallback;
 
   try {
     const parsed = new URL(candidate);
 
+    if (parsed.hostname.endsWith('.nip.io')) {
+      const normalized = new URL(TOLGEE_BASE_URL);
+      normalized.pathname = parsed.pathname;
+      normalized.search = parsed.search;
+      return normalized.toString();
+    }
+
     if (isIpHost(parsed.hostname) || parsed.hostname === 'localhost') {
-      const normalized = new URL(BAYTECH_BASE_URL);
+      const normalized = new URL(TOLGEE_BASE_URL);
       normalized.pathname = parsed.pathname;
       normalized.search = parsed.search;
       return normalized.toString();
