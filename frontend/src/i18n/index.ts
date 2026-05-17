@@ -6,7 +6,6 @@ import { Tolgee, FormatSimple } from '@tolgee/web';
 import { InContextTools } from '@tolgee/web/tools';
 import { withTolgee } from '@tolgee/i18next';
 
-const BAYTECH_BASE_URL = 'https://baytech.kz';
 const TOLGEE_BASE_URL = 'https://tolgee.baytech.kz';
 
 const isIpHost = (host: string) => /^(?:\d{1,3}\.){3}\d{1,3}$/.test(host);
