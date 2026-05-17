@@ -8,19 +8,48 @@ import { Tolgee, FormatSimple } from '@tolgee/web';
 import { InContextTools } from '@tolgee/web/tools';
 import { withTolgee } from '@tolgee/i18next';
 
+const BAYTECH_BASE_URL = 'https://baytech.kz';
+
+const isIpHost = (host: string) => /^(?:\d{1,3}\.){3}\d{1,3}$/.test(host);
+
+const normalizeTolgeeApiUrl = (raw?: string | null) => {
+  const fallback = import.meta.env.VITE_TOLGEE_API_URL || BAYTECH_BASE_URL;
+  const candidate = raw?.trim() || fallback;
+
+  try {
+    const parsed = new URL(candidate);
+
+    if (isIpHost(parsed.hostname) || parsed.hostname === 'localhost') {
+      const normalized = new URL(BAYTECH_BASE_URL);
+      normalized.pathname = parsed.pathname;
+      normalized.search = parsed.search;
+      return normalized.toString();
+    }
+
+    return parsed.toString();
+  } catch {
+    return fallback;
+  }
+};
+
 const urlParams = new URLSearchParams(window.location.search);
 const keyFromUrl = urlParams.get('editor_key');
 const urlFromUrl = urlParams.get('tolgee_url');
 
 if (keyFromUrl) {
   sessionStorage.setItem('tolgeeApiKey', keyFromUrl);
-  const apiUrlToSave = urlFromUrl || import.meta.env.VITE_TOLGEE_API_URL || 'http://localhost:8080';
+  const apiUrlToSave = normalizeTolgeeApiUrl(urlFromUrl);
   sessionStorage.setItem('tolgeeApiUrl', apiUrlToSave);
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 const savedApiKey = sessionStorage.getItem('tolgeeApiKey');
-const savedApiUrl = sessionStorage.getItem('tolgeeApiUrl');
+const savedApiUrlRaw = sessionStorage.getItem('tolgeeApiUrl');
+const savedApiUrl = normalizeTolgeeApiUrl(savedApiUrlRaw);
+
+if (savedApiUrlRaw && savedApiUrlRaw !== savedApiUrl) {
+  sessionStorage.setItem('tolgeeApiUrl', savedApiUrl);
+}
 
 export const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
