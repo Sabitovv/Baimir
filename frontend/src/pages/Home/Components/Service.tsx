@@ -32,7 +32,7 @@ const Service = () => {
 
 
   return (
-    <section className="relative py-20 overflow-hidden">
+    <section className="relative overflow-hidden py-12 md:py-20">
       <EditableImage
         imageKey="home_service_background"
         fallbackSrc={BgService}
@@ -41,19 +41,19 @@ const Service = () => {
       />
       <div className="relative z-10">
         <PageContainer>
-          <div className="mb-10">
+          <div className="mb-2 md:mb-10">
           <ScrollReveal>
-            <h1 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase text-white">
+            <h1 className="font-oswald text-[32px] font-semibold uppercase leading-[1.06] text-white md:text-5xl xl:text-6xl">
               {t('home.service.title')}
             </h1>
           </ScrollReveal>
 
-          <StaggerContainer staggerDelay={0.1} className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-16">
+          <StaggerContainer staggerDelay={0.1} className="mt-7 grid grid-cols-1 gap-x-16 gap-y-3 md:mt-14 md:grid-cols-2 md:gap-y-5">
             {services.map((key) => (
               <StaggerItem key={key}>
-                <div className="flex gap-4 items-center">
-                  <CheckCircleIconCustom fontSize="large"/>
-                  <p className="font-oswald font-bold text-base md:text-xl  text-white">
+                <div className="flex items-center gap-3 rounded-lg bg-black/20 px-3 py-2.5 backdrop-blur-[1px] md:bg-transparent md:px-0 md:py-0">
+                  <CheckCircleIconCustom className="!text-[1.5rem] md:!text-[2.2rem]" />
+                  <p className="font-oswald text-[15px] font-bold leading-5 text-white md:text-xl">
                     {t(key)}
                   </p>
                 </div>

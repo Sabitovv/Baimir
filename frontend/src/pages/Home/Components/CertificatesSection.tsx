@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation } from 'swiper/modules'
+import { Autoplay, Pagination } from 'swiper/modules'
+import type { Swiper as SwiperType } from 'swiper'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import 'swiper/css'
+import 'swiper/css/pagination'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import { useGetCertificatesQuery } from '@/api/certificatesApi'
 import PageContainer from '@/components/ui/PageContainer'
@@ -12,11 +14,17 @@ import PageContainer from '@/components/ui/PageContainer'
 const CertificatesSection = () => {
   const { t } = useTranslation()
   const { data: certificates = [], isLoading, isError } = useGetCertificatesQuery()
+  const swiperRef = useRef<SwiperType | null>(null)
   const [activeCertificate, setActiveCertificate] = useState<{
     imageUrl: string
     name?: string
     id: number
   } | null>(null)
+  const canNavigate = certificates.length > 1
+
+  const stopAutoplay = () => {
+    swiperRef.current?.autoplay?.stop()
+  }
 
   useEffect(() => {
     if (!activeCertificate) return
@@ -56,21 +64,46 @@ const CertificatesSection = () => {
           <div className="relative">
 
             <button
-              className="cert-prev hidden xl:flex absolute -left-16  top-1/2 -translate-y-1/2
+              type="button"
+              onClick={() => {
+                stopAutoplay()
+                swiperRef.current?.slidePrev()
+              }}
+              disabled={!canNavigate}
+              className="hidden md:flex absolute -left-6 xl:-left-16 top-1/2 -translate-y-1/2
                         w-12 h-12 rounded-full border border-gray-400 items-center justify-center
-                        hover:bg-black hover:text-white transition z-20"
+                        hover:bg-black hover:text-white transition z-20
+                        disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-inherit"
               aria-label="Previous"
             >
               <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
             </button>
 
             <Swiper
-              modules={[Navigation]}
+              key={`certificates-${certificates.length}`}
+              modules={[Autoplay, Pagination]}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper
+                if (canNavigate) {
+                  swiper.autoplay.start()
+                }
+              }}
+              autoplay={
+                canNavigate
+                  ? {
+                    delay: 3200,
+                    disableOnInteraction: true,
+                    pauseOnMouseEnter: true,
+                  }
+                  : false
+              }
+              onTouchStart={stopAutoplay}
               spaceBetween={24}
-              loop={certificates.length > 1}
-              navigation={{ prevEl: '.cert-prev', nextEl: '.cert-next' }}
+              loop={canNavigate}
+              pagination={canNavigate ? { clickable: true } : false}
+              className="[&_.swiper-pagination]:!relative [&_.swiper-pagination]:!mt-4 [&_.swiper-pagination-bullet]:bg-[#9CA3AF] [&_.swiper-pagination-bullet-active]:bg-[#F58322]"
               breakpoints={{
-                320: { slidesPerView: 1 },
+                320: { slidesPerView: 1.12, spaceBetween: 12 },
                 768: { slidesPerView: 2 },
                 1024: { slidesPerView: 3 }
               }}
@@ -101,13 +134,47 @@ const CertificatesSection = () => {
             </Swiper>
 
             <button
-              className="cert-next hidden xl:flex absolute -right-16 md:-right-8 top-1/2 -translate-y-1/2
+              type="button"
+              onClick={() => {
+                stopAutoplay()
+                swiperRef.current?.slideNext()
+              }}
+              disabled={!canNavigate}
+              className="hidden md:flex absolute -right-6 xl:-right-16 top-1/2 -translate-y-1/2
                         w-12 h-12 rounded-full border border-gray-400 items-center justify-center
-                        hover:bg-black hover:text-white transition z-20"
+                        hover:bg-black hover:text-white transition z-20
+                        disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-inherit"
               aria-label="Next"
             >
               <ArrowForwardIosIcon sx={{ fontSize: 16 }} />
             </button>
+
+            {canNavigate && (
+              <div className="mt-3 flex items-center justify-center gap-3 md:hidden">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      stopAutoplay()
+                      swiperRef.current?.slidePrev()
+                    }}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#9CA3AF] bg-white text-[#374151] transition hover:bg-black hover:text-white"
+                    aria-label="Previous"
+                  >
+                    <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      stopAutoplay()
+                      swiperRef.current?.slideNext()
+                    }}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#9CA3AF] bg-white text-[#374151] transition hover:bg-black hover:text-white"
+                    aria-label="Next"
+                  >
+                    <ArrowForwardIosIcon sx={{ fontSize: 16 }} />
+                  </button>
+              </div>
+            )}
 
           </div>
         </ScrollReveal>

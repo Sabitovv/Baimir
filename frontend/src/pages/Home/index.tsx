@@ -46,7 +46,7 @@ const Home = () => {
     return (
         <>
             <Hero />
-            <PageContainer className="py-6 md:py-8">
+            <PageContainer className="py-5 md:py-8">
                 <ProductCollectionRenderer
                     placement="HOME_HERO_COLLECTION"
                     layout="carousel"
@@ -54,7 +54,7 @@ const Home = () => {
                     skeletonCount={4}
                 />
             </PageContainer>
-            <PageContainer className="pb-6 md:pb-10">
+            <PageContainer className="pb-5 md:pb-10">
                 <ProductCollectionRenderer
                     placement="HOME_PERSONALIZED_RECOMMENDATIONS"
                     layout="carousel"

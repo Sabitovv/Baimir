@@ -111,6 +111,7 @@ export const setupI18n = async () => {
       return;
     } catch (error) {
       console.warn('[I18N DEBUG] Tolgee failed, falling back to CDN translations.', error);
+      tolgee = null;
     }
   }
 

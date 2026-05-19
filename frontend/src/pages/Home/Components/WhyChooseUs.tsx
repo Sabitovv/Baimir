@@ -31,26 +31,26 @@ const WhyChooseUs = () => {
   ]
 
   return (
-    <section className="py-16 md:py-20 bg-[#F5F5F5]">
+    <section className="bg-[#F5F5F5] py-12 md:py-20">
       <PageContainer>
-        <div className="px-6 md:px-0">
+        <div className="px-1 md:px-0">
 
           <ScrollReveal>
-            <h2 className="text-4xl md:text-5xl xl:text-6xl font-oswald font-semibold uppercase mb-8 md:mb-12 text-[#111111]">
+            <h2 className="mb-6 font-oswald text-[32px] font-semibold uppercase leading-[1.06] text-[#111111] md:mb-12 md:text-5xl xl:text-6xl">
               {t('home.why.title')}
             </h2>
           </ScrollReveal>
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-12 auto-rows-fr">
+          <StaggerContainer className="grid auto-rows-fr grid-cols-1 gap-4 md:grid-cols-3 md:gap-12">
             {features.map((item, index) => (
               <StaggerItem key={index}>
-                <div className="bg-white p-8 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group h-full flex flex-col">
-                  <div className="text-[#F58322] mb-4">
-                    <EditableImage imageKey={item.key} fallbackSrc={item.icon} alt="" className="w-12 h-12 object-contain" />
+                <div className="group flex h-full flex-col rounded-xl border border-[#ECECEC] bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md md:p-8">
+                  <div className="mb-3 text-[#F58322]">
+                    <EditableImage imageKey={item.key} fallbackSrc={item.icon} alt="" className="h-10 w-10 object-contain md:h-12 md:w-12" />
                   </div>
-                  <h3 className="text-base md:text-xl font-oswald font-bold uppercase mb-2">
+                  <h3 className="mb-2 font-oswald text-[15px] font-bold uppercase leading-5 md:text-xl">
                     {t(item.titleKey)}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed flex-1">
+                  <p className="flex-1 text-sm leading-relaxed text-gray-600">
                     {t(item.textKey)}
                   </p>
                 </div>

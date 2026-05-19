@@ -1287,6 +1287,9 @@ const ProductPage = () => {
     companySettingsData?.COMPANY_CONTACT_PHONES?.phones
       ?.map((entry) => entry.phone?.trim() ?? "")
       .filter((phone) => phone.length > 0) ?? [];
+  const companyEmail =
+    companySettingsData?.COMPANY_CONTACT_PHONES?.email?.trim() ||
+    STORE_CONTACTS.email;
   const companyManagers = companySettingsData?.COMPANY_MANAGERS?.managers ?? [];
   const effectiveManagers =
     companyManagers.length > 0
@@ -1298,7 +1301,9 @@ const ProductPage = () => {
           phone: manager.phone,
           position: manager.role,
         }));
-  const storeAddress = STORE_CONTACTS.address;
+  const storeAddress =
+    companySettingsData?.COMPANY_CONTACT_PHONES?.address?.trim() ||
+    STORE_CONTACTS.address;
   const workScheduleError = isWorkScheduleError
     ? t("productPage.modal.scheduleLoadError")
     : null;
@@ -1975,10 +1980,10 @@ const ProductPage = () => {
           <p>
             Email:{" "}
             <a
-              href={`mailto:${STORE_CONTACTS.email}`}
+              href={`mailto:${companyEmail}`}
               className="text-[#F58322] hover:underline"
             >
-              {STORE_CONTACTS.email}
+              {companyEmail}
             </a>
           </p>
           {companyPhones[0] && (
@@ -2661,10 +2666,10 @@ const ProductPage = () => {
               <li>
                 {t("productPage.Email")}{" "}
                 <a
-                  href="mailto:sales@example.com"
+                  href={`mailto:${companyEmail}`}
                   className="text-[#F58322] font-bold"
                 >
-                  sales@example.com
+                  {companyEmail}
                 </a>
               </li>
               <li>

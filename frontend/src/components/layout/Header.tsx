@@ -32,10 +32,13 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const desktopSearchRef = useRef<HTMLDivElement | null>(null)
+  const mobileTopSearchRef = useRef<HTMLDivElement | null>(null)
+  const mobileSearchToggleRef = useRef<HTMLButtonElement | null>(null)
   const mobileSearchRef = useRef<HTMLDivElement | null>(null)
   const desktopInputRef = useRef<HTMLInputElement | null>(null)
   const mobileInputRef = useRef<HTMLInputElement | null>(null)
@@ -56,15 +59,19 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     const onClickOutside = (event: MouseEvent) => {
       const target = event.target as Node
       const desktopContains = desktopSearchRef.current?.contains(target)
+      const mobileTopContains = mobileTopSearchRef.current?.contains(target)
+      const mobileToggleContains = mobileSearchToggleRef.current?.contains(target)
       const mobileContains = mobileSearchRef.current?.contains(target)
 
-      if (!desktopContains && !mobileContains) {
+      if (!desktopContains && !mobileTopContains && !mobileToggleContains && !mobileContains) {
         setIsSearchOpen(false)
+        setIsMobileSearchVisible(false)
       }
     }
 
     const onScroll = () => {
       setIsSearchOpen(false)
+      setIsMobileSearchVisible(false)
     }
 
     document.addEventListener('mousedown', onClickOutside)
@@ -74,6 +81,15 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       window.removeEventListener('scroll', onScroll)
     }
   }, [])
+
+  useEffect(() => {
+    if (!isMobileSearchVisible || open) return
+    const timeoutId = window.setTimeout(() => {
+      mobileInputRef.current?.focus()
+    }, 0)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [isMobileSearchVisible, open])
 
   const shouldSearch = debouncedQuery.length >= 1
   const { data: searchData, isFetching: isSearchFetching } = useSearchProductsQuery(
@@ -125,6 +141,35 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
 
   const closeSearch = () => {
     setIsSearchOpen(false)
+    setIsMobileSearchVisible(false)
+  }
+
+  const clearSearch = () => {
+    setSearchValue('')
+    setDebouncedQuery('')
+    setIsSearchOpen(false)
+  }
+
+  const submitSearch = () => {
+    if (searchResults[0]) {
+      handleSearchSelect(searchResults[0].slug)
+    }
+  }
+
+  const toggleMobileSearch = () => {
+    const isActive = isMobileSearchVisible || isSearchOpen
+
+    if (isActive) {
+      setIsMobileSearchVisible(false)
+      setIsSearchOpen(false)
+      setSearchValue('')
+      setDebouncedQuery('')
+      return
+    }
+
+    if (open) setOpen(false)
+    setIsMobileSearchVisible(true)
+    setIsSearchOpen(true)
   }
 
   const handleSearchSelect = (slug: string) => {
@@ -133,6 +178,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     setDebouncedQuery('')
     setIsSearchOpen(false)
     setOpen(false)
+    setIsMobileSearchVisible(false)
   }
 
   const getDropdownStyle = (inputRef: React.RefObject<HTMLInputElement | null>) => {
@@ -272,6 +318,170 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     )
   }
 
+  const renderMobileDropdown = () => {
+    if (!isSearchOpen) return null
+
+    return (
+      <div className="mt-2 overflow-hidden rounded-xl border border-white/15 bg-[#0F1115]/95 text-white shadow-2xl backdrop-blur">
+        {shouldSearch && isSearchFetching && (
+          <div className="px-4 py-3 text-sm text-gray-300">{t('header.searchLoading')}</div>
+        )}
+
+        {shouldSearch && !isSearchFetching && searchResults.length > 0 && (
+          <ul className="max-h-[320px] overflow-y-auto py-2">
+            {searchResults.map((product) => (
+              <li key={product.id}>
+                <button
+                  type="button"
+                  onClick={() => handleSearchSelect(product.slug)}
+                  className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
+                >
+                  <img
+                    src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                    alt={product.name}
+                    className="hidden min-[380px]:block h-10 w-10 rounded-md object-cover shrink-0"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-white">{product.name}</span>
+                    <span className="block text-xs text-[#F7A35C]">{formatPrice(product.price)}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+            <li className="h-1" aria-hidden="true" />
+          </ul>
+        )}
+
+        {shouldLoadEmptySuggestions && (
+          <div className="px-3 py-3">
+            {shouldSearch && !isSearchFetching && searchResults.length === 0 && (
+              <p className="px-1 text-sm text-gray-300">{t('header.searchNoResults')}</p>
+            )}
+            <p className="px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-400">
+              Может вас заинтересует
+            </p>
+
+            <div className="max-h-[260px] overflow-y-auto">
+              {isEmptyStateFetching && (
+                <div className="px-2 py-2 text-xs text-gray-300">{t('header.searchLoading')}</div>
+              )}
+
+              {!isEmptyStateFetching && emptyStateProducts.length > 0 && (
+                <ul className="overflow-y-auto py-1">
+                  {emptyStateProducts.map((product) => (
+                    <li key={product.id}>
+                      <button
+                        type="button"
+                        onClick={() => handleSearchSelect(product.slug)}
+                        className="flex w-full items-center gap-3 px-2 py-2.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
+                      >
+                        <img
+                          src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                          alt={product.name}
+                          className="hidden min-[380px]:block h-10 w-10 rounded-md object-cover shrink-0"
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-white">
+                            {product.name}
+                          </span>
+                          <span className="block text-xs text-[#F7A35C]">
+                            {formatPrice(product.price)}
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  const renderMobileDrawerDropdown = () => {
+    if (!isSearchOpen || !open) return null
+
+    return (
+      <div className="absolute left-0 right-0 top-full mt-2 z-[120] overflow-hidden rounded-xl border border-white/15 bg-[#0F1115]/95 text-white shadow-2xl backdrop-blur">
+        {shouldSearch && isSearchFetching && (
+          <div className="px-4 py-3 text-sm text-gray-300">{t('header.searchLoading')}</div>
+        )}
+
+        {shouldSearch && !isSearchFetching && searchResults.length > 0 && (
+          <ul className="max-h-[320px] overflow-y-auto py-2">
+            {searchResults.map((product) => (
+              <li key={product.id}>
+                <button
+                  type="button"
+                  onClick={() => handleSearchSelect(product.slug)}
+                  className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
+                >
+                  <img
+                    src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                    alt={product.name}
+                    className="hidden min-[380px]:block h-10 w-10 rounded-md object-cover shrink-0"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-white">{product.name}</span>
+                    <span className="block text-xs text-[#F7A35C]">{formatPrice(product.price)}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+            <li className="h-1" aria-hidden="true" />
+          </ul>
+        )}
+
+        {shouldLoadEmptySuggestions && (
+          <div className="px-3 py-3">
+            {shouldSearch && !isSearchFetching && searchResults.length === 0 && (
+              <p className="px-1 text-sm text-gray-300">{t('header.searchNoResults')}</p>
+            )}
+            <p className="px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-400">
+              Может вас заинтересует
+            </p>
+
+            <div className="max-h-[260px] overflow-y-auto">
+              {isEmptyStateFetching && (
+                <div className="px-2 py-2 text-xs text-gray-300">{t('header.searchLoading')}</div>
+              )}
+
+              {!isEmptyStateFetching && emptyStateProducts.length > 0 && (
+                <ul className="overflow-y-auto py-1">
+                  {emptyStateProducts.map((product) => (
+                    <li key={product.id}>
+                      <button
+                        type="button"
+                        onClick={() => handleSearchSelect(product.slug)}
+                        className="flex w-full items-center gap-3 px-2 py-2.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
+                      >
+                        <img
+                          src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                          alt={product.name}
+                          className="hidden min-[380px]:block h-10 w-10 rounded-md object-cover shrink-0"
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-white">
+                            {product.name}
+                          </span>
+                          <span className="block text-xs text-[#F7A35C]">
+                            {formatPrice(product.price)}
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414] font-manrope">
       <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
@@ -303,15 +513,11 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               }}
               className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
             />
-            <button
-              type="button"
-              className="px-4 border-l border-white/70"
-              onClick={() => {
-                if (searchResults[0]) {
-                  handleSearchSelect(searchResults[0].slug)
-                }
-              }}
-            >
+              <button
+                type="button"
+                className="px-4 border-l border-white/70"
+                onClick={submitSearch}
+              >
               <SearchIcon sx={{ color: 'white', fontSize: 20 }} />
             </button>
             {renderSearchDropdown(desktopInputRef)}
@@ -383,6 +589,15 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
         </Link>
 
         <div className="flex items-center gap-3">
+          <button
+            ref={mobileSearchToggleRef}
+            onClick={toggleMobileSearch}
+            aria-label={t('header.search')}
+            title={t('header.search')}
+            className={`transition-colors ${isMobileSearchVisible ? 'text-[#F58322]' : 'text-white hover:text-[#DB741F]'}`}
+          >
+            <SearchIcon sx={{ fontSize: 26 }} />
+          </button>
           <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-mobile>
             <ShoppingCartIcon sx={{ fontSize: 26 }} />
             {cartCount > 0 && (
@@ -399,11 +614,56 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               </span>
             )}
           </Link>
-          <button onClick={() => setOpen(true)}>
+          <button onClick={() => { setOpen(true); setIsMobileSearchVisible(false); setIsSearchOpen(false) }}>
             <MenuIcon sx={{ fontSize: 28 }} />
           </button>
         </div>
       </div>
+      {isMobileSearchVisible && (
+        <div
+          ref={mobileTopSearchRef}
+          className="xl:hidden fixed top-[88px] left-0 right-0 z-[60] px-4 pt-2 pb-3 bg-[#141414]/95 backdrop-blur-md border-b border-white/10"
+        >
+          <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#F58322]">
+            <input
+              ref={mobileInputRef}
+              placeholder={t('header.search')}
+              value={searchValue}
+              onChange={(event) => {
+                setSearchValue(event.target.value)
+                setIsSearchOpen(true)
+              }}
+              onFocus={() => setIsSearchOpen(true)}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape') {
+                  closeSearch()
+                }
+                if (event.key === 'Enter' && searchResults[0]) {
+                  handleSearchSelect(searchResults[0].slug)
+                }
+              }}
+              className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
+            />
+            {searchValue.length > 0 && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                className="mr-1 text-gray-300 hover:text-white"
+              >
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={submitSearch}
+              className="mr-2 text-gray-200 hover:text-white"
+            >
+              <SearchIcon sx={{ fontSize: 20 }} />
+            </button>
+          </div>
+          {renderMobileDropdown()}
+        </div>
+      )}
       {open && (
         <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">
           <div className="flex items-center justify-between h-[88px] px-4 border-b border-white/10">
@@ -414,7 +674,8 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           </div>
 
           <div className="p-6 flex flex-col gap-8">
-            <div ref={mobileSearchRef} className="relative flex items-center h-12 border border-white/30">
+            <div ref={mobileSearchRef} className="relative">
+              <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#F58322]">
               <input
                 ref={mobileInputRef}
                 placeholder={t('header.search')}
@@ -432,23 +693,29 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                     handleSearchSelect(searchResults[0].slug)
                   }
                 }}
-                className="flex-1 bg-transparent px-4 outline-none"
+                className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
               />
+              {searchValue.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="mr-1 text-gray-300 hover:text-white"
+                >
+                  <CloseIcon sx={{ fontSize: 18 }} />
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => {
-                  if (searchResults[0]) {
-                    handleSearchSelect(searchResults[0].slug)
-                  }
-                }}
-                className="mr-2"
+                onClick={submitSearch}
+                className="mr-2 text-gray-200 hover:text-white"
               >
-                <SearchIcon />
+                <SearchIcon sx={{ fontSize: 20 }} />
               </button>
-              {renderSearchDropdown(mobileInputRef)}
+              </div>
+              {renderMobileDrawerDropdown()}
             </div>
 
-            <nav className="flex flex-col gap-6 text-xl uppercase font-oswald font-600">
+            <nav className="flex flex-col gap-6 text-xl uppercase font-bold tracking-wider">
               {navItems.map((key) => (
                 <NavLink
                   key={key.id}
@@ -464,19 +731,19 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
             <div className="flex items-center justify-center gap-6 mt-4 pt-6 border-t border-white/10">
               <button
                 onClick={() => { changeLanguage('ru'); setOpen(false); }}
-                className={`text-lg font-oswald ${getLangClass('ru')}`}
+                className={`text-lg font-bold ${getLangClass('ru')}`}
               >
                 {t('header.languages.ru')}
               </button>
               <button
                 onClick={() => { changeLanguage('kz'); setOpen(false); }}
-                className={`text-lg font-oswald ${getLangClass('kz')}`}
+                className={`text-lg font-bold ${getLangClass('kz')}`}
               >
                 {t('header.languages.kz')}
               </button>
               <button
                 onClick={() => { changeLanguage('en'); setOpen(false); }}
-                className={`text-lg font-oswald ${getLangClass('en')}`}
+                className={`text-lg font-bold ${getLangClass('en')}`}
               >
                 {t('header.languages.en')}
               </button>

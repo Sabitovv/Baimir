@@ -28,7 +28,7 @@ const Breadcrumbs = () => {
         >
             <ol
                 ref={listRef}
-                className="flex items-center gap-1 overflow-x-auto whitespace-nowrap text-[11px] leading-5 text-gray-500 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible sm:whitespace-normal sm:text-sm"
+                className="flex items-center gap-1 overflow-x-auto whitespace-nowrap text-sm leading-6 text-gray-500 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible sm:whitespace-normal sm:text-base"
             >
 
                 {breadcrumbs.map((item, index) => {
@@ -52,11 +52,11 @@ const Breadcrumbs = () => {
 
                     return (
                         <li key={index} className="flex min-w-0 shrink-0 items-center sm:shrink">
-                            {index > 0 && <span className="mx-1 text-gray-400 sm:mx-2">›</span>}
+                            {index > 0 && <span className="mx-1.5 text-base text-gray-400 sm:mx-2.5">›</span>}
 
                             {isLast ? (
                                 <span
-                                    className="max-w-[140px] truncate font-medium text-[#F58322] sm:max-w-none"
+                                    className="max-w-[170px] truncate px-1 py-1 font-semibold text-[#F58322] sm:max-w-none"
                                     title={item.name}
                                 >
                                     {item.name}
@@ -64,7 +64,7 @@ const Breadcrumbs = () => {
                             ) : (
                                 <Link
                                     to={toPath}
-                                    className="max-w-[110px] truncate transition-colors hover:text-[#DB741F] sm:max-w-none"
+                                    className="max-w-[170px] truncate rounded px-1 py-1 transition-colors hover:text-[#DB741F] sm:max-w-none"
                                     title={item.name}
                                 >
                                     {item.name}

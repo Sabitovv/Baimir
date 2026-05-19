@@ -359,6 +359,8 @@ export type CompanyContactPhone = {
 
 export type CompanyContactPhones = {
   phones?: CompanyContactPhone[];
+  email?: string;
+  address?: string;
 };
 
 export type CompanySettingsResponse = {

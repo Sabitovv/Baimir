@@ -62,6 +62,11 @@ const getManagerInitials = (manager: CompanyManager): string => {
   return initials || 'M'
 }
 
+const normalizePhoneHref = (phone: string): string => {
+  const normalized = phone.replace(/[^\d+]/g, '')
+  return normalized.startsWith('+') ? normalized : `+${normalized}`
+}
+
 const AboutPage = () => {
   const { t, i18n } = useTranslation()
   const {
@@ -74,6 +79,11 @@ const AboutPage = () => {
   const workSchedule = companySettingsData?.COMPANY_WORK_SCHEDULE
   const companyInfoSections = companySettingsData?.COMPANY_INFO_SECTIONS?.sections ?? []
   const companyManagers = companySettingsData?.COMPANY_MANAGERS?.managers ?? []
+  const contactAddress = companySettingsData?.COMPANY_CONTACT_PHONES?.address?.trim() || t('about.contacts.address')
+  const contactEmail = companySettingsData?.COMPANY_CONTACT_PHONES?.email?.trim() || 'baymir@inbox.ru'
+  const contactPhones = companySettingsData?.COMPANY_CONTACT_PHONES?.phones
+    ?.map((entry) => entry.phone?.trim() ?? '')
+    .filter((phone) => phone.length > 0) ?? []
   const companyInfoLocale = getCompanyInfoLocale(i18n.resolvedLanguage || i18n.language)
 
   const stats = [
@@ -399,17 +409,20 @@ const AboutPage = () => {
             <ScrollReveal delay={0.15} className="relative overflow-hidden bg-[#141414] text-white rounded-xl p-6 sm:p-8 border border-gray-700 shadow-[0_22px_35px_-24px_rgba(20,20,20,0.95)]">
               <div className="absolute -top-16 right-0 w-44 h-44 rounded-full bg-[#F58322]/15 blur-2xl" />
               <h2 className="font-oswald text-2xl sm:text-3xl uppercase">{t('about.contacts.title')}</h2>
-              <p className="mt-4 text-gray-300">{t('about.contacts.address')}</p>
+              <p className="mt-4 text-gray-300">{contactAddress}</p>
 
               <div className="mt-6 space-y-2">
-                <a href="tel:+77080055085" className="block text-lg sm:text-xl hover:text-[#F58322] transition-colors">
-                  +7 (708) 005-50-85
-                </a>
-                <a href="tel:+77272208707" className="block text-lg sm:text-xl hover:text-[#F58322] transition-colors">
-                  +7 (727) 220-87-07
-                </a>
-                <a href="mailto:baymir@inbox.ru" className="block text-base sm:text-lg text-gray-300 hover:text-[#F58322] transition-colors">
-                  baymir@inbox.ru
+                {contactPhones.map((phone) => (
+                  <a
+                    key={phone}
+                    href={`tel:${normalizePhoneHref(phone)}`}
+                    className="block text-lg sm:text-xl hover:text-[#F58322] transition-colors"
+                  >
+                    {phone}
+                  </a>
+                ))}
+                <a href={`mailto:${contactEmail}`} className="block text-base sm:text-lg text-gray-300 hover:text-[#F58322] transition-colors">
+                  {contactEmail}
                 </a>
                 <a href="https://baymir.kz" target="_blank" rel="noreferrer" className="block text-base sm:text-lg text-gray-300 hover:text-[#F58322] transition-colors">
                   baymir.kz
