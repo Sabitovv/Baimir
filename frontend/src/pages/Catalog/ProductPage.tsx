@@ -122,6 +122,7 @@ const findCategoryById = (
 const PLACEHOLDER_IMG = productPlaceholder;
 const SEO_BASE_URL = "https://baytech.kz";
 const PRODUCT_JSON_LD_ID = "product-jsonld";
+const SEO_DESCRIPTION_MAX_LENGTH = 5000;
 
 type GalleryItem = {
   kind: "image" | "videoExternal" | "videoFile";
@@ -515,6 +516,12 @@ const stripHtmlTags = (value: string): string => {
     .replace(/&nbsp;/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
+};
+
+const normalizeSeoDescription = (raw: string | null | undefined, fallback: string): string => {
+  const cleaned = stripHtmlTags(raw ?? "");
+  const base = cleaned || fallback;
+  return base.slice(0, SEO_DESCRIPTION_MAX_LENGTH).trim();
 };
 
 const getContentBlockText = (block: ProductContentBlock): string => {
@@ -1435,7 +1442,10 @@ const ProductPage = () => {
 
     const previousTitle = document.title;
     const descriptionFallback = `${product.name} - купить в Baytech`;
-    const description = stripHtmlTags(product.description) || descriptionFallback;
+    const description = normalizeSeoDescription(
+      product.description,
+      descriptionFallback,
+    );
     const productUrl = toAbsoluteBaytechUrl(`/catalog/product/${product.slug}`);
     const imageUrl = toAbsoluteBaytechUrl(
       getPrimaryImage(product.media) || product.coverImage || PLACEHOLDER_IMG,
