@@ -122,7 +122,8 @@ const findCategoryById = (
 const PLACEHOLDER_IMG = productPlaceholder;
 const SEO_BASE_URL = "https://baytech.kz";
 const PRODUCT_JSON_LD_ID = "product-jsonld";
-const SEO_DESCRIPTION_MAX_LENGTH = 5000;
+const SEO_DESCRIPTION_MAX_LENGTH = 500;
+const SEO_DESCRIPTION_MIN_LENGTH = 10;
 
 type GalleryItem = {
   kind: "image" | "videoExternal" | "videoFile";
@@ -518,10 +519,22 @@ const stripHtmlTags = (value: string): string => {
     .trim();
 };
 
-const normalizeSeoDescription = (raw: string | null | undefined, fallback: string): string => {
-  const cleaned = stripHtmlTags(raw ?? "");
-  const base = cleaned || fallback;
-  return base.slice(0, SEO_DESCRIPTION_MAX_LENGTH).trim();
+const normalizeSeoDescription = (
+  raw: string | null | undefined,
+  fallback: string,
+): string => {
+  const cleaned = stripHtmlTags(raw ?? "")
+    .replace(/[\u0000-\u001F\u007F]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const fallbackClean = stripHtmlTags(fallback).trim() || "Baytech product";
+  const base = cleaned.length >= SEO_DESCRIPTION_MIN_LENGTH ? cleaned : fallbackClean;
+  const limited = base.slice(0, SEO_DESCRIPTION_MAX_LENGTH).trim();
+
+  return limited.length >= SEO_DESCRIPTION_MIN_LENGTH
+    ? limited
+    : fallbackClean.slice(0, SEO_DESCRIPTION_MAX_LENGTH);
 };
 
 const getContentBlockText = (block: ProductContentBlock): string => {
