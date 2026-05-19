@@ -108,10 +108,6 @@ const CatalogPage = () => {
     }
 
     stack.reverse().forEach((cat) => {
-      const hasChildren = data.some(
-        (i) => Number(i.parentId) === Number(cat.id),
-      );
-
       breadcrumbsList.push({
         name: cat.name,
         path: `/catalog/${cat.slug}`,

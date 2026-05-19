@@ -336,9 +336,6 @@ const CategoryPage = () => {
     }
 
     stack.reverse().forEach((cat) => {
-      const hasChildren = categories.some(
-        (c) => Number(c.parentId) === Number(cat.id),
-      );
       breadcrumbs.push({
         id: cat.id,
         name: cat.name,
