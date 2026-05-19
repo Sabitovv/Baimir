@@ -1474,6 +1474,15 @@ const ProductPage = () => {
       description,
       url: productUrl,
       image: [imageUrl],
+      offers: {
+        "@type": "Offer",
+        url: productUrl,
+        priceCurrency: "KZT",
+        price: product.price,
+        availability: product.inStock
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      },
     };
 
     if (brandName) {
