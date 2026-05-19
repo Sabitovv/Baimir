@@ -26,16 +26,14 @@ const IndustryCatalog = () => {
   const { data } = useGetCategoriesTreeQuery({ lang: i18n.language });
   const cards: CatalogCardItem[] = [];
   if (data) {
-    [
-      { index: 0, path: "catalog/metalworking?categoryId=19" },
-      { index: 1, path: "catalog/metalworking?categoryId=8" },
-      { index: 2, path: "catalog/metalworking?categoryId=20" },
-      { index: 3, path: "catalog/metalworking?categoryId=21" },
-    ].forEach(({ index, path }) => {
+    [{ index: 0 }, { index: 1 }, { index: 2 }, { index: 3 }].forEach(
+      ({ index }) => {
       const category = data[index];
       if (!category) return;
+      const path = `/catalog/${category.slug}`;
       cards.push({ title: category.name, image: category.imageUrl, path });
-    });
+    },
+    );
   }
 
   return (

@@ -120,6 +120,8 @@ const findCategoryById = (
 };
 
 const PLACEHOLDER_IMG = productPlaceholder;
+const SEO_BASE_URL = "https://baytech.kz";
+const PRODUCT_JSON_LD_ID = "product-jsonld";
 
 type GalleryItem = {
   kind: "image" | "videoExternal" | "videoFile";
@@ -610,6 +612,38 @@ const getPrimaryImage = (media: ProductDetail["media"]): string => {
       item.url.trim().length > 0,
   );
   return firstImage?.url?.trim() || PLACEHOLDER_IMG;
+};
+
+const toAbsoluteBaytechUrl = (value: string): string => {
+  const trimmed = value.trim();
+  if (!trimmed) return SEO_BASE_URL;
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      return `${SEO_BASE_URL}${parsed.pathname}${parsed.search}${parsed.hash}`;
+    } catch {
+      return SEO_BASE_URL;
+    }
+  }
+
+  const normalizedPath = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return `${SEO_BASE_URL}${normalizedPath}`;
+};
+
+const upsertMetaTag = (property: string, content: string): HTMLMetaElement => {
+  let tag = document.head.querySelector(
+    `meta[property="${property}"]`,
+  ) as HTMLMetaElement | null;
+
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute("property", property);
+    document.head.appendChild(tag);
+  }
+
+  tag.setAttribute("content", content);
+  return tag;
 };
 
 const ProductLinksBlock = ({
@@ -1395,6 +1429,72 @@ const ProductPage = () => {
     if (!product?.id) return;
     addRecentlyViewedProductId(product.id);
   }, [product?.id]);
+
+  useEffect(() => {
+    if (!product) return;
+
+    const previousTitle = document.title;
+    const descriptionFallback = `${product.name} - купить в Baytech`;
+    const description = stripHtmlTags(product.description) || descriptionFallback;
+    const productUrl = toAbsoluteBaytechUrl(`/catalog/product/${product.slug}`);
+    const imageUrl = toAbsoluteBaytechUrl(
+      getPrimaryImage(product.media) || product.coverImage || PLACEHOLDER_IMG,
+    );
+    const brandAttribute = product.specifications
+      ?.flatMap((group) => group.attributes ?? [])
+      .find((attr) => /бренд|brand|производител/i.test(attr.name));
+    const brandName = brandAttribute?.value?.trim() || "Baytech";
+    const categoryName = product.category?.name?.trim();
+
+    document.title = product.name;
+
+    const managedTags: HTMLMetaElement[] = [
+      upsertMetaTag("og:type", "product"),
+      upsertMetaTag("og:title", product.name),
+      upsertMetaTag("og:description", description),
+      upsertMetaTag("og:url", productUrl),
+      upsertMetaTag("og:image", imageUrl),
+      upsertMetaTag("og:site_name", "Baytech"),
+    ];
+
+    let jsonLdTag = document.getElementById(PRODUCT_JSON_LD_ID) as
+      | HTMLScriptElement
+      | null;
+    if (!jsonLdTag) {
+      jsonLdTag = document.createElement("script");
+      jsonLdTag.type = "application/ld+json";
+      jsonLdTag.id = PRODUCT_JSON_LD_ID;
+      document.body.appendChild(jsonLdTag);
+    }
+
+    const jsonLd: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      description,
+      url: productUrl,
+      image: [imageUrl],
+    };
+
+    if (brandName) {
+      jsonLd.brand = {
+        "@type": "Brand",
+        name: brandName,
+      };
+    }
+
+    if (categoryName) {
+      jsonLd.category = categoryName;
+    }
+
+    jsonLdTag.textContent = JSON.stringify(jsonLd);
+
+    return () => {
+      document.title = previousTitle;
+      managedTags.forEach((tag) => tag.remove());
+      jsonLdTag?.remove();
+    };
+  }, [product]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

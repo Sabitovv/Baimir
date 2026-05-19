@@ -46,13 +46,7 @@ const findCategoryBySlug = (
 
 const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
   const { t } = useTranslation();
-  
-  const categoryHasProducts =
-    Number(group.category.productCount ?? group.totalProducts ?? group.products.length) > 0;
-    
-  const categoryLink = categoryHasProducts
-    ? `/catalog/${group.category.slug}/products/${group.category.id}?categoryId=${group.category.id}&sort=price,ASC`
-    : `/catalog/${group.category.slug}?categoryId=${group.category.id}`;
+  const categoryLink = `/catalog/${group.category.slug}`;
 
   const carouselProducts = useMemo<CollectionProduct[]>(() => {
     return group.products.map(p => ({

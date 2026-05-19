@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import OpenButton from '@/assets/button1_for_sideBar.svg'
 import CloseButton from '@/assets/button2_for_sideBar.svg'
 import { useGetCategoriesTreeQuery, type Category } from '@/api/categoriesApi'
@@ -13,11 +13,14 @@ type TreeCategory = Category & {
 const CategoriesMenu = () => {
     const { i18n } = useTranslation()
     const { data: categories = [] } = useGetCategoriesTreeQuery({lang: i18n.language})
-    const { categoryId } = useParams<{ categoryId: string }>()
-    const [searchParams] = useSearchParams()
-
-    const rawActiveId = categoryId ?? searchParams.get('categoryId')
-    const activeId = rawActiveId ? Number(rawActiveId) : null
+    const { categorySlug, categoryId } = useParams<{ categorySlug?: string; categoryId?: string }>()
+    const activeId = useMemo(() => {
+        const fromParam = Number(categoryId)
+        if (Number.isFinite(fromParam) && fromParam > 0) return fromParam
+        const fromSlug = categories.find(c => c.slug === categorySlug)
+        const slugId = Number(fromSlug?.id)
+        return Number.isFinite(slugId) && slugId > 0 ? slugId : null
+    }, [categoryId, categorySlug, categories])
 
     const [openCategories, setOpenCategories] = useState<Record<number, boolean>>({})
 
@@ -104,15 +107,7 @@ const CategoriesMenu = () => {
     }
 
     const getCategoryLink = (cat: TreeCategory | Category) => {
-        const hasChildren = (cat as TreeCategory).children
-            ? (cat as TreeCategory).children.length > 0
-            : categories.some(c => Number(c.parentId) === Number(cat.id))
-
-        if (hasChildren) {
-            return `/catalog/${cat.slug}?categoryId=${cat.id}`
-        } else {
-            return `/catalog/${cat.slug}/products/${cat.id}`
-        }
+        return `/catalog/${cat.slug}`
     }
 
     if (!categories.length) return null

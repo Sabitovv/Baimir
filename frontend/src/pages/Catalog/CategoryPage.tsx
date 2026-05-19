@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
 
@@ -48,6 +48,50 @@ type ProductForFilter = {
   specifications?: ProductSpecGroup[];
 };
 
+type CategoryImageProps = {
+  src?: string | null;
+  alt: string;
+};
+
+const CategoryImage = ({ src, alt }: CategoryImageProps) => {
+  const [resolvedSrc, setResolvedSrc] = useState(src || sampleImg);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setResolvedSrc(src || sampleImg);
+    setIsLoaded(false);
+  }, [src]);
+
+  return (
+    <div className="relative w-full h-[100px] sm:h-[130px] flex items-center justify-center overflow-hidden shrink-0">
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 bg-gray-100 transition-opacity duration-300 ${
+          isLoaded ? "opacity-0" : "opacity-100"
+        }`}
+      />
+      <img
+        src={resolvedSrc}
+        alt={alt}
+        loading="lazy"
+        width={130}
+        height={130}
+        onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          if (resolvedSrc !== sampleImg) {
+            setResolvedSrc(sampleImg);
+            return;
+          }
+          setIsLoaded(true);
+        }}
+        className={`w-full h-full object-contain transition-all duration-300 group-hover:scale-105 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    </div>
+  );
+};
+
 const isPriceRangeFilter = (filter: Filter): boolean => {
   const code = String(filter.code ?? "").toLowerCase();
   const name = String(filter.name ?? "").toLowerCase();
@@ -64,6 +108,21 @@ const findCategoryById = (
     if (Number(cat.id) === id) return cat;
     if (cat.children && cat.children.length > 0) {
       const found = findCategoryById(cat.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+const findCategoryBySlug = (
+  categories: Category[],
+  slug?: string,
+): Category | null => {
+  if (!slug) return null;
+  for (const cat of categories) {
+    if (cat.slug === slug) return cat;
+    if (cat.children && cat.children.length > 0) {
+      const found = findCategoryBySlug(cat.children, slug);
       if (found) return found;
     }
   }
@@ -92,10 +151,11 @@ const CategoryPage = () => {
 
   const { t } = useTranslation();
   const { i18n } = useTranslation();
-  const { categoryId } = useParams<{
+  const { categorySlug, categoryId } = useParams<{
     categorySlug: string;
-    categoryId: string;
+    categoryId?: string;
   }>();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -119,9 +179,19 @@ const CategoryPage = () => {
     isError: isErrorCategories,
   } = useGetCategoriesTreeQuery({ lang: i18n.language });
 
-  const activeId = categoryId
-    ? Number(categoryId)
-    : Number(searchParams.get("categoryId"));
+  const activeId = useMemo(() => {
+    const fromParam = Number(categoryId);
+    if (Number.isFinite(fromParam) && fromParam > 0) return fromParam;
+
+    const fromSlug = findCategoryBySlug(categories, categorySlug);
+    const slugId = Number(fromSlug?.id);
+    if (Number.isFinite(slugId) && slugId > 0) return slugId;
+
+    const fromQuery = Number(searchParams.get("categoryId"));
+    if (Number.isFinite(fromQuery) && fromQuery > 0) return fromQuery;
+
+    return null;
+  }, [categoryId, categorySlug, categories, searchParams]);
 
   const currentCategory = useMemo(() => {
     if (!categories.length || !activeId) return null;
@@ -273,9 +343,7 @@ const CategoryPage = () => {
         id: cat.id,
         name: cat.name,
         slug: cat.slug,
-        path: hasChildren
-          ? `/catalog/${cat.slug}?categoryId=${cat.id}`
-          : `/catalog/${cat.slug}/products/${cat.id}`,
+        path: `/catalog/${cat.slug}`,
       });
     });
 
@@ -293,11 +361,10 @@ const CategoryPage = () => {
   }, []);
 
   useEffect(() => {
-    if (sortParam && sortParam.trim()) return;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("sort", "price,ASC");
-    setSearchParams(params, { replace: true });
-  }, [sortParam, searchParams, setSearchParams]);
+    if (!categorySlug) return;
+    if (!location.pathname.includes("/products/")) return;
+    navigate(`/catalog/${categorySlug}`, { replace: true });
+  }, [categorySlug, location.pathname, navigate]);
 
   const changePage = (newPage: number) => {
     const safePage = Math.max(1, Math.min(totalPages, newPage));
@@ -353,7 +420,19 @@ const CategoryPage = () => {
       </PageContainer>
     );
 
-  const hasSubcategories = (currentCategory?.children?.length ?? 0) > 0;
+  const childCategories = useMemo(() => {
+    if (!currentCategory) return [];
+
+    if (currentCategory.children && currentCategory.children.length > 0) {
+      return currentCategory.children;
+    }
+
+    return categories.filter(
+      (cat) => Number(cat.parentId) === Number(currentCategory.id),
+    );
+  }, [categories, currentCategory]);
+
+  const hasSubcategories = childCategories.length > 0;
   const hasProducts = products.length > 0;
 
   return (
@@ -375,18 +454,19 @@ const CategoryPage = () => {
 
           <main>
             {!isLoadingProducts && !hasProducts && hasSubcategories ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 md:gap-4 lg:gap-5 xl:gap-6">
-                {currentCategory?.children?.map((sub: Category) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+                {childCategories.map((sub: Category) => (
                   <div
                     key={sub.id}
-                    onClick={() =>
-                      navigate(`/catalog/${sub.slug}?categoryId=${sub.id}`)
-                    }
-                    className="cursor-pointer group border rounded-lg p-2.5 sm:p-3.5 md:p-3 lg:p-4 min-h-[76px] sm:min-h-[88px] md:min-h-[78px] lg:min-h-[84px] xl:min-h-[96px] flex items-center justify-center hover:shadow-lg transition bg-white text-center"
+                    onClick={() => navigate(`/catalog/${sub.slug}`)}
+                    className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 rounded-lg cursor-pointer flex flex-col items-center p-3 sm:p-6 h-[210px] sm:h-[240px] overflow-hidden group relative"
                   >
-                    <h3 className="font-bold text-[13px] leading-snug sm:text-base md:text-sm lg:text-base group-hover:text-[#DB741F] transition">
-                      {sub.name}
-                    </h3>
+                    <CategoryImage src={sub.imageUrl} alt={sub.name} />
+                    <div className="mt-3 sm:mt-4 text-center h-[56px] sm:h-[64px] flex flex-col items-center justify-center overflow-hidden">
+                      <p className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2">
+                        {sub.name}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>

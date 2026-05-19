@@ -38,7 +38,7 @@ const Breadcrumbs = () => {
 
                     if (!toPath) {
                         if (item.slug && item.id) {
-                            toPath = `/catalog/${item.slug}?categoryId=${item.id}`
+                            toPath = `/catalog/${item.slug}`
                         }
                         // else if (item.slug) {
                         //     toPath = `/catalog/${item.slug}`

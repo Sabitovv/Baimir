@@ -44,6 +44,7 @@ const AppRoutes = () => (
 
             <Route path="/catalog/product/:productSlug" element={<ProductPage />} />
             <Route path="/compare" element={<ComparePage />} />
+            <Route path="/catalog/:categorySlug" element={<CategoryPage />} />
             <Route path="/catalog/:categorySlug/products/:categoryId" element={<CategoryPage />} />
             <Route path="/catalog/deep-products" element={<CatalogDeepProductsPage />} />
             <Route path="/catalog/:categorySlug/deep-products" element={<CatalogDeepProductsPage />} />

@@ -114,9 +114,7 @@ const CatalogPage = () => {
 
       breadcrumbsList.push({
         name: cat.name,
-        path: hasChildren
-          ? `/catalog/${cat.slug}?categoryId=${cat.id}`
-          : `/catalog/${cat.slug}/products/${cat.id}`,
+        path: `/catalog/${cat.slug}`,
       });
     });
 
@@ -181,13 +179,9 @@ const CatalogPage = () => {
                       onClick={() => {
                         const isLeaf = !hasChildren(item.id);
                         if (isLeaf) {
-                          navigate(
-                            `/catalog/${item.slug}/products/${item.id}?categoryId=${item.id}`,
-                          );
+                          navigate(`/catalog/${item.slug}`);
                         } else {
-                          navigate(
-                            `/catalog/${item.slug}?categoryId=${item.id}`,
-                          );
+                          navigate(`/catalog/${item.slug}`);
                         }
                       }}
                       className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 
