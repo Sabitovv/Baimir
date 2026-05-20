@@ -99,5 +99,5 @@ export const STORE_CONTACTS = {
   address: 'Алатауский район, микрорайон Рахат, 244, Алматы, Казахстан',
   email: 'baymir@inbox.ru',
   phone: '+77080055085',
-  website: 'http://www.baymir.kz',
+  website: 'https://baymir.kz',
 } as const

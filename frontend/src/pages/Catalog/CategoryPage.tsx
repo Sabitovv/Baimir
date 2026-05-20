@@ -404,6 +404,18 @@ const CategoryPage = () => {
     setSearchParams(params, { replace: false });
   };
 
+  const childCategories = useMemo(() => {
+    if (!currentCategory) return [];
+
+    if (currentCategory.children && currentCategory.children.length > 0) {
+      return currentCategory.children;
+    }
+
+    return categories.filter(
+      (cat) => Number(cat.parentId) === Number(currentCategory.id),
+    );
+  }, [categories, currentCategory]);
+
   if (isLoadingCategories)
     return (
       <PageContainer>
@@ -416,18 +428,6 @@ const CategoryPage = () => {
         <p>{t("categoryPage.errorCategories")}</p>
       </PageContainer>
     );
-
-  const childCategories = useMemo(() => {
-    if (!currentCategory) return [];
-
-    if (currentCategory.children && currentCategory.children.length > 0) {
-      return currentCategory.children;
-    }
-
-    return categories.filter(
-      (cat) => Number(cat.parentId) === Number(currentCategory.id),
-    );
-  }, [categories, currentCategory]);
 
   const hasSubcategories = childCategories.length > 0;
   const hasProducts = products.length > 0;

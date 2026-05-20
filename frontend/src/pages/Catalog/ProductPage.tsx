@@ -567,11 +567,11 @@ const renderCardItem = (
     key={`${card.title}-${idx}`}
     className="group rounded-xl sm:rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl flex h-full flex-col"
   >
-    <div className="h-[170px] sm:h-[200px] md:h-[240px] lg:h-[260px] bg-gray-100 overflow-hidden">
+    <div className="h-[170px] sm:h-[200px] md:h-[240px] lg:h-[260px] bg-gray-50 overflow-hidden">
       <img
         src={card.imageUrl || PLACEHOLDER_IMG}
         alt={card.title}
-        className="w-full h-full object-contain sm:object-cover transition duration-500 group-hover:scale-[1.03]"
+        className="w-full h-full object-contain transition duration-500 group-hover:scale-[1.01]"
         loading="lazy"
       />
     </div>
@@ -611,11 +611,11 @@ const renderMainSetItem = (card: GridCardItem, idx: number) => (
         </p>
       </div>
 
-      <div className="h-[150px] sm:h-[200px] bg-gray-100 rounded-lg sm:rounded-xl overflow-hidden border border-gray-100">
+      <div className="h-[150px] sm:h-[200px] bg-gray-50 rounded-lg sm:rounded-xl overflow-hidden border border-gray-100">
         <img
           src={card.imageUrl || PLACEHOLDER_IMG}
           alt={card.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           loading="lazy"
         />
       </div>
@@ -1005,12 +1005,10 @@ const renderContentBlock = (
       const mediaFrameClass = isFullWidthImage
         ? "h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)]"
         : imageRatioClassMap[block.data.imageRatio];
-      const imageFitClass = isFullWidthImage
-        ? "object-cover object-center"
-        : "object-cover";
+      const imageFitClass = "object-contain object-center";
       const imageHoverClass = isFullWidthImage
-        ? "hover:scale-[1.02]"
-        : "hover:scale-110";
+        ? "hover:scale-[1.01]"
+        : "hover:scale-[1.02]";
 
       return (
         <section
@@ -1021,7 +1019,7 @@ const renderContentBlock = (
             className={`w-full ${imageWidthClassMap[block.data.imageWidth]}`}
           >
             <div
-              className={`${mediaFrameClass} rounded-xl overflow-hidden bg-gray-100 group`}
+              className={`${mediaFrameClass} rounded-xl overflow-hidden bg-gray-50 group`}
             >
               <img
                 src={block.data.imageUrl || PLACEHOLDER_IMG}
@@ -1126,12 +1124,12 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="group snap-start min-w-[72%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+                className="group snap-start min-w-[72%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110"
+                  className="w-full h-full object-contain aspect-[4/3] transition duration-500 group-hover:scale-[1.02]"
                   loading="lazy"
                 />
               </div>
@@ -1149,12 +1147,12 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="mb-3 sm:mb-4 break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+                className="mb-3 sm:mb-4 break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className="w-full h-auto object-cover transition duration-500 hover:scale-105"
+                  className="w-full h-auto object-contain transition duration-500 hover:scale-[1.02]"
                   loading="lazy"
                 />
               </div>
@@ -1169,12 +1167,12 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className={`group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
+                className={`group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className={`w-full h-full object-cover transition duration-500 group-hover:scale-110 ${idx === 0 ? "aspect-[16/7]" : "aspect-[4/3]"}`}
+                  className={`w-full h-full object-contain transition duration-500 group-hover:scale-[1.02] ${idx === 0 ? "aspect-[16/7]" : "aspect-[4/3]"}`}
                   loading="lazy"
                 />
               </div>
@@ -1194,15 +1192,15 @@ const renderContentBlock = (
           {block.data.urls.map((url, idx) => (
             <div
               key={`${url}-${idx}`}
-              className="group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+              className="group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-md transition-all duration-300 hover:shadow-xl"
             >
               <img
                 src={url || PLACEHOLDER_IMG}
                 alt={`gallery-${idx + 1}`}
                 className={
                   isSingleLayout
-                    ? "w-full h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)] object-cover object-center transition duration-500 group-hover:scale-[1.02]"
-                    : "w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110"
+                    ? "w-full h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)] object-contain object-center transition duration-500 group-hover:scale-[1.01]"
+                    : "w-full h-full object-contain aspect-[4/3] transition duration-500 group-hover:scale-[1.02]"
                 }
                 loading="lazy"
               />

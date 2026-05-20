@@ -325,6 +325,20 @@ const CatalogFilters = ({
     setSearchParams(params, { replace: false });
   };
 
+  const setRadioValue = (filterCode: string, valueId: string) => {
+    const params = new URLSearchParams(searchParams);
+    const current = params.get(filterCode);
+
+    if (current === valueId) {
+      params.delete(filterCode);
+    } else {
+      params.set(filterCode, valueId);
+    }
+
+    params.set("page", "1");
+    setSearchParams(params, { replace: false });
+  };
+
   const clearAll = () => {
     const params = new URLSearchParams();
     const categoryId = searchParams.get("categoryId");
@@ -547,6 +561,27 @@ const CatalogFilters = ({
                       <button
                         key={v.id}
                         onClick={() => toggleCheckbox(f.code, String(v.id))}
+                        className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#F58322] text-white border-[#F58322]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
+                      >
+                        {v.label}{" "}
+                        {v.count > 0 && (
+                          <span className="opacity-70">({v.count})</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {f.uiType === "RADIO_LIST" && (
+                <div className="flex flex-wrap gap-2">
+                  {f.values?.map((v: FilterValue) => {
+                    const isActive = searchParams.get(f.code) === String(v.id);
+
+                    return (
+                      <button
+                        key={v.id}
+                        onClick={() => setRadioValue(f.code, String(v.id))}
                         className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#F58322] text-white border-[#F58322]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
                       >
                         {v.label}{" "}

@@ -230,7 +230,7 @@ export type Filter = {
   code: string;
   name: string;
   range: FilterRange | null;
-  uiType: "RANGE_SLIDER" | "CHECKBOX_LIST";
+  uiType: "RANGE_SLIDER" | "CHECKBOX_LIST" | "RADIO_LIST";
   unitCode: string | null;
   values: FilterValue[] | null;
 };
