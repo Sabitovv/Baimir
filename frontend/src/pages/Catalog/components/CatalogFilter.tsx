@@ -109,6 +109,17 @@ const CatalogFilters = ({
   );
   const { t } = useTranslation();
 
+  const getDisplayValues = useCallback(
+    (filter: Filter): FilterValue[] => {
+      const values = filter.values ?? [];
+      if (filter.code === "wifi") {
+        return values.filter((v) => String(v.id) === "true");
+      }
+      return values;
+    },
+    [],
+  );
+
   const rangeFilters = useMemo(
     () => (filters ?? []).filter((f) => f.uiType === "RANGE_SLIDER"),
     [filters],
@@ -553,7 +564,7 @@ const CatalogFilters = ({
 
               {f.uiType === "CHECKBOX_LIST" && (
                 <div className="flex flex-wrap gap-2">
-                  {f.values?.map((v: FilterValue) => {
+                  {getDisplayValues(f).map((v: FilterValue) => {
                     const isActive = (
                       searchParams.get(f.code)?.split(",") || []
                     ).includes(String(v.id));
@@ -575,7 +586,7 @@ const CatalogFilters = ({
 
               {f.uiType === "RADIO_LIST" && (
                 <div className="flex flex-wrap gap-2">
-                  {f.values?.map((v: FilterValue) => {
+                  {getDisplayValues(f).map((v: FilterValue) => {
                     const isActive = searchParams.get(f.code) === String(v.id);
 
                     return (

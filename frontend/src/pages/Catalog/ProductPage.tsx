@@ -1124,7 +1124,7 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="group snap-start min-w-[72%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-md transition-all duration-300 hover:shadow-xl"
+                className="group snap-start min-w-[72%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
@@ -1147,7 +1147,7 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="mb-3 sm:mb-4 break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-md transition-all duration-300 hover:shadow-xl"
+                className="mb-3 sm:mb-4 break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
@@ -1167,7 +1167,7 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className={`group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
+                className={`group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
@@ -1192,7 +1192,7 @@ const renderContentBlock = (
           {block.data.urls.map((url, idx) => (
             <div
               key={`${url}-${idx}`}
-              className="group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-md transition-all duration-300 hover:shadow-xl"
+              className="group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
             >
               <img
                 src={url || PLACEHOLDER_IMG}
