@@ -7,6 +7,8 @@ import ContactForm from './Components/ContactForm'
 import DeferredSection from '@/components/common/DeferredSection'
 import PageContainer from '@/components/ui/PageContainer'
 import ProductCollectionRenderer from '@/components/collections/ProductCollectionRenderer'
+import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
+import { useTranslation } from 'react-i18next'
 
 const Warehouse = lazy(() => import('./Components/Warehouse'))
 const ForClients = lazy(() => import('./Components/ForClients'))
@@ -19,6 +21,44 @@ const NewsSection = lazy(() => import('./Components/NewsSection'))
 const SectionFallback = ({ heightClassName }: { heightClassName: string }) => (
     <div className={`${heightClassName} animate-pulse bg-[#F7F7F7]`} />
 )
+
+type OptionalCollectionSectionProps = {
+    placement: 'HOME_HERO_COLLECTION' | 'HOME_PERSONALIZED_RECOMMENDATIONS'
+    containerClassName: string
+    variant?: 'hero' | 'recommendations'
+    title?: string
+}
+
+const OptionalCollectionSection = ({
+    placement,
+    containerClassName,
+    variant = 'hero',
+    title,
+}: OptionalCollectionSectionProps) => {
+    const { i18n } = useTranslation()
+    const { collections, isLoading, isFetching, isError } = useProductCollectionPlacement(
+        placement,
+        { lang: i18n.language, maxItems: 12 },
+    )
+
+    const hasVisibleCollections = collections.some((collection) => collection.products.length > 0)
+    const shouldRenderSection = isLoading || isFetching || isError || hasVisibleCollections
+
+    if (!shouldRenderSection) return null
+
+    return (
+        <PageContainer className={containerClassName}>
+            <ProductCollectionRenderer
+                placement={placement}
+                layout="carousel"
+                variant={variant}
+                title={title}
+                maxItems={12}
+                skeletonCount={4}
+            />
+        </PageContainer>
+    )
+}
 
 const Home = () => {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
@@ -46,24 +86,16 @@ const Home = () => {
     return (
         <>
             <Hero />
-            <PageContainer className="py-5 md:py-8">
-                <ProductCollectionRenderer
-                    placement="HOME_HERO_COLLECTION"
-                    layout="carousel"
-                    maxItems={12}
-                    skeletonCount={4}
-                />
-            </PageContainer>
-            <PageContainer className="pb-5 md:pb-10">
-                <ProductCollectionRenderer
-                    placement="HOME_PERSONALIZED_RECOMMENDATIONS"
-                    layout="carousel"
-                    variant="recommendations"
-                    title="Персональные рекомендации"
-                    maxItems={12}
-                    skeletonCount={4}
-                />
-            </PageContainer>
+            <OptionalCollectionSection
+                placement="HOME_HERO_COLLECTION"
+                containerClassName="py-5 md:py-8"
+            />
+            <OptionalCollectionSection
+                placement="HOME_PERSONALIZED_RECOMMENDATIONS"
+                containerClassName="pb-5 md:pb-10"
+                variant="recommendations"
+                title="Персональные рекомендации"
+            />
             <IndustryCatalog />
             <WhyChooseUs />
             <Service />

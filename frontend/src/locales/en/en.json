@@ -135,6 +135,8 @@
       "thanks": "Thank you for your request.",
       "thanks_short": "thank you for your request",
       "manager_will_contact": "Our manager will contact you.",
+      "nonWorkingHoursNotice": "The company cannot quickly process orders and messages right now because it is currently outside working hours. Your request will be handled on the next working day.",
+      "viewSchedule": "View schedule",
       "errors": {
         "name": "Enter your name",
         "name_too_long": "Name must be at most {{max}} characters",

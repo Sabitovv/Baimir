@@ -96,6 +96,18 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
   const formattedPrice = Number.isFinite(priceNumber)
     ? `${priceNumber.toLocaleString(i18n.language)} ₸`
     : t("commonCatalog.askPrice");
+  const oldPriceNumber =
+    typeof product.oldPrice === "number" ? product.oldPrice : NaN;
+  const showOldPrice =
+    Number.isFinite(oldPriceNumber) &&
+    Number.isFinite(priceNumber) &&
+    oldPriceNumber > priceNumber;
+  const formattedOldPrice = showOldPrice
+    ? `${oldPriceNumber.toLocaleString(i18n.language)} ₸`
+    : null;
+  const discountPercent = showOldPrice
+    ? Math.round(((oldPriceNumber - priceNumber) / oldPriceNumber) * 100)
+    : null;
 
   const normalizedFeatures = useMemo(() => {
     return (
@@ -120,6 +132,11 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
               {t("commonCatalog.new")}
             </span>
           )}
+        {discountPercent !== null && discountPercent > 0 && (
+          <span className="absolute right-2 top-2 z-20 inline-flex items-center rounded-full bg-gradient-to-r from-[#D94A2A] to-[#DB741F] px-2.5 py-1 text-[11px] font-extrabold text-white shadow-sm ring-1 ring-white/60">
+            -{discountPercent}%
+          </span>
+        )}
         <img
           src={imgSrc}
           alt={product.name ?? "product image"}
@@ -169,7 +186,18 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
       )}
 
       <div className="mt-auto">
-        <p className="text-lg font-bold text-gray-900 mb-3">{formattedPrice}</p>
+        <div className="mb-3 rounded-md bg-white px-3 py-2.5">
+          <div className="flex items-end justify-between gap-2">
+            <p className={`text-lg font-extrabold tracking-tight text-gray-900 tabular-nums`}>
+              {formattedPrice}
+            </p>
+            {formattedOldPrice && (
+              <p className="inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-white px-2 py-0.5 text-[13px] font-medium text-gray-500 line-through decoration-gray-400 decoration-2 tabular-nums">
+                {formattedOldPrice}
+              </p>
+            )}
+          </div>
+        </div>
 
         {cartItem ? (
           <div className="flex items-center justify-between bg-[#F58322] rounded-sm">

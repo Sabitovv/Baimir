@@ -344,7 +344,7 @@ const AboutPage = () => {
           </ScrollReveal>
 
           <section className="mt-12 sm:mt-16 lg:mt-20 mb-16 sm:mb-20 grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <ScrollReveal className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)]">
+            <ScrollReveal id="work-schedule" className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)]">
               <h2 className="font-oswald text-2xl sm:text-3xl uppercase text-gray-900">
                 {t('about.schedule.title')}
               </h2>

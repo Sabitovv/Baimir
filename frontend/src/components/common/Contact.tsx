@@ -14,6 +14,9 @@ import {
 
 import { useCreateInquiryMutation } from '@/api/categoriesApi' 
 import type { InquiryRequest } from '@/api/categoriesApi'
+import { useGetCompanySettingsQuery } from '@/api/productsApi'
+import { isCompanyWorkingNow } from '@/utils/workSchedule'
+import WorkScheduleDialog from '@/components/common/WorkScheduleDialog'
 
 const LIMITS = {
   NAME: 120,
@@ -71,6 +74,9 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
   })
 
   const [createInquiry, { isLoading }] = useCreateInquiryMutation()
+  const { data: companySettingsData } = useGetCompanySettingsQuery()
+  const isCompanyClosedNow = isCompanyWorkingNow(companySettingsData?.COMPANY_WORK_SCHEDULE) === false
+  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false)
 
   const handleChange =
     (field: keyof FormState) =>
@@ -182,6 +188,18 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
   return (
     <Box className="w-full max-w-xl px-3 sm:px-4" component="section" aria-labelledby="contact-heading">
       <form className="flex flex-col gap-3 sm:gap-4" onSubmit={handleSubmit} noValidate>
+        {isCompanyClosedNow && (
+          <Alert severity="warning" sx={{ mb: 1 }}>
+            <span>{t('home.contact.nonWorkingHoursNotice')}</span>
+            <button
+              type="button"
+              onClick={() => setIsScheduleDialogOpen(true)}
+              className="mt-1 inline-flex font-semibold text-[#DB741F] hover:text-[#b85f18] hover:underline"
+            >
+              {t('home.contact.viewSchedule')}
+            </button>
+          </Alert>
+        )}
         <TextField
           size={isMobile ? 'small' : 'medium'}
           required
@@ -291,6 +309,10 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
           {snack.message}
         </Alert>
       </Snackbar>
+      <WorkScheduleDialog
+        open={isScheduleDialogOpen}
+        onClose={() => setIsScheduleDialogOpen(false)}
+      />
     </Box>
   )
 }

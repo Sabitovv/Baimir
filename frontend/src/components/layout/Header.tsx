@@ -10,7 +10,7 @@ import logo from '@/assets/header/oldBg.svg'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { useAppSelector } from '@/app/hooks'
-import { useGetPopularProductsQuery, useSearchProductsQuery } from '@/api/productsApi'
+import { useSearchProductsQuery } from '@/api/productsApi'
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import { EditableImage } from '@/zustand/EditableImage'
 //#F58322
@@ -97,7 +97,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       ? { query: debouncedQuery, page: 0, size: 20, sort: 'id,DESC' }
       : skipToken,
   )
-  const searchResults = (searchData?.content ?? []).slice(0, 8)
+  const searchResults = (searchData?.content ?? []).slice(0, 12)
   const shouldLoadEmptySuggestions =
     isSearchOpen && (!shouldSearch || (shouldSearch && !isSearchFetching && searchResults.length === 0))
   const {
@@ -105,18 +105,12 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     isFetching: isEmptyStateFetching,
   } = useProductCollectionPlacement('SEARCH_EMPTY_STATE_COLLECTION', {
     lang: i18n.language,
-    maxItems: 8,
+    maxItems: 12,
     skip: !shouldLoadEmptySuggestions,
   })
-  const { data: randomProductsData, isFetching: isRandomProductsFetching } =
-    useGetPopularProductsQuery(
-      shouldLoadEmptySuggestions ? { page: 0, size: 12 } : skipToken,
-    )
-  const randomProducts = randomProductsData?.content ?? []
-  const shouldShowFallbackProducts = emptyStateProducts.length < 3
-  const fallbackProducts = randomProducts
-    .filter((product) => !emptyStateProducts.some((item) => item.id === product.id))
-    .slice(0, Math.max(0, 8 - emptyStateProducts.length))
+  const hasEmptyStateSuggestions = emptyStateProducts.length > 0
+  const shouldRenderEmptyStateSuggestions = shouldLoadEmptySuggestions
+    && (isEmptyStateFetching || hasEmptyStateSuggestions)
 
   const navItems = [
     { id: 'catalog', path: '/catalog' },
@@ -181,109 +175,51 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     setIsMobileSearchVisible(false)
   }
 
-  const getDropdownStyle = (inputRef: React.RefObject<HTMLInputElement | null>) => {
-    if (!inputRef.current) return {}
-    const rect = inputRef.current.getBoundingClientRect()
-    const viewportHeight = window.innerHeight
-    const maxHeight = viewportHeight - rect.bottom - 16
-
-    return {
-      top: rect.bottom + 8,
-      left: rect.left,
-      width: rect.width,
-      maxHeight: `${Math.max(220, Math.min(maxHeight, 500))}px`,
-    }
-  }
-
-  const renderSearchDropdown = (inputRef: React.RefObject<HTMLInputElement | null>) => {
+  const renderDesktopSearchDropdown = () => {
     if (!isSearchOpen) return null
 
-    const dropdownStyle = getDropdownStyle(inputRef)
-
     return (
-      <div 
-        className='fixed z-[100] overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-2xl'
-        style={dropdownStyle}
-      >
+      <div className='absolute left-0 top-full mt-2 z-[120] w-[460px] 2xl:w-[560px] 3xl:w-[640px] overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-2xl'>
         {shouldSearch && isSearchFetching && (
           <div className="px-4 py-3 text-sm text-gray-500">{t('header.searchLoading')}</div>
         )}
 
-        {shouldLoadEmptySuggestions && (
+        {shouldRenderEmptyStateSuggestions && (
           <div className='px-3 py-3'>
-            {shouldSearch && !isSearchFetching && searchResults.length === 0 && (
-              <p className='px-1 text-sm text-gray-500'>{t('header.searchNoResults')}</p>
-            )}
-            <p className='px-1 pt-2 pb-2 text-xs font-semibold uppercase tracking-[0.05em] text-gray-800'>
-              Может вас заинтересует
-            </p>
-            <div className='max-h-[280px] overflow-y-auto pr-1'>
+            <div className='max-h-[460px] overflow-y-auto pr-1'>
               {isEmptyStateFetching && (
                 <div className='px-2 py-2 text-xs text-gray-500'>{t('header.searchLoading')}</div>
               )}
-              {!isEmptyStateFetching && emptyStateProducts.length > 0 && (
-                <ul className='overflow-y-auto py-1'>
-                  {emptyStateProducts.map((product) => (
-                    <li key={product.id}>
-                      <button
-                        type='button'
-                        onClick={() => handleSearchSelect(product.slug)}
-                        className='flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-gray-100'
-                      >
-                        <img
-                          src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
-                          alt={product.name}
-                          className='h-12 w-12 rounded-lg object-cover'
-                        />
-                        <span className='min-w-0 flex-1'>
-                          <span className='block truncate text-sm font-semibold text-gray-900'>
-                            {product.name}
-                          </span>
-                          <span className='block text-xs text-[#DB741F]'>
-                            {formatPrice(product.price)}
-                          </span>
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {shouldShowFallbackProducts && (
+              {!isEmptyStateFetching && hasEmptyStateSuggestions && (
                 <>
-                  <p className='px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-700'>
-                    Остальное
+                  <p className='px-1 pt-2 pb-2 text-xs font-semibold uppercase tracking-[0.05em] text-gray-800'>
+                    Может вас заинтересует
                   </p>
-                  {isRandomProductsFetching && (
-                    <div className='px-2 py-2 text-xs text-gray-500'>{t('header.searchLoading')}</div>
-                  )}
-                  {!isRandomProductsFetching && fallbackProducts.length > 0 && (
-                    <ul className='overflow-y-auto py-1'>
-                      {fallbackProducts.map((product) => (
-                        <li key={product.id}>
-                          <button
-                            type='button'
-                            onClick={() => handleSearchSelect(product.slug)}
-                            className='flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-gray-100'
-                          >
-                            <img
-                              src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
-                              alt={product.name}
-                              className='h-12 w-12 rounded-lg object-cover'
-                            />
-                            <span className='min-w-0 flex-1'>
-                              <span className='block truncate text-sm font-semibold text-gray-900'>
-                                {product.name}
-                              </span>
-                              <span className='block text-xs text-[#DB741F]'>
-                                {formatPrice(product.price)}
-                              </span>
+                  <ul className='overflow-y-auto py-1'>
+                    {emptyStateProducts.map((product) => (
+                      <li key={product.id}>
+                        <button
+                          type='button'
+                          onClick={() => handleSearchSelect(product.slug)}
+                          className='flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-gray-100'
+                        >
+                          <img
+                            src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                            alt={product.name}
+                            className='h-12 w-12 rounded-lg object-cover'
+                          />
+                          <span className='min-w-0 flex-1'>
+                            <span className='block truncate text-sm font-semibold text-gray-900'>
+                              {product.name}
                             </span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                            <span className='block text-xs text-[#DB741F]'>
+                              {formatPrice(product.price)}
+                            </span>
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 </>
               )}
             </div>
@@ -291,7 +227,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
         )}
 
         {shouldSearch && !isSearchFetching && searchResults.length > 0 && (
-          <ul className='max-h-[360px] overflow-y-auto py-2 pr-1'>
+          <ul className='max-h-[520px] overflow-y-auto py-2 pr-1'>
             {searchResults.map((product) => (
               <li key={product.id}>
                 <button
@@ -328,7 +264,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
         )}
 
         {shouldSearch && !isSearchFetching && searchResults.length > 0 && (
-          <ul className="max-h-[320px] overflow-y-auto py-2">
+          <ul className="max-h-[460px] overflow-y-auto py-2">
             {searchResults.map((product) => (
               <li key={product.id}>
                 <button
@@ -352,46 +288,44 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           </ul>
         )}
 
-        {shouldLoadEmptySuggestions && (
+        {shouldRenderEmptyStateSuggestions && (
           <div className="px-3 py-3">
-            {shouldSearch && !isSearchFetching && searchResults.length === 0 && (
-              <p className="px-1 text-sm text-gray-300">{t('header.searchNoResults')}</p>
-            )}
-            <p className="px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-400">
-              Может вас заинтересует
-            </p>
-
-            <div className="max-h-[260px] overflow-y-auto">
+            <div className="max-h-[420px] overflow-y-auto">
               {isEmptyStateFetching && (
                 <div className="px-2 py-2 text-xs text-gray-300">{t('header.searchLoading')}</div>
               )}
 
-              {!isEmptyStateFetching && emptyStateProducts.length > 0 && (
-                <ul className="overflow-y-auto py-1">
-                  {emptyStateProducts.map((product) => (
-                    <li key={product.id}>
-                      <button
-                        type="button"
-                        onClick={() => handleSearchSelect(product.slug)}
-                        className="flex w-full items-center gap-3 px-2 py-2.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
-                      >
-                        <img
-                          src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
-                          alt={product.name}
-                          className="hidden min-[380px]:block h-10 w-10 rounded-md object-cover shrink-0"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-semibold text-white">
-                            {product.name}
+              {!isEmptyStateFetching && hasEmptyStateSuggestions && (
+                <>
+                  <p className="px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-400">
+                    Может вас заинтересует
+                  </p>
+                  <ul className="overflow-y-auto py-1">
+                    {emptyStateProducts.map((product) => (
+                      <li key={product.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleSearchSelect(product.slug)}
+                          className="flex w-full items-center gap-3 px-2 py-2.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
+                        >
+                          <img
+                            src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                            alt={product.name}
+                            className="hidden min-[380px]:block h-10 w-10 rounded-md object-cover shrink-0"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-white">
+                              {product.name}
+                            </span>
+                            <span className="block text-xs text-[#F7A35C]">
+                              {formatPrice(product.price)}
+                            </span>
                           </span>
-                          <span className="block text-xs text-[#F7A35C]">
-                            {formatPrice(product.price)}
-                          </span>
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
               )}
             </div>
           </div>
@@ -410,7 +344,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
         )}
 
         {shouldSearch && !isSearchFetching && searchResults.length > 0 && (
-          <ul className="max-h-[320px] overflow-y-auto py-2">
+          <ul className="max-h-[460px] overflow-y-auto py-2">
             {searchResults.map((product) => (
               <li key={product.id}>
                 <button
@@ -434,46 +368,44 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           </ul>
         )}
 
-        {shouldLoadEmptySuggestions && (
+        {shouldRenderEmptyStateSuggestions && (
           <div className="px-3 py-3">
-            {shouldSearch && !isSearchFetching && searchResults.length === 0 && (
-              <p className="px-1 text-sm text-gray-300">{t('header.searchNoResults')}</p>
-            )}
-            <p className="px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-400">
-              Может вас заинтересует
-            </p>
-
-            <div className="max-h-[260px] overflow-y-auto">
+            <div className="max-h-[420px] overflow-y-auto">
               {isEmptyStateFetching && (
                 <div className="px-2 py-2 text-xs text-gray-300">{t('header.searchLoading')}</div>
               )}
 
-              {!isEmptyStateFetching && emptyStateProducts.length > 0 && (
-                <ul className="overflow-y-auto py-1">
-                  {emptyStateProducts.map((product) => (
-                    <li key={product.id}>
-                      <button
-                        type="button"
-                        onClick={() => handleSearchSelect(product.slug)}
-                        className="flex w-full items-center gap-3 px-2 py-2.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
-                      >
-                        <img
-                          src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
-                          alt={product.name}
-                          className="hidden min-[380px]:block h-10 w-10 rounded-md object-cover shrink-0"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-semibold text-white">
-                            {product.name}
+              {!isEmptyStateFetching && hasEmptyStateSuggestions && (
+                <>
+                  <p className="px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-400">
+                    Может вас заинтересует
+                  </p>
+                  <ul className="overflow-y-auto py-1">
+                    {emptyStateProducts.map((product) => (
+                      <li key={product.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleSearchSelect(product.slug)}
+                          className="flex w-full items-center gap-3 px-2 py-2.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
+                        >
+                          <img
+                            src={product.coverImage || 'https://placehold.co/56x56?text=No+Image'}
+                            alt={product.name}
+                            className="hidden min-[380px]:block h-10 w-10 rounded-md object-cover shrink-0"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-white">
+                              {product.name}
+                            </span>
+                            <span className="block text-xs text-[#F7A35C]">
+                              {formatPrice(product.price)}
+                            </span>
                           </span>
-                          <span className="block text-xs text-[#F7A35C]">
-                            {formatPrice(product.price)}
-                          </span>
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
               )}
             </div>
           </div>
@@ -483,7 +415,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full h-[88px] z-50 text-white overflow-x-hidden bg-[#141414] font-manrope">
+    <header className="fixed top-0 left-0 right-0 w-full h-[88px] z-50 text-white overflow-visible bg-[#141414] font-manrope">
       <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
         <div className="flex items-center gap-4 2xl:gap-8">
           <Link to="/" className="shrink-0">
@@ -492,35 +424,69 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
 
           <div
             ref={desktopSearchRef}
-            className="relative hidden 2xl:flex items-center w-[320px] 2xl:w-[400px] 3xl:w-[450px] h-10 border border-white/70 bg-black/30"
+            className="relative hidden 2xl:flex items-center w-[320px] 2xl:w-[400px] 3xl:w-[450px] h-10"
           >
-            <input
-              ref={desktopInputRef}
-              placeholder={t('header.search')}
-              value={searchValue}
-              onChange={(event) => {
-                setSearchValue(event.target.value)
-                setIsSearchOpen(true)
-              }}
-              onFocus={() => setIsSearchOpen(true)}
-              onKeyDown={(event) => {
-                if (event.key === 'Escape') {
-                  closeSearch()
-                }
-                if (event.key === 'Enter' && searchResults[0]) {
-                  handleSearchSelect(searchResults[0].slug)
-                }
-              }}
-              className="flex-1 bg-transparent px-4 text-sm text-white placeholder:text-gray-400 outline-none"
-            />
+            <div
+              className={`${
+                isSearchOpen
+                  ? 'absolute left-0 top-1/2 z-[110] flex h-12 w-[460px] 2xl:w-[560px] 3xl:w-[640px] -translate-y-1/2 items-center rounded-lg border border-white/40 bg-black/90 shadow-[0_12px_30px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all focus-within:border-[#F58322] focus-within:shadow-[0_0_0_3px_rgba(245,131,34,0.2)]'
+                  : 'flex h-10 w-full items-center border border-white/70 bg-black/30'
+              }`}
+            >
+              <input
+                ref={desktopInputRef}
+                placeholder={t('header.search')}
+                value={searchValue}
+                onChange={(event) => {
+                  setSearchValue(event.target.value)
+                  setIsSearchOpen(true)
+                }}
+                onFocus={() => setIsSearchOpen(true)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape') {
+                    closeSearch()
+                  }
+                  if (event.key === 'Enter' && searchResults[0]) {
+                    handleSearchSelect(searchResults[0].slug)
+                  }
+                }}
+                className={`flex-1 bg-transparent text-white outline-none ${
+                  isSearchOpen
+                    ? 'px-5 text-base placeholder:text-gray-300'
+                    : 'px-4 text-sm placeholder:text-gray-400'
+                }`}
+              />
+              {searchValue.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  aria-label="Clear search"
+                  title="Clear search"
+                  className={`transition-colors ${
+                    isSearchOpen ? 'text-gray-300 hover:text-white' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <CloseIcon sx={{ fontSize: 18 }} />
+                </button>
+              )}
               <button
                 type="button"
-                className="px-4 border-l border-white/70"
+                className={`${
+                  isSearchOpen
+                    ? 'ml-3 h-full px-5 border-l border-white/30 text-gray-100 hover:text-[#F7A35C]'
+                    : 'px-4 border-l border-white/70 text-white'
+                } transition-colors`}
                 onClick={submitSearch}
               >
-              <SearchIcon sx={{ color: 'white', fontSize: 20 }} />
-            </button>
-            {renderSearchDropdown(desktopInputRef)}
+                <SearchIcon sx={{ fontSize: 20 }} />
+              </button>
+              {isSearchOpen && (
+                <span className="pointer-events-none absolute right-16 hidden 3xl:block rounded border border-white/20 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-300">
+                  Esc
+                </span>
+              )}
+            </div>
+            {renderDesktopSearchDropdown()}
           </div>
         </div>
 
@@ -583,6 +549,14 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           </Link>
         </div>
       </div>
+      {isSearchOpen && !isMobileSearchVisible && (
+        <button
+          type="button"
+          aria-label="Close search"
+          onClick={closeSearch}
+          className="hidden 2xl:block fixed inset-0 z-[80] bg-black/20 backdrop-blur-[1px]"
+        />
+      )}
       <div className="xl:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
         <Link to="/">
           <EditableImage imageKey="header_mobile_logo" fallbackSrc={logo} alt="Baymir Logo" className="h-8" />

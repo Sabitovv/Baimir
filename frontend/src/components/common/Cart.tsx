@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CartCard from "./CartCard";
-import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
+import ProductCarousel from "@/components/collections/ProductCarousel";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useProductCollectionPlacement } from "@/features/productCollections/useProductCollectionPlacement";
 import {
   clearCart,
   decrementQuantity,
@@ -11,6 +12,9 @@ import {
   removeFromCart,
 } from "@/features/cartSlice";
 import { useCreateInquiryMutation } from "@/api/categoriesApi";
+import { useGetCompanySettingsQuery } from "@/api/productsApi";
+import { isCompanyWorkingNow } from "@/utils/workSchedule";
+import WorkScheduleDialog from "@/components/common/WorkScheduleDialog";
 
 const CheckCircleIcon = () => (
   <svg
@@ -34,6 +38,62 @@ type CartProps = {
   onClose: () => void;
 };
 
+const CartCrossSellSection = () => {
+  const { i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(true);
+  const { collections } = useProductCollectionPlacement(
+    "CART_CROSS_SELL_COLLECTION",
+    { lang: i18n.language, maxItems: 10 },
+  );
+
+  const visibleCollections = collections.filter(
+    (collection) => collection.products.length > 0,
+  );
+
+  if (visibleCollections.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="rounded-xl border border-[#EEF1F4] bg-gradient-to-b from-[#FFFFFF] to-[#FAFBFC] px-2.5 py-2">
+      <div className="mb-2 flex items-start justify-between gap-2 border-b border-dashed border-[#E5EAF0] pb-1.5">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-[#1F2937]">
+            Берут вместе
+          </p>
+          <p className="mt-0.5 text-[10px] text-[#6B7280]">
+            Универсальные товары: расходники, аксессуары и полезные мелочи
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="shrink-0 rounded-md border border-[#E5E7EB] bg-white px-2 py-1 text-[10px] font-semibold text-[#4B5563] transition hover:border-[#D1D5DB] hover:text-[#111827]"
+        >
+          {isOpen ? "Скрыть" : "Показать"}
+        </button>
+      </div>
+
+      {!isOpen ? null : (
+        <div className="space-y-2.5">
+          {visibleCollections.map((collection) => (
+            <div key={collection.id}>
+              <ProductCarousel
+                products={collection.products}
+                cardVariant="mini"
+                enableMouseDrag
+                showCompare={false}
+                className="[&>div]:pb-1.5 [&>div]:pt-0"
+                itemClassName="!w-[118px] !min-w-[118px] sm:!w-[126px] sm:!min-w-[126px]"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
+
 const Cart = ({ isOpen = false, onClose }: CartProps) => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
@@ -41,8 +101,12 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
 
   const [openUp, setOpenUp] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
 
   const [createInquiry, { isLoading }] = useCreateInquiryMutation();
+  const { data: companySettingsData } = useGetCompanySettingsQuery();
+  const isCompanyClosedNow =
+    isCompanyWorkingNow(companySettingsData?.COMPANY_WORK_SCHEDULE) === false;
 
   const total = items.reduce((sum, item) => {
     const itemPrice =
@@ -143,7 +207,10 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
           ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none"
       }`}
-      onClick={handleClose}
+      onClick={() => {
+        if (isScheduleDialogOpen) return;
+        handleClose();
+      }}
     >
       <div
         className={`relative w-full max-w-md h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out overflow-hidden ${
@@ -200,18 +267,24 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
         </div>
 
         {items.length > 0 && (
-          <div className="px-4 pb-2 bg-white max-h-[33vh] overflow-y-auto">
-            <ProductCollectionRenderer
-              placement="CART_CROSS_SELL_COLLECTION"
-              layout="carousel"
-              variant="recommendations"
-              carouselCardVariant="mini"
-              className="p-1 [&_h2]:text-xs [&_p]:hidden"
-            />
+          <div className="px-4 pb-2 bg-white max-h-[24vh] overflow-y-auto">
+            <CartCrossSellSection />
           </div>
         )}
 
         <div className="border-t border-gray-200 p-4 space-y-3 bg-white relative z-10">
+          {isCompanyClosedNow && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+              <p>{t("home.contact.nonWorkingHoursNotice")}</p>
+              <button
+                type="button"
+                onClick={() => setIsScheduleDialogOpen(true)}
+                className="mt-2 inline-flex text-xs font-semibold text-[#DB741F] hover:text-[#b85f18] hover:underline"
+              >
+                {t("home.contact.viewSchedule")}
+              </button>
+            </div>
+          )}
           <div className="flex items-center justify-between text-sm text-gray-600">
             <span>{t("cart.itemsTotalLabel")}</span>
             <span>
@@ -247,21 +320,6 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
               <p className="text-gray-600 mb-6">
                 {t("cart.successDescription")}
               </p>
-
-              <div className="w-full rounded-2xl border border-[#FDE4CF] bg-gradient-to-b from-[#FFF8F1] to-white p-3 shadow-[0_8px_18px_rgba(245,131,34,0.10)] text-left">
-                <div className="mb-2.5 flex items-center justify-between border-b border-[#F7DCC3] pb-2">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#C96A1D]">
-                    Рекомендуем к следующей покупке
-                  </p>
-                </div>
-                <ProductCollectionRenderer
-                  placement="POST_PURCHASE_NEXT_BUY_COLLECTION"
-                  layout="carousel"
-                  variant="recommendations"
-                  carouselCardVariant="mini"
-                  className="border-0 bg-transparent p-0 shadow-none [&_h2]:hidden [&_p]:hidden"
-                />
-              </div>
 
               <button
                 onClick={handleClose}
@@ -383,6 +441,10 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
           )}
         </div>
       </div>
+      <WorkScheduleDialog
+        open={isScheduleDialogOpen}
+        onClose={() => setIsScheduleDialogOpen(false)}
+      />
     </div>
   );
 };

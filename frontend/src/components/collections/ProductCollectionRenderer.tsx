@@ -144,8 +144,7 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
                       </div>
                       <button
                         type='button'
-                        // ДОБАВЛЕН ОБРАБОТЧИК КЛИКА (перенаправляем на страницу коллекции)
-                        onClick={() => navigate(`/collections/${collection.id}`)}
+                        onClick={() => navigate(`/collections/${collection.slug}`)}
                         className='shrink-0 rounded-full border border-[#F58322] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] text-[#DB741F] transition hover:bg-[#FFF4EA] sm:px-4 sm:py-1.5 sm:text-xs'
                       >
                         Смотреть все

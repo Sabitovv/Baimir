@@ -156,37 +156,11 @@ const CatalogDeepProductsPage = ({
       ? categoryIdFromParent
       : null;
 
-  const rootCategoryIds = useMemo(() => {
-    const hasNestedTree = categories.some(
-      (category) =>
-        Array.isArray(category.children) && category.children.length > 0,
-    );
-
-    if (hasNestedTree) {
-      return new Set(
-        categories
-          .map((category) => Number(category.id))
-          .filter((id) => Number.isFinite(id)),
-      );
-    }
-
-    return new Set(
-      categories
-        .filter((category) => category.parentId === null)
-        .map((category) => Number(category.id))
-        .filter((id) => Number.isFinite(id)),
-    );
-  }, [categories]);
-
-  const isRootCategory = selectedCategoryId === null
-    ? true
-    : rootCategoryIds.has(selectedCategoryId);
-
   const deepQueryParams = parentCategoryId
     ? { categoryId: parentCategoryId }
-    : isRootCategory
-    ? {}
-    : { categoryId: selectedCategoryId ?? undefined };
+    : selectedCategoryId
+      ? { categoryId: selectedCategoryId }
+      : {};
 
   const { data, isLoading, error } = useGetProductsDeepQuery(deepQueryParams);
 

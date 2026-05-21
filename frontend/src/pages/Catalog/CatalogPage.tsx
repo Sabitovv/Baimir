@@ -16,9 +16,9 @@ import StrategicCollectionBannerCarousel from "@/components/collections/Strategi
 import sampleImg from "@/assets/catalog/sample_machine.png";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
-import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
 import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
-import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
+import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
+import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
 
 interface CategoryImageProps {
   src?: string | null;
@@ -153,7 +153,7 @@ const CatalogPage = () => {
           <Breadcrumbs />
         </div>
 
-        <div className="mb-5 sm:mb-7">
+        <div className="hidden md:block mb-5 sm:mb-7">
           <StrategicCollectionBannerCarousel />
         </div>
 
@@ -210,7 +210,6 @@ const CatalogPage = () => {
           </main>
         </div>
 
-        {/* Общий заголовок для секций Коллекций и Deep Products */}
         <div className="mt-12 sm:mt-16 mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
           <h2 className="font-oswald text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
             {t("catalogPage.deepProductsTitle")}
@@ -218,23 +217,11 @@ const CatalogPage = () => {
           <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
         </div>
 
-        <div className="mb-6 sm:mb-8">
-          <ProductCollectionRenderer
-            placement="CATEGORY_INLINE_COLLECTION"
-            layout="carousel"
-            maxItems={12}
-            skeletonCount={4}
-          />
-        </div>
+        <CategoryInlineCollectionsSection />
 
-        <CatalogDeepProductsPage
-          embedded
-          categoryId={
-            currentCategory && Number.isFinite(Number(currentCategory.id))
-              ? Number(currentCategory.id)
-              : null
-          }
-        />
+        <div className="mb-6 sm:mb-8">
+          <CatalogDeepProductsPage embedded />
+        </div>
 
         <RecentlyViewedProducts />
 

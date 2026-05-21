@@ -143,7 +143,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const showOldPrice =
     Number.isFinite(oldPriceNumber) &&
     Number.isFinite(priceNumber) &&
-    oldPriceNumber < priceNumber;
+    oldPriceNumber > priceNumber;
+  const discountPercent = showOldPrice
+    ? Math.round(((oldPriceNumber - priceNumber) / oldPriceNumber) * 100)
+    : null;
   const formattedOldPrice = showOldPrice
     ? `${oldPriceNumber.toLocaleString(i18n.language)} ₸`
     : null;
@@ -170,6 +173,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {t("commonCatalog.new")}
           </span>
         )}
+        {discountPercent !== null && discountPercent > 0 && (
+          <span className={`absolute right-2 top-2 z-20 inline-flex items-center rounded-full bg-gradient-to-r from-[#D94A2A] to-[#DB741F] text-white font-extrabold shadow-sm ring-1 ring-white/60 ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"}`}>
+            -{discountPercent}%
+          </span>
+        )}
         <img
           src={resolvedImgSrc}
           alt={name}
@@ -183,19 +191,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {name}
       </h3>
 
-      <div className={`flex flex-wrap items-center ${isMini ? "mb-1 gap-1" : isCompact ? "mb-1.5 sm:mb-2 gap-1.5" : "mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 gap-1.5 sm:gap-2"}`}>
-        <span
-          className={`inline-flex items-center rounded-full font-semibold ${isMini ? "px-1 py-0.5 text-[8px]" : isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"} ${
-            isOutOfStock
-              ? "bg-gray-100 text-gray-600"
-              : "bg-green-50 text-green-700"
-          }`}
-        >
-          {isOutOfStock
-            ? t("commonCatalog.outOfStock")
-            : t("commonCatalog.inStock")}
-        </span>
-      </div>
+      {!isMini && (
+        <div className={`flex flex-wrap items-center ${isCompact ? "mb-1.5 sm:mb-2 gap-1.5" : "mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 gap-1.5 sm:gap-2"}`}>
+          <span
+            className={`inline-flex items-center rounded-full font-semibold ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"} ${
+              isOutOfStock
+                ? "bg-gray-100 text-gray-600"
+                : "bg-green-50 text-green-700"
+            }`}
+          >
+            {isOutOfStock
+              ? t("commonCatalog.outOfStock")
+              : t("commonCatalog.inStock")}
+          </span>
+        </div>
+      )}
 
       {normalizedFeatures.length > 0 && (
         <div className={`${isCompact ? "mb-1.5 sm:mb-2 space-y-0.5" : "mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 space-y-1"}`}>
@@ -219,14 +229,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
       )}
 
       <div className="mt-auto">
-        <p className={`font-bold text-gray-900 ${isMini ? "text-xs mb-1" : isCompact ? "text-[15px] sm:text-base md:text-[17px] mb-1.5 sm:mb-2" : "text-base sm:text-[17px] md:text-base lg:text-[17px] xl:text-lg mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3"}`}>
-          {formattedPrice}
-        </p>
-        {formattedOldPrice && (
-          <p className={`${isMini ? "-mt-1 mb-1 text-[9px]" : isCompact ? "-mt-1 mb-1.5 sm:mb-2 text-[10px] sm:text-xs" : "-mt-1.5 sm:-mt-2 mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3 text-[11px] sm:text-xs"} text-gray-400 line-through`}>
-            {formattedOldPrice}
-          </p>
-        )}
+        <div className={` rounded-md bg-white px-2.5 py-2.5`}>
+          <div className="flex items-end justify-between gap-2">
+            <p
+              className={`font-extrabold tracking-tight text-gray-900 tabular-nums ${
+                isMini ? "text-[11px] leading-tight" : "text-base"
+              }`}
+            >
+              {formattedPrice}
+            </p>
+            {formattedOldPrice ? (
+              <p
+                className={`inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-white px-2 py-0.5 font-medium text-gray-500 line-through decoration-gray-400 decoration-2 tabular-nums ${
+                  isMini ? "text-[9px]" : "text-[12px]"
+                }`}
+              >
+                {formattedOldPrice}
+              </p>
+            ) : null}
+          </div>
+        </div>
 
         <div className="flex gap-2 items-stretch">
           {showCompare && (

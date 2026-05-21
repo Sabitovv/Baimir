@@ -40,6 +40,7 @@ import productPlaceholder from "@/assets/catalog/productPlaceholder.svg";
 import Contact from "@/components/common/Contact";
 import ProductCard from "@/components/common/ProductCard";
 import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
+import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
 import {
   addToCart,
   incrementQuantity,
@@ -2850,6 +2851,7 @@ const ProductPage = () => {
           layout="carousel"
           className="mt-8 sm:mt-10 md:mt-12 mb-12 sm:mb-16 md:mb-20"
         />
+        <CategoryInlineCollectionsSection sectionTitle="Подборки" />
         <RecentlyViewedProducts />
         {!isLargeDescription && (
           <section className="mb-16">
