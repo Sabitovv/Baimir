@@ -85,6 +85,12 @@ const CatalogPage = () => {
       : null;
   }, [location.pathname, data]);
 
+  const currentCategoryId = useMemo(() => {
+    const rawId = currentCategory?.id;
+    const parsed = typeof rawId === "number" ? rawId : Number(rawId);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [currentCategory?.id]);
+
   useEffect(() => {
     if (!data) return;
 
@@ -218,7 +224,7 @@ const CatalogPage = () => {
         </div>
 
         <CategoryInlineCollectionsSection
-          categoryId={currentCategory?.id ?? null}
+          categoryId={currentCategoryId}
           requireCategoryId={false}
         />
 
