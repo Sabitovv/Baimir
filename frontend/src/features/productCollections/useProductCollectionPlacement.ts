@@ -10,17 +10,40 @@ export const useProductCollectionPlacement = (
     lang?: string
     skip?: boolean
     maxItems?: number
+    categoryId?: number
+    requireCategoryId?: boolean
+    page?: number
+    size?: number
+    sort?: string
   },
 ) => {
+  const shouldRequireCategoryId =
+    placement === 'CATEGORY_INLINE_COLLECTION' && options?.requireCategoryId !== false
+  const hasValidCategoryId =
+    typeof options?.categoryId === 'number' &&
+    Number.isFinite(options.categoryId) &&
+    options.categoryId > 0
+
+  const shouldSkip = Boolean(
+    options?.skip || (shouldRequireCategoryId && !hasValidCategoryId),
+  )
+
   const query = useGetResolvedCollectionsQuery(
-    { lang: options?.lang },
-    { skip: options?.skip },
+    {
+      placement,
+      ...(shouldRequireCategoryId && hasValidCategoryId
+        ? { categoryId: options?.categoryId }
+        : {}),
+      page: options?.page ?? 0,
+      size: options?.size ?? 20,
+      sort: options?.sort,
+      lang: options?.lang,
+    },
+    { skip: shouldSkip },
   )
 
   const collections = useMemo(() => {
-    const source = (query.data ?? [])
-      .filter((collection) => collection.placements.includes(placement))
-      .sort((a, b) => a.sortOrder - b.sortOrder)
+    const source = [...(query.data ?? [])].sort((a, b) => a.sortOrder - b.sortOrder)
     const maxItems = options?.maxItems
     if (!maxItems || maxItems <= 0) return source
 

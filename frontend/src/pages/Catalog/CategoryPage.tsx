@@ -659,7 +659,7 @@ const CategoryPage = () => {
         </div>
 
         {hasProducts && (
-          <CategoryInlineCollectionsSection sectionTitle="Подборки" />
+          <CategoryInlineCollectionsSection sectionTitle="Подборки" categoryId={activeId} />
         )}
 
         {!hasProducts && (
@@ -671,7 +671,7 @@ const CategoryPage = () => {
               <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
             </div>
 
-            <CategoryInlineCollectionsSection />
+            <CategoryInlineCollectionsSection categoryId={activeId} />
 
             <CatalogDeepProductsPage embedded categoryId={activeId} />
           </>

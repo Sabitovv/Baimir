@@ -7,17 +7,26 @@ import type { CollectionProduct } from '@/api/productCollectionsApi'
 
 type CategoryInlineCollectionsSectionProps = {
   sectionTitle?: string
+  categoryId?: number | null
+  requireCategoryId?: boolean
 }
 
 const CategoryInlineCollectionsSection = ({
   sectionTitle,
+  categoryId,
+  requireCategoryId = true,
 }: CategoryInlineCollectionsSectionProps) => {
   const { i18n } = useTranslation()
   const navigate = useNavigate()
 
   const { collections } = useProductCollectionPlacement(
     'CATEGORY_INLINE_COLLECTION',
-    { lang: i18n.language, maxItems: 12 },
+    {
+      lang: i18n.language,
+      maxItems: 12,
+      categoryId: typeof categoryId === 'number' ? categoryId : undefined,
+      requireCategoryId,
+    },
   )
 
   const visibleCollections = useMemo(

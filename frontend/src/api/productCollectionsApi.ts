@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import i18n from 'i18next'
 
 export type CollectionPlacementType =
+  | 'HOME_PAGE'
   | 'HOME_HERO_COLLECTION'
   | 'HOME_PERSONALIZED_RECOMMENDATIONS'
   | 'CATALOG_TOP_STRATEGIC_COLLECTION'
@@ -17,7 +18,7 @@ export type ProductCollection = {
   id: number
   name: string
   slug: string
-  placements: CollectionPlacementType[]
+  placements?: CollectionPlacementType[]
   sortOrder: number
   startDate: string | null
   endDate: string | null
@@ -47,9 +48,29 @@ export type ProductCollectionWithProducts = ProductCollection & {
   products: CollectionProduct[]
 }
 
+export type PageResponse<T> = {
+  content: T[]
+  totalPages: number
+  totalElements: number
+  size: number
+  number: number
+}
+
+export type ProductCollectionsQueryParams = {
+  placement?: CollectionPlacementType
+  categoryId?: number
+  page?: number
+  size?: number
+  sort?: string
+  lang?: string
+}
+
 export type ProductCollectionBySlug = {
+  id?: number
   slug: string
   name: string
+  placements?: CollectionPlacementType[]
+  sortOrder?: number
   startDate: string | null
   endDate: string | null
   products: CollectionProduct[]
@@ -71,18 +92,25 @@ export const productCollectionsApi = createApi({
   }),
   tagTypes: ['ProductCollection'],
   endpoints: (builder) => ({
-    getProductCollections: builder.query<ProductCollection[], { lang?: string } | void>({
+    getProductCollections: builder.query<PageResponse<ProductCollection>, ProductCollectionsQueryParams | void>({
       query: (arg) => {
-        const lang = (arg as { lang?: string })?.lang
+        const params = arg as ProductCollectionsQueryParams | undefined
         return {
           url: '/collections',
-          headers: lang ? { 'Accept-Language': lang } : undefined,
+          params: {
+            ...(params?.placement ? { placement: params.placement } : {}),
+            ...(params?.categoryId !== undefined ? { categoryId: params.categoryId } : {}),
+            page: params?.page ?? 0,
+            size: params?.size ?? 20,
+            ...(params?.sort ? { sort: params.sort } : {}),
+          },
+          headers: params?.lang ? { 'Accept-Language': params.lang } : undefined,
         }
       },
       providesTags: (result) =>
         result
           ? [
-              ...result.map((item) => ({ type: 'ProductCollection' as const, id: item.id })),
+              ...result.content.map((item) => ({ type: 'ProductCollection' as const, id: item.id })),
               { type: 'ProductCollection' as const, id: 'LIST' },
             ]
           : [{ type: 'ProductCollection' as const, id: 'LIST' }],
@@ -105,20 +133,27 @@ export const productCollectionsApi = createApi({
     }),
     getResolvedCollections: builder.query<
       ResolvedPlacementCollection[],
-      { lang?: string } | void
+      ProductCollectionsQueryParams | void
     >({
       async queryFn(arg, _api, _extraOptions, fetchWithBQ) {
-        const lang = (arg as { lang?: string } | undefined)?.lang
+        const params = arg as ProductCollectionsQueryParams | undefined
         const listResult = await fetchWithBQ({
           url: '/collections',
-          headers: lang ? { 'Accept-Language': lang } : undefined,
+          params: {
+            ...(params?.placement ? { placement: params.placement } : {}),
+            ...(params?.categoryId !== undefined ? { categoryId: params.categoryId } : {}),
+            page: params?.page ?? 0,
+            size: params?.size ?? 20,
+            ...(params?.sort ? { sort: params.sort } : {}),
+          },
+          headers: params?.lang ? { 'Accept-Language': params.lang } : undefined,
         })
 
         if (listResult.error) {
           return { error: listResult.error }
         }
 
-        const collections = (listResult.data ?? []) as ProductCollection[]
+        const collections = ((listResult.data as PageResponse<ProductCollection> | undefined)?.content ?? []) as ProductCollection[]
         const sortedCollections = [...collections].sort((a, b) => a.sortOrder - b.sortOrder)
         if (sortedCollections.length === 0) {
           return { data: [] }
@@ -128,7 +163,7 @@ export const productCollectionsApi = createApi({
           sortedCollections.map((collection) =>
             fetchWithBQ({
               url: `/collections/slug/${collection.slug}`,
-              headers: lang ? { 'Accept-Language': lang } : undefined,
+              headers: params?.lang ? { 'Accept-Language': params.lang } : undefined,
             }),
           ),
         )
@@ -142,6 +177,8 @@ export const productCollectionsApi = createApi({
           const detail = detailsResults[index]?.data as ProductCollectionBySlug | undefined
           return {
             ...collection,
+            placements: detail?.placements ?? collection.placements ?? [],
+            sortOrder: detail?.sortOrder ?? collection.sortOrder,
             products: detail?.products ?? [],
           }
         })

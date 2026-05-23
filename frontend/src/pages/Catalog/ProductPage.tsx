@@ -2851,7 +2851,10 @@ const ProductPage = () => {
           layout="carousel"
           className="mt-8 sm:mt-10 md:mt-12 mb-12 sm:mb-16 md:mb-20"
         />
-        <CategoryInlineCollectionsSection sectionTitle="Подборки" />
+        <CategoryInlineCollectionsSection
+          sectionTitle="Подборки"
+          categoryId={product?.category?.id ?? null}
+        />
         <RecentlyViewedProducts />
         {!isLargeDescription && (
           <section className="mb-16">
