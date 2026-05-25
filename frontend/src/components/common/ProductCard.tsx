@@ -218,12 +218,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       )}
 
-      <div className="mt-auto">
-        <p className={`font-bold text-gray-900 ${isMini ? "text-xs mb-1" : isCompact ? "text-[15px] sm:text-base md:text-[17px] mb-1.5 sm:mb-2" : "text-base sm:text-[17px] md:text-base lg:text-[17px] xl:text-lg mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3"}`}>
+      <div className="mt-auto min-w-0">
+        <p className={`font-bold text-gray-900 truncate ${isMini ? "text-xs mb-1" : isCompact ? "text-[13px] sm:text-base md:text-[17px] mb-1.5 sm:mb-2" : "text-[13px] sm:text-[17px] md:text-base lg:text-[17px] xl:text-lg mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3"}`}>
           {formattedPrice}
         </p>
         {formattedOldPrice && (
-          <p className={`${isMini ? "-mt-1 mb-1 text-[9px]" : isCompact ? "-mt-1 mb-1.5 sm:mb-2 text-[10px] sm:text-xs" : "-mt-1.5 sm:-mt-2 mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3 text-[11px] sm:text-xs"} text-gray-400 line-through`}>
+          <p className={`truncate ${isMini ? "-mt-1 mb-1 text-[8px]" : isCompact ? "-mt-1 mb-1.5 sm:mb-2 text-[8px] sm:text-xs" : "-mt-1.5 sm:-mt-2 mb-2.5 sm:mb-2.5 md:mb-2 lg:mb-3 text-[9px] sm:text-xs"} text-gray-400 line-through`}>
             {formattedOldPrice}
           </p>
         )}
