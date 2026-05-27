@@ -58,9 +58,10 @@ const AttachmentList = ({ attachments, className = '' }: AttachmentListProps) =>
     }
 
     setSelectedFile((current) => {
-      if (!current) return sortedAttachments[0]
+      const firstAttachment = sortedAttachments[0] ?? null
+      if (!current) return firstAttachment
       const stillExists = sortedAttachments.find((file) => file.id === current.id)
-      return stillExists ?? sortedAttachments[0]
+      return stillExists ?? firstAttachment
     })
   }, [sortedAttachments])
 
