@@ -61,6 +61,7 @@ const OptionalCollectionSection = ({
 }
 
 const Home = () => {
+    const { t } = useTranslation()
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
 
     useEffect(() => {
@@ -94,7 +95,7 @@ const Home = () => {
                 placement="HOME_PERSONALIZED_RECOMMENDATIONS"
                 containerClassName="pb-5 md:pb-10"
                 variant="recommendations"
-                title="Персональные рекомендации"
+                title={t('home.personalizedRecommendations')}
             />
             <IndustryCatalog />
             <WhyChooseUs />
@@ -155,7 +156,7 @@ const Home = () => {
                     <div
                         role="dialog"
                         aria-modal="true"
-                        aria-label="Форма отзыва"
+                        aria-label={t('home.reviews.formAriaLabel')}
                         className={`relative w-full max-w-5xl max-h-[92vh] overflow-y-auto transform-gpu transition-all duration-300 ease-out will-change-transform ${
                             isReviewModalOpen
                                 ? 'opacity-100 translate-y-0 scale-100'
@@ -165,7 +166,7 @@ const Home = () => {
                     >
                         <button
                             type="button"
-                            aria-label="Закрыть"
+                            aria-label={t('common.close')}
                             onClick={() => setIsReviewModalOpen(false)}
                             className="absolute right-4 top-4 z-10 w-10 h-10 rounded-full bg-white text-[#111111] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
                         >

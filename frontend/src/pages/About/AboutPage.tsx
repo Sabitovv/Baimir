@@ -157,7 +157,7 @@ const AboutPage = () => {
                   {t('about.hero.kicker')}
                 </motion.p>
                 <motion.h1
-                  className="mt-3 font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight"
+                  className="mt-3 font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight"
                   initial={{ opacity: 0, y: 12 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.35 }}
@@ -197,7 +197,7 @@ const AboutPage = () => {
 
           <section className="mt-12 sm:mt-16 lg:mt-20">
             <ScrollReveal>
-              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-gray-900">
+              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-gray-900">
                 {t('about.stats.title')}
               </h2>
             </ScrollReveal>
@@ -206,7 +206,7 @@ const AboutPage = () => {
               {stats.map((item) => (
                 <StaggerItem key={item.label} className="relative overflow-hidden bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)] hover:-translate-y-0.5 transition-transform">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#F58322] to-[#DB741F]" />
-                  <p className="font-oswald text-3xl sm:text-4xl text-[#F58322]">{item.value}</p>
+                  <p className="font-manrope text-3xl sm:text-4xl text-[#F58322]">{item.value}</p>
                   <p className="mt-2 text-sm sm:text-base text-gray-700 leading-snug">{item.label}</p>
                 </StaggerItem>
               ))}
@@ -215,7 +215,7 @@ const AboutPage = () => {
 
           <section className="mt-12 sm:mt-16 lg:mt-20">
             <ScrollReveal>
-              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#F58322]">
+              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#F58322]">
                 {t('about.advantages.title')}
               </h2>
             </ScrollReveal>
@@ -230,7 +230,7 @@ const AboutPage = () => {
                       : 'bg-gradient-to-br from-[#1e252b] to-[#141414]'
                   } shadow-[0_18px_32px_-24px_rgba(20,20,20,0.9)]`}
                 >
-                  <h3 className="font-oswald text-xl sm:text-2xl uppercase">{item.title}</h3>
+                  <h3 className="font-manrope text-xl sm:text-2xl uppercase">{item.title}</h3>
                   <p className="mt-3 text-sm sm:text-base text-gray-200 leading-relaxed">{item.text}</p>
                 </StaggerItem>
               ))}
@@ -245,7 +245,7 @@ const AboutPage = () => {
                     key={section.id}
                     className="bg-white border border-gray-200 rounded-xl p-6 sm:p-7 shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)]"
                   >
-                    <h3 className="font-oswald text-xl sm:text-2xl uppercase text-gray-900">
+                    <h3 className="font-manrope text-xl sm:text-2xl uppercase text-gray-900">
                       {getLocalizedCompanyInfoText(section.title, companyInfoLocale)}
                     </h3>
 
@@ -273,7 +273,7 @@ const AboutPage = () => {
           {companyManagers.length > 0 && (
             <section className="mt-12 sm:mt-16 lg:mt-20">
               <ScrollReveal>
-                <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-gray-900">
+                <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-gray-900">
                   {t('about.managers.title')}
                 </h2>
               </ScrollReveal>
@@ -325,7 +325,7 @@ const AboutPage = () => {
             <div className="absolute -right-20 -top-20 w-56 h-56 rounded-full border border-[#F58322]/25" />
             <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-[#F58322]/8 blur-2xl" />
 
-            <h2 className="relative z-10 font-oswald text-2xl sm:text-3xl uppercase text-white">
+            <h2 className="relative z-10 font-manrope text-2xl sm:text-3xl uppercase text-white">
               {t('about.brands.title')}
             </h2>
             <p className="relative z-10 mt-3 text-sm sm:text-base text-gray-200 leading-relaxed max-w-4xl">
@@ -345,7 +345,7 @@ const AboutPage = () => {
 
           <section className="mt-12 sm:mt-16 lg:mt-20 mb-16 sm:mb-20 grid grid-cols-1 xl:grid-cols-2 gap-6">
             <ScrollReveal id="work-schedule" className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)]">
-              <h2 className="font-oswald text-2xl sm:text-3xl uppercase text-gray-900">
+              <h2 className="font-manrope text-2xl sm:text-3xl uppercase text-gray-900">
                 {t('about.schedule.title')}
               </h2>
               {isScheduleLoading ? (
@@ -408,7 +408,7 @@ const AboutPage = () => {
 
             <ScrollReveal delay={0.15} className="relative overflow-hidden bg-[#141414] text-white rounded-xl p-6 sm:p-8 border border-gray-700 shadow-[0_22px_35px_-24px_rgba(20,20,20,0.95)]">
               <div className="absolute -top-16 right-0 w-44 h-44 rounded-full bg-[#F58322]/15 blur-2xl" />
-              <h2 className="font-oswald text-2xl sm:text-3xl uppercase">{t('about.contacts.title')}</h2>
+              <h2 className="font-manrope text-2xl sm:text-3xl uppercase">{t('about.contacts.title')}</h2>
               <p className="mt-4 text-gray-300">{contactAddress}</p>
 
               <div className="mt-6 space-y-2">
@@ -437,7 +437,7 @@ const AboutPage = () => {
 
           <ScrollReveal className="mb-16 sm:mb-20 rounded-xl overflow-hidden border border-gray-200 bg-white shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)]">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 sm:px-7 py-4 border-b border-gray-100">
-              <h2 className="font-oswald text-2xl sm:text-3xl uppercase text-gray-900">
+              <h2 className="font-manrope text-2xl sm:text-3xl uppercase text-gray-900">
                 {t('about.map.title')}
               </h2>
               <a

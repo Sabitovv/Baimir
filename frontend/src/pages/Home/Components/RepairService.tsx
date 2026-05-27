@@ -28,7 +28,7 @@ const RepairService = () => {
     <section className="py-24 bg-[#F5F7F8]">
       <PageContainer>
         <ScrollReveal>
-          <h1 className="font-oswald text-[#0E1621] text-4xl min-[650px]:text-5xl min-[900px]:text-6xl font-bold uppercase mb-4">
+          <h1 className="font-manrope text-[#0E1621] text-4xl min-[650px]:text-5xl min-[900px]:text-6xl font-bold uppercase mb-4">
             {t('home.repair.title')}
           </h1>
 
@@ -45,7 +45,7 @@ const RepairService = () => {
             <div className="block min-[650px]:hidden">
               {/* Orange card – engineer */}
               <div className="bg-[#F58322] px-6 py-10 text-[#233337]">
-                <h3 className="font-oswald text-2xl uppercase mb-6 font-bold">
+                <h3 className="font-manrope text-2xl uppercase mb-6 font-bold">
                   {t('home.repair.engineer.title')}
                 </h3>
                 <StaggerContainer staggerDelay={0.1} className="space-y-4 text-sm">
@@ -62,7 +62,7 @@ const RepairService = () => {
 
               {/* Dark card – client */}
               <div className="bg-[#233337] px-6 py-10 text-white">
-                <h3 className="font-oswald text-2xl uppercase mb-6 font-bold">
+                <h3 className="font-manrope text-2xl uppercase mb-6 font-bold">
                   {t('home.repair.client.title')}
                 </h3>
                 <StaggerContainer staggerDelay={0.1} className="space-y-4 text-sm text-gray-200 mb-8">
@@ -113,7 +113,7 @@ const RepairService = () => {
 
                 {/* Left column – engineer */}
                 <div className="w-full min-[650px]:w-[40%] px-6 min-[650px]:px-12 py-8 min-[650px]:py-12 text-[#233337] mt-6 min-[650px]:mt-10">
-                  <h3 className="font-oswald text-3xl uppercase mb-6 font-bold">
+                  <h3 className="font-manrope text-3xl uppercase mb-6 font-bold">
                     {t('home.repair.engineer.title')}
                   </h3>
 
@@ -132,7 +132,7 @@ const RepairService = () => {
                 {/* Right column – client */}
                 <div className="w-full min-[650px]:flex-1 px-6 min-[650px]:px-10 min-[900px]:px-16 py-8 min-[650px]:py-12 text-white flex flex-col items-end text-end mt-6 min-[650px]:mt-10">
                   <div>
-                    <h3 className="font-oswald text-2xl min-[1000px]:text-3xl uppercase mb-6 font-bold">
+                    <h3 className="font-manrope text-2xl min-[1000px]:text-3xl uppercase mb-6 font-bold">
                       {t('home.repair.client.title')}
                     </h3>
 

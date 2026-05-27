@@ -36,7 +36,7 @@ const WhyChooseUs = () => {
         <div className="px-1 md:px-0">
 
           <ScrollReveal>
-            <h2 className="mb-6 font-oswald text-[32px] font-semibold uppercase leading-[1.06] text-[#111111] md:mb-12 md:text-5xl xl:text-6xl">
+            <h2 className="mb-6 font-manrope text-[32px] font-semibold uppercase leading-[1.06] text-[#111111] md:mb-12 md:text-5xl xl:text-6xl">
               {t('home.why.title')}
             </h2>
           </ScrollReveal>
@@ -47,7 +47,7 @@ const WhyChooseUs = () => {
                   <div className="mb-3 text-[#F58322]">
                     <EditableImage imageKey={item.key} fallbackSrc={item.icon} alt="" className="h-10 w-10 object-contain md:h-12 md:w-12" />
                   </div>
-                  <h3 className="mb-2 font-oswald text-[15px] font-bold uppercase leading-5 md:text-xl">
+                  <h3 className="mb-2 font-manrope text-[15px] font-bold uppercase leading-5 md:text-xl">
                     {t(item.titleKey)}
                   </h3>
                   <p className="flex-1 text-sm leading-relaxed text-gray-600">

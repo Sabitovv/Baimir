@@ -20,7 +20,7 @@
 
 //           <section className='flex flex-col mx-auto w-full'>
 //             <ScrollReveal>
-//               <h1 className="font-oswald font-semibold text-3xl md:text-4xl xl:text-[45px] uppercase text-[#F05023]">
+//               <h1 className="font-manrope font-semibold text-3xl md:text-4xl xl:text-[45px] uppercase text-[#F05023]">
 //                 {t('technology.title')}
 //               </h1>
 //               <h3 className='text-xl font-bold mb-4 mt-1' style={{ whiteSpace: 'pre-line' }}>
@@ -42,7 +42,7 @@
 //         </div>
 
 //         <ScrollReveal y={40} className="mt-24 text-center max-w-[600px] mx-auto mb-30">
-//           <h2 className="font-oswald text-[42px] font-bold uppercase mb-8">
+//           <h2 className="font-manrope text-[42px] font-bold uppercase mb-8">
 //             Оставьте заявку
 //           </h2>
 //           <Contact />

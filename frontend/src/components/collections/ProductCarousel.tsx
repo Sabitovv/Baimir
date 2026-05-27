@@ -122,6 +122,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
               inStock={product.inStock}
               isNew={product.newProduct || product.new}
               keyFeatures={null}
+              categoryId={product.categoryId ?? product?.category?.id}
               categoryName={product.categoryName || product?.category?.name}
               variant={cardVariant}
               showCompare={showCompare}

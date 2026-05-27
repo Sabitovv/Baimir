@@ -50,10 +50,10 @@ const ServicePage = () => {
 
           <ScrollReveal>
             <section>
-              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight">
+              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight">
                 {t('service.title')}
               </h1>
-              <h3 className="text-base sm:text-lg lg:text-xl mt-2 font-bold font-oswald text-gray-800">
+              <h3 className="text-base sm:text-lg lg:text-xl mt-2 font-bold font-manrope text-gray-800">
                 {t('service.subTitle')}
               </h3>
             </section>
@@ -75,7 +75,7 @@ const ServicePage = () => {
 
           <section className="mt-12 sm:mt-16 lg:mt-20">
             <ScrollReveal>
-              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#F58322] mb-6 sm:mb-8">
+              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#F58322] mb-6 sm:mb-8">
                 {t('service.services.title')}
               </h2>
             </ScrollReveal>
@@ -94,7 +94,7 @@ const ServicePage = () => {
 
           <section className="mt-16 sm:mt-20 lg:mt-24">
             <ScrollReveal>
-              <h2 className="font-oswald text-2xl sm:text-3xl font-semibold uppercase mb-6 sm:mb-8 text-gray-900">
+              <h2 className="font-manrope text-2xl sm:text-3xl font-semibold uppercase mb-6 sm:mb-8 text-gray-900">
                 {t('service.why.title')}
               </h2>
 
@@ -120,7 +120,7 @@ const ServicePage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(250px,400px)] gap-10 sm:gap-12 lg:gap-16 items-center">
               <div>
                 <ScrollReveal>
-                  <h2 className="font-oswald text-xl sm:text-2xl font-semibold uppercase mb-8 sm:mb-10 text-gray-900">
+                  <h2 className="font-manrope text-xl sm:text-2xl font-semibold uppercase mb-8 sm:mb-10 text-gray-900">
                     {t('service.engineers.title')}
                   </h2>
                 </ScrollReveal>
@@ -153,7 +153,7 @@ const ServicePage = () => {
 
           <section className="mt-16 sm:mt-24 max-w-5xl">
             <ScrollReveal>
-              <h2 className="font-oswald text-2xl sm:text-3xl font-semibold uppercase text-gray-900">
+              <h2 className="font-manrope text-2xl sm:text-3xl font-semibold uppercase text-gray-900">
                 {t('service.realObjects.title')}
               </h2>
               <p className="mt-3 text-sm sm:text-base text-gray-600 leading-relaxed max-w-3xl mb-8 sm:mb-10">
@@ -177,7 +177,7 @@ const ServicePage = () => {
 
           <ScrollReveal y={40} className="mt-20 mb-16 sm:mt-28 sm:mb-20">
             <section>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-oswald font-semibold mb-8 sm:mb-10 uppercase text-center  text-gray-900">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-manrope font-semibold mb-8 sm:mb-10 uppercase text-center  text-gray-900">
                 {t('service.contact.title')}
               </h2>
               <div className="flex justify-center  w-full">

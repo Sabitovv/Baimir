@@ -36,7 +36,7 @@ const Hero = () => {
               <ScrollReveal delay={0.1}>
                 <h1
                   className="
-                    font-oswald text-[35px] font-semibold uppercase leading-[1.06]
+                    font-manrope text-[35px] font-semibold uppercase leading-[1.06]
                     md:text-[52px]
                     lg:text-[64px]
                     xl:text-[82px]
@@ -106,7 +106,7 @@ const Hero = () => {
                     }}
                     className="
                       group hidden min-h-11 shrink-0 items-center gap-3 rounded-sm border border-[#F58322] bg-black/30 px-5 py-3
-                      font-oswald transition hover:bg-[#DB741F]
+                      font-manrope transition hover:bg-[#DB741F]
                       md:inline-flex
                     "
                   >
@@ -124,7 +124,7 @@ const Hero = () => {
                       <path d="M10 14L21 3" />
                     </svg>
 
-                    <span className="font-oswald text-xs font-normal uppercase tracking-widest">
+                    <span className="font-manrope text-xs font-normal uppercase tracking-widest">
                       {t('hero.buttons.request')}
                     </span>
                   </button>

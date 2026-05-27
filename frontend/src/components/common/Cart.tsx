@@ -39,7 +39,7 @@ type CartProps = {
 };
 
 const CartCrossSellSection = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(true);
   const { collections } = useProductCollectionPlacement(
     "CART_CROSS_SELL_COLLECTION",
@@ -59,10 +59,10 @@ const CartCrossSellSection = () => {
       <div className="mb-2 flex items-start justify-between gap-2 border-b border-dashed border-[#E5EAF0] pb-1.5">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-[#1F2937]">
-            Берут вместе
+            {t('cart.crossSell.title')}
           </p>
           <p className="mt-0.5 text-[10px] text-[#6B7280]">
-            Универсальные товары: расходники, аксессуары и полезные мелочи
+            {t('cart.crossSell.description')}
           </p>
         </div>
         <button
@@ -70,7 +70,7 @@ const CartCrossSellSection = () => {
           onClick={() => setIsOpen((prev) => !prev)}
           className="shrink-0 rounded-md border border-[#E5E7EB] bg-white px-2 py-1 text-[10px] font-semibold text-[#4B5563] transition hover:border-[#D1D5DB] hover:text-[#111827]"
         >
-          {isOpen ? "Скрыть" : "Показать"}
+          {isOpen ? t('cart.crossSell.hide') : t('cart.crossSell.show')}
         </button>
       </div>
 

@@ -56,10 +56,13 @@
   },
   "common": {
     "more": "More",
-    "close": "Close"
+    "close": "Close",
+    "website": "Website",
+    "maybeInterested": "You may also like"
   },
   "app": {
-    "loadingTranslations": "Loading translations..."
+    "loadingTranslations": "Loading translations...",
+    "loadingResources": "Loading resources..."
   },
   "home": {
     "catalog": {
@@ -115,6 +118,7 @@
       "title": "News",
       "readmore": "others"
     },
+    "personalizedRecommendations": "Personalized recommendations",
     "service": {
       "title": "Turnkey service"
     },
@@ -161,6 +165,8 @@
     "subTitle": "We will select machines for your business",
     "text": "Visit our demo halls to see machines in operation and run test operations for your needs.",
     "videoSubText": "Subscribe if you want",
+    "videoTitle": "Demo showroom video",
+    "stepAlt": "Step {{index}}",
     "why": "Why visit a demo hall?",
     "work": "How it works?",
     "contactTitle": "Sign up for a demo hall"
@@ -241,9 +247,27 @@
     "code": "Code",
     "sku": "SKU",
     "brand": "Brand",
+    "price": "Price",
     "country": "Country",
     "loading": "Loading...",
-    "error": "Error"
+    "error": "Error",
+    "showAll": "View all"
+  },
+  "collections": {
+    "title": "Collections",
+    "recommendationsDescription": "A collection of products based on interests and popular views",
+    "promo": "Promotion",
+    "promoRange": "Promotion: {{start}} - {{end}}",
+    "promoFrom": "Promotion from {{start}}",
+    "promoUntil": "Promotion until {{end}}",
+    "strategic": "Strategic collection",
+    "toProducts": "To products",
+    "fromDate": "from {{start}}",
+    "untilDate": "until {{end}}",
+    "showProduct": "Show product {{index}}",
+    "showCollection": "Show collection {{index}}",
+    "error": "Failed to load collection. Please try again later.",
+    "empty": "The product list is empty for now."
   },
   "catalogPage": {
     "title": "Product catalog",
@@ -258,7 +282,13 @@
     "noRecentlyViewedProducts": "No recently viewed products",
     "productsCount": "{{count}} pcs",
     "productsCountUnit": "pcs",
-    "sampleAlt": "Laser machine sample"
+    "sampleAlt": "Laser machine sample",
+    "machineImageAlt": "Industrial machine",
+    "seo": {
+      "descriptionFallback": "{{productName}} - buy at Baytech",
+      "defaultBrand": "Baytech",
+      "siteName": "Baytech"
+    }
   },
   "categoryPage": {
     "loadingCategories": "Loading categories...",
@@ -283,6 +313,7 @@
     "adress": "Store address",
     "descriprion": "Description",
     "certificate": "Characterization",
+    "attachments": "Specifications",
     "information": "Order information",
     "model": "Model range:",
     "sku": "Model / SKU",
@@ -292,22 +323,36 @@
     "phone": "By phone:",
     "Email": "By email:",
     "artic": "Specify product SKU",
+    "otherSectionsTitle": "Additional information is also available:",
     "relatedProducts": "Related products",
     "loadingLinked": "Loading products...",
     "linkedNotFound": "Products for this block were not found",
+    "downloadAttachment": "Download file",
+    "previewAttachment": "Preview",
+    "noAttachments": "No files attached",
     "showImage": "Show image {{index}}",
     "pieces": "pcs",
     "modal": {
       "close": "Close",
       "retry": "Retry",
       "deliveryMethods": "Delivery methods",
+      "deliveryPrepaymentText": "Delivery is available only with prepayment.",
+      "deliveryMethodPickup": "Self pickup",
+      "deliveryMethodTransportCompany": "Transport company",
+      "deliveryMethodAlmaty": "Delivery within Almaty",
       "freeDelivery": "Free delivery conditions",
+      "freeDeliveryConditionMinOrder": "Free for orders from 100000 KZT.",
+      "freeDeliveryConditionTime": "Within 3 business days.",
+      "freeDeliveryConditionWeight": "Limit: weight up to 500 kg.",
+      "freeDeliveryConditionDimensions": "Limit: dimensions 2m*1.25m*1.25m.",
       "paymentMethods": "Payment methods",
       "warranty": "Warranty",
       "vat": "VAT, %",
       "additionalInfo": "Additional delivery and payment info",
+      "deliveryAdditionalInfo": "Before shipment, we always help choose the best delivery option from Almaty to your region.",
       "deliveryRegions": "Delivery regions",
       "moreDetails": "More details",
+      "kazakhstan": "Kazakhstan",
       "scheduleLoading": "Loading work schedule...",
       "scheduleLoadError": "Failed to load work schedule.",
       "timezone": "Time zone",
@@ -320,6 +365,12 @@
     "emptyTitle": "Your cart is empty",
     "emptyDescription": "Add items to your cart to submit a request.",
     "goToCatalog": "Go to catalog",
+    "crossSell": {
+      "title": "Frequently bought together",
+      "description": "Universal products: consumables, accessories, and useful extras",
+      "show": "Show",
+      "hide": "Hide"
+    },
     "itemsCount": "Items ({{count}})",
     "total": "Total",
     "submitRequest": "Submit request",
@@ -409,7 +460,9 @@
         }
       }
     },
-    "contactTitle": "Have questions? Leave a request"
+    "contactTitle": "Have questions? Leave a request",
+    "imageAltMain": "Demo production photo",
+    "imageAltThumb": "Demo production photo {{index}}"
   },
   "compare": {
     "title": "Product comparison",

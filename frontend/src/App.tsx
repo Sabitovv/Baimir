@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { TolgeeProvider } from '@tolgee/react';
+import i18next from 'i18next';
 import Layout from '@/components/layout/Layout';
 import AppRoutes from '@/routes/AppRoutes';
 import { tolgee, isEditMode } from '@/i18n'; 
@@ -22,7 +23,7 @@ const App = () => {
     }, [remoteImages, setImages]);
 
     if (isLoading && !remoteImages) {
-      return <div className="h-screen flex items-center justify-center">Загрузка ресурсов...</div>;
+      return <div className="h-screen flex items-center justify-center">{i18next.t('app.loadingResources')}</div>;
     }
 
   return (
@@ -31,9 +32,9 @@ const App = () => {
       {isEditMode && <ImageEditorModal />}
       
       {tolgee ? (
-        <TolgeeProvider 
+          <TolgeeProvider 
           tolgee={tolgee} 
-          fallback={<div>Загрузка переводов...</div>} 
+          fallback={<div>{i18next.t('app.loadingTranslations')}</div>} 
         >
           <Layout>
             <AppRoutes />

@@ -48,6 +48,18 @@ export type ProductMedia = {
   isPrimary?: boolean;
 };
 
+export type ProductAttachment = {
+  id: number;
+  name: string;
+  originalFilename: string;
+  fileUrl: string;
+  extension: string;
+  fileSize: number;
+  mimeType: string;
+  sortOrder: number;
+  downloadUrl: string | null;
+};
+
 export type BlockType =
   | "heading"
   | "paragraph"
@@ -167,6 +179,7 @@ export type ProductDetail = {
   specifications: SpecificationGroup[];
   variants: ProductVariant[];
   contentBlocks?: ProductContentBlock[];
+  attachments?: ProductAttachment[];
 };
 
 export type Product = {

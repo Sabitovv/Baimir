@@ -36,7 +36,7 @@ const CollectionPage = () => {
     <PageContainer>
       <div className='px-4 md:px-5 lg:px-0 mb-12 sm:mb-16 md:mb-20'>
         <div className='my-4 sm:my-5'>
-          <h1 className='font-oswald text-[22px] leading-tight sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900'>
+          <h1 className='font-manrope text-[22px] leading-tight sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900'>
             {collection?.name ?? t('commonCatalog.catalog')}
           </h1>
           <Breadcrumbs />
@@ -67,7 +67,7 @@ const CollectionPage = () => {
                     {t('productPage.notFoundTitle')}
                   </p>
                   <p className='text-center text-sm sm:text-base font-semibold text-gray-900 pb-4'>
-                    Может вас заинтересует
+                    {t('common.maybeInterested')}
                   </p>
                   <ProductCollectionRenderer
                     placement='SEARCH_EMPTY_STATE_COLLECTION'

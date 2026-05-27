@@ -1,0 +1,49 @@
+# Hardcoded text candidates (auto-scan)
+# Generated: 2026-05-26
+
+## Literal text attributes
+src/components/common/CategoriesMenu.tsx:138:                                          alt="toggle"
+src/components/common/CategoriesMenu.tsx:177:                                                              alt="toggle"
+src/components/layout/Header.tsx:422:            <EditableImage imageKey="header_main_logo" fallbackSrc={logo} alt="Baymir Logo" className="h-12 2xl:h-15" />
+src/components/layout/Header.tsx:463:                  aria-label="Clear search"
+src/components/layout/Header.tsx:464:                  title="Clear search"
+src/components/layout/Header.tsx:555:          aria-label="Close search"
+src/components/layout/Header.tsx:562:          <EditableImage imageKey="header_mobile_logo" fallbackSrc={logo} alt="Baymir Logo" className="h-8" />
+src/components/layout/Header.tsx:644:            <EditableImage imageKey="header_drawer_logo" fallbackSrc={logo} className="h-8" alt="Logo" />
+src/components/animations/CartAnimation.tsx:98:          alt="Flying"
+src/pages/Home/Components/CertificatesSection.tsx:77:              aria-label="Previous"
+src/pages/Home/Components/CertificatesSection.tsx:147:              aria-label="Next"
+src/pages/Home/Components/CertificatesSection.tsx:161:                    aria-label="Previous"
+src/pages/Home/Components/CertificatesSection.tsx:172:                    aria-label="Next"
+src/pages/Home/Components/ContactForm.tsx:35:                alt="review"
+src/components/common/LazyImage.tsx:21: *   alt="Hero banner"
+src/pages/Storage/StorageComponent.tsx:15:          alt="storage info"
+src/pages/Production/ProductionPage.tsx:101:                  alt="production main"
+src/pages/Production/ProductionPage.tsx:284:                aria-label="Close image preview"
+src/pages/Production/ProductionPage.tsx:291:                alt="platform logo preview"
+src/pages/Storage/StoragePage.tsx:163:                    alt="storage main"
+src/pages/Storage/StoragePage.tsx:315:            alt="contact"
+src/pages/Catalog/components/PopularProduct.tsx:57:          aria-label="scroll left"
+src/pages/Catalog/components/PopularProduct.tsx:64:            alt="Left"
+src/pages/Catalog/components/PopularProduct.tsx:113:          aria-label="scroll right"
+src/pages/Catalog/components/PopularProduct.tsx:120:            alt="Right"
+src/pages/Catalog/components/Breadcrumbs.tsx:26:            aria-label="Breadcrumb"
+src/pages/Service/ServicePage.tsx:68:                alt="service team"
+src/pages/Service/ServicePage.tsx:107:                  alt="work"
+src/pages/Service/ServicePage.tsx:148:                  alt="engineers"
+src/pages/Service/ServicePage.tsx:207:              aria-label="Close image preview"
+src/pages/Catalog/CategoryPage.tsx:712:                alt="machine"
+src/pages/Catalog/ProductPage.tsx:1065:            title="product-content-video"
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:37://               <img src={MainPhoto} alt="Главное фото" className="w-full object-cover" />
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:129://                 alt="Процесс производства"
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:147://                   title="Baimir Laser Machine Video"
+
+## Visible literal text nodes
+src/pages/Demo/DemoPage.tsx:51:        <main className="w-full min-w-0"> {/* Изменил <section> на <main> с min-w-0 для защиты сетки */}
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:98://               <StaggerItem className="list-item">Проектирование и расчёты</StaggerItem>
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:99://               <StaggerItem className="list-item">Подготовка материала</StaggerItem>
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:100://               <StaggerItem className="list-item">Формирование профиля</StaggerItem>
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:101://               <StaggerItem className="list-item">Соединение и герметизация швов</StaggerItem>
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:102://               <StaggerItem className="list-item">Изготовление фасонных элементов</StaggerItem>
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:103://               <StaggerItem className="list-item">Антикоррозийная обработка и отделка</StaggerItem>
+src/pages/Technologies/InnerTechbologies/InnerTechnologies.tsx:104://               <StaggerItem className="list-item">Контроль качества</StaggerItem>

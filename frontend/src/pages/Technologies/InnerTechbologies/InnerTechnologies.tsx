@@ -27,7 +27,7 @@
 
 //           {/* Главный блок с фото */}
 //           <ScrollReveal>
-//             <h1 className="font-oswald text-xl sm:text-2xl md:text-3xl xl:text-4xl font-bold uppercase text-[#F05023]">
+//             <h1 className="font-manrope text-xl sm:text-2xl md:text-3xl xl:text-4xl font-bold uppercase text-[#F05023]">
 //               {title}
 //             </h1>
 //             <h3 className="text-base sm:text-lg md:text-xl font-bold my-4 mb-4 md:mb-6 whitespace-pre-line">
@@ -200,7 +200,7 @@
 
 //           {/* Форма заявки */}
 //           <ScrollReveal y={40} className="mt-24 max-w-[600px] mx-auto mb-32 sm:mb-48 px-4 sm:px-0">
-//             <h2 className="font-oswald text-4xl sm:text-5xl md:text-6xl font-bold uppercase mb-8 text-center text-gray-900">
+//             <h2 className="font-manrope text-4xl sm:text-5xl md:text-6xl font-bold uppercase mb-8 text-center text-gray-900">
 //               Оставьте заявку
 //             </h2>
 //             <Contact />

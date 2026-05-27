@@ -41,7 +41,7 @@ const IndustryCatalog = () => {
       <PageContainer>
         <ScrollReveal>
           <div className="mb-6 md:mb-10">
-            <h1 className="font-oswald text-[32px] font-semibold uppercase leading-[1.05] text-[#111111] md:text-5xl xl:text-6xl">
+            <h1 className="font-manrope text-[32px] font-semibold uppercase leading-[1.05] text-[#111111] md:text-5xl xl:text-6xl">
               {t("home.catalog.title")}
             </h1>
 
@@ -83,7 +83,7 @@ const IndustryCatalog = () => {
                 <Link to={card.path} className="flex flex-col h-full">
                   <div className="group flex min-h-[320px] flex-col rounded-xl border border-[#EFEFEF] bg-gradient-to-b from-[#FCFCFC] to-[#F6F6F6] p-5">
                     <h1
-                      className="mb-3 text-center font-oswald text-sm font-bold uppercase leading-5 text-[#111111] transition-colors group-hover:text-[#DB741F]"
+                      className="mb-3 text-center font-manrope text-sm font-bold uppercase leading-5 text-[#111111] transition-colors group-hover:text-[#DB741F]"
                     >
                       {card.title}
                     </h1>
@@ -122,7 +122,7 @@ const IndustryCatalog = () => {
                   <Link
                     to={card.path}
                     className="
-                      font-oswald font-bold uppercase text-center
+                      font-manrope font-bold uppercase text-center
                       text-base md:text-lg
                       group-hover:text-[#DB741F]
                       mb-4

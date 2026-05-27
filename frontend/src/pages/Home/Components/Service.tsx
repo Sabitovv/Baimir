@@ -43,7 +43,7 @@ const Service = () => {
         <PageContainer>
           <div className="mb-2 md:mb-10">
           <ScrollReveal>
-            <h1 className="font-oswald text-[32px] font-semibold uppercase leading-[1.06] text-white md:text-5xl xl:text-6xl">
+            <h1 className="font-manrope text-[32px] font-semibold uppercase leading-[1.06] text-white md:text-5xl xl:text-6xl">
               {t('home.service.title')}
             </h1>
           </ScrollReveal>
@@ -53,7 +53,7 @@ const Service = () => {
               <StaggerItem key={key}>
                 <div className="flex items-center gap-3 rounded-lg bg-black/20 px-3 py-2.5 backdrop-blur-[1px] md:bg-transparent md:px-0 md:py-0">
                   <CheckCircleIconCustom className="!text-[1.5rem] md:!text-[2.2rem]" />
-                  <p className="font-oswald text-[15px] font-bold leading-5 text-white md:text-xl">
+                  <p className="font-manrope text-[15px] font-bold leading-5 text-white md:text-xl">
                     {t(key)}
                   </p>
                 </div>

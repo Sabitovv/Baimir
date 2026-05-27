@@ -150,7 +150,7 @@ const CatalogPage = () => {
     <PageContainer>
       <div className="mt-8 sm:mt-12 px-4 md:px-6 lg:px-0">
         <ScrollReveal>
-          <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
+          <h1 className="font-manrope text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
             {t("catalogPage.title")}
           </h1>
         </ScrollReveal>
@@ -217,7 +217,7 @@ const CatalogPage = () => {
         </div>
 
         <div className="mt-12 sm:mt-16 mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
-          <h2 className="font-oswald text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
+          <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
             {t("catalogPage.deepProductsTitle")}
           </h2>
           <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
@@ -238,7 +238,7 @@ const CatalogPage = () => {
           <section className="mb-16 mt-8">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="px-2 md:px-0 order-2 md:order-1">
-                <h3 className="font-oswald text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">
+                <h3 className="font-manrope text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">
                   {t("catalogPage.bid")}
                 </h3>
                 <Contact />

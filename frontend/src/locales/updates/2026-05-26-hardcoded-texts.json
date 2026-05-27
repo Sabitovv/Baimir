@@ -1,0 +1,134 @@
+{
+  "demo": {
+    "videoTitle": {
+      "ru": "Видео о демозале",
+      "en": "Demo showroom video",
+      "kz": "Демо-зал туралы видео"
+    },
+    "stepAlt": {
+      "ru": "Шаг {{index}}",
+      "en": "Step {{index}}",
+      "kz": "Қадам {{index}}"
+    }
+  },
+  "demoInner": {
+    "imageAltMain": {
+      "ru": "Фото демо-производства",
+      "en": "Demo production photo",
+      "kz": "Демо-өндірістің фотосы"
+    },
+    "imageAltThumb": {
+      "ru": "Фото демо-производства {{index}}",
+      "en": "Demo production photo {{index}}",
+      "kz": "Демо-өндірістің фотосы {{index}}"
+    }
+  },
+  "catalogPage": {
+    "machineImageAlt": {
+      "ru": "Промышленный станок",
+      "en": "Industrial machine",
+      "kz": "Өнеркәсіптік станок"
+    },
+    "seo": {
+      "descriptionFallback": {
+        "ru": "{{productName}} - купить в Baytech",
+        "en": "{{productName}} - buy at Baytech",
+        "kz": "{{productName}} - Baytech компаниясынан сатып алу"
+      },
+      "defaultBrand": {
+        "ru": "Baytech",
+        "en": "Baytech",
+        "kz": "Baytech"
+      },
+      "siteName": {
+        "ru": "Baytech",
+        "en": "Baytech",
+        "kz": "Baytech"
+      }
+    }
+  },
+  "productPage": {
+    "attachments": {
+      "ru": "Спецификации",
+      "en": "Specifications",
+      "kz": "Спецификациялар"
+    },
+    "downloadAttachment": {
+      "ru": "Скачать файл",
+      "en": "Download file",
+      "kz": "Файлды жүктеу"
+    },
+    "previewAttachment": {
+      "ru": "Предпросмотр",
+      "en": "Preview",
+      "kz": "Алдын ала қарау"
+    },
+    "noAttachments": {
+      "ru": "Файлы не прикреплены",
+      "en": "No files attached",
+      "kz": "Тіркелген файлдар жоқ"
+    },
+    "otherSectionsEyebrow": {
+      "ru": "Навигация по товару",
+      "en": "Product navigation",
+      "kz": "Тауар бойынша навигация"
+    },
+    "otherSectionsTitle": {
+      "ru": "Узнайте больше о товаре",
+      "en": "Learn more about this product",
+      "kz": "Тауар туралы толығырақ біліңіз"
+    },
+    "otherSectionsFallback": {
+      "ru": "В следующих разделах собраны характеристики, документы и информация для оформления заказа.",
+      "en": "The sections below include specifications, documents, and order information.",
+      "kz": "Келесі бөлімдерде сипаттамалар, құжаттар және тапсырыс беру ақпараты берілген."
+    },
+    "modal": {
+      "deliveryPrepaymentText": {
+        "ru": "Доставка осуществляется только по предоплате.",
+        "en": "Delivery is available only with prepayment.",
+        "kz": "Жеткізу тек алдын ала төлем бойынша жүзеге асырылады."
+      },
+      "deliveryMethodPickup": {
+        "ru": "Доставка \"Самовывоз\"",
+        "en": "Self pickup",
+        "kz": "Өздігінен алып кету"
+      },
+      "deliveryMethodTransportCompany": {
+        "ru": "Транспортная компания",
+        "en": "Transport company",
+        "kz": "Көлік компаниясы"
+      },
+      "deliveryMethodAlmaty": {
+        "ru": "Доставка по городу Алматы",
+        "en": "Delivery within Almaty",
+        "kz": "Алматы қаласы бойынша жеткізу"
+      },
+      "freeDeliveryConditionMinOrder": {
+        "ru": "Бесплатно при стоимости заказа от 100000 ₸.",
+        "en": "Free for orders from 100000 KZT.",
+        "kz": "Тапсырыс сомасы 100000 ₸-ден бастап тегін."
+      },
+      "freeDeliveryConditionTime": {
+        "ru": "В течении 3-х рабочих дней.",
+        "en": "Within 3 business days.",
+        "kz": "3 жұмыс күні ішінде."
+      },
+      "freeDeliveryConditionWeight": {
+        "ru": "Ограничение: вес - не более 500 кг.",
+        "en": "Limit: weight up to 500 kg.",
+        "kz": "Шектеу: салмағы - 500 кг-нан аспайды."
+      },
+      "freeDeliveryConditionDimensions": {
+        "ru": "Ограничение: габариты - 2м*1,25м*1,25м.",
+        "en": "Limit: dimensions 2m*1.25m*1.25m.",
+        "kz": "Шектеу: өлшемдері - 2м*1,25м*1,25м."
+      },
+      "deliveryAdditionalInfo": {
+        "ru": "К моменту отгрузки Товара, мы всегда позаботимся о том, чтобы предложить нашим клиентам оптимальный вариант доставки с г. Алматы в Ваш регион.",
+        "en": "Before shipment, we always help choose the best delivery option from Almaty to your region.",
+        "kz": "Тауарды жөнелту сәтіне қарай, біз Алматы қаласынан сіздің өңіріңізге жеткізудің ең тиімді нұсқасын ұсынуға әрқашан қамқор боламыз."
+      }
+    }
+  }
+}

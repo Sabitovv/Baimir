@@ -55,7 +55,7 @@ const CertificatesSection = () => {
       <PageContainer>
 
         <ScrollReveal>
-          <h2 className="font-oswald font-bold uppercase text-[#111111] text-3xl md:text-4xl xl:text-5xl mb-10">
+          <h2 className="font-manrope font-bold uppercase text-[#111111] text-3xl md:text-4xl xl:text-5xl mb-10">
             {t('home.certificates.title')}
           </h2>
         </ScrollReveal>
@@ -197,7 +197,7 @@ const CertificatesSection = () => {
           <div
             role="dialog"
             aria-modal="true"
-            aria-label={activeCertificate?.name || 'Сертификат'}
+            aria-label={activeCertificate?.name || t('home.certificates.title')}
             className={`relative w-full max-w-5xl max-h-[92vh] transform-gpu transition-all duration-300 ease-out ${
               activeCertificate ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
             }`}
@@ -205,7 +205,7 @@ const CertificatesSection = () => {
           >
             <button
               type="button"
-              aria-label="Закрыть"
+              aria-label={t('common.close')}
               onClick={() => setActiveCertificate(null)}
               className="absolute right-2 top-2 z-10 w-8 h-7 md:w-10 md:h-10 rounded-full bg-white text-[#111111] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
             >

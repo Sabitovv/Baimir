@@ -96,7 +96,7 @@ const NewsSection = () => {
 
         <ScrollReveal>
           <div className='flex items-end justify-between'>
-            <h2 className="font-oswald font-bold uppercase text-[#111111]
+            <h2 className="font-manrope font-bold uppercase text-[#111111]
                 text-3xl md:text-4xl xl:text-5xl mb-10">
               {t('home.news.title')}
             </h2>

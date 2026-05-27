@@ -1,20 +1,5 @@
 export type InfoModalType = 'delivery' | 'payment' | 'schedule' | 'address'
 
-export const DELIVERY_PREPAYMENT_TEXT = 'Доставка осуществляется только по предоплате.'
-
-export const DELIVERY_METHODS = [
-  'Доставка "Самовывоз"',
-  'Транспортная компания',
-  'Доставка по городу Алматы',
-] as const
-
-export const FREE_DELIVERY_CONDITIONS = [
-  'Бесплатно при стоимости заказа от 100000 ₸.',
-  'В течении 3-х рабочих дней.',
-  'Ограничение: вес - не более 500 кг.',
-  'Ограничение: габариты - 2м*1,25м*1,25м.',
-] as const
-
 export const PAYMENT_METHODS = [
   'Наличными',
   'Безналичный расчет',
@@ -25,8 +10,6 @@ export const PAYMENT_BANK_ACCOUNT = 'KZ348562203107166224'
 export const WARRANTY_TEXT = 'Гарантия против дефектов в основополагающих материалах и конструкциях Товара в течение 12 (двенадцати) месяцев.'
 
 export const VAT_TEXT = 'Наша компания плательщик НДС 12%.'
-
-export const DELIVERY_ADDITIONAL_INFO = 'К моменту отгрузки Товара, мы всегда позаботимся о том, чтобы предложить нашим клиентам оптимальный вариант доставки с г. Алматы в Ваш регион.'
 
 export const DELIVERY_DETAILS_URL = 'https://baymir.kz/p78828140-lazernyj-stanok-dlya.html'
 

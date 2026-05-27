@@ -193,7 +193,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               {!isEmptyStateFetching && hasEmptyStateSuggestions && (
                 <>
                   <p className='px-1 pt-2 pb-2 text-xs font-semibold uppercase tracking-[0.05em] text-gray-800'>
-                    Может вас заинтересует
+                    {t('common.maybeInterested')}
                   </p>
                   <ul className='overflow-y-auto py-1'>
                     {emptyStateProducts.map((product) => (
@@ -298,7 +298,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               {!isEmptyStateFetching && hasEmptyStateSuggestions && (
                 <>
                   <p className="px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-400">
-                    Может вас заинтересует
+                    {t('common.maybeInterested')}
                   </p>
                   <ul className="overflow-y-auto py-1">
                     {emptyStateProducts.map((product) => (
@@ -378,7 +378,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               {!isEmptyStateFetching && hasEmptyStateSuggestions && (
                 <>
                   <p className="px-1 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-400">
-                    Может вас заинтересует
+                    {t('common.maybeInterested')}
                   </p>
                   <ul className="overflow-y-auto py-1">
                     {emptyStateProducts.map((product) => (

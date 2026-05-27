@@ -231,22 +231,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="mt-auto">
         <div className={` rounded-md bg-white px-2.5 py-2.5`}>
           <div className="flex items-end justify-between gap-2">
-            <p
-              className={`font-extrabold tracking-tight text-gray-900 tabular-nums ${
-                isMini ? "text-[11px] leading-tight" : "text-base"
-              }`}
-            >
-              {formattedPrice}
-            </p>
-            {formattedOldPrice ? (
+            <div className={`flex min-w-0 ${isCompact || isMini ? "flex-col items-start gap-0.5" : "items-end gap-2"}`}>
+              {formattedOldPrice ? (
+                <p
+                  className={`inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-white px-2 py-0.5 font-medium text-gray-500 line-through decoration-gray-400 decoration-2 tabular-nums ${
+                    isMini
+                      ? "text-[8px] leading-none"
+                      : isCompact
+                        ? "text-[9px] leading-none"
+                        : "text-[12px]"
+                  }`}
+                >
+                  {formattedOldPrice}
+                </p>
+              ) : null}
               <p
-                className={`inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-white px-2 py-0.5 font-medium text-gray-500 line-through decoration-gray-400 decoration-2 tabular-nums ${
-                  isMini ? "text-[9px]" : "text-[12px]"
+                className={`font-extrabold tracking-tight text-gray-900 tabular-nums ${
+                  isMini ? "text-[11px] leading-tight" : "text-base"
                 }`}
               >
-                {formattedOldPrice}
+                {formattedPrice}
               </p>
-            ) : null}
+            </div>
           </div>
         </div>
 
