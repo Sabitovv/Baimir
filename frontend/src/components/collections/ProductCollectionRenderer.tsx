@@ -46,7 +46,7 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
   skeletonCount = 4,
   errorMessage,
 }) => {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   // ИНИЦИАЛИЗИРУЕМ НАВИГАЦИЮ
   const navigate = useNavigate()
 
@@ -112,7 +112,7 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
                       {title ?? collection.name}
                     </h2>
                     <p className='mt-1 text-[11px] font-medium text-[#6B7280] sm:text-xs'>
-                      Подборка товаров на основе интересов и популярных просмотров
+                      {t('collections.recommendationsDescription')}
                     </p>
                   </div>
                   {renderProducts(collection.products)}
@@ -135,20 +135,19 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
                               const startLabel = formatPromoDate(collection.startDate, i18n.language)
                               const endLabel = formatPromoDate(collection.endDate, i18n.language)
 
-                              if (startLabel && endLabel) return `Акция: ${startLabel} - ${endLabel}`
-                              if (startLabel) return `Акция с ${startLabel}`
-                              return `Акция до ${endLabel}`
+                              if (startLabel && endLabel) return t('collections.promoRange', { start: startLabel, end: endLabel })
+                              if (startLabel) return t('collections.promoFrom', { start: startLabel })
+                              return t('collections.promoUntil', { end: endLabel })
                             })()}
                           </p>
                         )}
                       </div>
                       <button
                         type='button'
-                        // ДОБАВЛЕН ОБРАБОТЧИК КЛИКА (перенаправляем на страницу коллекции)
-                        onClick={() => navigate(`/collections/${collection.id}`)}
+                        onClick={() => navigate(`/collections/${collection.slug}`)}
                         className='shrink-0 rounded-full border border-[#F58322] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] text-[#DB741F] transition hover:bg-[#FFF4EA] sm:px-4 sm:py-1.5 sm:text-xs'
                       >
-                        Смотреть все
+                        {t('commonCatalog.showAll')}
                       </button>
                     </div>
                   )}

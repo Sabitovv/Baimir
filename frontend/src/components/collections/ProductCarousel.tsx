@@ -13,6 +13,7 @@ type ProductCarouselProps = {
   itemClassName?: string
   cardVariant?: 'compact' | 'mini'
   enableMouseDrag?: boolean
+  showCompare?: boolean
 }
 
 const ProductCarousel: FC<ProductCarouselProps> = ({
@@ -21,6 +22,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
   itemClassName,
   cardVariant = 'compact',
   enableMouseDrag = false,
+  showCompare = true,
 }) => {
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const isPointerDownRef = useRef(false)
@@ -120,8 +122,10 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
               inStock={product.inStock}
               isNew={product.newProduct || product.new}
               keyFeatures={null}
+              categoryId={product.categoryId ?? product?.category?.id}
               categoryName={product.categoryName || product?.category?.name}
               variant={cardVariant}
+              showCompare={showCompare}
             />
           </div>
         ))}

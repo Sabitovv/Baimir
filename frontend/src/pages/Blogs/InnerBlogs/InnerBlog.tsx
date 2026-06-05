@@ -198,20 +198,20 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
       : 2;
     if (level === 2) {
       return (
-        <h2 key={key} className="font-oswald font-bold text-3xl mt-10 mb-5">
+        <h2 key={key} className="font-manrope font-bold text-3xl mt-10 mb-5">
           {text}
         </h2>
       );
     }
     if (level === 3) {
       return (
-        <h3 key={key} className="font-oswald font-bold text-2xl mt-8 mb-4">
+        <h3 key={key} className="font-manrope font-bold text-2xl mt-8 mb-4">
           {text}
         </h3>
       );
     }
     return (
-      <h4 key={key} className="font-oswald font-bold text-xl mt-6 mb-3">
+      <h4 key={key} className="font-manrope font-bold text-xl mt-6 mb-3">
         {text}
       </h4>
     );
@@ -430,7 +430,7 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
             className={`${isHorizontal ? textWidthClass : "w-full"} ${textOrderClass} ${verticalAlignClass} space-y-2`}
           >
             {title && (
-              <h3 className="font-oswald font-bold text-2xl text-gray-900 md:text-3xl">
+              <h3 className="font-manrope font-bold text-2xl text-gray-900 md:text-3xl">
                 {title}
               </h3>
             )}
@@ -503,7 +503,7 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
               {(cardTitle || cardDescription) && (
                 <div className="p-4">
                   {cardTitle && (
-                    <h4 className="font-oswald font-bold text-lg text-gray-900 mb-2">
+                    <h4 className="font-manrope font-bold text-lg text-gray-900 mb-2">
                       {cardTitle}
                     </h4>
                   )}
@@ -574,7 +574,7 @@ const InnerBlog = () => {
     return (
       <PageContainer>
         <div className="py-16 text-center">
-          <h2 className="text-2xl font-oswald font-bold mb-3">
+          <h2 className="text-2xl font-manrope font-bold mb-3">
             {t("innerBlog.notFoundTitle")}
           </h2>
           <p className="text-gray-600 mb-6">{t("innerBlog.notFoundText")}</p>

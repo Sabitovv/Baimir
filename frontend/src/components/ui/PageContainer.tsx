@@ -5,7 +5,7 @@ const PageContainer = ({
     children: React.ReactNode; 
     className?: string 
 }) => (
-    <div className={`max-w-[1400px] mx-auto px-4 ${className}`}>
+    <div className={`mx-auto w-full max-w-[1280px] px-4 2xl:max-w-[1400px] ${className}`}>
         {children}
     </div>
 )

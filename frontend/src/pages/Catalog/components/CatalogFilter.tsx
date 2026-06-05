@@ -109,6 +109,17 @@ const CatalogFilters = ({
   );
   const { t } = useTranslation();
 
+  const getDisplayValues = useCallback(
+    (filter: Filter): FilterValue[] => {
+      const values = filter.values ?? [];
+      if (filter.code === "wifi") {
+        return values.filter((v) => String(v.id) === "true");
+      }
+      return values;
+    },
+    [],
+  );
+
   const rangeFilters = useMemo(
     () => (filters ?? []).filter((f) => f.uiType === "RANGE_SLIDER"),
     [filters],
@@ -319,6 +330,20 @@ const CatalogFilters = ({
       params.set(filterCode, newValues.join(","));
     } else {
       params.delete(filterCode);
+    }
+
+    params.set("page", "1");
+    setSearchParams(params, { replace: false });
+  };
+
+  const setRadioValue = (filterCode: string, valueId: string) => {
+    const params = new URLSearchParams(searchParams);
+    const current = params.get(filterCode);
+
+    if (current === valueId) {
+      params.delete(filterCode);
+    } else {
+      params.set(filterCode, valueId);
     }
 
     params.set("page", "1");
@@ -539,7 +564,7 @@ const CatalogFilters = ({
 
               {f.uiType === "CHECKBOX_LIST" && (
                 <div className="flex flex-wrap gap-2">
-                  {f.values?.map((v: FilterValue) => {
+                  {getDisplayValues(f).map((v: FilterValue) => {
                     const isActive = (
                       searchParams.get(f.code)?.split(",") || []
                     ).includes(String(v.id));
@@ -547,6 +572,27 @@ const CatalogFilters = ({
                       <button
                         key={v.id}
                         onClick={() => toggleCheckbox(f.code, String(v.id))}
+                        className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#F58322] text-white border-[#F58322]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
+                      >
+                        {v.label}{" "}
+                        {v.count > 0 && (
+                          <span className="opacity-70">({v.count})</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {f.uiType === "RADIO_LIST" && (
+                <div className="flex flex-wrap gap-2">
+                  {getDisplayValues(f).map((v: FilterValue) => {
+                    const isActive = searchParams.get(f.code) === String(v.id);
+
+                    return (
+                      <button
+                        key={v.id}
+                        onClick={() => setRadioValue(f.code, String(v.id))}
                         className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#F58322] text-white border-[#F58322]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
                       >
                         {v.label}{" "}

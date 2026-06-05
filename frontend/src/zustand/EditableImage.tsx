@@ -10,6 +10,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   imageKey, 
   fallbackSrc = '', 
   className = '', 
+  onClick,
   alt: propsAlt, // 1. Вытаскиваем alt из пропсов под именем propsAlt
   ...restProps   // 2. В restProps теперь лежат все пропсы КРОМЕ alt
 }) => {
@@ -22,7 +23,10 @@ export const EditableImage: React.FC<EditableImageProps> = ({
     if (isEditMode && e.shiftKey) {
       e.preventDefault();
       openEditor(imageKey);
+      return;
     }
+
+    onClick?.(e);
   };
 
   const src = typeof imageData === 'string' ? imageData : imageData?.url;

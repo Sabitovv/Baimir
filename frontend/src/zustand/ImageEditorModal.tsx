@@ -1,8 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useImageEditorStore } from './ImageEditorState';
 import { useImageUpload } from './useImageUploads';
 
 export const ImageEditorModal: React.FC = () => {
+  const { t } = useTranslation();
   const editingKey = useImageEditorStore((state) => state.editingKey);
   const currentData = useImageEditorStore((state) => editingKey ? state.images[editingKey] : null);
   const closeEditor = useImageEditorStore((state) => state.closeEditor);
@@ -36,19 +38,19 @@ export const ImageEditorModal: React.FC = () => {
       <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md relative">
         <button onClick={closeEditor} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800">✕</button>
 
-        <h3 className="text-xl font-bold mb-2">Редактор изображения</h3>
+        <h3 className="text-xl font-bold mb-2">{t('imageEditor.title')}</h3>
         <p className="text-xs text-gray-400 mb-4 font-mono">{editingKey}</p>
 
         <div className="flex flex-col gap-5">
           {/* Поле для Alt текста */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Alt текст (описание для SEO)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('imageEditor.altLabel')}</label>
             <input 
               type="text"
               value={altText}
               onChange={(e) => setAltText(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder="Введите описание изображения..."
+              placeholder={t('imageEditor.altPlaceholder')}
             />
           </div>
 
@@ -58,7 +60,7 @@ export const ImageEditorModal: React.FC = () => {
               disabled={isUploading}
               className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
             >
-              {isUploading ? 'Загрузка...' : 'Загрузить новое фото'}
+              {isUploading ? t('imageEditor.uploading') : t('imageEditor.uploadNew')}
             </button>
 
             {/* Кнопка сохранения только Alt */}
@@ -67,7 +69,7 @@ export const ImageEditorModal: React.FC = () => {
               disabled={isUploading}
               className="w-full py-2 px-4 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 disabled:border-gray-300 disabled:text-gray-300"
             >
-              Сохранить только Alt текст
+              {t('imageEditor.saveAltOnly')}
             </button>
           </div>
           

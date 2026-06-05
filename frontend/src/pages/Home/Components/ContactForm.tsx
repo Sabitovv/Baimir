@@ -17,7 +17,7 @@ const ContactForm = () => {
           <ScrollReveal>
             <div className="w-full md:flex-1">
               <h2 className="
-                  font-oswald font-semibold uppercase text-[#111111]
+                  font-manrope font-semibold uppercase text-[#111111]
                   text-4xl md:text-5xl xl:text-6xl
                   mb-8 md:mb-10
                 ">

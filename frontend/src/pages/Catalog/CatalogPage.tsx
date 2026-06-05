@@ -16,9 +16,9 @@ import StrategicCollectionBannerCarousel from "@/components/collections/Strategi
 import sampleImg from "@/assets/catalog/sample_machine.png";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
-import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
 import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
-import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
+import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
+import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
 
 interface CategoryImageProps {
   src?: string | null;
@@ -85,6 +85,12 @@ const CatalogPage = () => {
       : null;
   }, [location.pathname, data]);
 
+  const currentCategoryId = useMemo(() => {
+    const rawId = currentCategory?.id;
+    const parsed = typeof rawId === "number" ? rawId : Number(rawId);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [currentCategory?.id]);
+
   useEffect(() => {
     if (!data) return;
 
@@ -108,15 +114,9 @@ const CatalogPage = () => {
     }
 
     stack.reverse().forEach((cat) => {
-      const hasChildren = data.some(
-        (i) => Number(i.parentId) === Number(cat.id),
-      );
-
       breadcrumbsList.push({
         name: cat.name,
-        path: hasChildren
-          ? `/catalog/${cat.slug}?categoryId=${cat.id}`
-          : `/catalog/${cat.slug}/products/${cat.id}`,
+        path: `/catalog/${cat.slug}`,
       });
     });
 
@@ -150,7 +150,7 @@ const CatalogPage = () => {
     <PageContainer>
       <div className="mt-8 sm:mt-12 px-4 md:px-6 lg:px-0">
         <ScrollReveal>
-          <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
+          <h1 className="font-manrope text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
             {t("catalogPage.title")}
           </h1>
         </ScrollReveal>
@@ -159,7 +159,7 @@ const CatalogPage = () => {
           <Breadcrumbs />
         </div>
 
-        <div className="mb-5 sm:mb-7">
+        <div className="hidden md:block mb-5 sm:mb-7">
           <StrategicCollectionBannerCarousel />
         </div>
 
@@ -181,13 +181,9 @@ const CatalogPage = () => {
                       onClick={() => {
                         const isLeaf = !hasChildren(item.id);
                         if (isLeaf) {
-                          navigate(
-                            `/catalog/${item.slug}/products/${item.id}?categoryId=${item.id}`,
-                          );
+                          navigate(`/catalog/${item.slug}`);
                         } else {
-                          navigate(
-                            `/catalog/${item.slug}?categoryId=${item.id}`,
-                          );
+                          navigate(`/catalog/${item.slug}`);
                         }
                       }}
                       className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 
@@ -220,31 +216,21 @@ const CatalogPage = () => {
           </main>
         </div>
 
-        {/* Общий заголовок для секций Коллекций и Deep Products */}
         <div className="mt-12 sm:mt-16 mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
-          <h2 className="font-oswald text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
+          <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
             {t("catalogPage.deepProductsTitle")}
           </h2>
           <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
         </div>
 
-        <div className="mb-6 sm:mb-8">
-          <ProductCollectionRenderer
-            placement="CATEGORY_INLINE_COLLECTION"
-            layout="carousel"
-            maxItems={12}
-            skeletonCount={4}
-          />
-        </div>
-
-        <CatalogDeepProductsPage
-          embedded
-          categoryId={
-            currentCategory && Number.isFinite(Number(currentCategory.id))
-              ? Number(currentCategory.id)
-              : null
-          }
+        <CategoryInlineCollectionsSection
+          categoryId={currentCategoryId}
+          requireCategoryId={false}
         />
+
+        <div className="mb-6 sm:mb-8">
+          <CatalogDeepProductsPage embedded />
+        </div>
 
         <RecentlyViewedProducts />
 
@@ -252,7 +238,7 @@ const CatalogPage = () => {
           <section className="mb-16 mt-8">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="px-2 md:px-0 order-2 md:order-1">
-                <h3 className="font-oswald text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">
+                <h3 className="font-manrope text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">
                   {t("catalogPage.bid")}
                 </h3>
                 <Contact />

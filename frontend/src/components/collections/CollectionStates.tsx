@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type CollectionSkeletonProps = {
   count?: number
@@ -39,9 +40,11 @@ type CollectionErrorProps = {
 }
 
 export const CollectionError: FC<CollectionErrorProps> = ({ message }) => {
+  const { t } = useTranslation()
+
   return (
     <div className='rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700 sm:rounded-xl sm:p-4 sm:text-sm'>
-      {message ?? 'Не удалось загрузить подборку. Попробуйте позже.'}
+      {message ?? t('collections.error')}
     </div>
   )
 }
@@ -51,9 +54,11 @@ type CollectionEmptyProps = {
 }
 
 export const CollectionEmpty: FC<CollectionEmptyProps> = ({ message }) => {
+  const { t } = useTranslation()
+
   return (
     <div className='rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-600 sm:rounded-xl sm:p-4 sm:text-sm'>
-      {message ?? 'Список товаров пока пуст.'}
+      {message ?? t('collections.empty')}
     </div>
   )
 }

@@ -7,6 +7,8 @@ import ContactForm from './Components/ContactForm'
 import DeferredSection from '@/components/common/DeferredSection'
 import PageContainer from '@/components/ui/PageContainer'
 import ProductCollectionRenderer from '@/components/collections/ProductCollectionRenderer'
+import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
+import { useTranslation } from 'react-i18next'
 
 const Warehouse = lazy(() => import('./Components/Warehouse'))
 const ForClients = lazy(() => import('./Components/ForClients'))
@@ -20,7 +22,46 @@ const SectionFallback = ({ heightClassName }: { heightClassName: string }) => (
     <div className={`${heightClassName} animate-pulse bg-[#F7F7F7]`} />
 )
 
+type OptionalCollectionSectionProps = {
+    placement: 'HOME_HERO_COLLECTION' | 'HOME_PERSONALIZED_RECOMMENDATIONS'
+    containerClassName: string
+    variant?: 'hero' | 'recommendations'
+    title?: string
+}
+
+const OptionalCollectionSection = ({
+    placement,
+    containerClassName,
+    variant = 'hero',
+    title,
+}: OptionalCollectionSectionProps) => {
+    const { i18n } = useTranslation()
+    const { collections, isLoading, isFetching, isError } = useProductCollectionPlacement(
+        placement,
+        { lang: i18n.language, maxItems: 12 },
+    )
+
+    const hasVisibleCollections = collections.some((collection) => collection.products.length > 0)
+    const shouldRenderSection = isLoading || isFetching || isError || hasVisibleCollections
+
+    if (!shouldRenderSection) return null
+
+    return (
+        <PageContainer className={containerClassName}>
+            <ProductCollectionRenderer
+                placement={placement}
+                layout="carousel"
+                variant={variant}
+                title={title}
+                maxItems={12}
+                skeletonCount={4}
+            />
+        </PageContainer>
+    )
+}
+
 const Home = () => {
+    const { t } = useTranslation()
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
 
     useEffect(() => {
@@ -46,24 +87,16 @@ const Home = () => {
     return (
         <>
             <Hero />
-            <PageContainer className="py-6 md:py-8">
-                <ProductCollectionRenderer
-                    placement="HOME_HERO_COLLECTION"
-                    layout="carousel"
-                    maxItems={12}
-                    skeletonCount={4}
-                />
-            </PageContainer>
-            <PageContainer className="pb-6 md:pb-10">
-                <ProductCollectionRenderer
-                    placement="HOME_PERSONALIZED_RECOMMENDATIONS"
-                    layout="carousel"
-                    variant="recommendations"
-                    title="Персональные рекомендации"
-                    maxItems={12}
-                    skeletonCount={4}
-                />
-            </PageContainer>
+            <OptionalCollectionSection
+                placement="HOME_HERO_COLLECTION"
+                containerClassName="py-5 md:py-8"
+            />
+            <OptionalCollectionSection
+                placement="HOME_PERSONALIZED_RECOMMENDATIONS"
+                containerClassName="pb-5 md:pb-10"
+                variant="recommendations"
+                title={t('home.personalizedRecommendations')}
+            />
             <IndustryCatalog />
             <WhyChooseUs />
             <Service />
@@ -123,7 +156,7 @@ const Home = () => {
                     <div
                         role="dialog"
                         aria-modal="true"
-                        aria-label="Форма отзыва"
+                        aria-label={t('home.reviews.formAriaLabel')}
                         className={`relative w-full max-w-5xl max-h-[92vh] overflow-y-auto transform-gpu transition-all duration-300 ease-out will-change-transform ${
                             isReviewModalOpen
                                 ? 'opacity-100 translate-y-0 scale-100'
@@ -133,7 +166,7 @@ const Home = () => {
                     >
                         <button
                             type="button"
-                            aria-label="Закрыть"
+                            aria-label={t('common.close')}
                             onClick={() => setIsReviewModalOpen(false)}
                             className="absolute right-4 top-4 z-10 w-10 h-10 rounded-full bg-white text-[#111111] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
                         >

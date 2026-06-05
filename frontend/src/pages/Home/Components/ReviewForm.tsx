@@ -56,7 +56,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
 
   const title = (
     <h2 className={`
-      font-oswald font-semibold uppercase text-[#111111]
+      font-manrope font-semibold uppercase text-[#111111]
       tracking-tight
       ${isModal ? 'text-2xl md:text-3xl mb-6 md:mb-7 text-left' : 'text-3xl md:text-4xl xl:text-[54px] mb-10 md:mb-12 xl:mb-16 text-center'}
     `}>

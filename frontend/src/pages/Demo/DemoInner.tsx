@@ -17,12 +17,12 @@ const DemoInnerPage = () => {
           <CategoriesMenu />
         </aside>
         <section className="max-w-[1000px]">
-          <h1 className="font-oswald text-[40px] font-bold uppercase mb-6">
+          <h1 className="font-manrope text-[40px] font-bold uppercase mb-6">
             {t('demoInner.title')}
           </h1>
           <div className="mb-12">
             <div className="bg-[#E5E5E5] h-[360px] mb-4 rounded-lg overflow-hidden">
-              <EditableImage imageKey="demo_inner_main_image" fallbackSrc={demoImg} className="w-full h-full object-cover" alt="demo" />
+              <EditableImage imageKey="demo_inner_main_image" fallbackSrc={demoImg} className="w-full h-full object-cover" alt={t('demoInner.imageAltMain')} />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
@@ -31,7 +31,7 @@ const DemoInnerPage = () => {
                   key={i}
                   className="bg-[#E5E5E5] h-[120px] rounded-lg overflow-hidden"
                 >
-                  <EditableImage imageKey={`demo_inner_thumb_${i}`} fallbackSrc={demoImg} className="w-full h-full object-cover" alt={`demo ${i}`} />
+                  <EditableImage imageKey={`demo_inner_thumb_${i}`} fallbackSrc={demoImg} className="w-full h-full object-cover" alt={t('demoInner.imageAltThumb', { index: i })} />
                 </div>
               ))}
             </div>
@@ -41,7 +41,7 @@ const DemoInnerPage = () => {
           <div className="max-w-[860px] space-y-10 text-[#2A2A2A]">
 
             <div>
-              <h2 className="font-oswald text-xl font-bold mb-2">
+              <h2 className="font-manrope text-xl font-bold mb-2">
                 {t('demoInner.intro.title')}
               </h2>
 
@@ -51,7 +51,7 @@ const DemoInnerPage = () => {
             </div>
 
             <div>
-              <h2 className="font-oswald text-xl font-bold mb-3">
+              <h2 className="font-manrope text-xl font-bold mb-3">
                 {t('demoInner.why.title')}
               </h2>
 
@@ -88,7 +88,7 @@ const DemoInnerPage = () => {
 
       <div className="mt-24 text-center max-w-[600px] mx-auto">
 
-        <h2 className="font-oswald text-[42px] font-bold uppercase mb-8">
+        <h2 className="font-manrope text-[42px] font-bold uppercase mb-8">
           {t('demoInner.contactTitle')}
         </h2>
 

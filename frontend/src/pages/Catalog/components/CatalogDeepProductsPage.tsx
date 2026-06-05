@@ -46,13 +46,7 @@ const findCategoryBySlug = (
 
 const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
   const { t } = useTranslation();
-  
-  const categoryHasProducts =
-    Number(group.category.productCount ?? group.totalProducts ?? group.products.length) > 0;
-    
-  const categoryLink = categoryHasProducts
-    ? `/catalog/${group.category.slug}/products/${group.category.id}?categoryId=${group.category.id}&sort=price,ASC`
-    : `/catalog/${group.category.slug}?categoryId=${group.category.id}`;
+  const categoryLink = `/catalog/${group.category.slug}`;
 
   const carouselProducts = useMemo<CollectionProduct[]>(() => {
     return group.products.map(p => ({
@@ -66,7 +60,7 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
     <section className="-mx-4 sm:mx-0 mb-5 sm:mb-6 md:mb-7 lg:mb-8 rounded-none sm:rounded-2xl border-x-0 sm:border-x border-y border-gray-100 bg-gradient-to-b from-white to-gray-50/60 p-2.5 sm:p-3.5 md:p-3 lg:p-4">
       <div className="mb-3 sm:mb-3.5 md:mb-3 flex items-center justify-between gap-2 sm:gap-3 px-1 sm:px-2">
         <div className="min-w-0">
-          <h2 className="font-oswald text-sm sm:text-xl md:text-2xl lg:text-[28px] xl:text-3xl font-bold uppercase text-gray-900 truncate">
+          <h2 className="font-manrope text-sm sm:text-xl md:text-2xl lg:text-[28px] xl:text-3xl font-bold uppercase text-gray-900 truncate">
             {group.category.name}
           </h2>
           <div className="mt-1 h-[3px] w-12 sm:w-14 md:w-12 lg:w-16 rounded-full bg-[#F58322]" />
@@ -162,37 +156,11 @@ const CatalogDeepProductsPage = ({
       ? categoryIdFromParent
       : null;
 
-  const rootCategoryIds = useMemo(() => {
-    const hasNestedTree = categories.some(
-      (category) =>
-        Array.isArray(category.children) && category.children.length > 0,
-    );
-
-    if (hasNestedTree) {
-      return new Set(
-        categories
-          .map((category) => Number(category.id))
-          .filter((id) => Number.isFinite(id)),
-      );
-    }
-
-    return new Set(
-      categories
-        .filter((category) => category.parentId === null)
-        .map((category) => Number(category.id))
-        .filter((id) => Number.isFinite(id)),
-    );
-  }, [categories]);
-
-  const isRootCategory = selectedCategoryId === null
-    ? true
-    : rootCategoryIds.has(selectedCategoryId);
-
   const deepQueryParams = parentCategoryId
     ? { categoryId: parentCategoryId }
-    : isRootCategory
-    ? {}
-    : { categoryId: selectedCategoryId ?? undefined };
+    : selectedCategoryId
+      ? { categoryId: selectedCategoryId }
+      : {};
 
   const { data, isLoading, error } = useGetProductsDeepQuery(deepQueryParams);
 
@@ -228,7 +196,7 @@ const CatalogDeepProductsPage = ({
           <span>{pageTitle}</span>
         </div>
 
-        <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-[34px] lg:text-4xl font-bold uppercase mb-6 sm:mb-8 md:mb-9 lg:mb-10">
+        <h1 className="font-manrope text-[22px] leading-tight sm:text-3xl md:text-[34px] lg:text-4xl font-bold uppercase mb-6 sm:mb-8 md:mb-9 lg:mb-10">
           {pageTitle}
         </h1>
 

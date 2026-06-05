@@ -45,7 +45,7 @@ const ForClients = () => {
       <PageContainer>
 
         <ScrollReveal>
-          <h1 className="font-oswald font-semibold text-4xl md:text-5xl xl:text-6xl uppercase mt-32">
+          <h1 className="font-manrope font-semibold text-4xl md:text-5xl xl:text-6xl uppercase mt-32">
             {t('home.clients.title')}
           </h1>
         </ScrollReveal>
@@ -57,7 +57,7 @@ const ForClients = () => {
                 className="border-[#F58322] border-4 p-4 md:p-8 hover:-translate-y-1 transition-transform duration-300 h-full flex flex-col overflow-hidden"
               >
                 <div className="flex justify-between items-start gap-3 mb-6 md:mb-8 xl:mb-12">
-                  <h3 className="font-oswald font-bold text-xl md:text-2xl xl:text-3xl uppercase pr-2 min-w-0 break-words leading-tight">
+                  <h3 className="font-manrope font-bold text-xl md:text-2xl xl:text-3xl uppercase pr-2 min-w-0 break-words leading-tight">
                     {t(item.titleKey)}
                   </h3>
                   <EditableImage

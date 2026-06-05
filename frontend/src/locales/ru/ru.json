@@ -56,10 +56,13 @@
   },
   "common": {
     "more": "Подробнее",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "website": "Сайт",
+    "maybeInterested": "Может вас заинтересует"
   },
   "app": {
-    "loadingTranslations": "Загрузка переводов..."
+    "loadingTranslations": "Загрузка переводов...",
+    "loadingResources": "Загрузка ресурсов..."
   },
   "home": {
     "catalog": {
@@ -187,6 +190,8 @@
       "thanks": "Спасибо за отклик.",
       "thanks_short": "спасибо за отклик",
       "manager_will_contact": "Менеджер свяжется с вами.",
+      "nonWorkingHoursNotice": "Сейчас компания не может быстро обрабатывать заказы и сообщения, поскольку по ее графику работы сейчас выходной. Ваша заявка будет обработана в ближайший рабочий день.",
+      "viewSchedule": "Посмотреть график",
       "imageAlt": "Форма обратной связи",
       "errors": {
         "name": "Введите имя",
@@ -207,7 +212,8 @@
     "news": {
       "title": "Новости",
       "readmore": "Другие"
-    }
+    },
+    "personalizedRecommendations": "Персональные рекомендации"
   },
   "technology": {
     "title": "Технологии производства под ваш цех",
@@ -219,6 +225,8 @@
     "subTitle": "Подберем станки под ваш бизнес",
     "text": "Ждем вам в наших демозалах, где мы покажем в работе любой станок из наличия, выполним тестовые детали и операции нужные вашему бизнесу.",
     "videoSubText": "Подписывайтесь, можно без него",
+    "videoTitle": "Видео о демозале",
+    "stepAlt": "Шаг {{index}}",
     "why": "Зачем посещать демозал?",
 
     "whymain1": "Реальную картину:",
@@ -505,9 +513,27 @@
     "code": "Код",
     "sku": "Артикул",
     "brand": "Бренд",
+    "price": "Цена",
     "country": "Страна",
     "loading": "Загрузка...",
-    "error": "Ошибка"
+    "error": "Ошибка",
+    "showAll": "Смотреть все"
+  },
+  "collections": {
+    "title": "Подборки",
+    "recommendationsDescription": "Подборка товаров на основе интересов и популярных просмотров",
+    "promo": "Акция",
+    "promoRange": "Акция: {{start}} - {{end}}",
+    "promoFrom": "Акция с {{start}}",
+    "promoUntil": "Акция до {{end}}",
+    "strategic": "Стратегическая подборка",
+    "toProducts": "К товарам",
+    "fromDate": "с {{start}}",
+    "untilDate": "до {{end}}",
+    "showProduct": "Показать товар {{index}}",
+    "showCollection": "Показать подборку {{index}}",
+    "error": "Не удалось загрузить подборку. Попробуйте позже.",
+    "empty": "Список товаров пока пуст."
   },
   "catalogPage": {
     "title": "Каталог товаров",
@@ -522,7 +548,13 @@
     "noRecentlyViewedProducts": "Нет недавно просмотренных товаров",
     "productsCount": "{{count}} шт.",
     "productsCountUnit": "шт.",
-    "sampleAlt": "Лазерный станок - пример"
+    "sampleAlt": "Лазерный станок - пример",
+    "machineImageAlt": "Промышленный станок",
+    "seo": {
+      "descriptionFallback": "{{productName}} - купить в Baytech",
+      "defaultBrand": "Baytech",
+      "siteName": "Baytech"
+    }
   },
   "categoryPage": {
     "loadingCategories": "Загрузка категорий...",
@@ -547,6 +579,7 @@
     "adress": "Адрес магазина",
     "descriprion": "Описание",
     "certificate": "Характеристика",
+    "attachments": "Спецификации",
     "information": "Информация для заказа",
     "model": "Модельный ряд:",
     "sku": "Модель / SKU",
@@ -556,22 +589,36 @@
     "phone": "По телефону:",
     "Email": "По электронной почте:",
     "artic": "Укажите артикул товара",
+    "otherSectionsTitle": "Также доступна дополнительная информация:",
     "relatedProducts": "Связанные товары",
     "loadingLinked": "Загрузка товаров...",
     "linkedNotFound": "Товары для блока не найдены",
+    "downloadAttachment": "Скачать файл",
+    "previewAttachment": "Предпросмотр",
+    "noAttachments": "Файлы не прикреплены",
     "showImage": "Показать изображение {{index}}",
     "pieces": "шт.",
     "modal": {
       "close": "Закрыть",
       "retry": "Повторить",
       "deliveryMethods": "Способы доставки",
+      "deliveryPrepaymentText": "Доставка осуществляется только по предоплате.",
+      "deliveryMethodPickup": "Доставка \"Самовывоз\"",
+      "deliveryMethodTransportCompany": "Транспортная компания",
+      "deliveryMethodAlmaty": "Доставка по городу Алматы",
       "freeDelivery": "Бесплатная доставка при условии",
+      "freeDeliveryConditionMinOrder": "Бесплатно при стоимости заказа от 100000 ₸.",
+      "freeDeliveryConditionTime": "В течении 3-х рабочих дней.",
+      "freeDeliveryConditionWeight": "Ограничение: вес - не более 500 кг.",
+      "freeDeliveryConditionDimensions": "Ограничение: габариты - 2м*1,25м*1,25м.",
       "paymentMethods": "Способы оплаты",
       "warranty": "Гарантия",
       "vat": "НДС, %",
       "additionalInfo": "Дополнительная информация о доставке и оплате",
+      "deliveryAdditionalInfo": "К моменту отгрузки Товара, мы всегда позаботимся о том, чтобы предложить нашим клиентам оптимальный вариант доставки с г. Алматы в Ваш регион.",
       "deliveryRegions": "Регионы доставки",
       "moreDetails": "Подробнее",
+      "kazakhstan": "Казахстан",
       "scheduleLoading": "Загрузка графика работы...",
       "scheduleLoadError": "Не удалось загрузить график работы.",
       "timezone": "Часовой пояс",
@@ -584,6 +631,12 @@
     "emptyTitle": "Корзина пуста",
     "emptyDescription": "Добавьте товары в корзину, чтобы оформить заявку.",
     "goToCatalog": "Перейти в каталог",
+    "crossSell": {
+      "title": "Берут вместе",
+      "description": "Универсальные товары: расходники, аксессуары и полезные мелочи",
+      "show": "Показать",
+      "hide": "Скрыть"
+    },
     "itemsCount": "Товары ({{count}})",
     "total": "Итого",
     "submitRequest": "Отправить заявку",
@@ -673,7 +726,9 @@
         }
       }
     },
-    "contactTitle": "Есть вопросы? Оставьте заявку"
+    "contactTitle": "Есть вопросы? Оставьте заявку",
+    "imageAltMain": "Фото демо-производства",
+    "imageAltThumb": "Фото демо-производства {{index}}"
   },
   "compare": {
     "title": "Сравнение товаров",

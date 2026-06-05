@@ -59,6 +59,9 @@ const formatDisplayPhone = (phone: string): string => {
 }
 
 const extractStoreAddress = (settings: CompanySettingsResponse | undefined, locale: CompanyInfoLocale): string | null => {
+  const contactAddress = settings?.COMPANY_CONTACT_PHONES?.address?.trim()
+  if (contactAddress) return contactAddress
+
   const sections = settings?.COMPANY_INFO_SECTIONS?.sections ?? []
 
   for (const section of sections) {
@@ -101,6 +104,7 @@ const Footer = () => {
   const social = settings?.COMPANY_SOCIAL_LINKS?.socials ?? []
   const locale = getCompanyInfoLocale(i18n.resolvedLanguage || i18n.language)
   const storeAddress = extractStoreAddress(settings, locale)
+  const contactEmail = settings?.COMPANY_CONTACT_PHONES?.email?.trim() || t('footer.email.value')
   const phones = settings?.COMPANY_CONTACT_PHONES?.phones
     ?.map((entry) => entry.phone?.trim() ?? '')
     .filter((phone) => phone.length > 0) ?? []
@@ -205,7 +209,11 @@ const Footer = () => {
             <h4 className="mt-6 font-display text-xs font-bold uppercase tracking-[0.16em] text-gray-400">
               {t('footer.email.title')}
             </h4>
-            <p className="mt-3 break-all text-sm text-gray-200">{t('footer.email.value')}</p>
+            <p className="mt-3 break-all text-sm text-gray-200">
+              <a href={`mailto:${contactEmail}`} className="hover:text-[#F58322] transition-colors">
+                {contactEmail}
+              </a>
+            </p>
           </div>
         </div>
 

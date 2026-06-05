@@ -48,7 +48,7 @@ export const PopularProduct = () => {
 
   return (
     <section className="mb-12 sm:mb-16 md:mb-20 mt-8 sm:mt-10 md:mt-12 px-0 sm:px-0">
-      <h2 className="font-oswald text-lg sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase mb-4 sm:mb-5 md:mb-6 ml-1 sm:ml-4">
+      <h2 className="font-manrope text-lg sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase mb-4 sm:mb-5 md:mb-6 ml-1 sm:ml-4">
         {t("catalogPage.popular")}
       </h2>
 

@@ -53,11 +53,11 @@ const DemoPage = () => {
           {/* HERO */}
           <section>
             <ScrollReveal>
-              <h1 className="font-oswald text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#F05023] leading-tight">
+              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#F05023] leading-tight">
                 {t('demo.title')}
               </h1>
 
-              <h3 className="font-oswald text-lg sm:text-xl lg:text-2xl font-bold mt-2 sm:mt-3 mb-4 sm:mb-6 whitespace-pre-line text-gray-900">
+              <h3 className="font-manrope text-lg sm:text-xl lg:text-2xl font-bold mt-2 sm:mt-3 mb-4 sm:mb-6 whitespace-pre-line text-gray-900">
                 {t('demo.subTitle')}
               </h3>
 
@@ -72,7 +72,7 @@ const DemoPage = () => {
                 <iframe
                   className="w-full h-full"
                   src="https://www.youtube.com/embed/APaLfGApE8A?rel=0"
-                  title="YouTube video player"
+                  title={t('demo.videoTitle')}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
@@ -111,7 +111,7 @@ const DemoPage = () => {
           {/* HOW IT WORKS */}
           <section className="max-w-4xl mx-auto mb-20 sm:mb-28">
             <ScrollReveal>
-              <h2 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-bold text-[#F05023] uppercase mb-8 sm:mb-10 text-center sm:text-left">
+              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-bold text-[#F05023] uppercase mb-8 sm:mb-10 text-center sm:text-left">
                 {t("demo.work")}
               </h2>
             </ScrollReveal>
@@ -130,7 +130,7 @@ const DemoPage = () => {
                       imageKey={icon.key}
                       fallbackSrc={icon.src}
                       className="w-12 sm:w-14 md:w-16 flex-shrink-0"
-                      alt={`step ${i + 1}`}
+                      alt={t('demo.stepAlt', { index: i + 1 })}
                     />
 
                     <div className="flex-1">
@@ -151,7 +151,7 @@ const DemoPage = () => {
           {/* FORM */}
           <ScrollReveal y={40} className="mb-20 sm:mb-32 lg:mb-40 px-2 sm:px-0">
             <section>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-oswald font-semibold mb-8 sm:mb-10 text-center sm:text-left text-gray-900 uppercase">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-manrope font-semibold mb-8 sm:mb-10 text-center sm:text-left text-gray-900 uppercase">
                 {t('demo.contactTitle')}
               </h2>
 

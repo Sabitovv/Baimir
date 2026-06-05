@@ -48,6 +48,18 @@ export type ProductMedia = {
   isPrimary?: boolean;
 };
 
+export type ProductAttachment = {
+  id: number;
+  name: string;
+  originalFilename: string;
+  fileUrl: string;
+  extension: string;
+  fileSize: number;
+  mimeType: string;
+  sortOrder: number;
+  downloadUrl: string | null;
+};
+
 export type BlockType =
   | "heading"
   | "paragraph"
@@ -167,6 +179,7 @@ export type ProductDetail = {
   specifications: SpecificationGroup[];
   variants: ProductVariant[];
   contentBlocks?: ProductContentBlock[];
+  attachments?: ProductAttachment[];
 };
 
 export type Product = {
@@ -230,7 +243,7 @@ export type Filter = {
   code: string;
   name: string;
   range: FilterRange | null;
-  uiType: "RANGE_SLIDER" | "CHECKBOX_LIST";
+  uiType: "RANGE_SLIDER" | "CHECKBOX_LIST" | "RADIO_LIST";
   unitCode: string | null;
   values: FilterValue[] | null;
 };
@@ -359,6 +372,8 @@ export type CompanyContactPhone = {
 
 export type CompanyContactPhones = {
   phones?: CompanyContactPhone[];
+  email?: string;
+  address?: string;
 };
 
 export type CompanySettingsResponse = {

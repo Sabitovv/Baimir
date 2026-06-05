@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
 
@@ -25,6 +25,8 @@ import ScrollReveal from "@/components/animations/ScrollReveal";
 import CategoryCalculator from "./components/CategoryCalculator";
 import { EditableImage } from "@/zustand/EditableImage";
 import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
+import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
+import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
 
 type BreadcrumbItem = {
   id?: number | string;
@@ -48,6 +50,60 @@ type ProductForFilter = {
   specifications?: ProductSpecGroup[];
 };
 
+type CategoryImageProps = {
+  src?: string | null;
+  alt: string;
+};
+
+const resolveProductCount = (value: {
+  productCount?: number | string;
+  productsCount?: number | string;
+  count?: number | string;
+}): number | null => {
+  const raw = value.productCount ?? value.productsCount ?? value.count;
+  const parsed = typeof raw === 'number' ? raw : Number(raw);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const CategoryImage = ({ src, alt }: CategoryImageProps) => {
+  const [resolvedSrc, setResolvedSrc] = useState(src || sampleImg);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setResolvedSrc(src || sampleImg);
+    setIsLoaded(false);
+  }, [src]);
+
+  return (
+    <div className="relative w-full h-[100px] sm:h-[130px] flex items-center justify-center overflow-hidden shrink-0">
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 bg-gray-100 transition-opacity duration-300 ${
+          isLoaded ? "opacity-0" : "opacity-100"
+        }`}
+      />
+      <img
+        src={resolvedSrc}
+        alt={alt}
+        loading="lazy"
+        width={130}
+        height={130}
+        onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          if (resolvedSrc !== sampleImg) {
+            setResolvedSrc(sampleImg);
+            return;
+          }
+          setIsLoaded(true);
+        }}
+        className={`w-full h-full object-contain transition-all duration-300 group-hover:scale-105 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    </div>
+  );
+};
+
 const isPriceRangeFilter = (filter: Filter): boolean => {
   const code = String(filter.code ?? "").toLowerCase();
   const name = String(filter.name ?? "").toLowerCase();
@@ -64,6 +120,21 @@ const findCategoryById = (
     if (Number(cat.id) === id) return cat;
     if (cat.children && cat.children.length > 0) {
       const found = findCategoryById(cat.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+const findCategoryBySlug = (
+  categories: Category[],
+  slug?: string,
+): Category | null => {
+  if (!slug) return null;
+  for (const cat of categories) {
+    if (cat.slug === slug) return cat;
+    if (cat.children && cat.children.length > 0) {
+      const found = findCategoryBySlug(cat.children, slug);
       if (found) return found;
     }
   }
@@ -92,10 +163,11 @@ const CategoryPage = () => {
 
   const { t } = useTranslation();
   const { i18n } = useTranslation();
-  const { categoryId } = useParams<{
+  const { categorySlug, categoryId } = useParams<{
     categorySlug: string;
-    categoryId: string;
+    categoryId?: string;
   }>();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -119,9 +191,19 @@ const CategoryPage = () => {
     isError: isErrorCategories,
   } = useGetCategoriesTreeQuery({ lang: i18n.language });
 
-  const activeId = categoryId
-    ? Number(categoryId)
-    : Number(searchParams.get("categoryId"));
+  const activeId = useMemo(() => {
+    const fromParam = Number(categoryId);
+    if (Number.isFinite(fromParam) && fromParam > 0) return fromParam;
+
+    const fromSlug = findCategoryBySlug(categories, categorySlug);
+    const slugId = Number(fromSlug?.id);
+    if (Number.isFinite(slugId) && slugId > 0) return slugId;
+
+    const fromQuery = Number(searchParams.get("categoryId"));
+    if (Number.isFinite(fromQuery) && fromQuery > 0) return fromQuery;
+
+    return null;
+  }, [categoryId, categorySlug, categories, searchParams]);
 
   const currentCategory = useMemo(() => {
     if (!categories.length || !activeId) return null;
@@ -266,16 +348,11 @@ const CategoryPage = () => {
     }
 
     stack.reverse().forEach((cat) => {
-      const hasChildren = categories.some(
-        (c) => Number(c.parentId) === Number(cat.id),
-      );
       breadcrumbs.push({
         id: cat.id,
         name: cat.name,
         slug: cat.slug,
-        path: hasChildren
-          ? `/catalog/${cat.slug}?categoryId=${cat.id}`
-          : `/catalog/${cat.slug}/products/${cat.id}`,
+        path: `/catalog/${cat.slug}`,
       });
     });
 
@@ -293,11 +370,10 @@ const CategoryPage = () => {
   }, []);
 
   useEffect(() => {
-    if (sortParam && sortParam.trim()) return;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("sort", "price,ASC");
-    setSearchParams(params, { replace: true });
-  }, [sortParam, searchParams, setSearchParams]);
+    if (!categorySlug) return;
+    if (!location.pathname.includes("/products/")) return;
+    navigate(`/catalog/${categorySlug}`, { replace: true });
+  }, [categorySlug, location.pathname, navigate]);
 
   const changePage = (newPage: number) => {
     const safePage = Math.max(1, Math.min(totalPages, newPage));
@@ -340,6 +416,18 @@ const CategoryPage = () => {
     setSearchParams(params, { replace: false });
   };
 
+  const childCategories = useMemo(() => {
+    if (!currentCategory) return [];
+
+    if (currentCategory.children && currentCategory.children.length > 0) {
+      return currentCategory.children;
+    }
+
+    return categories.filter(
+      (cat) => Number(cat.parentId) === Number(currentCategory.id),
+    );
+  }, [categories, currentCategory]);
+
   if (isLoadingCategories)
     return (
       <PageContainer>
@@ -353,7 +441,7 @@ const CategoryPage = () => {
       </PageContainer>
     );
 
-  const hasSubcategories = (currentCategory?.children?.length ?? 0) > 0;
+  const hasSubcategories = childCategories.length > 0;
   const hasProducts = products.length > 0;
 
   return (
@@ -361,7 +449,7 @@ const CategoryPage = () => {
       <div className="px-4 md:px-5 lg:px-0 mb-12 sm:mb-16 md:mb-20">
         <div className="my-4 sm:my-5">
           <ScrollReveal key={activeId ?? "catalog-title"}>
-            <h1 className="font-oswald text-[22px] leading-tight sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
+            <h1 className="font-manrope text-[22px] leading-tight sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
               {currentCategory?.name ?? t("commonCatalog.catalog")}
             </h1>
           </ScrollReveal>
@@ -375,20 +463,29 @@ const CategoryPage = () => {
 
           <main>
             {!isLoadingProducts && !hasProducts && hasSubcategories ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 md:gap-4 lg:gap-5 xl:gap-6">
-                {currentCategory?.children?.map((sub: Category) => (
-                  <div
-                    key={sub.id}
-                    onClick={() =>
-                      navigate(`/catalog/${sub.slug}?categoryId=${sub.id}`)
-                    }
-                    className="cursor-pointer group border rounded-lg p-2.5 sm:p-3.5 md:p-3 lg:p-4 min-h-[76px] sm:min-h-[88px] md:min-h-[78px] lg:min-h-[84px] xl:min-h-[96px] flex items-center justify-center hover:shadow-lg transition bg-white text-center"
-                  >
-                    <h3 className="font-bold text-[13px] leading-snug sm:text-base md:text-sm lg:text-base group-hover:text-[#DB741F] transition">
-                      {sub.name}
-                    </h3>
-                  </div>
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+                {childCategories.map((sub: Category) => {
+                  const productCountValue = resolveProductCount(sub);
+                  return (
+                    <div
+                      key={sub.id}
+                      onClick={() => navigate(`/catalog/${sub.slug}`)}
+                      className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 rounded-lg cursor-pointer flex flex-col items-center p-3 sm:p-6 h-[210px] sm:h-[240px] overflow-hidden group relative"
+                    >
+                      {productCountValue !== null && (
+                        <span className="absolute left-2.5 top-2.5 z-10 inline-flex items-center rounded-full bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-700">
+                          {productCountValue} {t('catalogPage.productsCountUnit')}
+                        </span>
+                      )}
+                      <CategoryImage src={sub.imageUrl} alt={sub.name} />
+                      <div className="mt-3 sm:mt-4 text-center h-[56px] sm:h-[64px] flex flex-col items-center justify-center overflow-hidden">
+                        <p className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2">
+                          {sub.name}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <>
@@ -512,7 +609,7 @@ const CategoryPage = () => {
                         {t("productPage.notFoundTitle")}
                       </p>
                       <p className="text-center text-sm sm:text-base font-semibold text-gray-900 pb-4">
-                        Может вас заинтересует
+                        {t("common.maybeInterested")}
                       </p>
                       <ProductCollectionRenderer
                         placement="SEARCH_EMPTY_STATE_COLLECTION"
@@ -579,12 +676,31 @@ const CategoryPage = () => {
           </main>
         </div>
 
+        {hasProducts && (
+          <CategoryInlineCollectionsSection sectionTitle={t('collections.title')} categoryId={activeId} />
+        )}
+
+        {!hasProducts && (
+          <>
+            <div className="mt-12 sm:mt-16 mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
+              <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
+                {t("catalogPage.deepProductsTitle")}
+              </h2>
+              <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
+            </div>
+
+            <CategoryInlineCollectionsSection categoryId={activeId} />
+
+            <CatalogDeepProductsPage embedded categoryId={activeId} />
+          </>
+        )}
+
         <RecentlyViewedProducts />
 
         <section className="mb-12 sm:mb-14 md:mb-16">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-7 lg:gap-8 items-center">
             <div className="px-2 md:px-0">
-              <h3 className="font-oswald text-2xl sm:text-4xl md:text-[40px] lg:text-5xl font-bold uppercase mb-5 sm:mb-7 md:mb-8 ml-2 sm:ml-4">
+              <h3 className="font-manrope text-2xl sm:text-4xl md:text-[40px] lg:text-5xl font-bold uppercase mb-5 sm:mb-7 md:mb-8 ml-2 sm:ml-4">
                 {t("catalogPage.bid")}
               </h3>
               <Contact />

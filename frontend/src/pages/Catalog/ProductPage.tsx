@@ -40,6 +40,7 @@ import productPlaceholder from "@/assets/catalog/productPlaceholder.svg";
 import Contact from "@/components/common/Contact";
 import ProductCard from "@/components/common/ProductCard";
 import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
+import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
 import {
   addToCart,
   incrementQuantity,
@@ -56,12 +57,10 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import {
-  DELIVERY_ADDITIONAL_INFO,
   DELIVERY_DETAILS_URL,
-  DELIVERY_METHODS,
-  DELIVERY_PREPAYMENT_TEXT,
-  FREE_DELIVERY_CONDITIONS,
   INTERNATIONAL_DELIVERY_REGIONS,
   KAZAKHSTAN_DELIVERY_REGIONS,
   PAYMENT_BANK_ACCOUNT,
@@ -120,6 +119,10 @@ const findCategoryById = (
 };
 
 const PLACEHOLDER_IMG = productPlaceholder;
+const SEO_BASE_URL = "https://baytech.kz";
+const PRODUCT_JSON_LD_ID = "product-jsonld";
+const SEO_DESCRIPTION_MAX_LENGTH = 500;
+const SEO_DESCRIPTION_MIN_LENGTH = 10;
 
 type GalleryItem = {
   kind: "image" | "videoExternal" | "videoFile";
@@ -515,6 +518,24 @@ const stripHtmlTags = (value: string): string => {
     .trim();
 };
 
+const normalizeSeoDescription = (
+  raw: string | null | undefined,
+  fallback: string,
+): string => {
+  const cleaned = stripHtmlTags(raw ?? "")
+    .replace(/[\u0000-\u001F\u007F]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const fallbackClean = stripHtmlTags(fallback).trim() || "Baytech product";
+  const base = cleaned.length >= SEO_DESCRIPTION_MIN_LENGTH ? cleaned : fallbackClean;
+  const limited = base.slice(0, SEO_DESCRIPTION_MAX_LENGTH).trim();
+
+  return limited.length >= SEO_DESCRIPTION_MIN_LENGTH
+    ? limited
+    : fallbackClean.slice(0, SEO_DESCRIPTION_MAX_LENGTH);
+};
+
 const getContentBlockText = (block: ProductContentBlock): string => {
   switch (block.type) {
     case "heading":
@@ -545,11 +566,11 @@ const renderCardItem = (
     key={`${card.title}-${idx}`}
     className="group rounded-xl sm:rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl flex h-full flex-col"
   >
-    <div className="h-[170px] sm:h-[200px] md:h-[240px] lg:h-[260px] bg-gray-100 overflow-hidden">
+    <div className="h-[170px] sm:h-[200px] md:h-[240px] lg:h-[260px] bg-gray-50 overflow-hidden">
       <img
         src={card.imageUrl || PLACEHOLDER_IMG}
         alt={card.title}
-        className="w-full h-full object-contain sm:object-cover transition duration-500 group-hover:scale-[1.03]"
+        className="w-full h-full object-contain transition duration-500 group-hover:scale-[1.01]"
         loading="lazy"
       />
     </div>
@@ -589,11 +610,11 @@ const renderMainSetItem = (card: GridCardItem, idx: number) => (
         </p>
       </div>
 
-      <div className="h-[150px] sm:h-[200px] bg-gray-100 rounded-lg sm:rounded-xl overflow-hidden border border-gray-100">
+      <div className="h-[150px] sm:h-[200px] bg-gray-50 rounded-lg sm:rounded-xl overflow-hidden border border-gray-100">
         <img
           src={card.imageUrl || PLACEHOLDER_IMG}
           alt={card.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           loading="lazy"
         />
       </div>
@@ -610,6 +631,68 @@ const getPrimaryImage = (media: ProductDetail["media"]): string => {
       item.url.trim().length > 0,
   );
   return firstImage?.url?.trim() || PLACEHOLDER_IMG;
+};
+
+const toAbsoluteBaytechUrl = (value: string): string => {
+  const trimmed = value.trim();
+  if (!trimmed) return SEO_BASE_URL;
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      return `${SEO_BASE_URL}${parsed.pathname}${parsed.search}${parsed.hash}`;
+    } catch {
+      return SEO_BASE_URL;
+    }
+  }
+
+  const normalizedPath = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return `${SEO_BASE_URL}${normalizedPath}`;
+};
+
+const formatAttachmentSize = (sizeInBytes: number): string => {
+  if (!Number.isFinite(sizeInBytes) || sizeInBytes <= 0) return "-";
+
+  const units = ["B", "KB", "MB", "GB"];
+  let value = sizeInBytes;
+  let unitIndex = 0;
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+
+  const precision = value >= 10 || unitIndex === 0 ? 0 : 1;
+  return `${value.toFixed(precision)} ${units[unitIndex]}`;
+};
+
+const getAttachmentPreviewUrl = (fileUrl: string, mimeType: string): string => {
+  const normalizedMime = mimeType.toLowerCase();
+
+  if (
+    normalizedMime.includes("pdf") ||
+    normalizedMime.startsWith("image/") ||
+    normalizedMime.startsWith("text/")
+  ) {
+    return fileUrl;
+  }
+
+  return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+};
+
+const upsertMetaTag = (property: string, content: string): HTMLMetaElement => {
+  let tag = document.head.querySelector(
+    `meta[property="${property}"]`,
+  ) as HTMLMetaElement | null;
+
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute("property", property);
+    document.head.appendChild(tag);
+  }
+
+  tag.setAttribute("content", content);
+  return tag;
 };
 
 const ProductLinksBlock = ({
@@ -951,12 +1034,10 @@ const renderContentBlock = (
       const mediaFrameClass = isFullWidthImage
         ? "h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)]"
         : imageRatioClassMap[block.data.imageRatio];
-      const imageFitClass = isFullWidthImage
-        ? "object-cover object-center"
-        : "object-cover";
+      const imageFitClass = "object-contain object-center";
       const imageHoverClass = isFullWidthImage
-        ? "hover:scale-[1.02]"
-        : "hover:scale-110";
+        ? "hover:scale-[1.01]"
+        : "hover:scale-[1.02]";
 
       return (
         <section
@@ -967,7 +1048,7 @@ const renderContentBlock = (
             className={`w-full ${imageWidthClassMap[block.data.imageWidth]}`}
           >
             <div
-              className={`${mediaFrameClass} rounded-xl overflow-hidden bg-gray-100 group`}
+              className={`${mediaFrameClass} rounded-xl overflow-hidden bg-gray-50 group`}
             >
               <img
                 src={block.data.imageUrl || PLACEHOLDER_IMG}
@@ -1072,12 +1153,12 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="group snap-start min-w-[72%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+                className="group snap-start min-w-[72%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className="w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110"
+                  className="w-full h-full object-contain aspect-[4/3] transition duration-500 group-hover:scale-[1.02]"
                   loading="lazy"
                 />
               </div>
@@ -1095,12 +1176,12 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className="mb-3 sm:mb-4 break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+                className="mb-3 sm:mb-4 break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className="w-full h-auto object-cover transition duration-500 hover:scale-105"
+                  className="w-full h-auto object-contain transition duration-500 hover:scale-[1.02]"
                   loading="lazy"
                 />
               </div>
@@ -1115,12 +1196,12 @@ const renderContentBlock = (
             {block.data.urls.map((url, idx) => (
               <div
                 key={`${url}-${idx}`}
-                className={`group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
+                className={`group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
               >
                 <img
                   src={url || PLACEHOLDER_IMG}
                   alt={`gallery-${idx + 1}`}
-                  className={`w-full h-full object-cover transition duration-500 group-hover:scale-110 ${idx === 0 ? "aspect-[16/7]" : "aspect-[4/3]"}`}
+                  className={`w-full h-full object-contain transition duration-500 group-hover:scale-[1.02] ${idx === 0 ? "aspect-[16/7]" : "aspect-[4/3]"}`}
                   loading="lazy"
                 />
               </div>
@@ -1140,15 +1221,15 @@ const renderContentBlock = (
           {block.data.urls.map((url, idx) => (
             <div
               key={`${url}-${idx}`}
-              className="group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-md transition-all duration-300 hover:shadow-xl"
+              className="group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
             >
               <img
                 src={url || PLACEHOLDER_IMG}
                 alt={`gallery-${idx + 1}`}
                 className={
                   isSingleLayout
-                    ? "w-full h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)] object-cover object-center transition duration-500 group-hover:scale-[1.02]"
-                    : "w-full h-full object-cover aspect-[4/3] transition duration-500 group-hover:scale-110"
+                    ? "w-full h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)] object-contain object-center transition duration-500 group-hover:scale-[1.01]"
+                    : "w-full h-full object-contain aspect-[4/3] transition duration-500 group-hover:scale-[1.02]"
                 }
                 loading="lazy"
               />
@@ -1256,9 +1337,13 @@ const ProductPage = () => {
   });
 
   const [activeImage, setActiveImage] = useState(0);
-  const [activeTab, setActiveTab] = useState<"desc" | "specs" | "order">(
+  const [activeTab, setActiveTab] = useState<
+    "desc" | "specs" | "attachments" | "order"
+  >(
     "desc",
   );
+  const [selectedPreviewFileId, setSelectedPreviewFileId] = useState<number | null>(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [compareError, setCompareError] = useState<string | null>(null);
   const [infoModalType, setInfoModalType] = useState<InfoModalType | null>(
     null,
@@ -1274,6 +1359,8 @@ const ProductPage = () => {
   const [stickyCardWidth, setStickyCardWidth] = useState<number | null>(null);
   const [stickyCardLeft, setStickyCardLeft] = useState<number | null>(null);
   const [stickyCardHeight, setStickyCardHeight] = useState<number | null>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const {
     data: companySettingsData,
@@ -1287,6 +1374,9 @@ const ProductPage = () => {
     companySettingsData?.COMPANY_CONTACT_PHONES?.phones
       ?.map((entry) => entry.phone?.trim() ?? "")
       .filter((phone) => phone.length > 0) ?? [];
+  const companyEmail =
+    companySettingsData?.COMPANY_CONTACT_PHONES?.email?.trim() ||
+    STORE_CONTACTS.email;
   const companyManagers = companySettingsData?.COMPANY_MANAGERS?.managers ?? [];
   const effectiveManagers =
     companyManagers.length > 0
@@ -1298,7 +1388,9 @@ const ProductPage = () => {
           phone: manager.phone,
           position: manager.role,
         }));
-  const storeAddress = STORE_CONTACTS.address;
+  const storeAddress =
+    companySettingsData?.COMPANY_CONTACT_PHONES?.address?.trim() ||
+    STORE_CONTACTS.address;
   const workScheduleError = isWorkScheduleError
     ? t("productPage.modal.scheduleLoadError")
     : null;
@@ -1390,6 +1482,87 @@ const ProductPage = () => {
     if (!product?.id) return;
     addRecentlyViewedProductId(product.id);
   }, [product?.id]);
+
+  useEffect(() => {
+    if (!product) return;
+
+    const previousTitle = document.title;
+    const descriptionFallback = t("catalogPage.seo.descriptionFallback", {
+      productName: product.name,
+    });
+    const description = normalizeSeoDescription(
+      product.description,
+      descriptionFallback,
+    );
+    const productUrl = toAbsoluteBaytechUrl(`/catalog/product/${product.slug}`);
+    const imageUrl = toAbsoluteBaytechUrl(
+      getPrimaryImage(product.media) || product.coverImage || PLACEHOLDER_IMG,
+    );
+    const brandAttribute = product.specifications
+      ?.flatMap((group) => group.attributes ?? [])
+      .find((attr) => /бренд|brand|производител/i.test(attr.name));
+    const brandName =
+      brandAttribute?.value?.trim() || t("catalogPage.seo.defaultBrand");
+    const categoryName = product.category?.name?.trim();
+
+    document.title = product.name;
+
+    const managedTags: HTMLMetaElement[] = [
+      upsertMetaTag("og:type", "product"),
+      upsertMetaTag("og:title", product.name),
+      upsertMetaTag("og:description", description),
+      upsertMetaTag("og:url", productUrl),
+      upsertMetaTag("og:image", imageUrl),
+      upsertMetaTag("og:site_name", t("catalogPage.seo.siteName")),
+    ];
+
+    let jsonLdTag = document.getElementById(PRODUCT_JSON_LD_ID) as
+      | HTMLScriptElement
+      | null;
+    if (!jsonLdTag) {
+      jsonLdTag = document.createElement("script");
+      jsonLdTag.type = "application/ld+json";
+      jsonLdTag.id = PRODUCT_JSON_LD_ID;
+      document.body.appendChild(jsonLdTag);
+    }
+
+    const jsonLd: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      description,
+      url: productUrl,
+      image: [imageUrl],
+      offers: {
+        "@type": "Offer",
+        url: productUrl,
+        priceCurrency: "KZT",
+        price: product.price,
+        availability: product.inStock
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      },
+    };
+
+    if (brandName) {
+      jsonLd.brand = {
+        "@type": "Brand",
+        name: brandName,
+      };
+    }
+
+    if (categoryName) {
+      jsonLd.category = categoryName;
+    }
+
+    jsonLdTag.textContent = JSON.stringify(jsonLd);
+
+    return () => {
+      document.title = previousTitle;
+      managedTags.forEach((tag) => tag.remove());
+      jsonLdTag?.remove();
+    };
+  }, [product]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -1532,11 +1705,56 @@ const ProductPage = () => {
 
     return columns;
   }, [product?.specifications]);
+  const hasSpecifications = specColumns.some((column) => column.length > 0);
 
   const normalizedContentBlocks = useMemo(
     () => normalizeContentBlocks(product?.contentBlocks),
     [product?.contentBlocks],
   );
+
+  const productAttachments = useMemo(() => {
+    return [...(product?.attachments ?? [])].sort(
+      (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+    );
+  }, [product?.attachments]);
+  const hasAttachments = productAttachments.length > 0;
+  const otherInfoTabs = useMemo<
+    Array<{ key: "specs" | "attachments" | "order"; label: string }>
+  >(() => {
+    const tabs: Array<{ key: "specs" | "attachments" | "order"; label: string }> = [];
+
+    if (hasSpecifications) {
+      tabs.push({ key: "specs", label: t("productPage.certificate") });
+    }
+
+    if (hasAttachments) {
+      tabs.push({ key: "attachments", label: t("productPage.attachments") });
+    }
+
+    tabs.push({ key: "order", label: t("productPage.information") });
+    return tabs;
+  }, [hasAttachments, hasSpecifications, t]);
+
+  const selectedPreviewFile = useMemo(() => {
+    if (!productAttachments.length) return null;
+    return (
+      productAttachments.find((item) => item.id === selectedPreviewFileId) ??
+      productAttachments[0]
+    );
+  }, [productAttachments, selectedPreviewFileId]);
+
+  useEffect(() => {
+    if (activeTab === "attachments" && !hasAttachments) {
+      setActiveTab("desc");
+      setIsPreviewModalOpen(false);
+    }
+  }, [activeTab, hasAttachments]);
+
+  useEffect(() => {
+    if (activeTab === "specs" && !hasSpecifications) {
+      setActiveTab("desc");
+    }
+  }, [activeTab, hasSpecifications]);
 
   const isInCompare = product
     ? compareItems.some((item) => item.id === product.id)
@@ -1716,18 +1934,30 @@ const ProductPage = () => {
             : "";
 
   const renderInfoModalContent = () => {
+    const deliveryMethods = [
+      t("productPage.modal.deliveryMethodPickup"),
+      t("productPage.modal.deliveryMethodTransportCompany"),
+      t("productPage.modal.deliveryMethodAlmaty"),
+    ];
+    const freeDeliveryConditions = [
+      t("productPage.modal.freeDeliveryConditionMinOrder"),
+      t("productPage.modal.freeDeliveryConditionTime"),
+      t("productPage.modal.freeDeliveryConditionWeight"),
+      t("productPage.modal.freeDeliveryConditionDimensions"),
+    ];
+
     if (infoModalType === "delivery") {
       return (
         <div className="space-y-4 text-sm text-gray-700">
           <p className="font-medium text-gray-900">
-            {DELIVERY_PREPAYMENT_TEXT}
+            {t("productPage.modal.deliveryPrepaymentText")}
           </p>
           <div>
             <h4 className="text-sm font-semibold text-gray-900">
               {t("productPage.modal.deliveryMethods")}
             </h4>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              {DELIVERY_METHODS.map((item) => (
+              {deliveryMethods.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -1737,7 +1967,7 @@ const ProductPage = () => {
               {t("productPage.modal.freeDelivery")}
             </h4>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              {FREE_DELIVERY_CONDITIONS.map((item) => (
+              {freeDeliveryConditions.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -1750,14 +1980,14 @@ const ProductPage = () => {
       return (
         <div className="space-y-4 text-sm text-gray-700">
           <p className="font-medium text-gray-900">
-            {DELIVERY_PREPAYMENT_TEXT}
+            {t("productPage.modal.deliveryPrepaymentText")}
           </p>
           <div>
             <h4 className="text-sm font-semibold text-gray-900">
               {t("productPage.modal.deliveryMethods")}
             </h4>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              {DELIVERY_METHODS.map((item) => (
+              {deliveryMethods.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -1789,7 +2019,7 @@ const ProductPage = () => {
             <h4 className="text-sm font-semibold text-gray-900">
               {t("productPage.modal.additionalInfo")}
             </h4>
-            <p className="mt-2">{DELIVERY_ADDITIONAL_INFO}</p>
+            <p className="mt-2">{t("productPage.modal.deliveryAdditionalInfo")}</p>
           </div>
           <div>
             <h4 className="text-sm font-semibold text-gray-900">
@@ -1800,7 +2030,7 @@ const ProductPage = () => {
                 <li key={item}>{item}</li>
               ))}
               <li>
-                Казахстан:
+                {t('productPage.modal.kazakhstan')}:
                 <ul className="mt-1 list-disc space-y-1 pl-5">
                   {KAZAKHSTAN_DELIVERY_REGIONS.map((region) => (
                     <li key={region.name}>
@@ -1973,17 +2203,17 @@ const ProductPage = () => {
           )}
 
           <p>
-            Email:{" "}
+            {t('footer.email.title')}:{" "}
             <a
-              href={`mailto:${STORE_CONTACTS.email}`}
+              href={`mailto:${companyEmail}`}
               className="text-[#F58322] hover:underline"
             >
-              {STORE_CONTACTS.email}
+              {companyEmail}
             </a>
           </p>
           {companyPhones[0] && (
             <p>
-              Телефон:{" "}
+              {t('footer.phones.title')}:{" "}
               <a
                 href={`tel:${normalizePhoneHref(companyPhones[0])}`}
                 className="text-[#F58322] hover:underline"
@@ -1993,7 +2223,7 @@ const ProductPage = () => {
             </p>
           )}
           <p>
-            Сайт:{" "}
+            {t('common.website')}:{" "}
             <a
               href={STORE_CONTACTS.website}
               target="_blank"
@@ -2379,13 +2609,24 @@ const ProductPage = () => {
             >
               {t("productPage.descriprion")}
             </button>
-            <button
-              onClick={() => setActiveTab("specs")}
-              className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+            {hasSpecifications && (
+              <button
+                onClick={() => setActiveTab("specs")}
+                className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
                   ${activeTab === "specs" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
-            >
-              {t("productPage.certificate")}
-            </button>
+              >
+                {t("productPage.certificate")}
+              </button>
+            )}
+            {hasAttachments && (
+              <button
+                onClick={() => setActiveTab("attachments")}
+                className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+                  ${activeTab === "attachments" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+              >
+                {t("productPage.attachments")}
+              </button>
+            )}
             <button
               onClick={() => setActiveTab("order")}
               className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
@@ -2527,6 +2768,26 @@ const ProductPage = () => {
                     </table>
                   </div>
                 )}
+
+                {otherInfoTabs.length > 0 && (
+                  <div className="mt-10 rounded-2xl border border-[#F58322]/20 bg-[#FFF8F1] p-5">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {t("productPage.otherSectionsTitle")}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {otherInfoTabs.map((tab) => (
+                        <button
+                          key={tab.key}
+                          type="button"
+                          onClick={() => setActiveTab(tab.key)}
+                          className="inline-flex items-center rounded-full border border-[#F58322]/30 bg-white px-4 py-2 text-sm font-medium text-[#B25E18] transition-colors hover:bg-[#F58322]/10"
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <aside
                 ref={stickyColumnRef}
@@ -2556,7 +2817,7 @@ const ProductPage = () => {
                         : undefined
                   }
                 >
-                  <h3 className="font-oswald text-2xl font-bold uppercase mb-5 text-gray-900">
+                  <h3 className="font-manrope text-2xl font-bold uppercase mb-5 text-gray-900">
                     {t("catalogPage.bid")}
                   </h3>
                   <Contact productId={product.id} />
@@ -2566,7 +2827,7 @@ const ProductPage = () => {
           </div>
         )}
 
-        {activeTab === "specs" && (
+        {hasSpecifications && activeTab === "specs" && (
           <div className="mt-4">
             {product.specifications && product.specifications.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -2661,10 +2922,10 @@ const ProductPage = () => {
               <li>
                 {t("productPage.Email")}{" "}
                 <a
-                  href="mailto:sales@example.com"
+                  href={`mailto:${companyEmail}`}
                   className="text-[#F58322] font-bold"
                 >
-                  sales@example.com
+                  {companyEmail}
                 </a>
               </li>
               <li>
@@ -2710,17 +2971,102 @@ const ProductPage = () => {
             </p>
           </div>
         )}
+
+        {hasAttachments && activeTab === "attachments" && (
+          <div className="mt-4">
+            {productAttachments.length > 0 ? (
+              <>
+                <div className="space-y-3">
+                  {productAttachments.map((attachment) => {
+                    const resolvedUrl =
+                      attachment.downloadUrl || attachment.fileUrl
+                        ? toAbsoluteBaytechUrl(
+                            attachment.downloadUrl || attachment.fileUrl,
+                          )
+                        : "";
+                    const extensionLabel = (attachment.extension || "file")
+                      .replace(/^\./, "")
+                      .toUpperCase();
+
+                    return (
+                      <div
+                        key={attachment.id}
+                        className="rounded-2xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-3 sm:p-4 shadow-sm"
+                      >
+                        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                          <div className="min-w-0 flex items-start gap-3">
+                            <div className="h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-xl border border-[#F58322]/30 bg-[#FFF3E9] flex items-center justify-center text-[#F58322] font-extrabold text-[10px] sm:text-[11px] uppercase">
+                              {extensionLabel}
+                            </div>
+
+                            <div className="min-w-0">
+                              <p className="font-semibold text-gray-900 break-words">
+                                {attachment.name || attachment.originalFilename}
+                              </p>
+                              <p className="mt-1 text-sm text-gray-500 break-all">
+                                {attachment.originalFilename}
+                              </p>
+                              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-600 uppercase tracking-wide">
+                                <span className="rounded-full bg-gray-100 px-2 py-1">
+                                  {extensionLabel}
+                                </span>
+                                <span className="rounded-full bg-gray-100 px-2 py-1 normal-case">
+                                  {formatAttachmentSize(attachment.fileSize)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex w-full sm:w-auto flex-col sm:flex-row items-stretch sm:items-center gap-2 md:shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedPreviewFileId(attachment.id);
+                                setIsPreviewModalOpen(true);
+                              }}
+                              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg border border-[#F58322] px-4 py-2.5 text-sm font-semibold text-[#F58322] hover:bg-[#FFF3E9] transition-colors"
+                            >
+                              {t("productPage.previewAttachment")}
+                            </button>
+                            {resolvedUrl && (
+                              <a
+                                href={resolvedUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-[#F58322] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#DB741F] transition-colors"
+                              >
+                                {t("productPage.downloadAttachment")}
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <p className="py-4 text-gray-500">
+                {t("productPage.noAttachments")}
+              </p>
+            )}
+          </div>
+        )}
         <ProductCollectionRenderer
           placement="PRODUCT_ALTERNATIVES_COLLECTION"
           layout="carousel"
           className="mt-8 sm:mt-10 md:mt-12 mb-12 sm:mb-16 md:mb-20"
+        />
+        <CategoryInlineCollectionsSection
+          sectionTitle={t('collections.title')}
+          categoryId={product?.category?.id ?? null}
         />
         <RecentlyViewedProducts />
         {!isLargeDescription && (
           <section className="mb-16">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="px-2 md:px-0">
-                <h3 className="font-oswald text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
+                <h3 className="font-manrope text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
                   {t("catalogPage.bid")}
                 </h3>
                 <Contact productId={product.id} />
@@ -2729,7 +3075,7 @@ const ProductPage = () => {
                 <EditableImage
                   imageKey="catalog_product_bid_image"
                   fallbackSrc={sampleImg}
-                  alt="machine"
+                  alt={t("catalogPage.machineImageAlt")}
                   className="max-w-full w-72 sm:w-full object-contain"
                 />
               </div>
@@ -2737,6 +3083,55 @@ const ProductPage = () => {
           </section>
         )}
       </div>
+
+      <Dialog
+        open={isPreviewModalOpen && Boolean(selectedPreviewFile)}
+        onClose={() => setIsPreviewModalOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        fullScreen={isMobile}
+        sx={{
+          "& .MuiDialog-paper": {
+            ...(isMobile
+              ? {
+                  margin: 0,
+                  maxHeight: "100dvh",
+                  borderRadius: 0,
+                }
+              : {}),
+          },
+        }}
+      >
+        <DialogTitle className="font-bold text-gray-900 text-sm sm:text-lg leading-snug break-words pr-10">
+          {t("productPage.previewAttachment")}
+          {selectedPreviewFile ? `: ${selectedPreviewFile.originalFilename}` : ""}
+        </DialogTitle>
+        <DialogContent
+          dividers={!isMobile}
+          className="p-0 sm:p-4"
+        >
+          {selectedPreviewFile && (
+            <iframe
+              title={selectedPreviewFile.originalFilename}
+              src={getAttachmentPreviewUrl(
+                toAbsoluteBaytechUrl(selectedPreviewFile.fileUrl),
+                selectedPreviewFile.mimeType,
+              )}
+              className="h-[calc(100dvh-140px)] min-h-[280px] sm:h-[75vh] sm:min-h-[540px] w-full rounded-none sm:rounded-xl border-0 sm:border sm:border-gray-200"
+            />
+          )}
+        </DialogContent>
+        <DialogActions className="px-3 pb-3 pt-2 sm:px-6 sm:pb-5">
+          <Button
+            onClick={() => setIsPreviewModalOpen(false)}
+            variant="outlined"
+            color="warning"
+            fullWidth={isMobile}
+          >
+            {t("productPage.modal.close")}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={Boolean(infoModalType)}

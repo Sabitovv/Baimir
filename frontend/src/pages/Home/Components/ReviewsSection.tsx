@@ -1,16 +1,14 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
-import type { NavigationOptions } from "swiper/types";
+import { Autoplay } from "swiper/modules";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import "swiper/css";
-import "swiper/css/navigation";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import PageContainer from "@/components/ui/PageContainer";
 
@@ -67,10 +65,13 @@ type ReviewsSectionProps = {
 const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
   const { t, i18n } = useTranslation();
 
-  const prevRef = useRef<HTMLButtonElement | null>(null);
-  const nextRef = useRef<HTMLButtonElement | null>(null);
+  const swiperRef = useRef<SwiperType | null>(null);
 
   const { data: reviews = [], isLoading, isError } = useGetReviewsQuery();
+  const canNavigate = reviews.length > 1;
+  const stopAutoplay = () => {
+    swiperRef.current?.autoplay?.stop();
+  };
 
   if (isLoading) {
     return (
@@ -90,7 +91,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
         <ScrollReveal>
           <h2
             className="
-              font-oswald font-semibold text-center 
+              font-manrope font-semibold text-center 
               text-3xl md:text-4xl xl:text-[54px]
               mb-10 md:mb-12 xl:mb-16
               tracking-tight leading-none
@@ -103,7 +104,13 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
         <ScrollReveal delay={0.15}>
           <div className="relative">
             <button
-              ref={prevRef}
+              type="button"
+              onClick={() => {
+                stopAutoplay();
+                swiperRef.current?.slidePrev();
+              }}
+              disabled={!canNavigate}
+              aria-label={t("commonCatalog.prev", { defaultValue: "Предыдущий" })}
               className="
                 hidden md:flex
                 absolute -left-6 xl:-left-16 top-1/2 -translate-y-1/2
@@ -111,36 +118,30 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                 items-center justify-center
                 text-[#374151] hover:bg-[#0B5FA1] hover:text-white hover:border-[#0B5FA1]
                 transition z-50 shadow-sm
+                disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white/90 disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]
               "
             >
               <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
             </button>
 
             <Swiper
-              modules={[Navigation]}
-              navigation
-              onBeforeInit={(swiper: SwiperType) => {
-                const navigation = swiper.params
-                  .navigation as NavigationOptions;
-                navigation.prevEl = prevRef.current;
-                navigation.nextEl = nextRef.current;
+              modules={[Autoplay]}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
               }}
+              autoplay={
+                canNavigate
+                  ? {
+                      delay: 3500,
+                      disableOnInteraction: true,
+                      pauseOnMouseEnter: true,
+                    }
+                  : false
+              }
+              onTouchStart={stopAutoplay}
               spaceBetween={24}
               slidesPerView={1}
-              loop={reviews.length > 1}
-              onSwiper={(swiper) => {
-                setTimeout(() => {
-                  const navigation = swiper.params
-                    .navigation as NavigationOptions;
-                  if (prevRef.current && nextRef.current) {
-                    navigation.prevEl = prevRef.current;
-                    navigation.nextEl = nextRef.current;
-                    swiper.navigation.destroy();
-                    swiper.navigation.init();
-                    swiper.navigation.update();
-                  }
-                });
-              }}
+              loop={canNavigate}
               breakpoints={{
                 640: { slidesPerView: 1 },
                 768: {
@@ -178,7 +179,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                               className="w-12 h-12 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-full bg-[#F59E0B] text-white flex items-center justify-center font-oswald text-xl">
+                            <div className="w-12 h-12 rounded-full bg-[#F59E0B] text-white flex items-center justify-center font-manrope text-xl">
                               {getInitial(review.authorName)}
                             </div>
                           )}
@@ -263,7 +264,13 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
             </Swiper>
 
             <button
-              ref={nextRef}
+              type="button"
+              onClick={() => {
+                stopAutoplay();
+                swiperRef.current?.slideNext();
+              }}
+              disabled={!canNavigate}
+              aria-label={t("commonCatalog.next", { defaultValue: "Следующий" })}
               className="
                 hidden md:flex
                 absolute -right-6 xl:-right-16 top-1/2 -translate-y-1/2
@@ -271,10 +278,38 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                 items-center justify-center
                 text-[#374151] hover:bg-[#0B5FA1] hover:text-white hover:border-[#0B5FA1]
                 transition z-50 shadow-sm
+                disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white/90 disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]
               "
             >
               <ArrowForwardIosIcon sx={{ fontSize: 18 }} />
             </button>
+
+            <div className="mt-5 flex items-center justify-center gap-3 md:hidden">
+              <button
+                type="button"
+                onClick={() => {
+                  stopAutoplay();
+                  swiperRef.current?.slidePrev();
+                }}
+                disabled={!canNavigate}
+                aria-label={t("commonCatalog.prev", { defaultValue: "Предыдущий" })}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#6B7280] bg-white text-[#374151] transition hover:bg-[#0B5FA1] hover:text-white hover:border-[#0B5FA1] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]"
+              >
+                <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  stopAutoplay();
+                  swiperRef.current?.slideNext();
+                }}
+                disabled={!canNavigate}
+                aria-label={t("commonCatalog.next", { defaultValue: "Следующий" })}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#6B7280] bg-white text-[#374151] transition hover:bg-[#0B5FA1] hover:text-white hover:border-[#0B5FA1] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]"
+              >
+                <ArrowForwardIosIcon sx={{ fontSize: 16 }} />
+              </button>
+            </div>
           </div>
         </ScrollReveal>
         <ScrollReveal className="flex justify-end">

@@ -19,24 +19,24 @@ const Hero = () => {
         decoding="async"
         className="absolute inset-0 z-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0 z-10 bg-black/55" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/70 via-black/50 to-black/75" />
 
       <div className="relative z-20 flex flex-1 flex-col">
         <PageContainer className="flex flex-1 flex-col">
           <div
             className="
-              flex flex-1 flex-col justify-between
-              pb-8 pt-[120px]
-              md:pb-12 md:pt-[160px]
+              flex flex-1 flex-col justify-start
+              pb-10 pt-28
+              md:justify-between md:gap-0 md:pb-12 md:pt-[160px]
               lg:pt-[160px] 
               xl:pb-[80px] xl:pt-[216px]
             "
           >
-            <div className="w-full">
+            <div className="w-full max-w-[560px]">
               <ScrollReveal delay={0.1}>
                 <h1
                   className="
-                    font-oswald text-[38px] font-semibold uppercase leading-[1.05]
+                    font-manrope text-[35px] font-semibold uppercase leading-[1.06]
                     md:text-[52px]
                     lg:text-[64px]
                     xl:text-[82px]
@@ -46,12 +46,12 @@ const Hero = () => {
                 </h1>
               </ScrollReveal>
 
-              <ScrollReveal delay={0.25}>
+              <ScrollReveal delay={0.2} className="hidden md:block">
                 <div
                   className="
-                    mt-6 flex flex-wrap items-center gap-4 text-[11px]
+                    mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px]
                     font-semibold uppercase tracking-widest text-gray-300
-                    md:mt-8 md:text-sm
+                    md:mt-6 md:gap-4 md:text-sm
                   "
                 >
                   <span>{t('hero.tags.laser')}</span>
@@ -66,28 +66,29 @@ const Hero = () => {
                 <Link to="/catalog">
                   <button
                     className="
-                      mt-8 bg-[#F58322] px-8 py-3 text-xs font-bold uppercase tracking-widest transition
+                      mt-10 inline-flex min-h-11 items-center justify-center rounded-sm bg-[#F58322] px-6 py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition
                       hover:bg-[#DB741F] hover:shadow-lg hover:shadow-[#F05023]/20
-                      md:mt-12 md:px-10 md:py-4 md:text-sm
+                      md:mt-10 md:px-10 md:py-4 md:text-sm
                     "
                   >
                     {t('hero.buttons.catalog')}
                   </button>
                 </Link>
               </ScrollReveal>
+
             </div>
 
-            <div className="mt-auto w-full pt-12">
+            <div className="w-full pt-40 md:mt-auto md:pt-12">
               <ScrollReveal delay={0.5}>
                 <div
                   className="
-                    flex flex-col items-start justify-between gap-6
+                    flex flex-col items-start justify-between gap-4
                     lg:flex-row lg:items-end
                   "
                 >
                   <p
                     className="
-                      w-full text-xs font-normal leading-7 text-white
+                      w-full max-w-[38ch] text-[15px] font-medium leading-[1.55] text-white md:max-w-none
                       md:text-sm md:leading-8
                       lg:max-w-none
                     "
@@ -104,8 +105,9 @@ const Hero = () => {
                       }
                     }}
                     className="
-                      group flex shrink-0 items-center gap-4 border border-[#F58322] bg-black/30 px-6 py-3
-                      font-oswald transition hover:bg-[#DB741F]
+                      group hidden min-h-11 shrink-0 items-center gap-3 rounded-sm border border-[#F58322] bg-black/30 px-5 py-3
+                      font-manrope transition hover:bg-[#DB741F]
+                      md:inline-flex
                     "
                   >
                     <svg
@@ -122,7 +124,7 @@ const Hero = () => {
                       <path d="M10 14L21 3" />
                     </svg>
 
-                    <span className="font-oswald text-xs font-normal uppercase tracking-widest">
+                    <span className="font-manrope text-xs font-normal uppercase tracking-widest">
                       {t('hero.buttons.request')}
                     </span>
                   </button>

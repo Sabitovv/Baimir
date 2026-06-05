@@ -25,7 +25,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
   className,
   autoRotateMs = 4500,
 }) => {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [activeIndex, setActiveIndex] = useState(0)
   const [activeProductIndex, setActiveProductIndex] = useState(0)
 
@@ -83,9 +83,9 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
     startLabel && endLabel
       ? `${startLabel} - ${endLabel}`
       : startLabel
-        ? `с ${startLabel}`
+        ? t('collections.fromDate', { start: startLabel })
         : endLabel
-          ? `до ${endLabel}`
+          ? t('collections.untilDate', { end: endLabel })
           : null
 
   return (
@@ -103,14 +103,14 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
 
       <div className='relative sm:hidden'>
         <p className='mb-1 inline-flex rounded-full border border-[#FDBA74]/45 bg-[#FDBA74]/12 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#FCD9A5]'>
-          Стратегическая подборка
+          {t('collections.strategic')}
         </p>
         <h3 className='line-clamp-1 text-xs font-bold text-white/90'>
           {activeCollection.name}
         </h3>
         {periodLabel && (
           <p className='mt-1 inline-flex rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[9px] font-semibold text-[#FDE7C3]'>
-            Акция {periodLabel}
+            {t('collections.promo')} {periodLabel}
           </p>
         )}
 
@@ -141,7 +141,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
                   : 'bg-gray-500/30 text-gray-200'
               }`}
             >
-              {coverProduct.inStock ? 'В наличии' : 'Нет в наличии'}
+              {coverProduct.inStock ? t('commonCatalog.inStock') : t('commonCatalog.outOfStock')}
             </p>
           </div>
         </div>
@@ -150,21 +150,21 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
           to={`/catalog/product/${coverProduct.slug}`}
           className='mt-2.5 inline-flex rounded-full bg-[#F58322] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#DB741F]'
         >
-          К товарам
+          {t('collections.toProducts')}
         </Link>
       </div>
 
       <div className='relative hidden min-h-[150px] items-center gap-4 sm:grid xl:hidden sm:grid-cols-[1fr_1.1fr_auto]'>
         <div className='min-w-0'>
           <p className='mb-1.5 inline-flex rounded-full border border-[#FDBA74]/45 bg-[#FDBA74]/12 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#FCD9A5]'>
-            Стратегическая подборка
+            {t('collections.strategic')}
           </p>
           <h3 className='line-clamp-2 text-sm font-extrabold leading-[1.2] text-white md:text-base'>
             {activeCollection.name}
           </h3>
           {periodLabel && (
             <p className='mt-1.5 inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-[#FDE7C3]'>
-              Акция {periodLabel}
+              {t('collections.promo')} {periodLabel}
             </p>
           )}
         </div>
@@ -177,13 +177,13 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
             to={`/catalog/product/${coverProduct.slug}`}
             className='mt-2 inline-flex rounded-full bg-[#F58322] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#DB741F] md:mt-2.5 md:px-3.5 md:py-1.5 md:text-xs'
           >
-            К товарам
+            {t('collections.toProducts')}
           </Link>
         </div>
 
         <div className='flex items-center justify-end gap-3'>
           <div className='text-right'>
-            <p className='text-[10px] font-medium text-white/70'>Цена</p>
+            <p className='text-[10px] font-medium text-white/70'>{t('commonCatalog.price')}</p>
             <p className='text-base font-extrabold text-white md:text-lg'>
               {new Intl.NumberFormat(i18n.language, {
                 style: 'currency',
@@ -198,7 +198,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
                   : 'bg-gray-500/30 text-gray-200'
               }`}
             >
-              {coverProduct.inStock ? 'В наличии' : 'Нет в наличии'}
+              {coverProduct.inStock ? t('commonCatalog.inStock') : t('commonCatalog.outOfStock')}
             </p>
           </div>
 
@@ -217,14 +217,14 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
       <div className='relative hidden min-h-[172px] xl:block'>
         <div className='absolute left-0 top-1/2 z-20 max-w-[38%] -translate-y-1/2'>
           <p className='mb-2 inline-flex rounded-full border border-[#FDBA74]/45 bg-[#FDBA74]/12 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#FCD9A5] sm:mb-2.5 sm:px-3 sm:text-[11px]'>
-            Стратегическая подборка
+            {t('collections.strategic')}
           </p>
           <h3 className='line-clamp-2 text-base font-extrabold leading-[1.2] text-white sm:text-[20px]'>
             {activeCollection.name}
           </h3>
           {periodLabel && (
             <p className='mt-2 inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold tracking-[0.02em] text-[#FDE7C3] sm:mt-2.5 sm:px-3 sm:text-xs'>
-              Акция {periodLabel}
+              {t('collections.promo')} {periodLabel}
             </p>
           )}
         </div>
@@ -237,7 +237,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
 
         <div className='absolute right-0 top-1/2 z-20 flex -translate-y-1/2 items-center justify-end gap-3 sm:gap-4'>
           <div className='text-right'>
-            <p className='text-[10px] font-medium text-white/70 sm:text-xs'>Цена</p>
+            <p className='text-[10px] font-medium text-white/70 sm:text-xs'>{t('commonCatalog.price')}</p>
             <p className='text-base font-extrabold text-white sm:text-lg'>
               {new Intl.NumberFormat(i18n.language, {
                 style: 'currency',
@@ -252,7 +252,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
                   : 'bg-gray-500/30 text-gray-200'
               }`}
             >
-              {coverProduct.inStock ? 'В наличии' : 'Нет в наличии'}
+              {coverProduct.inStock ? t('commonCatalog.inStock') : t('commonCatalog.outOfStock')}
             </p>
           </div>
 
@@ -272,7 +272,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
             to={`/catalog/product/${coverProduct.slug}`}
             className='inline-flex rounded-full bg-[#F58322] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#DB741F] sm:px-3.5 sm:py-1.5 sm:text-xs'
           >
-            К товарам
+            {t('collections.toProducts')}
           </Link>
         </div>
       </div>
@@ -283,7 +283,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
             <button
               key={product.id}
               type='button'
-              aria-label={`Показать товар ${index + 1}`}
+              aria-label={t('collections.showProduct', { index: index + 1 })}
               onClick={() => setActiveProductIndex(index)}
               className={`h-1.5 rounded-full transition-all ${
                 index === safeProductIndex
@@ -301,7 +301,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
             <button
               key={collection.id}
               type='button'
-              aria-label={`Показать подборку ${index + 1}`}
+              aria-label={t('collections.showCollection', { index: index + 1 })}
               onClick={() => {
                 setActiveIndex(index)
                 setActiveProductIndex(0)

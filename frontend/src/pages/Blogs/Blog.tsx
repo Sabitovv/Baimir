@@ -115,11 +115,11 @@ const BlogPage = () => {
               {t('blogPage.title')}
             </h1>
 
-            <h3 className="font-oswald font-bold mt-4 mb-6 text-2xl md:text-3xl">
+            <h3 className="font-manrope font-bold mt-4 mb-6 text-2xl md:text-3xl">
               {t('blogPage.subtitle')}
             </h3>
 
-            <p className="max-w-3xl mb-6 text-sm font-Monaper text-[#233337] leading-relaxed">
+            <p className="max-w-3xl mb-6 text-sm font-manrope text-[#233337] leading-relaxed">
               {t('blogPage.description')}
             </p>
           </ScrollReveal>

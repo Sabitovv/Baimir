@@ -57,7 +57,7 @@ const Warehouse = () => {
         <ScrollReveal>
           <h1
             className="
-            font-oswald font-bold uppercase text-[#111111]
+            font-manrope font-bold uppercase text-[#111111]
             text-4xl md:text-5xl xl:text-6xl
             mb-10
           "
@@ -111,7 +111,7 @@ const Warehouse = () => {
                 <div>
                   <div
                     className="
-                    font-oswald font-bold text-[#F58322]
+                    font-manrope font-bold text-[#F58322]
                     text-4xl md:text-5xl
                     leading-none
                     mb-2
@@ -120,7 +120,7 @@ const Warehouse = () => {
                     {t(item.valueKey, { defaultValue: item.fallbackValue })}
 
                     {item.unit && (
-                      <span className="text-xl md:text-2xl ml-1 font-oswald font-semibold">
+                      <span className="text-xl md:text-2xl ml-1 font-manrope font-semibold">
                         {t(`home.warehouse.units.${item.unit}`)}
                       </span>
                     )}
