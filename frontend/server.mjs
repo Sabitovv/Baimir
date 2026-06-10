@@ -247,8 +247,24 @@ const normalizeProductImages = (product) => {
   );
 };
 
+const firstText = (...values) => {
+  for (const value of values) {
+    const text = stripHtml(value);
+    if (text) return text;
+  }
+  return "";
+};
+
 const getProductBrandName = (product) => {
-  const direct = stripHtml(product?.brandName || product?.brand?.name || "");
+  const direct = firstText(
+    product?.brandName,
+    product?.brand?.name,
+    product?.brand,
+    product?.manufacturer?.name,
+    product?.manufacturer,
+    product?.producer?.name,
+    product?.producer,
+  );
   if (direct) return direct;
 
   const brandAttribute = product?.specifications
@@ -256,6 +272,29 @@ const getProductBrandName = (product) => {
     .find((attr) => /бренд|brand|производител/i.test(String(attr?.name || "")));
 
   return stripHtml(brandAttribute?.value || "");
+};
+
+const getProductCategoryName = (product, categories) => {
+  const direct = firstText(
+    product?.category?.name,
+    product?.categoryName,
+    product?.category?.title,
+    product?.categoryTitle,
+  );
+  if (direct) return direct;
+
+  const categoryId = product?.category?.id ?? product?.categoryId;
+  const categoryById =
+    categoryId !== undefined && categoryId !== null
+      ? findCategoryById(categories, categoryId)
+      : null;
+  if (categoryById) return stripHtml(categoryById.name);
+
+  const breadcrumbsFromProduct = Array.isArray(product?.breadcrumbs)
+    ? product.breadcrumbs
+    : [];
+  const lastCategory = breadcrumbsFromProduct[breadcrumbsFromProduct.length - 1];
+  return stripHtml(lastCategory?.name || "");
 };
 
 const buildGlobalGraph = () => [
@@ -475,7 +514,7 @@ const buildProductSeoData = (product, slug, categories) => {
     .trim();
   const pageUrl = toAbsoluteBaytechUrl(`/catalog/product/${slug}`);
   const images = normalizeProductImages(product);
-  const category = stripHtml(product?.category?.name || "");
+  const category = getProductCategoryName(product, categories);
   const brand = getProductBrandName(product);
   const sku = stripHtml(product?.sku || "");
   const price =
@@ -560,6 +599,9 @@ const renderProductHtml = (indexHtml, seo) => {
         url: seo.pageUrl,
         priceCurrency: "KZT",
         availability: seo.availability,
+        seller: {
+          "@id": `${SITE_ORIGIN}/#organization`,
+        },
         ...(seo.price !== null ? { price: seo.price } : {}),
       },
       ...(seo.category ? { category: seo.category } : {}),
