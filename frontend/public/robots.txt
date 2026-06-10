@@ -1,0 +1,177 @@
+# robots.txt for https://baytech.kz/
+# Public catalog and product pages are allowed for search engines and AI search crawlers.
+
+User-agent: *
+Allow: /
+
+# Technical / private sections
+Disallow: /api/
+Disallow: /admin/
+Disallow: /login
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /account
+Disallow: /search
+
+# Duplicate / tracking / filter parameters
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+Disallow: /*?yclid=
+
+# OpenAI / ChatGPT
+User-agent: OAI-SearchBot
+User-agent: GPTBot
+User-agent: ChatGPT-User
+Allow: /
+
+# Technical / private sections
+Disallow: /api/
+Disallow: /admin/
+Disallow: /login
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /account
+Disallow: /search
+
+# Duplicate / tracking / filter parameters
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+Disallow: /*?yclid=
+
+# Anthropic / Claude
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Claude-Web
+Allow: /
+
+# Technical / private sections
+Disallow: /api/
+Disallow: /admin/
+Disallow: /login
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /account
+Disallow: /search
+
+# Duplicate / tracking / filter parameters
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+Disallow: /*?yclid=
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Technical / private sections
+Disallow: /api/
+Disallow: /admin/
+Disallow: /login
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /account
+Disallow: /search
+
+# Duplicate / tracking / filter parameters
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+Disallow: /*?yclid=
+
+# Google AI / Gemini controls
+User-agent: Google-Extended
+Allow: /
+
+# Technical / private sections
+Disallow: /api/
+Disallow: /admin/
+Disallow: /login
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /account
+Disallow: /search
+
+# Duplicate / tracking / filter parameters
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+Disallow: /*?yclid=
+
+# Common Crawl and other AI/data crawlers
+User-agent: CCBot
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Bytespider
+User-agent: Meta-ExternalAgent
+User-agent: FacebookBot
+Allow: /
+
+# Technical / private sections
+Disallow: /api/
+Disallow: /admin/
+Disallow: /login
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /account
+Disallow: /search
+
+# Duplicate / tracking / filter parameters
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+Disallow: /*?yclid=
+
+# Yandex
+User-agent: Yandex
+Allow: /
+
+# Technical / private sections
+Disallow: /api/
+Disallow: /admin/
+Disallow: /login
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /account
+Disallow: /search
+
+# Duplicate / tracking / filter parameters
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+Disallow: /*?yclid=
+
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&fbclid&gclid&yclid&sort&filter&page /
+
+# Sitemap
+Sitemap: https://baytech.kz/sitemap.xml

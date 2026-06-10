@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!--
+    This file must be generated automatically from the product database.
+
+    Include only published product pages.
+    Exclude hidden, deleted, draft and 404 products.
+
+    URL pattern:
+    https://baytech.kz/catalog/product/{product-slug}
+  -->
+
+  <url>
+    <loc>https://baytech.kz/catalog/product/listogibochnyj-stanok-wc67k-40t-1600-gidr-estun-e21</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
