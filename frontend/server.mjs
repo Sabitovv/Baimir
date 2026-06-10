@@ -171,10 +171,14 @@ const fetchProductBySlug = async (slug, langHeader) => {
 const fetchCategoriesTree = async (langHeader) =>
   fetchJson("/categories/tree", langHeader);
 
-const fetchProductsByCategory = async (categoryId, langHeader) =>
+const fetchProductsByCategory = async (
+  categoryId,
+  langHeader,
+  { page = 1, limit = 12 } = {},
+) =>
   fetchJson(`/products/category/${encodeURIComponent(categoryId)}`, langHeader, {
-    page: 1,
-    limit: 50,
+    page,
+    limit,
     sort: "price,ASC",
   });
 
@@ -409,14 +413,15 @@ const buildHomeGraph = () => [
 
 const buildCatalogGraph = (categories) => {
   const rootCategories = categories.filter(
-    (category) => category?.parentId === null || category?.parentId === undefined,
+    (category) =>
+      category?.parentId === null || category?.parentId === undefined,
   );
   const pageUrl = toAbsoluteBaytechUrl("/catalog");
 
   return [
     {
       "@type": "CollectionPage",
-      "@id": `${pageUrl}#webpage`,
+      "@id": `${pageUrl}#collectionpage`,
       url: pageUrl,
       name: "Каталог станков и промышленного оборудования",
       description:
@@ -437,6 +442,7 @@ const buildCatalogGraph = (categories) => {
       "@type": "ItemList",
       "@id": `${pageUrl}#itemlist`,
       name: "Категории каталога Baytech",
+      numberOfItems: rootCategories.length,
       itemListElement: rootCategories.map((category, index) => ({
         "@type": "ListItem",
         position: index + 1,
@@ -461,7 +467,7 @@ const buildCategoryGraph = (category, categories, productsResponse) => {
   return [
     {
       "@type": "CollectionPage",
-      "@id": `${pageUrl}#webpage`,
+      "@id": `${pageUrl}#collectionpage`,
       url: pageUrl,
       name: stripHtml(category?.name),
       description:
@@ -494,6 +500,7 @@ const buildCategoryGraph = (category, categories, productsResponse) => {
         children.length > 0
           ? `Подкатегории: ${stripHtml(category?.name)}`
           : `Товары: ${stripHtml(category?.name)}`,
+      numberOfItems: listItems.length,
       itemListElement: listItems.map((item, index) => ({
         "@type": "ListItem",
         position: index + 1,
@@ -504,6 +511,59 @@ const buildCategoryGraph = (category, categories, productsResponse) => {
             : toAbsoluteBaytechUrl(`/catalog/product/${item?.slug}`),
       })),
     },
+  ];
+};
+
+const INFO_PAGES = {
+  "/production": {
+    name: "Производство",
+    description:
+      "Производственные возможности Baytech: изготовление, подбор и поставка промышленного оборудования для предприятий Казахстана.",
+  },
+  "/storage": {
+    name: "Склад",
+    description:
+      "Склад Baytech: наличие промышленного оборудования, комплектующих и расходных материалов для оперативной поставки.",
+  },
+  "/service": {
+    name: "Сервис",
+    description:
+      "Сервис Baytech: монтаж, пусконаладка, обслуживание и сопровождение промышленного оборудования.",
+  },
+  "/about": {
+    name: "О компании",
+    description:
+      "Информация о Baytech: поставщик станков и промышленного оборудования в Казахстане.",
+  },
+  "/blog": {
+    name: "Блог",
+    description:
+      "Материалы Baytech о промышленном оборудовании, технологиях, сервисе и производстве.",
+  },
+};
+
+const buildWebPageGraph = (pathname, page) => {
+  const pageUrl = toAbsoluteBaytechUrl(pathname);
+
+  return [
+    {
+      "@type": "WebPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: page.name,
+      description: page.description,
+      isPartOf: {
+        "@id": `${SITE_ORIGIN}/#website`,
+      },
+      about: {
+        "@id": `${SITE_ORIGIN}/#organization`,
+      },
+      inLanguage: DEFAULT_LANG,
+    },
+    buildBreadcrumbGraph(pageUrl, [
+      { name: "Главная", item: `${SITE_ORIGIN}/` },
+      { name: page.name, item: pageUrl },
+    ]),
   ];
 };
 
@@ -624,7 +684,13 @@ const renderCatalogHtml = async (indexHtml, req) => {
   return renderHtmlWithSchema(indexHtml, buildCatalogGraph(categories));
 };
 
-const renderCategoryHtml = async (indexHtml, req, categorySlug, categoryId) => {
+const renderCategoryHtml = async (
+  indexHtml,
+  req,
+  requestUrl,
+  categorySlug,
+  categoryId,
+) => {
   const categories = flattenCategories(
     await fetchCategoriesTree(req.headers["accept-language"]),
   );
@@ -642,6 +708,10 @@ const renderCategoryHtml = async (indexHtml, req, categorySlug, categoryId) => {
       ? await fetchProductsByCategory(
           category.id,
           req.headers["accept-language"],
+          {
+            page: Number(requestUrl.searchParams.get("page")) || 1,
+            limit: Number(requestUrl.searchParams.get("limit")) || 12,
+          },
         )
       : null;
 
@@ -685,6 +755,7 @@ const server = createServer(async (req, res) => {
       const html = await renderCategoryHtml(
         indexHtml,
         req,
+        requestUrl,
         categoryProductMatch[1],
         categoryProductMatch[2],
       );
@@ -694,7 +765,12 @@ const server = createServer(async (req, res) => {
     const categoryMatch = pathname.match(/^\/catalog\/([^/]+)$/);
     if (categoryMatch) {
       const indexHtml = await readFile(INDEX_PATH, "utf-8");
-      const html = await renderCategoryHtml(indexHtml, req, categoryMatch[1]);
+      const html = await renderCategoryHtml(
+        indexHtml,
+        req,
+        requestUrl,
+        categoryMatch[1],
+      );
       return send(res, 200, html, "text/html; charset=utf-8");
     }
 
@@ -705,7 +781,11 @@ const server = createServer(async (req, res) => {
     const spaHtml = await readFile(INDEX_PATH, "utf-8");
     const html = renderHtmlWithSchema(
       spaHtml,
-      pathname === "/" ? buildHomeGraph() : [],
+      pathname === "/"
+        ? buildHomeGraph()
+        : INFO_PAGES[pathname]
+          ? buildWebPageGraph(pathname, INFO_PAGES[pathname])
+          : [],
     );
     return send(res, 200, html, "text/html; charset=utf-8");
   } catch (error) {
