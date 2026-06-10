@@ -120,7 +120,6 @@ const findCategoryById = (
 
 const PLACEHOLDER_IMG = productPlaceholder;
 const SEO_BASE_URL = "https://baytech.kz";
-const PRODUCT_JSON_LD_ID = "product-jsonld";
 const SEO_DESCRIPTION_MAX_LENGTH = 500;
 const SEO_DESCRIPTION_MIN_LENGTH = 10;
 
@@ -1498,13 +1497,6 @@ const ProductPage = () => {
     const imageUrl = toAbsoluteBaytechUrl(
       getPrimaryImage(product.media) || product.coverImage || PLACEHOLDER_IMG,
     );
-    const brandAttribute = product.specifications
-      ?.flatMap((group) => group.attributes ?? [])
-      .find((attr) => /бренд|brand|производител/i.test(attr.name));
-    const brandName =
-      brandAttribute?.value?.trim() || t("catalogPage.seo.defaultBrand");
-    const categoryName = product.category?.name?.trim();
-
     document.title = product.name;
 
     const managedTags: HTMLMetaElement[] = [
@@ -1516,51 +1508,9 @@ const ProductPage = () => {
       upsertMetaTag("og:site_name", t("catalogPage.seo.siteName")),
     ];
 
-    let jsonLdTag = document.getElementById(PRODUCT_JSON_LD_ID) as
-      | HTMLScriptElement
-      | null;
-    if (!jsonLdTag) {
-      jsonLdTag = document.createElement("script");
-      jsonLdTag.type = "application/ld+json";
-      jsonLdTag.id = PRODUCT_JSON_LD_ID;
-      document.body.appendChild(jsonLdTag);
-    }
-
-    const jsonLd: Record<string, unknown> = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      name: product.name,
-      description,
-      url: productUrl,
-      image: [imageUrl],
-      offers: {
-        "@type": "Offer",
-        url: productUrl,
-        priceCurrency: "KZT",
-        price: product.price,
-        availability: product.inStock
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
-      },
-    };
-
-    if (brandName) {
-      jsonLd.brand = {
-        "@type": "Brand",
-        name: brandName,
-      };
-    }
-
-    if (categoryName) {
-      jsonLd.category = categoryName;
-    }
-
-    jsonLdTag.textContent = JSON.stringify(jsonLd);
-
     return () => {
       document.title = previousTitle;
       managedTags.forEach((tag) => tag.remove());
-      jsonLdTag?.remove();
     };
   }, [product]);
 

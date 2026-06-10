@@ -19,6 +19,14 @@ const API_BASE_URL = (
   process.env.VITE_API_BASE_URL ||
   "https://baytech.kz/api/v1"
 ).replace(/\/$/, "");
+const BRAND_NAME = "Baytech";
+const BRAND_ALTERNATE_NAMES = ["BAYMIR Tech", "BAYMIR", "Baytech.kz"];
+const DEFAULT_LANG = "ru-KZ";
+const COMPANY_EMAIL = "baymir@inbox.ru";
+const COMPANY_PHONE = "+77080055085";
+const COMPANY_ADDRESS = "Алатауский район, микрорайон Рахат, 244";
+const COMPANY_CITY = "Алматы";
+const LOGO_URL = `${SITE_ORIGIN}/web-app-manifest-512x512.png`;
 
 const CONTENT_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -53,6 +61,8 @@ const stripHtml = (value) =>
     .replace(/\s+/g, " ")
     .trim();
 
+const normalizePhone = (value) => String(value || "").replace(/[^\d+]/g, "");
+
 const toAbsoluteBaytechUrl = (value) => {
   const raw = String(value || "").trim();
   if (!raw) return SITE_ORIGIN;
@@ -68,6 +78,42 @@ const toAbsoluteBaytechUrl = (value) => {
 
   const normalizedPath = raw.startsWith("/") ? raw : `/${raw}`;
   return `${SITE_ORIGIN}${normalizedPath}`;
+};
+
+const isPlainObject = (value) =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+
+const compactJsonLd = (value) => {
+  if (Array.isArray(value)) {
+    const items = value
+      .map((item) => compactJsonLd(item))
+      .filter((item) => item !== undefined);
+    return items.length > 0 ? items : undefined;
+  }
+
+  if (isPlainObject(value)) {
+    const entries = Object.entries(value)
+      .map(([key, item]) => [key, compactJsonLd(item)])
+      .filter(([, item]) => item !== undefined);
+    if (entries.length === 0) return undefined;
+    return Object.fromEntries(entries);
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  }
+
+  if (value === null || value === undefined) return undefined;
+  return value;
+};
+
+const escapeJsonForHtml = (value) =>
+  JSON.stringify(value).replace(/</g, "\\u003c");
+
+const normalizeAcceptLanguage = (header) => {
+  const raw = Array.isArray(header) ? header[0] : header;
+  return String(raw || "ru").split(",")[0].trim() || "ru";
 };
 
 const send = (res, status, body, contentType = "text/plain; charset=utf-8") => {
@@ -97,54 +143,387 @@ const serveFile = async (res, filePath) => {
   }
 };
 
-const fetchProductBySlug = async (slug, langHeader) => {
-  const response = await fetch(
-    `${API_BASE_URL}/products/${encodeURIComponent(slug)}`,
-    {
-      headers: {
-        "Accept-Language": langHeader || "ru",
-      },
-    },
+const fetchJson = async (apiPath, langHeader, params = {}) => {
+  const url = new URL(
+    `${API_BASE_URL}${apiPath.startsWith("/") ? apiPath : `/${apiPath}`}`,
   );
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      url.searchParams.set(key, String(value));
+    }
+  });
+
+  const response = await fetch(url, {
+    headers: {
+      "Accept-Language": normalizeAcceptLanguage(langHeader),
+    },
+  });
 
   if (!response.ok) return null;
   return response.json();
 };
 
-const buildSeoData = (product, slug) => {
+const fetchProductBySlug = async (slug, langHeader) => {
+  return fetchJson(`/products/${encodeURIComponent(slug)}`, langHeader);
+};
+
+const fetchCategoriesTree = async (langHeader) =>
+  fetchJson("/categories/tree", langHeader);
+
+const fetchProductsByCategory = async (categoryId, langHeader) =>
+  fetchJson(`/products/category/${encodeURIComponent(categoryId)}`, langHeader, {
+    page: 1,
+    limit: 50,
+    sort: "price,ASC",
+  });
+
+const flattenCategories = (categories, seen = new Map()) => {
+  if (!Array.isArray(categories)) return [];
+
+  categories.forEach((category) => {
+    if (!category || category.id === undefined || category.id === null) return;
+    seen.set(String(category.id), category);
+    flattenCategories(category.children, seen);
+  });
+
+  return Array.from(seen.values());
+};
+
+const hasCategoryChildren = (category, categories) =>
+  categories.some((item) => Number(item?.parentId) === Number(category?.id)) ||
+  Boolean(category?.children?.length);
+
+const getCategoryPageUrl = (category, categories) => {
+  if (!category?.slug) return `${SITE_ORIGIN}/catalog`;
+  if (hasCategoryChildren(category, categories)) {
+    return toAbsoluteBaytechUrl(
+      `/catalog/${category.slug}?categoryId=${category.id}`,
+    );
+  }
+  return toAbsoluteBaytechUrl(
+    `/catalog/${category.slug}/products/${category.id}`,
+  );
+};
+
+const getCategoryCollectionUrl = (category) =>
+  category?.slug ? toAbsoluteBaytechUrl(`/catalog/${category.slug}`) : "";
+
+const findCategoryBySlug = (categories, slug) =>
+  categories.find((category) => category?.slug === slug) || null;
+
+const findCategoryById = (categories, id) =>
+  categories.find((category) => Number(category?.id) === Number(id)) || null;
+
+const getCategoryAncestors = (category, categories) => {
+  const stack = [];
+  let current = category;
+
+  while (current) {
+    stack.push(current);
+    current =
+      current.parentId !== undefined && current.parentId !== null
+        ? findCategoryById(categories, current.parentId)
+        : null;
+  }
+
+  return stack.reverse();
+};
+
+const normalizeProductImages = (product) => {
+  const imageCandidates = [
+    product?.coverImage,
+    ...(Array.isArray(product?.media)
+      ? product.media
+          .filter((item) =>
+            String(item?.type || "").toUpperCase().includes("IMAGE"),
+          )
+          .map((item) => item?.url)
+      : []),
+  ];
+
+  return [...new Set(imageCandidates.map(toAbsoluteBaytechUrl))].filter(
+    (item) => item !== SITE_ORIGIN,
+  );
+};
+
+const getProductBrandName = (product) => {
+  const direct = stripHtml(product?.brandName || product?.brand?.name || "");
+  if (direct) return direct;
+
+  const brandAttribute = product?.specifications
+    ?.flatMap((group) => group?.attributes ?? [])
+    .find((attr) => /бренд|brand|производител/i.test(String(attr?.name || "")));
+
+  return stripHtml(brandAttribute?.value || "");
+};
+
+const buildGlobalGraph = () => [
+  {
+    "@type": "Organization",
+    "@id": `${SITE_ORIGIN}/#organization`,
+    name: BRAND_NAME,
+    alternateName: BRAND_ALTERNATE_NAMES,
+    url: `${SITE_ORIGIN}/`,
+    logo: {
+      "@type": "ImageObject",
+      url: LOGO_URL,
+    },
+    description:
+      "Baytech поставляет станки и промышленное оборудование в Казахстане: оборудование для металлообработки, лазерные станки, листогибочные станки, компрессоры, деревообработку, камнеобработку, электротехнику, запчасти и комплектующие.",
+    email: COMPANY_EMAIL,
+    telephone: COMPANY_PHONE,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: COMPANY_ADDRESS,
+      addressLocality: COMPANY_CITY,
+      addressCountry: "KZ",
+    },
+    areaServed: {
+      "@type": "Country",
+      name: "Kazakhstan",
+    },
+    knowsAbout: [
+      "Металлообработка",
+      "Лазерные станки",
+      "Листогибочные станки",
+      "Гильотинные ножницы",
+      "Компрессоры",
+      "Деревообработка",
+      "Камнеобработка",
+      "Промышленное оборудование",
+      "Запчасти для станков",
+      "Пусконаладка оборудования",
+      "Сервисное сопровождение оборудования",
+    ],
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: normalizePhone(COMPANY_PHONE),
+        email: COMPANY_EMAIL,
+        contactType: "sales",
+        areaServed: "KZ",
+        availableLanguage: ["ru", "kk"],
+      },
+    ],
+  },
+  {
+    "@type": "WebSite",
+    "@id": `${SITE_ORIGIN}/#website`,
+    url: `${SITE_ORIGIN}/`,
+    name: BRAND_NAME,
+    alternateName: "Baytech.kz",
+    publisher: {
+      "@id": `${SITE_ORIGIN}/#organization`,
+    },
+    inLanguage: DEFAULT_LANG,
+  },
+];
+
+const buildBreadcrumbGraph = (pageUrl, items) => ({
+  "@type": "BreadcrumbList",
+  "@id": `${pageUrl}#breadcrumb`,
+  itemListElement: items.map((item, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: item.name,
+    item: item.item,
+  })),
+});
+
+const buildSchemaScript = (pageGraph = []) => {
+  const graph = compactJsonLd([...buildGlobalGraph(), ...pageGraph]) || [];
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": graph,
+  };
+
+  return `  <script type="application/ld+json">${escapeJsonForHtml(schema)}</script>`;
+};
+
+const injectHeadContent = (indexHtml, content) =>
+  indexHtml.replace("</head>", `${content}\n</head>`);
+
+const renderHtmlWithSchema = (indexHtml, pageGraph = [], extraHead = "") =>
+  injectHeadContent(
+    indexHtml,
+    `${extraHead}${extraHead ? "\n" : ""}${buildSchemaScript(pageGraph)}`,
+  );
+
+const buildHomeGraph = () => [
+  {
+    "@type": "WebPage",
+    "@id": `${SITE_ORIGIN}/#webpage`,
+    url: `${SITE_ORIGIN}/`,
+    name: "Станки и промышленное оборудование в Казахстане",
+    description:
+      "Baytech поставляет станки и промышленное оборудование в Казахстане.",
+    isPartOf: {
+      "@id": `${SITE_ORIGIN}/#website`,
+    },
+    about: {
+      "@id": `${SITE_ORIGIN}/#organization`,
+    },
+    inLanguage: DEFAULT_LANG,
+  },
+];
+
+const buildCatalogGraph = (categories) => {
+  const rootCategories = categories.filter(
+    (category) => category?.parentId === null || category?.parentId === undefined,
+  );
+  const pageUrl = toAbsoluteBaytechUrl("/catalog");
+
+  return [
+    {
+      "@type": "CollectionPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: "Каталог станков и промышленного оборудования",
+      description:
+        "Каталог промышленного оборудования Baytech: металлообработка, лазерные станки, листогибочные станки, компрессоры, деревообработка, камнеобработка, электротехника, запчасти и комплектующие.",
+      isPartOf: {
+        "@id": `${SITE_ORIGIN}/#website`,
+      },
+      publisher: {
+        "@id": `${SITE_ORIGIN}/#organization`,
+      },
+      inLanguage: DEFAULT_LANG,
+    },
+    buildBreadcrumbGraph(pageUrl, [
+      { name: "Главная", item: `${SITE_ORIGIN}/` },
+      { name: "Каталог", item: pageUrl },
+    ]),
+    {
+      "@type": "ItemList",
+      "@id": `${pageUrl}#itemlist`,
+      name: "Категории каталога Baytech",
+      itemListElement: rootCategories.map((category, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: stripHtml(category?.name),
+        url: getCategoryCollectionUrl(category),
+      })),
+    },
+  ];
+};
+
+const buildCategoryGraph = (category, categories, productsResponse) => {
+  const pageUrl = getCategoryCollectionUrl(category);
+  const children = categories.filter(
+    (item) => Number(item?.parentId) === Number(category?.id),
+  );
+  const products = Array.isArray(productsResponse?.products)
+    ? productsResponse.products
+    : [];
+  const listItems = children.length > 0 ? children : products;
+  const ancestors = getCategoryAncestors(category, categories);
+
+  return [
+    {
+      "@type": "CollectionPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: stripHtml(category?.name),
+      description:
+        stripHtml(category?.description) ||
+        `Каталог промышленного оборудования Baytech: ${stripHtml(category?.name)}.`,
+      isPartOf: {
+        "@id": `${SITE_ORIGIN}/#website`,
+      },
+      about: {
+        "@type": "Thing",
+        name: stripHtml(category?.name),
+      },
+      publisher: {
+        "@id": `${SITE_ORIGIN}/#organization`,
+      },
+      inLanguage: DEFAULT_LANG,
+    },
+    buildBreadcrumbGraph(pageUrl, [
+      { name: "Главная", item: `${SITE_ORIGIN}/` },
+      { name: "Каталог", item: toAbsoluteBaytechUrl("/catalog") },
+      ...ancestors.map((item) => ({
+        name: stripHtml(item?.name),
+        item: getCategoryCollectionUrl(item),
+      })),
+    ]),
+    {
+      "@type": "ItemList",
+      "@id": `${pageUrl}#itemlist`,
+      name:
+        children.length > 0
+          ? `Подкатегории: ${stripHtml(category?.name)}`
+          : `Товары: ${stripHtml(category?.name)}`,
+      itemListElement: listItems.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: stripHtml(item?.name),
+        url:
+          children.length > 0
+            ? getCategoryCollectionUrl(item)
+            : toAbsoluteBaytechUrl(`/catalog/product/${item?.slug}`),
+      })),
+    },
+  ];
+};
+
+const buildProductSeoData = (product, slug, categories) => {
   const title = stripHtml(product?.name) || `Товар ${slug}`;
-  const fallbackDescription = `${title} - купить в Baytech`;
-  const description = (stripHtml(product?.description) || fallbackDescription)
+  const description = stripHtml(product?.description)
     .slice(0, 500)
     .trim();
   const pageUrl = toAbsoluteBaytechUrl(`/catalog/product/${slug}`);
-  const imageCandidate =
-    product?.coverImage ||
-    product?.media?.find(
-      (item) =>
-        String(item?.type || "").toUpperCase().includes("IMAGE") &&
-        typeof item?.url === "string" &&
-        item.url.trim(),
-    )?.url ||
-    "/favicon-96x96.png";
-  const imageUrl = toAbsoluteBaytechUrl(imageCandidate);
+  const images = normalizeProductImages(product);
   const category = stripHtml(product?.category?.name || "");
-  const brand = "Baytech";
+  const brand = getProductBrandName(product);
+  const sku = stripHtml(product?.sku || "");
   const price =
     typeof product?.price === "number" && Number.isFinite(product.price)
       ? product.price
       : null;
-  const inStock = Boolean(product?.inStock);
+  const availability =
+    typeof product?.inStock === "boolean"
+      ? product.inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock"
+      : "";
+  const breadcrumbsFromProduct = Array.isArray(product?.breadcrumbs)
+    ? product.breadcrumbs
+    : [];
+  const categoryBreadcrumbs =
+    breadcrumbsFromProduct.length > 0
+      ? breadcrumbsFromProduct
+      : product?.category
+        ? [product.category]
+        : [];
+  const breadcrumbItems = [
+    { name: "Главная", item: `${SITE_ORIGIN}/` },
+    { name: "Каталог", item: toAbsoluteBaytechUrl("/catalog") },
+    ...categoryBreadcrumbs.map((item) => {
+      const categoryNode =
+        findCategoryById(categories, item?.id) ||
+        findCategoryBySlug(categories, item?.slug) ||
+        item;
+      return {
+        name: stripHtml(item?.name),
+        item: getCategoryPageUrl(categoryNode, categories),
+      };
+    }),
+    { name: title, item: pageUrl },
+  ];
 
   return {
     title,
     description,
     pageUrl,
-    imageUrl,
+    images,
     category,
     brand,
+    sku,
     price,
-    inStock,
+    availability,
+    breadcrumbItems,
   };
 };
 
@@ -154,41 +533,79 @@ const renderProductHtml = (indexHtml, seo) => {
   <meta property="og:title" content="${escapeHtml(seo.title)}" />
   <meta property="og:description" content="${escapeHtml(seo.description)}" />
   <meta property="og:url" content="${escapeHtml(seo.pageUrl)}" />
-  <meta property="og:image" content="${escapeHtml(seo.imageUrl)}" />
+  ${
+    seo.images[0]
+      ? `<meta property="og:image" content="${escapeHtml(seo.images[0])}" />`
+      : ""
+  }
   <meta property="og:site_name" content="Baytech" />`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: seo.title,
-    description: seo.description,
-    brand: {
-      "@type": "Brand",
-      name: seo.brand,
-    },
-    url: seo.pageUrl,
-    image: [seo.imageUrl],
-    offers: {
-      "@type": "Offer",
+  const productGraph = [
+    {
+      "@type": "Product",
+      "@id": `${seo.pageUrl}#product`,
+      name: seo.title,
+      description: seo.description,
       url: seo.pageUrl,
-      priceCurrency: "KZT",
-      availability: seo.inStock
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      ...(seo.price !== null ? { price: seo.price } : {}),
+      image: seo.images,
+      sku: seo.sku,
+      brand: seo.brand
+        ? {
+            "@type": "Brand",
+            name: seo.brand,
+          }
+        : undefined,
+      offers: {
+        "@type": "Offer",
+        url: seo.pageUrl,
+        priceCurrency: "KZT",
+        availability: seo.availability,
+        ...(seo.price !== null ? { price: seo.price } : {}),
+      },
+      ...(seo.category ? { category: seo.category } : {}),
     },
-    ...(seo.category ? { category: seo.category } : {}),
-  };
+    buildBreadcrumbGraph(seo.pageUrl, seo.breadcrumbItems),
+  ];
 
   const titleTag = `<title>${escapeHtml(seo.title)}</title>`;
   const htmlWithTitle = indexHtml.replace(
     /<title>[^<]*<\/title>/i,
     titleTag,
   );
-  const withOg = htmlWithTitle.replace("</head>", `${ogBlock}\n</head>`);
-  return withOg.replace(
-    "</body>",
-    `  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n</body>`,
+  return renderHtmlWithSchema(htmlWithTitle, productGraph, ogBlock);
+};
+
+const renderCatalogHtml = async (indexHtml, req) => {
+  const categories = flattenCategories(
+    await fetchCategoriesTree(req.headers["accept-language"]),
+  );
+  return renderHtmlWithSchema(indexHtml, buildCatalogGraph(categories));
+};
+
+const renderCategoryHtml = async (indexHtml, req, categorySlug, categoryId) => {
+  const categories = flattenCategories(
+    await fetchCategoriesTree(req.headers["accept-language"]),
+  );
+  const category =
+    (categoryId ? findCategoryById(categories, categoryId) : null) ||
+    findCategoryBySlug(categories, categorySlug);
+
+  if (!category) return renderHtmlWithSchema(indexHtml);
+
+  const children = categories.filter(
+    (item) => Number(item?.parentId) === Number(category?.id),
+  );
+  const productsResponse =
+    children.length === 0
+      ? await fetchProductsByCategory(
+          category.id,
+          req.headers["accept-language"],
+        )
+      : null;
+
+  return renderHtmlWithSchema(
+    indexHtml,
+    buildCategoryGraph(category, categories, productsResponse),
   );
 };
 
@@ -201,12 +618,41 @@ const server = createServer(async (req, res) => {
     const productMatch = pathname.match(/^\/catalog\/product\/([^/]+)$/);
     if (productMatch) {
       const slug = productMatch[1];
-      const [indexHtml, product] = await Promise.all([
+      const [indexHtml, product, categoriesTree] = await Promise.all([
         readFile(INDEX_PATH, "utf-8"),
         fetchProductBySlug(slug, req.headers["accept-language"]),
+        fetchCategoriesTree(req.headers["accept-language"]),
       ]);
-      const seo = buildSeoData(product, slug);
+      const categories = flattenCategories(categoriesTree);
+      const seo = buildProductSeoData(product, slug, categories);
       const html = renderProductHtml(indexHtml, seo);
+      return send(res, 200, html, "text/html; charset=utf-8");
+    }
+
+    if (pathname === "/catalog" || pathname === "/catalog/") {
+      const indexHtml = await readFile(INDEX_PATH, "utf-8");
+      const html = await renderCatalogHtml(indexHtml, req);
+      return send(res, 200, html, "text/html; charset=utf-8");
+    }
+
+    const categoryProductMatch = pathname.match(
+      /^\/catalog\/([^/]+)\/products\/([^/]+)$/,
+    );
+    if (categoryProductMatch) {
+      const indexHtml = await readFile(INDEX_PATH, "utf-8");
+      const html = await renderCategoryHtml(
+        indexHtml,
+        req,
+        categoryProductMatch[1],
+        categoryProductMatch[2],
+      );
+      return send(res, 200, html, "text/html; charset=utf-8");
+    }
+
+    const categoryMatch = pathname.match(/^\/catalog\/([^/]+)$/);
+    if (categoryMatch) {
+      const indexHtml = await readFile(INDEX_PATH, "utf-8");
+      const html = await renderCategoryHtml(indexHtml, req, categoryMatch[1]);
       return send(res, 200, html, "text/html; charset=utf-8");
     }
 
@@ -215,7 +661,11 @@ const server = createServer(async (req, res) => {
     if (served) return;
 
     const spaHtml = await readFile(INDEX_PATH, "utf-8");
-    return send(res, 200, spaHtml, "text/html; charset=utf-8");
+    const html = renderHtmlWithSchema(
+      spaHtml,
+      pathname === "/" ? buildHomeGraph() : [],
+    );
+    return send(res, 200, html, "text/html; charset=utf-8");
   } catch (error) {
     return send(res, 500, "Internal Server Error");
   }
