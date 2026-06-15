@@ -206,7 +206,7 @@ const Footer = () => {
               <p className="mt-3 text-sm text-gray-300">—</p>
             )} */}
 
-            <h4 className="mt-6 font-display text-xs font-bold uppercase tracking-[0.16em] text-gray-400">
+            <h4 className="font-display text-xs font-bold uppercase tracking-[0.16em] text-gray-400">
               {t('footer.email.title')}
             </h4>
             <p className="mt-3 break-all text-sm text-gray-200">

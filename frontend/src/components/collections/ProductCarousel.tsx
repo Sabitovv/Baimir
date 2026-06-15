@@ -27,6 +27,8 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const isPointerDownRef = useRef(false)
   const hasDraggedRef = useRef(false)
+  const hasCapturedRef = useRef(false)
+  const activePointerIdRef = useRef<number | null>(null)
   const suppressClickRef = useRef(false)
   const dragStartXRef = useRef(0)
   const dragStartYRef = useRef(0)
@@ -44,11 +46,16 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
 
     isPointerDownRef.current = true
     hasDraggedRef.current = false
+    hasCapturedRef.current = false
+    activePointerIdRef.current = event.pointerId
     clearSuppressClick()
     dragStartXRef.current = event.clientX
     dragStartYRef.current = event.clientY
     dragStartScrollLeftRef.current = scrollRef.current.scrollLeft
-    scrollRef.current.setPointerCapture(event.pointerId)
+    // NOTE: do not capture the pointer here. Capturing on pointerdown makes the
+    // browser retarget the resulting `click` to this scroll container, which
+    // swallows clicks on the buttons/links inside the cards (e.g. add to cart).
+    // The pointer is only captured once an actual drag starts (see move handler).
   }
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -65,6 +72,14 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
       hasDraggedRef.current = true
       suppressClickRef.current = true
       setIsDragging(true)
+
+      // Capture the pointer only now that a real drag has started, so dragging
+      // keeps scrolling even if the cursor leaves the container. Plain clicks
+      // never reach this branch, so their `click` events stay on the buttons.
+      if (!hasCapturedRef.current && activePointerIdRef.current !== null) {
+        scrollRef.current.setPointerCapture(activePointerIdRef.current)
+        hasCapturedRef.current = true
+      }
     }
 
     if (!hasDraggedRef.current) return
@@ -76,8 +91,18 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
   const stopDragging = () => {
     if (!enableMouseDrag) return
 
+    if (
+      hasCapturedRef.current
+      && activePointerIdRef.current !== null
+      && scrollRef.current?.hasPointerCapture(activePointerIdRef.current)
+    ) {
+      scrollRef.current.releasePointerCapture(activePointerIdRef.current)
+    }
+
     isPointerDownRef.current = false
     hasDraggedRef.current = false
+    hasCapturedRef.current = false
+    activePointerIdRef.current = null
     setIsDragging(false)
   }
 
