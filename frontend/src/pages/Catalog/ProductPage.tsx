@@ -104,6 +104,41 @@ const normalizePhoneHref = (phone: string): string => {
   return normalized.startsWith("+") ? normalized : `+${normalized}`;
 };
 
+const RETURN_POLICY_RU = {
+  title: "Условия возврата и обмена",
+  intro: "Компания осуществляет возврат и обмен этого товара в соответствии с требованиями законодательства.",
+  termsTitle: "Сроки возврата",
+  term: "Возврат возможен в течение 14 дней после получения (для товаров надлежащего качества).",
+  deliveryNote: "Обратная доставка товаров осуществляется по договоренности.",
+  warranty: "На все поставляемое оборудование - Гарантия в течение 12 (двенадцати) месяцев.",
+  exchangeDefective: "Бесплатному обмену подлежат дефектные части оборудования.",
+  noReturn: "Возврат оборудования не предусмотрен.",
+};
+
+const RETURN_POLICY_TEXT: Record<string, Record<string, string>> = {
+  ru: RETURN_POLICY_RU,
+  kz: {
+    title: "Қайтару және алмастыру шарттары",
+    intro: "Компания осы тауарды заң талаптарына сәйкес қайтаруды және алмастыруды жүзеге асырады.",
+    termsTitle: "Қайтару мерзімдері",
+    term: "Қайтаруды алғаннан кейін 14 күн ішінде мүмкін (тиісті сападағы тауарлар үшін).",
+    deliveryNote: "Тауарларды кері жеткізу келісім бойынша жүзеге асырылады.",
+    warranty: "Барлық жеткізілетін жабдыққа - 12 (он екі) ай кепілдік.",
+    exchangeDefective: "Ақаулы жабдық бөлшектері тегін алмастырылады.",
+    noReturn: "Жабдықты қайтару қарастырылмаған.",
+  },
+  en: {
+    title: "Return and exchange policy",
+    intro: "The company provides return and exchange of this product in accordance with legal requirements.",
+    termsTitle: "Return period",
+    term: "Return is possible within 14 days after receipt (for goods of proper quality).",
+    deliveryNote: "Return delivery is carried out by agreement.",
+    warranty: "All supplied equipment has a 12 (twelve) month warranty.",
+    exchangeDefective: "Defective parts of the equipment are subject to free exchange.",
+    noReturn: "Return of equipment is not provided.",
+  },
+};
+
 const findCategoryById = (
   categories: Category[],
   id: number,
@@ -1347,6 +1382,7 @@ const ProductPage = () => {
   const [infoModalType, setInfoModalType] = useState<InfoModalType | null>(
     null,
   );
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
 
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
@@ -2465,12 +2501,13 @@ const ProductPage = () => {
                   </h5>
                   <div className="flex justify-between flex-wrap gap-2">
                     <p>{t("productPage.conditions")}</p>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
+                      onClick={() => setReturnModalOpen(true)}
                       className="font-bold hover:underline whitespace-nowrap text-[#F58322] hover:text-[#DB741F] transition-colors"
                     >
                       {t("productPage.more")} →
-                    </a>
+                    </button>
                   </div>
                 </div>
 
@@ -3100,6 +3137,53 @@ const ProductPage = () => {
         <DialogActions>
           <Button
             onClick={() => setInfoModalType(null)}
+            variant="outlined"
+            color="warning"
+          >
+            {t("productPage.modal.close")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={returnModalOpen}
+        onClose={() => setReturnModalOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle className="font-bold text-gray-900">
+          {RETURN_POLICY_TEXT[i18n.language]?.title ?? RETURN_POLICY_RU.title}
+        </DialogTitle>
+        <DialogContent dividers>
+          <div className="max-h-[65vh] overflow-y-auto pr-1 space-y-4 text-sm text-gray-700">
+            <p>{RETURN_POLICY_TEXT[i18n.language]?.intro ?? RETURN_POLICY_RU.intro}</p>
+            <div>
+              <h4 className="font-semibold text-gray-900">
+                {RETURN_POLICY_TEXT[i18n.language]?.termsTitle ?? RETURN_POLICY_RU.termsTitle}
+              </h4>
+              <ul className="list-disc pl-5 mt-2 space-y-1">
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.term ?? RETURN_POLICY_RU.term}</li>
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.deliveryNote ?? RETURN_POLICY_RU.deliveryNote}</li>
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.warranty ?? RETURN_POLICY_RU.warranty}</li>
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.exchangeDefective ?? RETURN_POLICY_RU.exchangeDefective}</li>
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.noReturn ?? RETURN_POLICY_RU.noReturn}</li>
+              </ul>
+            </div>
+            <p>
+              <a
+                href={DELIVERY_DETAILS_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#F58322] hover:underline"
+              >
+                {RETURN_POLICY_TEXT[i18n.language]?.moreLink ?? RETURN_POLICY_RU.moreLink}
+              </a>
+            </p>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setReturnModalOpen(false)}
             variant="outlined"
             color="warning"
           >

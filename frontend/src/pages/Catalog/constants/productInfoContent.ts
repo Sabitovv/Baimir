@@ -1,4 +1,4 @@
-export type InfoModalType = 'delivery' | 'payment' | 'schedule' | 'address'
+export type InfoModalType = 'delivery' | 'payment' | 'schedule' | 'address' | 'return'
 
 export const PAYMENT_METHODS = [
   'Наличными',
