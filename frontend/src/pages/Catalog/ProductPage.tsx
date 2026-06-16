@@ -113,6 +113,7 @@ const RETURN_POLICY_RU = {
   warranty: "На все поставляемое оборудование - Гарантия в течение 12 (двенадцати) месяцев.",
   exchangeDefective: "Бесплатному обмену подлежат дефектные части оборудования.",
   noReturn: "Возврат оборудования не предусмотрен.",
+  moreLink: "Подробнее: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
 };
 
 const RETURN_POLICY_TEXT: Record<string, Record<string, string>> = {
@@ -126,6 +127,7 @@ const RETURN_POLICY_TEXT: Record<string, Record<string, string>> = {
     warranty: "Барлық жеткізілетін жабдыққа - 12 (он екі) ай кепілдік.",
     exchangeDefective: "Ақаулы жабдық бөлшектері тегін алмастырылады.",
     noReturn: "Жабдықты қайтару қарастырылмаған.",
+    moreLink: "Толығырақ: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
   },
   en: {
     title: "Return and exchange policy",
@@ -136,6 +138,7 @@ const RETURN_POLICY_TEXT: Record<string, Record<string, string>> = {
     warranty: "All supplied equipment has a 12 (twelve) month warranty.",
     exchangeDefective: "Defective parts of the equipment are subject to free exchange.",
     noReturn: "Return of equipment is not provided.",
+    moreLink: "More details: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
   },
 };
 
