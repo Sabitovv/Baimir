@@ -4,6 +4,8 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
+import { compression } from 'vite-plugin-compression2';
 
 const moveCssBeforeScript = (): Plugin => {
   return {
@@ -67,6 +69,36 @@ export default defineConfig({
     tailwindcss(),
     moveCssBeforeScript(),
     seoStaticHeaders(),
+    ViteImageOptimizer({
+      includePublic: true,
+      cache: true,
+      cacheLocation: 'node_modules/.cache/vite-plugin-image-optimizer',
+      logStats: true,
+      png: {
+        quality: 85,
+      },
+      jpeg: {
+        quality: 80,
+        mozjpeg: true,
+      },
+      jpg: {
+        quality: 80,
+        mozjpeg: true,
+      },
+      webp: {
+        quality: 80,
+        effort: 4,
+      },
+      avif: {
+        quality: 75,
+        effort: 4,
+      },
+    }),
+    compression({
+      algorithms: ['gzip', 'brotliCompress'],
+      threshold: 1024,
+      skipIfLargerOrEqual: true,
+    }),
     visualizer({
       open: false,
       gzipSize: true,

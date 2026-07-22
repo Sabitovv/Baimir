@@ -16,7 +16,7 @@ const itemVariants: Variants = {
 }
 
 const StaggerItem = ({ children, className }: Props) => (
-    <motion.div variants={itemVariants} className={className}>
+    <motion.div variants={itemVariants} className={className} style={{ willChange: 'transform, opacity' }}>
         {children}
     </motion.div>
 )

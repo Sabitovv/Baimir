@@ -23,6 +23,7 @@ const ScrollReveal = ({
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration, delay, ease: 'easeOut' }}
         className={className}
+        style={{ willChange: 'transform, opacity' }}
         {...rest}
     >
         {children}

@@ -39,7 +39,8 @@ const Service = () => {
         fallbackSrc={SERVICE_BG}
         className="absolute inset-0 w-full h-full object-cover"
         alt=""
-        loading="lazy"
+        loading="eager"
+        fetchPriority="high"
         decoding="async"
         width={1600}
         height={900}
