@@ -111,7 +111,7 @@ const Footer = () => {
 // const year = new Date().getFullYear()
 
   return (
-    <footer className="bg-[#233337] text-white py-12 px-6 md:px-20 text-center md:text-left">
+    <footer className="min-h-[600px] bg-[#233337] text-white py-12 px-6 md:min-h-[240px] md:px-20 text-center md:text-left">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
@@ -123,7 +123,7 @@ const Footer = () => {
               {t('footer.address.city')}, {t('footer.address.street')}
             </p>
 
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 md:justify-start">
+            <div className="mt-6 flex min-h-10 flex-wrap items-center justify-center gap-3 md:justify-start">
               {social.map((data) => (
                 <a
                   key={data.id}
@@ -144,7 +144,7 @@ const Footer = () => {
             <h4 className="font-display text-xs font-bold uppercase tracking-[0.16em] text-gray-400">
               {t('footer.address.title')}
             </h4>
-            <p className="mt-3 text-sm leading-relaxed text-gray-200">
+            <p className="mt-3 min-h-[4.5rem] text-sm leading-relaxed text-gray-200">
               {storeAddress || (
                 <>
                   {t('footer.address.city')}
@@ -160,7 +160,7 @@ const Footer = () => {
               {t('footer.phones.title')}
             </h4>
             {phones.length > 0 ? (
-              <div className="mt-3 space-y-1 text-sm text-gray-200">
+              <div className="mt-3 min-h-[3rem] space-y-1 text-sm text-gray-200">
                 {phones.map((phone) => (
                   <p key={phone}>
                     <a href={`tel:${normalizePhoneHref(phone)}`} className="hover:text-[#F58322] transition-colors">
@@ -170,10 +170,10 @@ const Footer = () => {
                 ))}
               </div>
             ) : (
-              <>
-                <p className="mt-3 text-sm text-gray-200">{t('footer.phones.main')}</p>
-                <p className="mt-1 text-sm text-gray-200">{t('footer.phones.mobile')}</p>
-              </>
+              <div className="mt-3 min-h-[3rem] space-y-1">
+                <p className="text-sm text-gray-200">{t('footer.phones.main')}</p>
+                <p className="text-sm text-gray-200">{t('footer.phones.mobile')}</p>
+              </div>
             )}
           </div>
 

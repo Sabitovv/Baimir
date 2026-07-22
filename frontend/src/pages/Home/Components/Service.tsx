@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import PageContainer from '@/components/ui/PageContainer'
-import BgService from '@/assets/home/bg_service.webp'
 import { SvgIcon, type SvgIconProps } from '@mui/material'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
 import { EditableImage } from '@/zustand/EditableImage'
+
+const SERVICE_BG = '/images/bg_service.webp'
 
 const Service = () => {
   const { t } = useTranslation()
@@ -35,9 +36,13 @@ const Service = () => {
     <section className="relative overflow-hidden py-12 md:py-20">
       <EditableImage
         imageKey="home_service_background"
-        fallbackSrc={BgService}
+        fallbackSrc={SERVICE_BG}
         className="absolute inset-0 w-full h-full object-cover"
         alt=""
+        loading="lazy"
+        decoding="async"
+        width={1600}
+        height={900}
       />
       <div className="relative z-10">
         <PageContainer>

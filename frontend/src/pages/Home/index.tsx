@@ -3,7 +3,6 @@ import Hero from './Components/Hero'
 import IndustryCatalog from './Components/IndustryCatalog'
 import WhyChooseUs from './Components/WhyChooseUs'
 import Service from './Components/Service'
-import ContactForm from './Components/ContactForm'
 import DeferredSection from '@/components/common/DeferredSection'
 import PageContainer from '@/components/ui/PageContainer'
 import ProductCollectionRenderer from '@/components/collections/ProductCollectionRenderer'
@@ -17,6 +16,7 @@ const ReviewForm = lazy(() => import('./Components/ReviewForm'))
 const RepairService = lazy(() => import('./Components/RepairService'))
 const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
 const NewsSection = lazy(() => import('./Components/NewsSection'))
+const ContactForm = lazy(() => import('./Components/ContactForm'))
 
 const SectionFallback = ({ heightClassName }: { heightClassName: string }) => (
     <div className={`${heightClassName} animate-pulse bg-[#F7F7F7]`} />
@@ -125,7 +125,11 @@ const Home = () => {
                 </Suspense>
             </DeferredSection>
 
-            <ContactForm />
+            <DeferredSection placeholderClassName="min-h-[520px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
+                    <ContactForm />
+                </Suspense>
+            </DeferredSection>
 
             <DeferredSection placeholderClassName="min-h-[420px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[420px]" />}>

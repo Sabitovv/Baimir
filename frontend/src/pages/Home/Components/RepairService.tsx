@@ -89,6 +89,10 @@ const RepairService = () => {
                 imageKey="home_repair_left_worker"
                 fallbackSrc={leftImg}
                 alt=""
+                width={360}
+                height={300}
+                loading="lazy"
+                decoding="async"
                 className="hidden min-[1000px]:block absolute left-1/2 top-1/2 w-[360px] h-[300px] object-cover
                            -translate-x-1/2 -translate-y-1/2 z-0"
               />
@@ -103,6 +107,10 @@ const RepairService = () => {
                   imageKey="home_repair_right_worker"
                   fallbackSrc={rightImg}
                   alt=""
+                  width={360}
+                  height={300}
+                  loading="lazy"
+                  decoding="async"
                   className="hidden min-[1000px]:block absolute left-0 top-1/2 w-[360px] h-[300px] object-cover
                              skew-x-[10deg] -translate-x-1/2 -translate-y-1/2"
                 />

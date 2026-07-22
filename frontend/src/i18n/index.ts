@@ -1,10 +1,9 @@
 import i18n from 'i18next';
+import type { i18n as I18nType } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
-import { Tolgee, FormatSimple } from '@tolgee/web';
-import { InContextTools } from '@tolgee/web/tools';
-import { withTolgee } from '@tolgee/i18next';
+import type { TolgeeInstance } from '@tolgee/web';
 
 const TOLGEE_BASE_URL = 'https://tolgee.baytech.kz';
 
@@ -58,7 +57,7 @@ if (savedApiUrlRaw && savedApiUrlRaw !== savedApiUrl) {
 
 export const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
-export let tolgee: any = null;
+export let tolgee: TolgeeInstance | null = null;
 
 const CDN_URL = 'https://baytech.kz/minio/locales/814bc1c3f9019b399682693b66a4ffa5';
 
@@ -85,6 +84,9 @@ const initI18next = async (useHttpBackend: boolean) => {
       interpolation: {
         escapeValue: false,
       },
+      react: {
+        useSuspense: false,
+      },
       detection: {
         order: ['localStorage', 'cookie', 'navigator'],
         caches: ['localStorage', 'cookie'],
@@ -94,23 +96,29 @@ const initI18next = async (useHttpBackend: boolean) => {
 
 export const setupI18n = async () => {
   if (isEditMode) {
-    tolgee = Tolgee()
-      .use(InContextTools())
-      .use(FormatSimple())
-      .init({
-        apiUrl: savedApiUrl as string,
-        apiKey: savedApiKey as string,
-        defaultLanguage: 'ru',
-        defaultNs: 'translation',
-      });
-
     try {
+      const [{ Tolgee, FormatSimple }, { InContextTools }, { withTolgee }] = await Promise.all([
+        import('@tolgee/web'),
+        import('@tolgee/web/tools'),
+        import('@tolgee/i18next'),
+      ]);
+
+      tolgee = Tolgee()
+        .use(InContextTools())
+        .use(FormatSimple())
+        .init({
+          apiUrl: savedApiUrl as string,
+          apiKey: savedApiKey as string,
+          defaultLanguage: 'ru',
+          defaultNs: 'translation',
+        });
+
       await tolgee.run();
-      withTolgee(i18n as any, tolgee);
+      withTolgee(i18n as I18nType, tolgee);
       await initI18next(false);
       return;
     } catch (error) {
-      console.warn('[I18N DEBUG] Tolgee failed, falling back to CDN translations.', error);
+      console.warn('[I18N] Tolgee failed, falling back to CDN translations.', error);
       tolgee = null;
     }
   }

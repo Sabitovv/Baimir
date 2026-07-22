@@ -5,6 +5,25 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 
+const moveCssBeforeScript = (): Plugin => {
+  return {
+    name: 'move-css-before-script',
+    transformIndexHtml(html) {
+      const scriptMatch = html.match(/<script[^>]+type="module"[^>]*><\/script>/);
+      const cssMatch = html.match(/<link rel="stylesheet"[^>]*>/);
+
+      if (scriptMatch && cssMatch) {
+        const scriptTag = scriptMatch[0];
+        const cssTag = cssMatch[0];
+        html = html.replace(cssTag, '');
+        html = html.replace(scriptTag, `${cssTag}\n  ${scriptTag}`);
+      }
+
+      return html;
+    },
+  };
+};
+
 const seoStaticHeaders = (): Plugin => {
   return {
     name: 'seo-static-headers',
@@ -46,9 +65,10 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    moveCssBeforeScript(),
     seoStaticHeaders(),
     visualizer({
-      open: true,
+      open: false,
       gzipSize: true,
       brotliSize: true,
     })

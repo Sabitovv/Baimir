@@ -1,22 +1,25 @@
 import { useTranslation } from 'react-i18next'
-import bgMain from '@/assets/home/background_main.webp'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import { Link } from 'react-router-dom'
 import PageContainer from '@/components/ui/PageContainer'
 import { EditableImage } from '@/zustand/EditableImage'
 
+const HERO_BG = '/images/background_main.webp'
+
 const Hero = () => {
   const { t } = useTranslation()
 
   return (
-    <section className="relative flex min-h-[100dvh] flex-col text-white">
+    <section className="relative flex min-h-[100svh] flex-col text-white">
       <EditableImage
         imageKey="home_hero_background"
-        fallbackSrc={bgMain}
+        fallbackSrc={HERO_BG}
         alt=""
         loading="eager"
         fetchPriority="high"
         decoding="async"
+        width={1920}
+        height={1080}
         className="absolute inset-0 z-0 h-full w-full object-cover"
       />
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/70 via-black/50 to-black/75" />
