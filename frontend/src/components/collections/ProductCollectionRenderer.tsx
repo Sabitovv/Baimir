@@ -1,8 +1,11 @@
-import type { FC } from 'react'
+import { useMemo, type FC } from 'react'
 import { useTranslation } from 'react-i18next'
 // ДОБАВЛЕН ИМПОРТ useNavigate
 import { useNavigate } from 'react-router-dom' 
-import { type CollectionPlacementType } from '@/api/productCollectionsApi'
+import {
+  type CollectionPlacementType,
+  type ResolvedPlacementCollection,
+} from '@/api/productCollectionsApi'
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import ProductCarousel from './ProductCarousel'
 import ProductGrid from './ProductGrid'
@@ -21,6 +24,10 @@ type ProductCollectionRendererProps = {
   carouselCardVariant?: 'compact' | 'mini'
   skeletonCount?: number
   errorMessage?: string
+  collectionsOverride?: ResolvedPlacementCollection[]
+  isLoadingOverride?: boolean
+  isFetchingOverride?: boolean
+  isErrorOverride?: boolean
 }
 
 const formatPromoDate = (value: string | null | undefined, locale: string) => {
@@ -45,20 +52,34 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
   carouselCardVariant,
   skeletonCount = 4,
   errorMessage,
+  collectionsOverride,
+  isLoadingOverride,
+  isFetchingOverride,
+  isErrorOverride,
 }) => {
   const { t, i18n } = useTranslation()
   // ИНИЦИАЛИЗИРУЕМ НАВИГАЦИЮ
   const navigate = useNavigate()
+  const hasCollectionOverride = collectionsOverride !== undefined
+  const resolvedMaxItems = maxItems ?? (layout === 'carousel' ? 12 : undefined)
+
+  const placementState = useProductCollectionPlacement(placement, {
+    lang: i18n.language,
+    maxItems: resolvedMaxItems,
+    skip: hasCollectionOverride,
+  })
 
   const {
     collections,
     isLoading,
     isFetching,
     isError,
-  } = useProductCollectionPlacement(placement, {
-    lang: i18n.language,
-    maxItems,
-  })
+  } = {
+    collections: collectionsOverride ?? placementState.collections,
+    isLoading: isLoadingOverride ?? placementState.isLoading,
+    isFetching: isFetchingOverride ?? placementState.isFetching,
+    isError: isErrorOverride ?? placementState.isError,
+  }
 
   const renderProducts = (products: typeof collections[number]['products']) => {
     if (layout === 'grid') {
@@ -74,8 +95,9 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
     )
   }
 
-  const visibleCollections = collections.filter(
-    (collection) => collection.products.length > 0,
+  const visibleCollections = useMemo(
+    () => collections.filter((collection) => collection.products.length > 0),
+    [collections],
   )
 
   if (!isLoading && !isFetching && !isError && visibleCollections.length === 0) {

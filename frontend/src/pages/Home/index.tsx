@@ -55,6 +55,10 @@ const OptionalCollectionSection = ({
                 title={title}
                 maxItems={12}
                 skeletonCount={4}
+                collectionsOverride={collections}
+                isLoadingOverride={isLoading}
+                isFetchingOverride={isFetching}
+                isErrorOverride={isError}
             />
         </PageContainer>
     )

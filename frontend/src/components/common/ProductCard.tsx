@@ -79,25 +79,51 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
-  const items = useAppSelector((state) => state.cart.items);
-  const compareItems = useAppSelector((state) => state.compare.items);
   const [compareError, setCompareError] = React.useState<string | null>(null);
-  const cartItem = items.find((item) => item.id === id);
   const imgSrc =
     typeof coverImage === "string" && coverImage.trim().length > 0
       ? coverImage
       : PLACEHOLDER_IMG;
   const [resolvedImgSrc, setResolvedImgSrc] = React.useState(imgSrc);
   const { addAnimation } = useCartAnimation();
+  const cartItem = useAppSelector((state) =>
+    state.cart.items.find((item) => item.id === id),
+  );
+  const isInCompare = useAppSelector((state) =>
+    state.compare.items.some((item) => item.id === id),
+  );
 
   React.useEffect(() => {
     setResolvedImgSrc(imgSrc);
   }, [imgSrc]);
 
-  const isInCompare = compareItems.some((item) => item.id === id);
+  const priceNumber =
+    typeof price === "number"
+      ? price
+      : typeof price === "string"
+        ? Number(price)
+        : NaN;
+
+  const cartPrice = Number.isFinite(priceNumber) ? priceNumber : undefined;
+
+  const formattedPrice = Number.isFinite(priceNumber)
+    ? `${priceNumber.toLocaleString(i18n.language)} ₸`
+    : t("commonCatalog.askPrice");
+
+  const oldPriceNumber = typeof oldPrice === "number" ? oldPrice : NaN;
+  const showOldPrice =
+    Number.isFinite(oldPriceNumber) &&
+    Number.isFinite(priceNumber) &&
+    oldPriceNumber > priceNumber;
+  const discountPercent = showOldPrice
+    ? Math.round(((oldPriceNumber - priceNumber) / oldPriceNumber) * 100)
+    : null;
+  const formattedOldPrice = showOldPrice
+    ? `${oldPriceNumber.toLocaleString(i18n.language)} ₸`
+    : null;
   const isOutOfStock = inStock === false;
 
-  const handleCompareToggle = () => {
+  const handleCompareToggle = React.useCallback(() => {
     if (isInCompare) {
       dispatch(removeFromCompare(id));
       setCompareError(null);
@@ -124,32 +150,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }),
     );
     setCompareError(null);
-  };
-
-  const priceNumber =
-    typeof price === "number"
-      ? price
-      : typeof price === "string"
-        ? Number(price)
-        : NaN;
-
-  const cartPrice = Number.isFinite(priceNumber) ? priceNumber : undefined;
-
-  const formattedPrice = Number.isFinite(priceNumber)
-    ? `${priceNumber.toLocaleString(i18n.language)} ₸`
-    : t("commonCatalog.askPrice");
-
-  const oldPriceNumber = typeof oldPrice === "number" ? oldPrice : NaN;
-  const showOldPrice =
-    Number.isFinite(oldPriceNumber) &&
-    Number.isFinite(priceNumber) &&
-    oldPriceNumber > priceNumber;
-  const discountPercent = showOldPrice
-    ? Math.round(((oldPriceNumber - priceNumber) / oldPriceNumber) * 100)
-    : null;
-  const formattedOldPrice = showOldPrice
-    ? `${oldPriceNumber.toLocaleString(i18n.language)} ₸`
-    : null;
+  }, [
+    categoryId,
+    categoryName,
+    dispatch,
+    id,
+    imgSrc,
+    isInCompare,
+    name,
+    priceNumber,
+    slug,
+    t,
+  ]);
 
   const normalizedFeatures = React.useMemo(() => {
     return (keyFeatures ?? [])
@@ -183,6 +195,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           alt={name}
           className={`max-h-full object-contain ${isOutOfStock ? "opacity-80 saturate-75" : ""}`}
           loading="lazy"
+          decoding="async"
+          width={240}
+          height={180}
+          sizes={isMini ? "96px" : isCompact ? "(max-width: 640px) 45vw, 220px" : "(max-width: 640px) 90vw, 280px"}
           onError={() => setResolvedImgSrc(PLACEHOLDER_IMG)}
         />
       </div>
@@ -355,4 +371,4 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
 };
 
-export default ProductCard;
+export default React.memo(ProductCard);

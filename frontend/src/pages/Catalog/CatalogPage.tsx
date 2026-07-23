@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/hooks";
 import { clearBreadcrumbs, setBreadcrumbs } from "@/features/catalogSlice";
@@ -6,26 +6,34 @@ import { useGetCategoriesTreeQuery } from "@/api/categoriesApi";
 
 import PageContainer from "@/components/ui/PageContainer";
 import CategoriesMenu from "@/components/common/CategoriesMenu";
-import Contact from "@/components/common/Contact";
 import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
-import ScrollReveal from "@/components/animations/ScrollReveal";
-import StaggerContainer from "@/components/animations/StaggerContainer";
-import StaggerItem from "@/components/animations/StaggerItem";
+import DeferredSection from "@/components/common/DeferredSection";
 import StrategicCollectionBannerCarousel from "@/components/collections/StrategicCollectionBannerCarousel";
 
 import sampleImg from "@/assets/catalog/sample_machine.png";
 import { useTranslation } from "react-i18next";
 import { EditableImage } from "@/zustand/EditableImage";
-import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
-import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
-import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
+
+const Contact = lazy(() => import("@/components/common/Contact"));
+const CatalogDeepProductsPage = lazy(() => import("./components/CatalogDeepProductsPage"));
+const CategoryInlineCollectionsSection = lazy(() => import("./components/CategoryInlineCollectionsSection"));
+const RecentlyViewedProducts = lazy(() =>
+  import("./components/RecentlyViewedProducts").then((module) => ({
+    default: module.RecentlyViewedProducts,
+  })),
+);
 
 interface CategoryImageProps {
   src?: string | null;
   alt: string;
+  priority?: boolean;
 }
 
-const CategoryImage = ({ src, alt }: CategoryImageProps) => {
+const DeferredFallback = ({ className }: { className: string }) => (
+  <div className={`animate-pulse bg-[#F7F7F7] ${className}`} aria-hidden="true" />
+);
+
+const CategoryImage = ({ src, alt, priority = false }: CategoryImageProps) => {
   const [resolvedSrc, setResolvedSrc] = useState(src || sampleImg);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -45,9 +53,12 @@ const CategoryImage = ({ src, alt }: CategoryImageProps) => {
       <img
         src={resolvedSrc}
         alt={alt}
-        loading="lazy"
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
+        decoding="async"
         width={130}
         height={130}
+        sizes="(max-width: 768px) 45vw, (max-width: 1280px) 28vw, 220px"
         onLoad={() => setIsLoaded(true)}
         onError={() => {
           if (resolvedSrc !== sampleImg) {
@@ -130,10 +141,6 @@ const CatalogPage = () => {
       : data.filter((item) => item.parentId === null);
   }, [data, currentCategory]);
 
-  const hasChildren = (id: number | string) => {
-    return data?.some((item) => item.parentId === id);
-  };
-
   const resolveProductCount = (value: {
     productCount?: number | string;
     productsCount?: number | string;
@@ -149,11 +156,9 @@ const CatalogPage = () => {
   return (
     <PageContainer>
       <div className="mt-8 sm:mt-12 px-4 md:px-6 lg:px-0">
-        <ScrollReveal>
-          <h1 className="font-manrope text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
-            {t("catalogPage.title")}
-          </h1>
-        </ScrollReveal>
+        <h1 className="font-manrope text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
+          {t("catalogPage.title")}
+        </h1>
 
         <div className="my-3 sm:my-4 text-xs sm:text-sm text-gray-500">
           <Breadcrumbs />
@@ -169,42 +174,38 @@ const CatalogPage = () => {
           </aside>
 
           <main className="ml-0 lg:ml-5">
-            <StaggerContainer
+            <div
               key={location.pathname}
               className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
             >
-              {visibleCategories.map((item) => {
+              {visibleCategories.map((item, index) => {
                 const productCountValue = resolveProductCount(item);
                 return (
-                  <StaggerItem key={item.id}>
-                    <div
-                      onClick={() => {
-                        const isLeaf = !hasChildren(item.id);
-                        if (isLeaf) {
-                          navigate(`/catalog/${item.slug}`);
-                        } else {
-                          navigate(`/catalog/${item.slug}`);
-                        }
-                      }}
-                      className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1 
-                              transition-all duration-300 rounded-lg cursor-pointer 
-                              flex flex-col items-center p-3 sm:p-6 h-[210px] sm:h-[240px] overflow-hidden group relative"
-                    >
-                      {productCountValue !== null && (
-                        <span className="absolute left-2.5 top-2.5 z-10 inline-flex items-center rounded-full bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-700">
-                          {productCountValue}{" "}
-                          {t("catalogPage.productsCountUnit")}
-                        </span>
-                      )}
-                      <CategoryImage src={item.imageUrl} alt={item.name} />
+                  <div
+                    key={item.id}
+                    onClick={() => navigate(`/catalog/${item.slug}`)}
+                    className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1
+                            transition-all duration-300 rounded-lg cursor-pointer
+                            flex flex-col items-center p-3 sm:p-6 h-[210px] sm:h-[240px] overflow-hidden group relative"
+                  >
+                    {productCountValue !== null && (
+                      <span className="absolute left-2.5 top-2.5 z-10 inline-flex items-center rounded-full bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-700">
+                        {productCountValue}{" "}
+                        {t("catalogPage.productsCountUnit")}
+                      </span>
+                    )}
+                    <CategoryImage
+                      src={item.imageUrl}
+                      alt={item.name}
+                      priority={index === 0}
+                    />
 
-                      <div className="mt-3 sm:mt-4 text-center h-[56px] sm:h-[64px] flex flex-col items-center justify-center overflow-hidden">
-                        <p className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2">
-                          {item.name}
-                        </p>
-                      </div>
+                    <div className="mt-3 sm:mt-4 text-center h-[56px] sm:h-[64px] flex flex-col items-center justify-center overflow-hidden">
+                      <p className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2">
+                        {item.name}
+                      </p>
                     </div>
-                  </StaggerItem>
+                  </div>
                 );
               })}
               {visibleCategories.length === 0 && (
@@ -212,7 +213,7 @@ const CatalogPage = () => {
                   {t("catalogPage.noSubcategories")}
                 </div>
               )}
-            </StaggerContainer>
+            </div>
           </main>
         </div>
 
@@ -223,18 +224,31 @@ const CatalogPage = () => {
           <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
         </div>
 
-        <CategoryInlineCollectionsSection
-          categoryId={currentCategoryId}
-          requireCategoryId={false}
-        />
+        <DeferredSection placeholderClassName="min-h-[260px]">
+          <Suspense fallback={<DeferredFallback className="min-h-[260px]" />}>
+            <CategoryInlineCollectionsSection
+              categoryId={currentCategoryId}
+              requireCategoryId={false}
+            />
+          </Suspense>
+        </DeferredSection>
 
-        <div className="mb-6 sm:mb-8">
-          <CatalogDeepProductsPage embedded />
-        </div>
+        <DeferredSection placeholderClassName="mb-6 min-h-[360px] sm:mb-8">
+          <Suspense fallback={<DeferredFallback className="mb-6 min-h-[360px] sm:mb-8" />}>
+            <div className="mb-6 sm:mb-8">
+              <CatalogDeepProductsPage embedded />
+            </div>
+          </Suspense>
+        </DeferredSection>
 
-        <RecentlyViewedProducts />
+        <DeferredSection placeholderClassName="min-h-[260px]">
+          <Suspense fallback={<DeferredFallback className="min-h-[260px]" />}>
+            <RecentlyViewedProducts />
+          </Suspense>
+        </DeferredSection>
 
-        <ScrollReveal>
+        <DeferredSection placeholderClassName="mb-16 mt-8 min-h-[520px]">
+          <Suspense fallback={<DeferredFallback className="mb-16 mt-8 min-h-[520px]" />}>
           <section className="mb-16 mt-8">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="px-2 md:px-0 order-2 md:order-1">
@@ -256,7 +270,8 @@ const CatalogPage = () => {
               </div>
             </div>
           </section>
-        </ScrollReveal>
+          </Suspense>
+        </DeferredSection>
       </div>
     </PageContainer>
   );

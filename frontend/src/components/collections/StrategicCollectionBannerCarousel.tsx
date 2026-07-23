@@ -96,6 +96,12 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
         src={coverProduct.coverImage || productPlaceholder}
         alt=''
         aria-hidden='true'
+        width={1200}
+        height={220}
+        loading='eager'
+        fetchPriority='high'
+        decoding='async'
+        sizes='(min-width: 768px) 100vw'
         className='pointer-events-none absolute inset-0 h-full w-full object-cover opacity-30 blur-[2px]'
       />
       <div className='pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0B1220]/92 via-[#111827]/80 to-[#0F172A]/92' />
@@ -119,8 +125,13 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
             <img
               src={coverProduct.coverImage || productPlaceholder}
               alt={coverProduct.name}
+              width={88}
+              height={88}
+              loading='eager'
+              fetchPriority='high'
+              decoding='async'
+              sizes='88px'
               className='h-full w-full rounded-lg object-contain'
-              loading='lazy'
             />
           </div>
           <div className='min-w-0'>
@@ -207,8 +218,13 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
             <img
               src={coverProduct.coverImage || productPlaceholder}
               alt={coverProduct.name}
+              width={138}
+              height={138}
+              loading='eager'
+              fetchPriority='high'
+              decoding='async'
+              sizes='138px'
               className='relative z-10 h-full w-full rounded-xl object-contain contrast-110 saturate-125'
-              loading='lazy'
             />
           </div>
         </div>
@@ -261,8 +277,13 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
             <img
               src={coverProduct.coverImage || productPlaceholder}
               alt={coverProduct.name}
+              width={156}
+              height={156}
+              loading='eager'
+              fetchPriority='high'
+              decoding='async'
+              sizes='156px'
               className='relative z-10 h-full w-full rounded-xl object-contain contrast-110 saturate-125'
-              loading='lazy'
             />
           </div>
         </div>

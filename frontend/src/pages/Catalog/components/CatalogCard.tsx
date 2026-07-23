@@ -142,6 +142,10 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
           alt={product.name ?? "product image"}
           className="max-h-full object-contain"
           loading="lazy"
+          decoding="async"
+          width={240}
+          height={180}
+          sizes="(max-width: 640px) 90vw, 280px"
         />
       </div>
 

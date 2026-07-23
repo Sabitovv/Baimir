@@ -7,8 +7,8 @@ import { useGetProductCollectionBySlugQuery } from '@/api/productCollectionsApi'
 import PageContainer from '@/components/ui/PageContainer'
 import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
 import CategoriesMenu from '@/components/common/CategoriesMenu'
-import ProductCard from '@/components/common/ProductCard'
 import ProductCollectionRenderer from '@/components/collections/ProductCollectionRenderer'
+import ProductGrid from '@/components/collections/ProductGrid'
 
 const CollectionPage = () => {
   const { slug = '' } = useParams<{ slug: string }>()
@@ -48,21 +48,21 @@ const CollectionPage = () => {
           </aside>
 
           <main>
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-3.5 lg:gap-4'>
+            <div className='space-y-4'>
               {isLoading && (
-                <p className='col-span-full text-center'>
+                <p className='text-center'>
                   {t('productPage.loadingProduct')}
                 </p>
               )}
 
               {!isLoading && isError && (
-                <p className='col-span-full text-center text-gray-500'>
+                <p className='text-center text-gray-500'>
                   {t('categoryPage.errorCategories')}
                 </p>
               )}
 
               {!isLoading && !isError && (collection?.products?.length ?? 0) === 0 && (
-                <div className='col-span-full py-8'>
+                <div className='py-8'>
                   <p className='text-center text-gray-500 pb-5'>
                     {t('productPage.notFoundTitle')}
                   </p>
@@ -78,20 +78,13 @@ const CollectionPage = () => {
                 </div>
               )}
 
-              {(collection?.products ?? []).map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  slug={product.slug}
-                  name={product.name}
-                  coverImage={product.coverImage}
-                  price={product.price}
-                  oldPrice={product.oldPrice}
-                  inStock={product.inStock}
-                  isNew={product.newProduct}
-                  categoryName={product.categoryName ?? ''}
+              {!isLoading && !isError && (collection?.products?.length ?? 0) > 0 && (
+                <ProductGrid
+                  products={collection?.products ?? []}
+                  cardVariant='default'
+                  gridClassName='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-3.5 lg:gap-4'
                 />
-              ))}
+              )}
             </div>
           </main>
         </div>

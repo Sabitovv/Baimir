@@ -1,10 +1,10 @@
 import ScrollToTop from '@/app/ScrollToTop'
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Home from '@/pages/Home'
 
 // const TechnologiesPage = lazy(() => import('@/pages/Technologies/TechnologiesPage'))
 // const InnerTechnologies = lazy(() => import('@/pages/Technologies/InnerTechbologies/InnerTechnologies'))
+const Home = lazy(() => import('@/pages/Home'))
 const Blog = lazy(() => import('@/pages/Blogs/Blog'))
 const InnerBlog = lazy(() => import('@/pages/Blogs/InnerBlogs/InnerBlog'))
 // const DemoPage = lazy(() => import('@/pages/Demo/DemoPage'))

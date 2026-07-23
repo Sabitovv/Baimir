@@ -65,10 +65,11 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
     const deltaX = event.clientX - dragStartXRef.current
     const deltaY = event.clientY - dragStartYRef.current
 
-    if (
+    const shouldStartDrag =
       Math.abs(deltaX) > dragThreshold
       && Math.abs(deltaX) > Math.abs(deltaY)
-    ) {
+
+    if (!hasDraggedRef.current && shouldStartDrag) {
       hasDraggedRef.current = true
       suppressClickRef.current = true
       setIsDragging(true)
@@ -130,7 +131,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
         onPointerLeave={stopDragging}
         onClickCapture={handleClickCapture}
         onDragStart={handleDragStart}
-        className={`flex gap-2.5 sm:gap-3 md:gap-3.5 overflow-x-auto pb-3 pt-1 pr-1 sm:pr-2 scroll-smooth snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${enableMouseDrag ? `select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}` : ''}`}
+        className={`flex gap-2.5 sm:gap-3 md:gap-3.5 overflow-x-auto pb-3 pt-1 pr-1 sm:pr-2 ${isDragging ? 'scroll-auto' : 'scroll-smooth'} snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${enableMouseDrag ? `select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}` : ''}`}
       >
         {products.map((product) => (
           <div

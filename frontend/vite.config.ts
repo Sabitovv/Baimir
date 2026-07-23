@@ -132,8 +132,40 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+
+          if (
+            id.includes('/react/')
+            || id.includes('/react-dom/')
+            || id.includes('/scheduler/')
+          ) {
+            return 'react-vendor';
+          }
+
+          if (
+            id.includes('/react-router/')
+            || id.includes('/react-router-dom/')
+          ) {
+            return 'router';
+          }
+
+          if (
+            id.includes('@reduxjs/toolkit')
+            || id.includes('/react-redux/')
+          ) {
+            return 'state';
+          }
+
+          if (id.includes('framer-motion')) {
+            return 'framer-motion';
+          }
+
           if (id.includes('@mui/icons-material')) {
             return 'mui-icons';
+          }
+
+          if (id.includes('@mui') || id.includes('@emotion')) {
+            return 'mui';
           }
 
           if (id.includes('@tolgee')) {
@@ -148,9 +180,7 @@ export default defineConfig({
             return 'swiper';
           }
 
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+          return 'vendor';
         },
       },
     },
