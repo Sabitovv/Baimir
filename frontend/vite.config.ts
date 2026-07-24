@@ -63,45 +63,13 @@ const seoStaticHeaders = (): Plugin => {
 };
 
 const vendorChunks: Record<string, string[]> = {
-  'vendor-react': [
+  'ui-core': [
     'react',
     'react-dom',
+    'react-is',
     'scheduler',
-  ],
-  'vendor-router': [
-    'react-router',
-    'react-router-dom',
-  ],
-  'vendor-redux': [
-    '@reduxjs/toolkit',
-    'react-redux',
-    'redux',
-    'redux-thunk',
-    'reselect',
-    'immer',
-    'use-sync-external-store',
-  ],
-  'vendor-zustand': [
-    'zustand',
-  ],
-  'vendor-mui-icons': [
-    '@mui/icons-material',
-  ],
-  'vendor-mui': [
-    '@mui/material',
-    '@mui/system',
-    '@mui/utils',
-    '@emotion/react',
-    '@emotion/styled',
-    '@emotion/cache',
-    '@emotion/serialize',
-    '@emotion/use-insertion-effect-with-fallbacks',
-    '@emotion/unitless',
-    '@emotion/weak-memoize',
-    '@emotion/memoize',
-    '@emotion/sheet',
-    '@emotion/hash',
-    '@emotion/is-prop-valid',
+    '@mui',
+    '@emotion',
   ],
   'vendor-motion': [
     'framer-motion',
@@ -133,14 +101,27 @@ const vendorChunks: Record<string, string[]> = {
     'dayjs',
     'date-fns',
   ],
-  'vendor-vue': [
-    'vue',
-    '@vue/runtime-core',
-    '@vue/runtime-dom',
+  'vendor-state': [
+    '@reduxjs/toolkit',
+    'react-redux',
+    'redux',
+    'redux-thunk',
+    'reselect',
+    'immer',
+    'use-sync-external-store',
+    'zustand',
+  ],
+  'vendor-router': [
+    'react-router',
+    'react-router-dom',
   ],
 };
 
 const matchesPackage = (id: string, packageName: string) => {
+  if (packageName.startsWith('@') && !packageName.includes('/')) {
+    return id.includes(`/node_modules/${packageName}/`);
+  }
+
   return id.includes(`/node_modules/${packageName}/`);
 };
 
