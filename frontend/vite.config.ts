@@ -68,28 +68,28 @@ const vendorChunks: Record<string, string[]> = {
     'react-dom',
     'react-is',
     'scheduler',
-    '@mui',
-    '@emotion',
-  ],
-  'vendor-motion': [
+    'react-router',
+    'react-router-dom',
+    'react-redux',
+    'use-sync-external-store',
     'framer-motion',
     'motion-dom',
     'motion-utils',
+    '@tolgee/react',
+    'react-i18next',
+    '@cyntler/react-doc-viewer',
+    '@mui',
+    '@emotion',
   ],
   'vendor-i18n': [
     '@tolgee/i18next',
-    '@tolgee/react',
     '@tolgee/web',
     'i18next',
-    'react-i18next',
     'i18next-browser-languagedetector',
     'i18next-http-backend',
   ],
   'vendor-swiper': [
     'swiper',
-  ],
-  'vendor-doc-viewer': [
-    '@cyntler/react-doc-viewer',
   ],
   'vendor-sanitize': [
     'dompurify',
@@ -103,17 +103,11 @@ const vendorChunks: Record<string, string[]> = {
   ],
   'vendor-state': [
     '@reduxjs/toolkit',
-    'react-redux',
     'redux',
     'redux-thunk',
     'reselect',
     'immer',
-    'use-sync-external-store',
     'zustand',
-  ],
-  'vendor-router': [
-    'react-router',
-    'react-router-dom',
   ],
 };
 
