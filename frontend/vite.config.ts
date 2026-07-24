@@ -62,82 +62,97 @@ const seoStaticHeaders = (): Plugin => {
   };
 };
 
+const vendorChunks: Record<string, string[]> = {
+  'vendor-react': [
+    'react',
+    'react-dom',
+    'scheduler',
+  ],
+  'vendor-router': [
+    'react-router',
+    'react-router-dom',
+  ],
+  'vendor-redux': [
+    '@reduxjs/toolkit',
+    'react-redux',
+    'redux',
+    'redux-thunk',
+    'reselect',
+    'immer',
+    'use-sync-external-store',
+  ],
+  'vendor-zustand': [
+    'zustand',
+  ],
+  'vendor-mui-icons': [
+    '@mui/icons-material',
+  ],
+  'vendor-mui': [
+    '@mui/material',
+    '@mui/system',
+    '@mui/utils',
+    '@emotion/react',
+    '@emotion/styled',
+    '@emotion/cache',
+    '@emotion/serialize',
+    '@emotion/use-insertion-effect-with-fallbacks',
+    '@emotion/unitless',
+    '@emotion/weak-memoize',
+    '@emotion/memoize',
+    '@emotion/sheet',
+    '@emotion/hash',
+    '@emotion/is-prop-valid',
+  ],
+  'vendor-motion': [
+    'framer-motion',
+    'motion-dom',
+    'motion-utils',
+  ],
+  'vendor-i18n': [
+    '@tolgee/i18next',
+    '@tolgee/react',
+    '@tolgee/web',
+    'i18next',
+    'react-i18next',
+    'i18next-browser-languagedetector',
+    'i18next-http-backend',
+  ],
+  'vendor-swiper': [
+    'swiper',
+  ],
+  'vendor-doc-viewer': [
+    '@cyntler/react-doc-viewer',
+  ],
+  'vendor-sanitize': [
+    'dompurify',
+  ],
+  'vendor-heavy-utils': [
+    'lodash',
+    'lodash-es',
+    'moment',
+    'dayjs',
+    'date-fns',
+  ],
+  'vendor-vue': [
+    'vue',
+    '@vue/runtime-core',
+    '@vue/runtime-dom',
+  ],
+};
+
+const matchesPackage = (id: string, packageName: string) => {
+  return id.includes(`/node_modules/${packageName}/`);
+};
+
 const manualVendorChunks = (id: string) => {
   const normalizedId = id.replace(/\\/g, '/');
 
   if (!normalizedId.includes('/node_modules/')) return undefined;
 
-  if (
-    normalizedId.includes('/node_modules/react/')
-    || normalizedId.includes('/node_modules/react-dom/')
-    || normalizedId.includes('/node_modules/scheduler/')
-  ) {
-    return 'react-core';
-  }
-
-  if (
-    normalizedId.includes('/node_modules/react-router/')
-    || normalizedId.includes('/node_modules/react-router-dom/')
-  ) {
-    return 'react-router';
-  }
-
-  if (
-    normalizedId.includes('/node_modules/@reduxjs/toolkit/')
-    || normalizedId.includes('/node_modules/react-redux/')
-    || normalizedId.includes('/node_modules/redux/')
-    || normalizedId.includes('/node_modules/redux-thunk/')
-    || normalizedId.includes('/node_modules/reselect/')
-    || normalizedId.includes('/node_modules/immer/')
-    || normalizedId.includes('/node_modules/use-sync-external-store/')
-  ) {
-    return 'state-redux';
-  }
-
-  if (normalizedId.includes('/node_modules/zustand/')) {
-    return 'state-zustand';
-  }
-
-  if (normalizedId.includes('/node_modules/@mui/icons-material/')) {
-    return 'mui-icons';
-  }
-
-  if (
-    normalizedId.includes('/node_modules/@mui/')
-    || normalizedId.includes('/node_modules/@emotion/')
-  ) {
-    return 'mui-core';
-  }
-
-  if (normalizedId.includes('/node_modules/framer-motion/')) {
-    return 'motion';
-  }
-
-  if (
-    normalizedId.includes('/node_modules/@tolgee/')
-  ) {
-    return 'tolgee';
-  }
-
-  if (
-    normalizedId.includes('/node_modules/i18next/')
-    || normalizedId.includes('/node_modules/react-i18next/')
-    || normalizedId.includes('/node_modules/i18next-browser-languagedetector/')
-    || normalizedId.includes('/node_modules/i18next-http-backend/')
-  ) {
-    return 'i18next';
-  }
-
-  if (normalizedId.includes('/node_modules/swiper/')) {
-    return 'swiper';
-  }
-
-  if (normalizedId.includes('/node_modules/dompurify/')) {
-    return 'sanitize';
-  }
-
-  if (normalizedId.includes('/node_modules/@cyntler/react-doc-viewer/')) {
-    return 'doc-viewer';
+  for (const [chunkName, packages] of Object.entries(vendorChunks)) {
+    if (packages.some((packageName) => matchesPackage(normalizedId, packageName))) {
+      return chunkName;
+    }
   }
 
   return 'vendor-misc';
