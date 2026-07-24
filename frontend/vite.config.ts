@@ -62,6 +62,87 @@ const seoStaticHeaders = (): Plugin => {
   };
 };
 
+const manualVendorChunks = (id: string) => {
+  const normalizedId = id.replace(/\\/g, '/');
+
+  if (!normalizedId.includes('/node_modules/')) return undefined;
+
+  if (
+    normalizedId.includes('/node_modules/react/')
+    || normalizedId.includes('/node_modules/react-dom/')
+    || normalizedId.includes('/node_modules/scheduler/')
+  ) {
+    return 'react-core';
+  }
+
+  if (
+    normalizedId.includes('/node_modules/react-router/')
+    || normalizedId.includes('/node_modules/react-router-dom/')
+  ) {
+    return 'react-router';
+  }
+
+  if (
+    normalizedId.includes('/node_modules/@reduxjs/toolkit/')
+    || normalizedId.includes('/node_modules/react-redux/')
+    || normalizedId.includes('/node_modules/redux/')
+    || normalizedId.includes('/node_modules/redux-thunk/')
+    || normalizedId.includes('/node_modules/reselect/')
+    || normalizedId.includes('/node_modules/immer/')
+    || normalizedId.includes('/node_modules/use-sync-external-store/')
+  ) {
+    return 'state-redux';
+  }
+
+  if (normalizedId.includes('/node_modules/zustand/')) {
+    return 'state-zustand';
+  }
+
+  if (normalizedId.includes('/node_modules/@mui/icons-material/')) {
+    return 'mui-icons';
+  }
+
+  if (
+    normalizedId.includes('/node_modules/@mui/')
+    || normalizedId.includes('/node_modules/@emotion/')
+  ) {
+    return 'mui-core';
+  }
+
+  if (normalizedId.includes('/node_modules/framer-motion/')) {
+    return 'motion';
+  }
+
+  if (
+    normalizedId.includes('/node_modules/@tolgee/')
+  ) {
+    return 'tolgee';
+  }
+
+  if (
+    normalizedId.includes('/node_modules/i18next/')
+    || normalizedId.includes('/node_modules/react-i18next/')
+    || normalizedId.includes('/node_modules/i18next-browser-languagedetector/')
+    || normalizedId.includes('/node_modules/i18next-http-backend/')
+  ) {
+    return 'i18next';
+  }
+
+  if (normalizedId.includes('/node_modules/swiper/')) {
+    return 'swiper';
+  }
+
+  if (normalizedId.includes('/node_modules/dompurify/')) {
+    return 'sanitize';
+  }
+
+  if (normalizedId.includes('/node_modules/@cyntler/react-doc-viewer/')) {
+    return 'doc-viewer';
+  }
+
+  return 'vendor-misc';
+};
+
 export default defineConfig({
   base: '/',
   plugins: [
@@ -132,27 +213,7 @@ export default defineConfig({
 
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('@mui/icons-material')) {
-            return 'mui-icons';
-          }
-
-          if (id.includes('@tolgee')) {
-            return 'tolgee';
-          }
-
-          if (id.includes('i18next') || id.includes('react-i18next') || id.includes('i18next-')) {
-            return 'i18next';
-          }
-
-          if (id.includes('swiper')) {
-            return 'swiper';
-          }
-
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-        },
+        manualChunks: manualVendorChunks,
       },
     },
   },
