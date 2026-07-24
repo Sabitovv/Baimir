@@ -1,23 +1,127 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&
-      family=Manrope:wght@300;400;500;600;700&
-      family=Geologica:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+<html lang="ru">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>baimir</title>
-    <script type="module" crossorigin src="/Baimir/assets/index-BYGJe5aw.js"></script>
-    <link rel="stylesheet" crossorigin href="/Baimir/assets/index-Dysm5W9R.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Baytech поставляет станки и промышленное оборудование в Казахстане: лазерные станки, листогибочные станки, компрессоры, деревообработку, камнеобработку, электротехнику, запчасти и пусконаладку." />
+  <meta name="theme-color" content="#F58322" />
+
+  <link rel="preload" as="image" href="/images/background_main-mobile.webp" type="image/webp" media="(max-width: 767px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/images/background_main-tablet.webp" type="image/webp" media="(min-width: 768px) and (max-width: 1279px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/images/background_main.webp" type="image/webp" media="(min-width: 1280px)" fetchpriority="high" />
+  <link rel="preload" href="/fonts/manrope-v20-latin-500.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
+  <link rel="preload" href="/fonts/manrope-v20-latin-600.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
+  <link rel="preload" href="/fonts/manrope-v20-latin-700.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
+
+  <style>
+    @font-face {
+      font-family: 'Manrope';
+      src: url('/fonts/manrope-v20-latin-500.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+      size-adjust: 100%;
+      ascent-override: 103%;
+      descent-override: 29%;
+      line-gap-override: 0%;
+    }
+
+    @font-face {
+      font-family: 'Manrope';
+      src: url('/fonts/manrope-v20-latin-600.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+      size-adjust: 100%;
+      ascent-override: 103%;
+      descent-override: 29%;
+      line-gap-override: 0%;
+    }
+
+    @font-face {
+      font-family: 'Manrope';
+      src: url('/fonts/manrope-v20-latin-700.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+      size-adjust: 100%;
+      ascent-override: 103%;
+      descent-override: 29%;
+      line-gap-override: 0%;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background: #F2F2F2;
+      font-family: 'Manrope', Arial, sans-serif;
+      font-size-adjust: 0.52;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    #root {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    #root>header {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 50;
+      height: 88px;
+    }
+
+    #root>main {
+      flex: 1 1 0%;
+      padding-top: 88px;
+    }
+
+    #root>main>section:first-child {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      background: #111;
+    }
+
+    #root>footer {
+      min-height: 600px;
+    }
+
+    @media (min-width: 768px) {
+      #root>footer {
+        min-height: 240px;
+      }
+    }
+  </style>
+
+  <link rel="preconnect" href="https://tolgee.baytech.kz" crossorigin />
+  <link rel="dns-prefetch" href="https://tolgee.baytech.kz" />
+  <link rel="preconnect" href="https://baytech.kz" crossorigin />
+  <link rel="dns-prefetch" href="https://baytech.kz" />
+
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <title>Baymir</title>
+  <link rel="stylesheet" crossorigin href="/assets/index-DkKxMsjg.css">
+  <script type="module" crossorigin src="/assets/index-ymiDxCPq.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-i18n-DyKGIYOG.js">
+  <link rel="modulepreload" crossorigin href="/assets/ui-core-Ys4h6eh7.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-state-DWu6Dk3N.js">
+  
+</head>
+
+<body>
+  <div id="root"></div>
+</body>
+
 </html>

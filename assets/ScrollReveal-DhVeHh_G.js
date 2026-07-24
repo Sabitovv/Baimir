@@ -1,0 +1,1 @@
+import{j as s,n as r}from"./ui-core-Ys4h6eh7.js";const p=({children:t,delay:i=0,duration:o=.6,y:e=30,className:a,...n})=>s.jsx(r.div,{initial:{opacity:0,y:e},whileInView:{opacity:1,y:0},viewport:{once:!0,amount:.15},transition:{duration:o,delay:i,ease:"easeOut"},className:a,style:{willChange:"transform, opacity"},...n,children:t});export{p as S};
