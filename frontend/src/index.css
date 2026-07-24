@@ -16,7 +16,11 @@
     src: url('/fonts/manrope-v20-latin-regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 @font-face {
@@ -25,6 +29,10 @@
     font-weight: 500;
     font-style: normal;
     font-display: swap;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 @font-face {
@@ -33,6 +41,10 @@
     font-weight: 600;
     font-style: normal;
     font-display: swap;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 @font-face {
@@ -41,6 +53,10 @@
     font-weight: 700;
     font-style: normal;
     font-display: swap;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 @font-face {
@@ -48,7 +64,11 @@
     src: url('/fonts/manrope-v20-latin-800.woff2') format('woff2');
     font-weight: 800;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 @font-face {
@@ -56,7 +76,11 @@
     src: url('/fonts/oswald-v57-latin-regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 107%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 @font-face {
@@ -64,7 +88,11 @@
     src: url('/fonts/oswald-v57-latin-500.woff2') format('woff2');
     font-weight: 500;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 107%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 @font-face {
@@ -72,7 +100,11 @@
     src: url('/fonts/oswald-v57-latin-600.woff2') format('woff2');
     font-weight: 600;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 107%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 @font-face {
@@ -80,14 +112,19 @@
     src: url('/fonts/oswald-v57-latin-700.woff2') format('woff2');
     font-weight: 700;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 107%;
+    descent-override: 29%;
+    line-gap-override: 0%;
 }
 
 html,
 body {
     overflow-x: hidden;
     background-color: #F2F2F2;
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Manrope', Arial, sans-serif;
+    font-size-adjust: 0.52;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

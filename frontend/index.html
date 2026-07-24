@@ -7,12 +7,60 @@
   <meta name="description" content="Baytech поставляет станки и промышленное оборудование в Казахстане: лазерные станки, листогибочные станки, компрессоры, деревообработку, камнеобработку, электротехнику, запчасти и пусконаладку." />
   <meta name="theme-color" content="#F58322" />
 
+  <link rel="preload" as="image" href="/images/background_main-mobile.webp" type="image/webp" media="(max-width: 767px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/images/background_main-tablet.webp" type="image/webp" media="(min-width: 768px) and (max-width: 1279px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/images/background_main.webp" type="image/webp" media="(min-width: 1280px)" fetchpriority="high" />
+  <link rel="preload" href="/fonts/manrope-v20-latin-500.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
+  <link rel="preload" href="/fonts/manrope-v20-latin-600.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
+  <link rel="preload" href="/fonts/manrope-v20-latin-700.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
+
   <style>
+    @font-face {
+      font-family: 'Manrope';
+      src: url('/fonts/manrope-v20-latin-500.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+      size-adjust: 100%;
+      ascent-override: 103%;
+      descent-override: 29%;
+      line-gap-override: 0%;
+    }
+
+    @font-face {
+      font-family: 'Manrope';
+      src: url('/fonts/manrope-v20-latin-600.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+      size-adjust: 100%;
+      ascent-override: 103%;
+      descent-override: 29%;
+      line-gap-override: 0%;
+    }
+
+    @font-face {
+      font-family: 'Manrope';
+      src: url('/fonts/manrope-v20-latin-700.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+      size-adjust: 100%;
+      ascent-override: 103%;
+      descent-override: 29%;
+      line-gap-override: 0%;
+    }
+
     html,
     body {
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      background: #F2F2F2;
+      font-family: 'Manrope', Arial, sans-serif;
+      font-size-adjust: 0.52;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     #root {
@@ -39,6 +87,7 @@
       display: flex;
       min-height: 100vh;
       flex-direction: column;
+      background: #111;
     }
 
     #root>footer {
@@ -61,13 +110,6 @@
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-
-  <link rel="preload" as="image" href="/images/background_main-mobile.webp" type="image/webp" media="(max-width: 767px)" fetchpriority="high" />
-  <link rel="preload" as="image" href="/images/background_main-tablet.webp" type="image/webp" media="(min-width: 768px) and (max-width: 1279px)" fetchpriority="high" />
-  <link rel="preload" as="image" href="/images/background_main.webp" type="image/webp" media="(min-width: 1280px)" fetchpriority="high" />
-  <link rel="preload" href="/fonts/manrope-v20-latin-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="/fonts/manrope-v20-latin-600.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="/fonts/manrope-v20-latin-700.woff2" as="font" type="font/woff2" crossorigin />
 
   <title>Baymir</title>
 </head>
