@@ -5,6 +5,8 @@ import PageContainer from '@/components/ui/PageContainer'
 import { EditableImage } from '@/zustand/EditableImage'
 
 const HERO_BG = '/images/background_main.webp'
+const HERO_BG_MOBILE = '/images/background_main-mobile.webp'
+const HERO_BG_TABLET = '/images/background_main-tablet.webp'
 
 const Hero = () => {
   const { t } = useTranslation()
@@ -14,13 +16,30 @@ const Hero = () => {
       <EditableImage
         imageKey="home_hero_background"
         fallbackSrc={HERO_BG}
+        sources={[
+          {
+            media: '(max-width: 767px)',
+            srcSet: HERO_BG_MOBILE,
+            width: 768,
+            height: 385,
+            type: 'image/webp',
+          },
+          {
+            media: '(max-width: 1279px)',
+            srcSet: HERO_BG_TABLET,
+            width: 1280,
+            height: 641,
+            type: 'image/webp',
+          },
+        ]}
         alt=""
         loading="eager"
         fetchPriority="high"
         decoding="async"
         width={1920}
-        height={1080}
-        className="absolute inset-0 z-0 h-full w-full object-cover"
+        height={961}
+        sizes="100vw"
+        className="absolute inset-0 z-0 h-full w-full object-cover [aspect-ratio:1920/961]"
       />
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/70 via-black/50 to-black/75" />
 

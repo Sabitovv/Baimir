@@ -37,13 +37,12 @@ const Service = () => {
       <EditableImage
         imageKey="home_service_background"
         fallbackSrc={SERVICE_BG}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover [aspect-ratio:1600/359]"
         alt=""
-        loading="eager"
-        fetchPriority="high"
+        loading="lazy"
         decoding="async"
         width={1600}
-        height={900}
+        height={359}
       />
       <div className="relative z-10">
         <PageContainer>

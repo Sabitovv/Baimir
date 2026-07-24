@@ -62,7 +62,9 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
 
-  <link rel="preload" as="image" href="/images/background_main.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="/images/background_main-mobile.webp" type="image/webp" media="(max-width: 767px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/images/background_main-tablet.webp" type="image/webp" media="(min-width: 768px) and (max-width: 1279px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/images/background_main.webp" type="image/webp" media="(min-width: 1280px)" fetchpriority="high" />
   <link rel="preload" href="/fonts/manrope-v20-latin-regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/manrope-v20-latin-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/manrope-v20-latin-700.woff2" as="font" type="font/woff2" crossorigin />

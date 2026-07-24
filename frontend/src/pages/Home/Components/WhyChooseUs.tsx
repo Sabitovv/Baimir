@@ -45,7 +45,16 @@ const WhyChooseUs = () => {
               <StaggerItem key={index}>
                 <div className="group flex h-full flex-col rounded-xl border border-[#ECECEC] bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md md:p-8">
                   <div className="mb-3 text-[#F58322]">
-                    <EditableImage imageKey={item.key} fallbackSrc={item.icon} alt="" className="h-10 w-10 object-contain md:h-12 md:w-12" />
+                    <EditableImage
+                      imageKey={item.key}
+                      fallbackSrc={item.icon}
+                      alt=""
+                      width={48}
+                      height={48}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-10 w-10 object-contain md:h-12 md:w-12"
+                    />
                   </div>
                   <h3 className="mb-2 font-manrope text-[15px] font-bold uppercase leading-5 md:text-xl">
                     {t(item.titleKey)}

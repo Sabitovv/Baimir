@@ -63,6 +63,10 @@ const ForClients = () => {
                   <EditableImage
                     imageKey={item.key}
                     fallbackSrc={item.image}
+                    width={56}
+                    height={56}
+                    loading="lazy"
+                    decoding="async"
                     className="w-10 h-10 md:w-14 md:h-14 max-w-full object-contain shrink-0"
                     alt=""
                   />

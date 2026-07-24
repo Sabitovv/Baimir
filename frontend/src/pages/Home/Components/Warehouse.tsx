@@ -74,7 +74,11 @@ const Warehouse = () => {
                   imageKey={activeImage.key}
                   fallbackSrc={activeImage.src}
                   alt={t("home.warehouse.imageAlt")}
-                  className="w-full h-[380px] object-cover"
+                  width={960}
+                  height={380}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-[380px] aspect-[48/19] object-cover"
                 />
               )}
             </div>
@@ -95,7 +99,11 @@ const Warehouse = () => {
                     fallbackSrc={img.src}
                     onClick={() => setImgChange(index)}
                     alt={t("home.warehouse.imageAlt")}
-                    className="w-full h-[110px] object-cover"
+                    width={320}
+                    height={110}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-[110px] aspect-[32/11] object-cover"
                   />
                 </div>
               ))}

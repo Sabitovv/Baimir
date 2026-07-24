@@ -125,7 +125,10 @@ const CertificatesSection = () => {
                     <img
                       src={certificate.imageUrl}
                       alt={certificate.name || `certificate-${certificate.id}`}
-                      className="max-h-[220px] object-contain mx-auto"
+                      width={180}
+                      height={220}
+                      decoding="async"
+                      className="h-full max-h-[220px] w-full object-contain mx-auto"
                       loading="lazy"
                     />
                   </button>
@@ -217,6 +220,8 @@ const CertificatesSection = () => {
                 <img
                   src={activeCertificate.imageUrl}
                   alt={activeCertificate.name || `certificate-${activeCertificate.id}`}
+                  width={900}
+                  height={1200}
                   className="w-full h-auto max-h-[80vh] object-contain mx-auto"
                 />
               </div>

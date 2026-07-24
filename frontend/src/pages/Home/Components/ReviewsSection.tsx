@@ -176,6 +176,11 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                           {review.imageUrl ? (
                             <img
                               src={review.imageUrl}
+                              alt=""
+                              width={48}
+                              height={48}
+                              loading="lazy"
+                              decoding="async"
                               className="w-12 h-12 rounded-full object-cover"
                             />
                           ) : (

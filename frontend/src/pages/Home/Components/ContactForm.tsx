@@ -33,6 +33,10 @@ const ContactForm = () => {
                 imageKey="home_contact_review_image"
                 fallbackSrc={ReviewImg}
                 alt="review"
+                width={700}
+                height={466}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-auto object-contain"
               />
             </div>

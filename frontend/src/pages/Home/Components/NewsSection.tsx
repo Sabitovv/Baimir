@@ -138,7 +138,10 @@ const NewsSection = () => {
                         <img
                           src={image}
                           alt={title}
-                          className="w-full h-[160px] object-cover transform group-hover:scale-110 transition-transform duration-300"
+                          width={420}
+                          height={160}
+                          decoding="async"
+                          className="w-full h-[160px] aspect-[21/8] object-cover transform group-hover:scale-110 transition-transform duration-300"
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />

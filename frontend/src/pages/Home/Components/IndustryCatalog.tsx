@@ -88,11 +88,16 @@ const IndustryCatalog = () => {
                       {card.title}
                     </h1>
 
-                    <div className="flex w-full flex-grow items-center justify-center rounded-lg bg-white/70 p-3">
+                    <div className="flex w-full flex-grow aspect-[4/3] items-center justify-center rounded-lg bg-white/70 p-3">
                       <img
                         src={card.image}
-                        className="max-h-40 object-contain"
+                        className="h-full w-full object-contain"
                         alt={card.title}
+                        loading="lazy"
+                        decoding="async"
+                        width={320}
+                        height={240}
+                        sizes="(max-width: 767px) 90vw, 320px"
                       />
                     </div>
                     <span className="mt-4 hidden text-xs font-bold uppercase tracking-widest text-[#F58322] md:inline">
@@ -131,11 +136,16 @@ const IndustryCatalog = () => {
                     {card.title}
                   </Link>
 
-                  <div className="flex-grow flex items-center justify-center">
+                  <div className="flex-grow flex aspect-[4/3] w-full items-center justify-center">
                     <img
                       src={card.image}
-                      className="max-h-40 md:max-h-44 xl:max-h-48 object-contain"
+                      className="h-full max-h-40 w-full object-contain md:max-h-44 xl:max-h-48"
                       alt={card.title}
+                      loading="lazy"
+                      decoding="async"
+                      width={360}
+                      height={270}
+                      sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 90vw"
                     />
                   </div>
                 </div>

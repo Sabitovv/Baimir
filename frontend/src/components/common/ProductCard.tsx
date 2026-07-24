@@ -179,7 +179,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         isOutOfStock ? "border-gray-300" : "hover:shadow-lg"
       }`}
     >
-      <div className={`relative flex items-center justify-center ${isMini ? "h-16 mb-1" : isCompact ? "h-24 sm:h-28 md:h-28 lg:h-32 mb-1.5 sm:mb-2 md:mb-2 lg:mb-2.5" : "h-28 sm:h-32 md:h-28 lg:h-32 xl:h-40 mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 xl:mb-4"}`}>
+      <div className={`relative flex items-center justify-center overflow-hidden ${isMini ? "h-16 aspect-square mb-1" : isCompact ? "h-24 aspect-[4/3] sm:h-28 md:h-28 lg:h-32 mb-1.5 sm:mb-2 md:mb-2 lg:mb-2.5" : "h-28 aspect-[4/3] sm:h-32 md:h-28 lg:h-32 xl:h-40 mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 xl:mb-4"}`}>
         {isNew === true && !isOutOfStock && (
           <span className={`absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] text-[#DB741F] font-semibold ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"}`}>
             {t("commonCatalog.new")}
@@ -193,7 +193,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <img
           src={resolvedImgSrc}
           alt={name}
-          className={`max-h-full object-contain ${isOutOfStock ? "opacity-80 saturate-75" : ""}`}
+          className={`h-full w-full object-contain ${isOutOfStock ? "opacity-80 saturate-75" : ""}`}
           loading="lazy"
           decoding="async"
           width={240}

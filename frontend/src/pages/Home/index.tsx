@@ -1,14 +1,14 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import Hero from './Components/Hero'
-import IndustryCatalog from './Components/IndustryCatalog'
-import WhyChooseUs from './Components/WhyChooseUs'
-import Service from './Components/Service'
 import DeferredSection from '@/components/common/DeferredSection'
 import PageContainer from '@/components/ui/PageContainer'
 import ProductCollectionRenderer from '@/components/collections/ProductCollectionRenderer'
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import { useTranslation } from 'react-i18next'
 
+const IndustryCatalog = lazy(() => import('./Components/IndustryCatalog'))
+const WhyChooseUs = lazy(() => import('./Components/WhyChooseUs'))
+const Service = lazy(() => import('./Components/Service'))
 const Warehouse = lazy(() => import('./Components/Warehouse'))
 const ForClients = lazy(() => import('./Components/ForClients'))
 const ReviewsSection = lazy(() => import('./Components/ReviewsSection'))
@@ -101,9 +101,23 @@ const Home = () => {
                 variant="recommendations"
                 title={t('home.personalizedRecommendations')}
             />
-            <IndustryCatalog />
-            <WhyChooseUs />
-            <Service />
+            <DeferredSection placeholderClassName="min-h-[560px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[560px]" />}>
+                    <IndustryCatalog />
+                </Suspense>
+            </DeferredSection>
+
+            <DeferredSection placeholderClassName="min-h-[520px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
+                    <WhyChooseUs />
+                </Suspense>
+            </DeferredSection>
+
+            <DeferredSection placeholderClassName="min-h-[360px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[360px]" />}>
+                    <Service />
+                </Suspense>
+            </DeferredSection>
 
             <DeferredSection placeholderClassName="min-h-[520px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>

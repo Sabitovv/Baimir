@@ -34,11 +34,28 @@ const CategoryCard = ({
             {title}
           </h3>
         </div>
-        <div className="relative bg-gray-50 p-4 flex items-center  h-[220px]">
+        <div className="relative bg-gray-50 p-4 flex items-center justify-center h-[220px] aspect-[4/3] overflow-hidden">
           {imageKey ? (
-            <EditableImage imageKey={imageKey} fallbackSrc={image} alt={title} />
+            <EditableImage
+              imageKey={imageKey}
+              fallbackSrc={image}
+              alt={title}
+              width={320}
+              height={240}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-contain"
+            />
           ) : (
-            <img src={image} alt={title} />
+            <img
+              src={image}
+              alt={title}
+              width={320}
+              height={240}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-contain"
+            />
           )}
         </div>
 
