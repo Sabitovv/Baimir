@@ -67,6 +67,8 @@ const vendorChunks: Record<string, string[]> = {
     'react',
     'react-dom',
     'react-is',
+    'prop-types',
+    'hoist-non-react-statics',
     'scheduler',
     'react-router',
     'react-router-dom',
@@ -130,7 +132,7 @@ const manualVendorChunks = (id: string) => {
     }
   }
 
-  return 'vendor-misc';
+  return undefined;
 };
 
 export default defineConfig({
