@@ -59,7 +59,7 @@ export const isEditMode = Boolean(savedApiKey && savedApiUrl);
 
 export let tolgee: TolgeeInstance | null = null;
 
-const CDN_URL = 'https://baytech.kz/minio/locales/814bc1c3f9019b399682693b66a4ffa5';
+const CDN_URL = 'https://baytech.kz/minio/locales/706d8b4e7fe8908292491fbbc5dc2fa0';
 
 const initI18next = async (useHttpBackend: boolean) => {
   if (useHttpBackend) {
