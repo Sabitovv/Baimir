@@ -157,7 +157,7 @@ const findCategoryById = (
 };
 
 const PLACEHOLDER_IMG = productPlaceholder;
-const SEO_BASE_URL = "https://baytech.kz";
+const SEO_BASE_URL = "https://bodorlaser.kz";
 const SEO_DESCRIPTION_MAX_LENGTH = 500;
 const SEO_DESCRIPTION_MIN_LENGTH = 10;
 

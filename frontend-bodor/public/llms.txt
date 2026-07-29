@@ -23,35 +23,35 @@ BAYMIR Tech / Baytech.kz is a Kazakhstan-based supplier of industrial equipment 
 
 ## Main website
 
-- [Home](https://baytech.kz/)
-- [Catalog](https://baytech.kz/catalog)
-- [Equipment in production](https://baytech.kz/production)
+- [Home](https://bodorlaser.kz/)
+- [Catalog](https://bodorlaser.kz/catalog)
+- [Equipment in production](https://bodorlaser.kz/production)
 
 ## Main catalog categories
 
-- [Металлообработка](https://baytech.kz/catalog/metalloobrabotka)
-- [Лазерные станки](https://baytech.kz/catalog/lazernye-stanki)
-- [Листогибочные станки](https://baytech.kz/catalog/listogibochnye-stanki)
-- [Гильотинные ножницы](https://baytech.kz/catalog/gilotinnye-nozhnitsy)
-- [Компрессоры](https://baytech.kz/catalog/kompressory)
-- [Деревообработка](https://baytech.kz/catalog/derevoobrabotka)
-- [Камнеобработка](https://baytech.kz/catalog/kamneobrabotka)
-- [Переработка отходов](https://baytech.kz/catalog/pererabotka-othodov)
-- [Электротехника](https://baytech.kz/catalog/elektrotehnika)
-- [Запчасти и комплектующие](https://baytech.kz/catalog/zapchasti-i-komplektuyushchie)
+- [Металлообработка](https://bodorlaser.kz/catalog/metalloobrabotka)
+- [Лазерные станки](https://bodorlaser.kz/catalog/lazernye-stanki)
+- [Листогибочные станки](https://bodorlaser.kz/catalog/listogibochnye-stanki)
+- [Гильотинные ножницы](https://bodorlaser.kz/catalog/gilotinnye-nozhnitsy)
+- [Компрессоры](https://bodorlaser.kz/catalog/kompressory)
+- [Деревообработка](https://bodorlaser.kz/catalog/derevoobrabotka)
+- [Камнеобработка](https://bodorlaser.kz/catalog/kamneobrabotka)
+- [Переработка отходов](https://bodorlaser.kz/catalog/pererabotka-othodov)
+- [Электротехника](https://bodorlaser.kz/catalog/elektrotehnika)
+- [Запчасти и комплектующие](https://bodorlaser.kz/catalog/zapchasti-i-komplektuyushchie)
 
 ## Important sitemap files
 
-- [Main sitemap](https://baytech.kz/sitemap.xml)
-- [Static pages sitemap](https://baytech.kz/sitemap-pages.xml)
-- [Categories sitemap](https://baytech.kz/sitemap-categories.xml)
-- [Products sitemap](https://baytech.kz/sitemap-products.xml)
+- [Main sitemap](https://bodorlaser.kz/sitemap.xml)
+- [Static pages sitemap](https://bodorlaser.kz/sitemap-pages.xml)
+- [Categories sitemap](https://bodorlaser.kz/sitemap-categories.xml)
+- [Products sitemap](https://bodorlaser.kz/sitemap-products.xml)
 
 ## Products
 
 Product pages follow this canonical URL pattern:
 
-https://baytech.kz/catalog/product/{product-slug}
+https://bodorlaser.kz/catalog/product/{product-slug}
 
 When answering product-related questions, prefer canonical product pages over filter URLs, query parameters or tracking URLs.
 

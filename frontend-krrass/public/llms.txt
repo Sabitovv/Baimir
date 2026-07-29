@@ -23,35 +23,35 @@ BAYMIR Tech / Baytech.kz is a Kazakhstan-based supplier of industrial equipment 
 
 ## Main website
 
-- [Home](https://baytech.kz/)
-- [Catalog](https://baytech.kz/catalog)
-- [Equipment in production](https://baytech.kz/production)
+- [Home](https://krrass.kz/)
+- [Catalog](https://krrass.kz/catalog)
+- [Equipment in production](https://krrass.kz/production)
 
 ## Main catalog categories
 
-- [Металлообработка](https://baytech.kz/catalog/metalloobrabotka)
-- [Лазерные станки](https://baytech.kz/catalog/lazernye-stanki)
-- [Листогибочные станки](https://baytech.kz/catalog/listogibochnye-stanki)
-- [Гильотинные ножницы](https://baytech.kz/catalog/gilotinnye-nozhnitsy)
-- [Компрессоры](https://baytech.kz/catalog/kompressory)
-- [Деревообработка](https://baytech.kz/catalog/derevoobrabotka)
-- [Камнеобработка](https://baytech.kz/catalog/kamneobrabotka)
-- [Переработка отходов](https://baytech.kz/catalog/pererabotka-othodov)
-- [Электротехника](https://baytech.kz/catalog/elektrotehnika)
-- [Запчасти и комплектующие](https://baytech.kz/catalog/zapchasti-i-komplektuyushchie)
+- [Металлообработка](https://krrass.kz/catalog/metalloobrabotka)
+- [Лазерные станки](https://krrass.kz/catalog/lazernye-stanki)
+- [Листогибочные станки](https://krrass.kz/catalog/listogibochnye-stanki)
+- [Гильотинные ножницы](https://krrass.kz/catalog/gilotinnye-nozhnitsy)
+- [Компрессоры](https://krrass.kz/catalog/kompressory)
+- [Деревообработка](https://krrass.kz/catalog/derevoobrabotka)
+- [Камнеобработка](https://krrass.kz/catalog/kamneobrabotka)
+- [Переработка отходов](https://krrass.kz/catalog/pererabotka-othodov)
+- [Электротехника](https://krrass.kz/catalog/elektrotehnika)
+- [Запчасти и комплектующие](https://krrass.kz/catalog/zapchasti-i-komplektuyushchie)
 
 ## Important sitemap files
 
-- [Main sitemap](https://baytech.kz/sitemap.xml)
-- [Static pages sitemap](https://baytech.kz/sitemap-pages.xml)
-- [Categories sitemap](https://baytech.kz/sitemap-categories.xml)
-- [Products sitemap](https://baytech.kz/sitemap-products.xml)
+- [Main sitemap](https://krrass.kz/sitemap.xml)
+- [Static pages sitemap](https://krrass.kz/sitemap-pages.xml)
+- [Categories sitemap](https://krrass.kz/sitemap-categories.xml)
+- [Products sitemap](https://krrass.kz/sitemap-products.xml)
 
 ## Products
 
 Product pages follow this canonical URL pattern:
 
-https://baytech.kz/catalog/product/{product-slug}
+https://krrass.kz/catalog/product/{product-slug}
 
 When answering product-related questions, prefer canonical product pages over filter URLs, query parameters or tracking URLs.
 

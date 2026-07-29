@@ -1,4 +1,4 @@
-# robots.txt for https://baytech.kz/
+# robots.txt for https://krrass.kz/
 # Public catalog and product pages are allowed for search engines and AI search crawlers.
 
 User-agent: *
@@ -174,4 +174,4 @@ Disallow: /*?yclid=
 Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&fbclid&gclid&yclid&sort&filter&page /
 
 # Sitemap
-Sitemap: https://baytech.kz/sitemap.xml
+Sitemap: https://krrass.kz/sitemap.xml
