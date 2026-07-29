@@ -1,0 +1,3217 @@
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useParams, Link, useSearchParams } from "react-router-dom";
+import { skipToken } from "@reduxjs/toolkit/query";
+import DOMPurify from "dompurify";
+
+import PageContainer from "@/components/ui/PageContainer";
+import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setBreadcrumbs } from "@/features/catalogSlice";
+import {
+  productsApi,
+  useGetCompanySettingsQuery,
+  useGetProductBySlugQuery,
+} from "@/api/productsApi";
+import type {
+  ProductContentBlock,
+  GridCardItem,
+  ProductDetail,
+} from "@/api/productsApi";
+import type {
+  CompanyManager,
+  CompanyWorkSchedule,
+  ProductVariant,
+  SpecificationAttribute,
+  SpecificationGroup,
+  WorkInterval,
+  WorkScheduleDayKey,
+} from "@/api/productsApi";
+import { useGetCategoriesTreeQuery } from "@/api/categoriesApi";
+import type { Category } from "@/api/categoriesApi";
+
+import track from "@/assets/catalog/icons/fa_truck.svg";
+import delivery from "@/assets/catalog/icons/time.svg";
+import calendar from "@/assets/catalog/icons/calendar.svg";
+import address from "@/assets/catalog/icons/addres.svg";
+import { useTranslation } from "react-i18next";
+import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
+import sampleImg from "@/assets/catalog/sample_machine.png";
+import productPlaceholder from "@/assets/catalog/productPlaceholder.svg";
+import Contact from "@/components/common/Contact";
+import ProductCard from "@/components/common/ProductCard";
+import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
+import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
+import {
+  addToCart,
+  incrementQuantity,
+  decrementQuantity,
+  removeFromCart,
+} from "@/features/cartSlice";
+import { addToCompare, removeFromCompare } from "@/features/compareSlice";
+import { useCartAnimation } from "@/components/animations/useCartAnimation";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import {
+  DELIVERY_DETAILS_URL,
+  INTERNATIONAL_DELIVERY_REGIONS,
+  KAZAKHSTAN_DELIVERY_REGIONS,
+  PAYMENT_BANK_ACCOUNT,
+  PAYMENT_METHODS,
+  SALES_MANAGERS,
+  STORE_CONTACTS,
+  VAT_TEXT,
+  WARRANTY_TEXT,
+  type InfoModalType,
+} from "./constants/productInfoContent";
+import { EditableImage } from "@/zustand/EditableImage";
+import { addRecentlyViewedProductId } from "@/utils/recentlyViewedStorage";
+const formatPrice = (
+  price: number | null | undefined,
+  fallback: string,
+): string => {
+  if (typeof price !== "number" || !Number.isFinite(price)) return fallback;
+
+  return new Intl.NumberFormat("ru-KZ", {
+    style: "currency",
+    currency: "KZT",
+    maximumFractionDigits: 0,
+  }).format(price);
+};
+
+const formatAttributeLabel = (key: string): string => {
+  const normalized = key.replace(/[_-]+/g, " ").trim().replace(/\s+/g, " ");
+  if (!normalized) return key;
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+};
+
+const getManagerFullName = (manager: CompanyManager): string => {
+  const firstName = manager.firstName?.trim() ?? "";
+  const lastName = manager.lastName?.trim() ?? "";
+  const fullName = `${firstName} ${lastName}`.trim();
+  return fullName || "-";
+};
+
+const normalizePhoneHref = (phone: string): string => {
+  const normalized = phone.replace(/[^\d+]/g, "");
+  return normalized.startsWith("+") ? normalized : `+${normalized}`;
+};
+
+const RETURN_POLICY_RU = {
+  title: "Условия возврата и обмена",
+  intro: "Компания осуществляет возврат и обмен этого товара в соответствии с требованиями законодательства.",
+  termsTitle: "Сроки возврата",
+  term: "Возврат возможен в течение 14 дней после получения (для товаров надлежащего качества).",
+  deliveryNote: "Обратная доставка товаров осуществляется по договоренности.",
+  warranty: "На все поставляемое оборудование - Гарантия в течение 12 (двенадцати) месяцев.",
+  exchangeDefective: "Бесплатному обмену подлежат дефектные части оборудования.",
+  noReturn: "Возврат оборудования не предусмотрен.",
+  moreLink: "Подробнее: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
+};
+
+const RETURN_POLICY_TEXT: Record<string, Record<string, string>> = {
+  ru: RETURN_POLICY_RU,
+  kz: {
+    title: "Қайтару және алмастыру шарттары",
+    intro: "Компания осы тауарды заң талаптарына сәйкес қайтаруды және алмастыруды жүзеге асырады.",
+    termsTitle: "Қайтару мерзімдері",
+    term: "Қайтаруды алғаннан кейін 14 күн ішінде мүмкін (тиісті сападағы тауарлар үшін).",
+    deliveryNote: "Тауарларды кері жеткізу келісім бойынша жүзеге асырылады.",
+    warranty: "Барлық жеткізілетін жабдыққа - 12 (он екі) ай кепілдік.",
+    exchangeDefective: "Ақаулы жабдық бөлшектері тегін алмастырылады.",
+    noReturn: "Жабдықты қайтару қарастырылмаған.",
+    moreLink: "Толығырақ: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
+  },
+  en: {
+    title: "Return and exchange policy",
+    intro: "The company provides return and exchange of this product in accordance with legal requirements.",
+    termsTitle: "Return period",
+    term: "Return is possible within 14 days after receipt (for goods of proper quality).",
+    deliveryNote: "Return delivery is carried out by agreement.",
+    warranty: "All supplied equipment has a 12 (twelve) month warranty.",
+    exchangeDefective: "Defective parts of the equipment are subject to free exchange.",
+    noReturn: "Return of equipment is not provided.",
+    moreLink: "More details: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
+  },
+};
+
+const findCategoryById = (
+  categories: Category[],
+  id: number,
+): Category | null => {
+  for (const cat of categories) {
+    if (Number(cat.id) === id) return cat;
+    if (cat.children && cat.children.length > 0) {
+      const found = findCategoryById(cat.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+const PLACEHOLDER_IMG = productPlaceholder;
+const SEO_BASE_URL = "https://baytech.kz";
+const SEO_DESCRIPTION_MAX_LENGTH = 500;
+const SEO_DESCRIPTION_MIN_LENGTH = 10;
+
+type GalleryItem = {
+  kind: "image" | "videoExternal" | "videoFile";
+  url: string;
+  preview: string;
+  embedUrl?: string;
+};
+
+type BreadcrumbItem = {
+  id?: number | string;
+  name: string;
+  slug?: string;
+  path: string;
+};
+
+type HeaderSpecGroup = {
+  isHeader: true;
+  name: string;
+  attributes?: never;
+};
+
+type SpecGroup = SpecificationGroup | HeaderSpecGroup;
+type StickyMode = "static" | "fixedTop" | "fixedBottom";
+
+const toYouTubeId = (url: string): string | null => {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace("www.", "");
+
+    if (host === "youtu.be") {
+      const id = parsed.pathname.replace("/", "");
+      return id || null;
+    }
+
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      if (parsed.pathname === "/watch") return parsed.searchParams.get("v");
+      if (parsed.pathname.startsWith("/shorts/"))
+        return parsed.pathname.split("/")[2] || null;
+      if (parsed.pathname.startsWith("/embed/"))
+        return parsed.pathname.split("/")[2] || null;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+};
+
+const toYouTubeEmbedUrl = (url: string): string | null => {
+  const id = toYouTubeId(url);
+  return id ? `https://www.youtube.com/embed/${id}` : null;
+};
+
+const isVideoFileUrl = (url: string): boolean =>
+  /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
+
+const normalizeGallery = (
+  media:
+    | Array<{
+        url?: string | null;
+        type?: string | null;
+        sortOrder?: number | null;
+      }>
+    | null
+    | undefined,
+): GalleryItem[] => {
+  if (!media || media.length === 0) {
+    return [{ kind: "image", url: PLACEHOLDER_IMG, preview: PLACEHOLDER_IMG }];
+  }
+
+  const sorted = [...media].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+  );
+
+  const mapped: GalleryItem[] = sorted
+    .map((item) => {
+      const url = String(item.url ?? "").trim();
+      if (!url) return null;
+
+      const rawType = String(item.type ?? "").toUpperCase();
+      const youtubeEmbed = toYouTubeEmbedUrl(url);
+
+      if (rawType.includes("IMAGE")) {
+        return { kind: "image", url, preview: url };
+      }
+
+      if (rawType === "VIDEO_EXTERNAL") {
+        if (youtubeEmbed) {
+          const id = toYouTubeId(url);
+          const preview = id
+            ? `https://img.youtube.com/vi/${id}/hqdefault.jpg`
+            : PLACEHOLDER_IMG;
+          return {
+            kind: "videoExternal",
+            url,
+            preview,
+            embedUrl: youtubeEmbed,
+          };
+        }
+        return {
+          kind: "videoExternal",
+          url,
+          preview: PLACEHOLDER_IMG,
+          embedUrl: url,
+        };
+      }
+
+      if (rawType.includes("VIDEO")) {
+        if (youtubeEmbed) {
+          const id = toYouTubeId(url);
+          const preview = id
+            ? `https://img.youtube.com/vi/${id}/hqdefault.jpg`
+            : PLACEHOLDER_IMG;
+          return {
+            kind: "videoExternal",
+            url,
+            preview,
+            embedUrl: youtubeEmbed,
+          };
+        }
+        return { kind: "videoFile", url, preview: PLACEHOLDER_IMG };
+      }
+
+      if (isVideoFileUrl(url))
+        return { kind: "videoFile", url, preview: PLACEHOLDER_IMG };
+      return { kind: "image", url, preview: url };
+    })
+    .filter((item): item is GalleryItem => item !== null);
+
+  return mapped.length > 0
+    ? mapped
+    : [{ kind: "image", url: PLACEHOLDER_IMG, preview: PLACEHOLDER_IMG }];
+};
+
+const WORK_DAYS_ORDER: WorkScheduleDayKey[] = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
+
+const formatIntervals = (intervals: WorkInterval[] | undefined): string => {
+  if (!intervals || intervals.length === 0) return "-";
+  return intervals
+    .map((interval) => `${interval.start} - ${interval.end}`)
+    .join(", ");
+};
+
+const formatExceptionDateRange = (
+  startDate: string,
+  endDate: string,
+): string => {
+  if (!startDate && !endDate) return "-";
+  if (startDate === endDate) return startDate;
+  return `${startDate} - ${endDate}`;
+};
+
+const imageWidthClassMap: Record<"1/3" | "1/2" | "2/3" | "full", string> = {
+  "1/3": "lg:w-1/3",
+  "1/2": "lg:w-1/2",
+  "2/3": "lg:w-2/3",
+  full: "w-full",
+};
+
+const imageRatioClassMap: Record<"video" | "square" | "portrait", string> = {
+  video: "aspect-video",
+  square: "aspect-square",
+  portrait: "aspect-[3/4]",
+};
+
+const toRecord = (value: unknown): Record<string, unknown> | null => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+};
+
+const toStringValue = (value: unknown, fallback = ""): string => {
+  if (typeof value === "string") return value;
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  return fallback;
+};
+
+const toStringArray = (value: unknown): string[] => {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => toStringValue(item).trim()).filter(Boolean);
+};
+
+const toRows = (value: unknown): string[][] => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((row) =>
+      Array.isArray(row) ? row.map((cell) => toStringValue(cell, "")) : [],
+    )
+    .filter((row) => row.length > 0);
+};
+
+const normalizeContentBlocks = (value: unknown): ProductContentBlock[] => {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((rawBlock, idx): ProductContentBlock | null => {
+      const block = toRecord(rawBlock);
+      if (!block) return null;
+
+      const type = toStringValue(block.type);
+      const data = toRecord(block.data) ?? {};
+      const id = toStringValue(block.id, `block-${idx}`);
+
+      if (type === "heading") {
+        const levelRaw = Number(block?.data && toRecord(block.data)?.level);
+        const level =
+          levelRaw === 1 || levelRaw === 2 || levelRaw === 3 ? levelRaw : 2;
+        return {
+          id,
+          type: "heading",
+          data: {
+            text: toStringValue(data.text),
+            level,
+            subtitle: toStringValue(data.subtitle) || undefined,
+          },
+        };
+      }
+
+      if (type === "paragraph") {
+        return {
+          id,
+          type: "paragraph",
+          data: { text: toStringValue(data.text) },
+        };
+      }
+
+      if (type === "imageCard") {
+        const position = toStringValue(data.position);
+        const imageWidth = toStringValue(data.imageWidth);
+        const imageRatio = toStringValue(data.imageRatio);
+        const verticalAlign = toStringValue(data.verticalAlign);
+
+        return {
+          id,
+          type: "imageCard",
+          data: {
+            imageUrl: toStringValue(data.imageUrl),
+            title: toStringValue(data.title),
+            description: toStringValue(data.description),
+            position:
+              position === "left" ||
+              position === "right" ||
+              position === "top" ||
+              position === "bottom"
+                ? position
+                : "left",
+            imageWidth:
+              imageWidth === "1/3" ||
+              imageWidth === "1/2" ||
+              imageWidth === "2/3" ||
+              imageWidth === "full"
+                ? imageWidth
+                : "1/2",
+            imageRatio:
+              imageRatio === "video" ||
+              imageRatio === "square" ||
+              imageRatio === "portrait"
+                ? imageRatio
+                : "video",
+            verticalAlign:
+              verticalAlign === "start" || verticalAlign === "center"
+                ? verticalAlign
+                : "start",
+          },
+        };
+      }
+
+      if (type === "youtube") {
+        return {
+          id,
+          type: "youtube",
+          data: {
+            videoId: toStringValue(data.videoId),
+            videoUrl: toStringValue(data.videoUrl) || undefined,
+          },
+        };
+      }
+
+      if (type === "table") {
+        return {
+          id,
+          type: "table",
+          data: { rows: toRows(data.rows) },
+        };
+      }
+
+      if (type === "gallery") {
+        const layout = toStringValue(data.layout);
+        return {
+          id,
+          type: "gallery",
+          data: {
+            urls: toStringArray(data.urls),
+            layout:
+              layout === "single" ||
+              layout === "grid" ||
+              layout === "carousel" ||
+              layout === "featured" ||
+              layout === "masonry"
+                ? layout
+                : "grid",
+          },
+        };
+      }
+
+      if (type === "list") {
+        const styleRaw = toStringValue(data.style);
+        const styleFromOrdered = data.ordered === true ? "number" : "bullet";
+        const style = styleRaw || styleFromOrdered;
+        return {
+          id,
+          type: "list",
+          data: {
+            items: toStringArray(data.items),
+            style:
+              style === "bullet" ||
+              style === "number" ||
+              style === "check" ||
+              style === "dash" ||
+              style === "arrow"
+                ? style
+                : "bullet",
+          },
+        };
+      }
+
+      if (type === "cardGrid") {
+        const columnsRaw = Number(data.columns);
+        const columns =
+          columnsRaw === 2 || columnsRaw === 3 || columnsRaw === 4
+            ? columnsRaw
+            : 3;
+        const imageRatioRaw = toStringValue(data.imageRatio);
+        const cardsRaw = Array.isArray(data.cards) ? data.cards : [];
+
+        const cards = cardsRaw
+          .map((item) => toRecord(item))
+          .filter((item): item is Record<string, unknown> => item !== null)
+          .map((item) => ({
+            imageUrl: toStringValue(item.imageUrl),
+            title: toStringValue(item.title),
+            description: toStringValue(item.description),
+          }));
+
+        return {
+          id,
+          type: "cardGrid",
+          data: {
+            columns,
+            imageRatio:
+              imageRatioRaw === "square" ||
+              imageRatioRaw === "video" ||
+              imageRatioRaw === "portrait"
+                ? imageRatioRaw
+                : "video",
+            cards,
+          },
+        };
+      }
+
+      if (type === "productLink") {
+        const layout = toStringValue(data.layout);
+        return {
+          id,
+          type: "productLink",
+          data: {
+            productIds: toStringArray(data.productIds),
+            layout:
+              layout === "card" || layout === "grid" || layout === "carousel"
+                ? layout
+                : "card",
+          },
+        };
+      }
+
+      return null;
+    })
+    .filter((item): item is ProductContentBlock => item !== null);
+};
+
+const stripHtmlTags = (value: string): string => {
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+const normalizeSeoDescription = (
+  raw: string | null | undefined,
+  fallback: string,
+): string => {
+  const cleaned = stripHtmlTags(raw ?? "")
+    .replace(/[\u0000-\u001F\u007F]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const fallbackClean = stripHtmlTags(fallback).trim() || "Baytech product";
+  const base = cleaned.length >= SEO_DESCRIPTION_MIN_LENGTH ? cleaned : fallbackClean;
+  const limited = base.slice(0, SEO_DESCRIPTION_MAX_LENGTH).trim();
+
+  return limited.length >= SEO_DESCRIPTION_MIN_LENGTH
+    ? limited
+    : fallbackClean.slice(0, SEO_DESCRIPTION_MAX_LENGTH);
+};
+
+const getContentBlockText = (block: ProductContentBlock): string => {
+  switch (block.type) {
+    case "heading":
+      return `${block.data.text} ${block.data.subtitle ?? ""}`.trim();
+    case "paragraph":
+      return block.data.text;
+    case "imageCard":
+      return `${block.data.title} ${block.data.description}`.trim();
+    case "table":
+      return block.data.rows.flat().join(" ");
+    case "list":
+      return block.data.items.join(" ");
+    case "cardGrid":
+      return block.data.cards
+        .map((card) => `${card.title} ${card.description}`.trim())
+        .join(" ");
+    default:
+      return "";
+  }
+};
+
+const renderCardItem = (
+  card: GridCardItem,
+  idx: number,
+  _ratio: "square" | "video" | "portrait",
+) => (
+  <article
+    key={`${card.title}-${idx}`}
+    className="group rounded-xl sm:rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl flex h-full flex-col"
+  >
+    <div className="h-[170px] sm:h-[200px] md:h-[240px] lg:h-[260px] bg-gray-50 overflow-hidden">
+      <img
+        src={card.imageUrl || PLACEHOLDER_IMG}
+        alt={card.title}
+        className="w-full h-full object-contain transition duration-500 group-hover:scale-[1.01]"
+        loading="lazy"
+      />
+    </div>
+    <div className="p-3 sm:p-5 space-y-1.5 sm:space-y-2 flex flex-1 flex-col">
+      <h4 className="font-semibold text-gray-900 leading-snug line-clamp-2">
+        {card.title}
+      </h4>
+      <p className="text-xs sm:text-sm text-gray-600 whitespace-pre-line line-clamp-4">
+        {card.description}
+      </p>
+    </div>
+  </article>
+);
+
+const isMainSetHeading = (value?: string): boolean => {
+  if (!value) return false;
+  const text = value.toLowerCase();
+  return (
+    text.includes("основная комплектация") ||
+    text.includes("main configuration") ||
+    text.includes("main package")
+  );
+};
+
+const renderMainSetItem = (card: GridCardItem, idx: number) => (
+  <article
+    key={`${card.title}-${idx}`}
+    className="rounded-xl sm:rounded-2xl border border-gray-200 bg-white p-3 sm:p-4 md:p-5 shadow-sm transition-all duration-300 hover:shadow-md"
+  >
+    <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_220px] gap-3 sm:gap-4 md:gap-5 items-start">
+      <div className="min-w-0">
+        <h4 className="font-semibold text-gray-900 leading-snug mb-1.5 sm:mb-2 text-[15px] sm:text-base md:text-lg">
+          {card.title}
+        </h4>
+        <p className="text-xs sm:text-sm md:text-base text-gray-700 whitespace-pre-line">
+          {card.description}
+        </p>
+      </div>
+
+      <div className="h-[150px] sm:h-[200px] bg-gray-50 rounded-lg sm:rounded-xl overflow-hidden border border-gray-100">
+        <img
+          src={card.imageUrl || PLACEHOLDER_IMG}
+          alt={card.title}
+          className="w-full h-full object-contain"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  </article>
+);
+
+const getPrimaryImage = (media: ProductDetail["media"]): string => {
+  if (!media || media.length === 0) return PLACEHOLDER_IMG;
+  const firstImage = media.find(
+    (item) =>
+      String(item.type).toUpperCase().includes("IMAGE") &&
+      typeof item.url === "string" &&
+      item.url.trim().length > 0,
+  );
+  return firstImage?.url?.trim() || PLACEHOLDER_IMG;
+};
+
+const toAbsoluteBaytechUrl = (value: string): string => {
+  const trimmed = value.trim();
+  if (!trimmed) return SEO_BASE_URL;
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      return `${SEO_BASE_URL}${parsed.pathname}${parsed.search}${parsed.hash}`;
+    } catch {
+      return SEO_BASE_URL;
+    }
+  }
+
+  const normalizedPath = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return `${SEO_BASE_URL}${normalizedPath}`;
+};
+
+const formatAttachmentSize = (sizeInBytes: number): string => {
+  if (!Number.isFinite(sizeInBytes) || sizeInBytes <= 0) return "-";
+
+  const units = ["B", "KB", "MB", "GB"];
+  let value = sizeInBytes;
+  let unitIndex = 0;
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+
+  const precision = value >= 10 || unitIndex === 0 ? 0 : 1;
+  return `${value.toFixed(precision)} ${units[unitIndex]}`;
+};
+
+const getAttachmentPreviewUrl = (fileUrl: string, mimeType: string): string => {
+  const normalizedMime = mimeType.toLowerCase();
+
+  if (
+    normalizedMime.includes("pdf") ||
+    normalizedMime.startsWith("image/") ||
+    normalizedMime.startsWith("text/")
+  ) {
+    return fileUrl;
+  }
+
+  return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+};
+
+const upsertMetaTag = (property: string, content: string): HTMLMetaElement => {
+  let tag = document.head.querySelector(
+    `meta[property="${property}"]`,
+  ) as HTMLMetaElement | null;
+
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute("property", property);
+    document.head.appendChild(tag);
+  }
+
+  tag.setAttribute("content", content);
+  return tag;
+};
+
+const ProductLinksBlock = ({
+  block,
+}: {
+  block: Extract<ProductContentBlock, { type: "productLink" }>;
+}) => {
+  const dispatch = useAppDispatch();
+  const { i18n, t } = useTranslation();
+  const [items, setItems] = useState<ProductDetail[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [hasResolved, setHasResolved] = useState(false);
+  const requestNonceRef = useRef(0);
+
+  const productTokens = useMemo(() => {
+    const seen = new Set<string>();
+
+    return (block.data.productIds ?? [])
+      .map((value) => String(value).trim())
+      .filter((token) => {
+        if (!token || seen.has(token)) return false;
+        seen.add(token);
+        return true;
+      });
+  }, [block.data.productIds]);
+
+  const productIdsKey = productTokens.join("|");
+
+  useEffect(() => {
+    if (!productIdsKey) {
+      setItems([]);
+      setLoading(false);
+      setHasResolved(true);
+      return;
+    }
+
+    const REQUEST_TIMEOUT_MS = 10000;
+    const requestNonce = ++requestNonceRef.current;
+    let cancelled = false;
+
+    const tokens = productIdsKey.split("|").filter(Boolean);
+
+    setHasResolved(false);
+    setLoading(false);
+
+    const loadingTimer = window.setTimeout(() => {
+      if (!cancelled && requestNonceRef.current === requestNonce) {
+        setLoading(true);
+      }
+    }, 150);
+
+    const ids: number[] = [];
+    const slugs: string[] = [];
+
+    tokens.forEach((token) => {
+      if (/^\d+$/.test(token)) {
+        ids.push(Number(token));
+      } else {
+        slugs.push(token);
+      }
+    });
+
+    if (ids.length === 0 && slugs.length === 0) {
+      window.clearTimeout(loadingTimer);
+
+      if (!cancelled && requestNonceRef.current === requestNonce) {
+        setItems([]);
+        setLoading(false);
+        setHasResolved(true);
+      }
+      return;
+    }
+
+    const subscriptions: Array<{
+      unsubscribe: () => void;
+      abort?: () => void;
+    }> = [];
+    const requests: Array<Promise<ProductDetail[]>> = [];
+
+    const withTimeout = (
+      promise: Promise<ProductDetail[]>,
+      subscription: { abort?: () => void },
+    ): Promise<ProductDetail[]> =>
+      new Promise((resolve) => {
+        const timeoutId = window.setTimeout(() => {
+          if (typeof subscription.abort === "function") {
+            subscription.abort();
+          }
+          resolve([]);
+        }, REQUEST_TIMEOUT_MS);
+
+        promise
+          .then((result) => {
+            window.clearTimeout(timeoutId);
+            resolve(result);
+          })
+          .catch(() => {
+            window.clearTimeout(timeoutId);
+            resolve([]);
+          });
+      });
+
+    if (ids.length > 0) {
+      const sub = dispatch(
+        productsApi.endpoints.getProductsBatch.initiate(ids),
+      );
+      subscriptions.push(sub);
+      requests.push(
+        withTimeout(
+          sub.unwrap().then((data) => (Array.isArray(data) ? data : [])),
+          sub,
+        ),
+      );
+    }
+
+    slugs.forEach((slug) => {
+      const sub = dispatch(
+        productsApi.endpoints.getProductBySlug.initiate({
+          slug,
+          lang: i18n.language,
+        }),
+      );
+      subscriptions.push(sub);
+      requests.push(
+        withTimeout(
+          sub.unwrap().then((data) => (data ? [data] : [])),
+          sub,
+        ),
+      );
+    });
+
+    Promise.allSettled(requests)
+      .then((settledResults) => {
+        window.clearTimeout(loadingTimer);
+        if (cancelled || requestNonceRef.current !== requestNonce) return;
+
+        const results = settledResults.map((result) =>
+          result.status === "fulfilled" ? result.value : [],
+        );
+
+        const allProducts = results.flat();
+        const byId = new Map<number, ProductDetail>();
+        const bySlug = new Map<string, ProductDetail>();
+
+        allProducts.forEach((product) => {
+          byId.set(product.id, product);
+          bySlug.set(product.slug, product);
+        });
+
+        const loaded: ProductDetail[] = [];
+        const seen = new Set<number>();
+
+        tokens.forEach((token) => {
+          const product = /^\d+$/.test(token)
+            ? byId.get(Number(token))
+            : bySlug.get(token);
+
+          if (!product || seen.has(product.id)) return;
+
+          seen.add(product.id);
+          loaded.push(product);
+        });
+
+        setItems(loaded);
+      })
+      .finally(() => {
+        window.clearTimeout(loadingTimer);
+        if (!cancelled && requestNonceRef.current === requestNonce) {
+          setLoading(false);
+          setHasResolved(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(loadingTimer);
+      subscriptions.forEach((sub) => {
+        if (typeof sub.abort === "function") sub.abort();
+        sub.unsubscribe();
+      });
+    };
+  }, [dispatch, i18n.language, productIdsKey]);
+
+  const isCardLayout = block.data.layout === "card";
+  const isCarouselLayout = block.data.layout === "carousel";
+  const displayedItems = isCardLayout ? items.slice(0, 1) : items;
+  const shouldRenderCarousel = isCarouselLayout && displayedItems.length >= 3;
+  const showLoading = loading && displayedItems.length === 0 && !hasResolved;
+
+  if (!productIdsKey) return null;
+  if (hasResolved && displayedItems.length === 0) return null;
+
+  if (isCardLayout && displayedItems[0]) {
+    const item = displayedItems[0];
+
+    return (
+      <section className="space-y-2 sm:space-y-3">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+          {t("productPage.relatedProducts")}
+        </h3>
+
+        {showLoading && (
+          <p className="text-sm text-gray-500">
+            {t("productPage.loadingLinked")}
+          </p>
+        )}
+
+        {displayedItems.length > 0 && (
+          <div className="max-w-[360px]">
+            <ProductCard
+              id={item.id}
+              slug={item.slug}
+              name={item.name}
+              coverImage={item.coverImage || getPrimaryImage(item.media)}
+              price={item.price}
+              oldPrice={item.oldPrice}
+              inStock={item.inStock}
+              isNew={item.newProduct}
+              categoryId={item.category?.id}
+              categoryName={item.category?.name ?? ""}
+            />
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  return (
+    <section className="space-y-2 sm:space-y-3">
+      <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+        {t("productPage.relatedProducts")}
+      </h3>
+
+      {showLoading && (
+        <p className="text-sm text-gray-500">
+          {t("productPage.loadingLinked")}
+        </p>
+      )}
+
+      {displayedItems.length > 0 && shouldRenderCarousel && (
+        <div className="-mx-1 flex snap-x snap-mandatory gap-3 sm:gap-4 overflow-x-auto px-1 pb-2 sm:pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {displayedItems.map((item) => (
+            <div
+              key={item.id}
+              className="w-[220px] shrink-0 snap-start sm:w-[290px] lg:w-[320px]"
+            >
+              <ProductCard
+                id={item.id}
+                slug={item.slug}
+                name={item.name}
+                coverImage={item.coverImage || getPrimaryImage(item.media)}
+                price={item.price}
+                oldPrice={item.oldPrice}
+                inStock={item.inStock}
+                isNew={item.newProduct ?? item.new}
+                categoryId={item.category?.id}
+                categoryName={item.category?.name ?? ""}
+                showCompare={false}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {displayedItems.length > 0 && !shouldRenderCarousel && (
+        <div className="grid grid-cols-1 gap-3 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {displayedItems.map((item) => (
+            <ProductCard
+              key={item.id}
+              id={item.id}
+              slug={item.slug}
+              name={item.name}
+              coverImage={item.coverImage || getPrimaryImage(item.media)}
+              price={item.price}
+              oldPrice={item.oldPrice}
+              inStock={item.inStock}
+              isNew={item.newProduct ?? item.new}
+              categoryId={item.category?.id}
+              categoryName={item.category?.name ?? ""}
+              showCompare={false}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
+const renderContentBlock = (
+  block: ProductContentBlock,
+  prevBlock?: ProductContentBlock,
+) => {
+  switch (block.type) {
+    case "heading": {
+      if (!block.data.text?.trim()) return null;
+      const HeadingTag =
+        block.data.level === 1 ? "h1" : block.data.level === 2 ? "h2" : "h3";
+      return (
+        <div
+          key={block.id}
+          className="space-y-1.5 sm:space-y-2 border-l-4 border-[#F58322] pl-3 sm:pl-4 md:pl-5"
+        >
+          <HeadingTag className="font-bold text-gray-900 text-lg sm:text-xl md:text-2xl leading-tight">
+            {block.data.text}
+          </HeadingTag>
+          {block.data.subtitle && (
+            <p className="text-xs sm:text-sm text-gray-500 md:text-base">
+              {block.data.subtitle}
+            </p>
+          )}
+        </div>
+      );
+    }
+    case "paragraph":
+      if (!block.data.text?.trim()) return null;
+      return (
+        <p
+          key={block.id}
+          className="text-gray-700 leading-relaxed whitespace-pre-line text-sm md:text-base"
+        >
+          {block.data.text}
+        </p>
+      );
+    case "imageCard": {
+      const isHorizontal =
+        block.data.position === "left" || block.data.position === "right";
+      const reverse =
+        block.data.position === "right" || block.data.position === "bottom";
+      const directionClass = isHorizontal ? "lg:flex-row" : "flex-col";
+      const reverseClass = reverse
+        ? isHorizontal
+          ? "lg:flex-row-reverse"
+          : "flex-col-reverse"
+        : "";
+      const alignClass =
+        block.data.verticalAlign === "center" ? "items-center" : "items-start";
+      const hasTitle = Boolean(block.data.title?.trim());
+      const hasDescription = Boolean(block.data.description?.trim());
+      const isFullWidthImage = block.data.imageWidth === "full";
+      const mediaFrameClass = isFullWidthImage
+        ? "h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)]"
+        : imageRatioClassMap[block.data.imageRatio];
+      const imageFitClass = "object-contain object-center";
+      const imageHoverClass = isFullWidthImage
+        ? "hover:scale-[1.01]"
+        : "hover:scale-[1.02]";
+
+      return (
+        <section
+          key={block.id}
+          className={`flex ${directionClass} ${reverseClass} ${alignClass} gap-3 sm:gap-4 md:gap-5 rounded-xl sm:rounded-2xl border border-gray-200 p-3 sm:p-4 md:p-6 bg-gradient-to-b from-white to-gray-50/70 shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.01]`}
+        >
+          <div
+            className={`w-full ${imageWidthClassMap[block.data.imageWidth]}`}
+          >
+            <div
+              className={`${mediaFrameClass} rounded-xl overflow-hidden bg-gray-50 group`}
+            >
+              <img
+                src={block.data.imageUrl || PLACEHOLDER_IMG}
+                alt={block.data.title || "content-image"}
+                className={`w-full h-full ${imageFitClass} transition duration-500 ${imageHoverClass}`}
+                loading="lazy"
+              />
+            </div>
+          </div>
+          {(hasTitle || hasDescription) && (
+            <div className="flex-1 space-y-1.5 sm:space-y-2">
+              {hasTitle && (
+                <h3 className="font-semibold text-base sm:text-lg text-gray-900 md:text-xl">
+                  {block.data.title}
+                </h3>
+              )}
+              {hasDescription && (
+                <p className="text-xs sm:text-sm text-gray-600 whitespace-pre-line md:text-base">
+                  {block.data.description}
+                </p>
+              )}
+            </div>
+          )}
+        </section>
+      );
+    }
+    case "youtube": {
+      const embedUrl = block.data.videoId
+        ? `https://www.youtube.com/embed/${block.data.videoId}`
+        : block.data.videoUrl
+          ? toYouTubeEmbedUrl(block.data.videoUrl)
+          : null;
+      if (!embedUrl) return null;
+
+      return (
+        <div
+          key={block.id}
+          className="aspect-video rounded-2xl overflow-hidden bg-black border border-gray-200 shadow-lg"
+        >
+          <iframe
+            src={embedUrl}
+            title="product-content-video"
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
+      );
+    }
+    case "table": {
+      if (!block.data.rows?.length) return null;
+      const [header, ...body] = block.data.rows;
+      if (!header) return null;
+      return (
+        <div
+          key={block.id}
+          className="overflow-x-auto rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-md shadow-gray-200/60"
+        >
+          <table className="w-full min-w-[560px] text-xs sm:text-sm">
+            <thead className="bg-gradient-to-b from-gray-50 to-gray-100/80 text-gray-700">
+              <tr>
+                {header.map((cell, idx) => (
+                  <th
+                    key={idx}
+                    className="px-3 sm:px-4 py-2.5 sm:py-3 text-left font-semibold border-b border-gray-200 whitespace-nowrap first:rounded-tl-xl last:rounded-tr-xl [&:not(:last-child)]:border-r [&:not(:last-child)]:border-gray-200/80"
+                  >
+                    {cell}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {body.map((row, rowIdx) => (
+                <tr
+                  key={rowIdx}
+                  className="border-b border-gray-100 last:border-b-0 odd:bg-white even:bg-gray-50/55 hover:bg-[#FFF6EF] transition-colors"
+                >
+                  {row.map((cell, cellIdx) => (
+                    <td
+                      key={cellIdx}
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 align-top [&:not(:last-child)]:border-r [&:not(:last-child)]:border-gray-100"
+                    >
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    case "gallery": {
+      if (!block.data.urls?.length) return null;
+      if (block.data.layout === "carousel") {
+        return (
+          <div
+            key={block.id}
+            className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory"
+          >
+            {block.data.urls.map((url, idx) => (
+              <div
+                key={`${url}-${idx}`}
+                className="group snap-start min-w-[72%] sm:min-w-[56%] lg:min-w-[40%] rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
+              >
+                <img
+                  src={url || PLACEHOLDER_IMG}
+                  alt={`gallery-${idx + 1}`}
+                  className="w-full h-full object-contain aspect-[4/3] transition duration-500 group-hover:scale-[1.02]"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        );
+      }
+
+      if (block.data.layout === "masonry") {
+        return (
+          <div
+            key={block.id}
+            className="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4"
+          >
+            {block.data.urls.map((url, idx) => (
+              <div
+                key={`${url}-${idx}`}
+                className="mb-3 sm:mb-4 break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
+              >
+                <img
+                  src={url || PLACEHOLDER_IMG}
+                  alt={`gallery-${idx + 1}`}
+                  className="w-full h-auto object-contain transition duration-500 hover:scale-[1.02]"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        );
+      }
+
+      if (block.data.layout === "featured") {
+        return (
+          <div key={block.id} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            {block.data.urls.map((url, idx) => (
+              <div
+                key={`${url}-${idx}`}
+                className={`group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl ${idx === 0 ? "md:col-span-2" : ""}`}
+              >
+                <img
+                  src={url || PLACEHOLDER_IMG}
+                  alt={`gallery-${idx + 1}`}
+                  className={`w-full h-full object-contain transition duration-500 group-hover:scale-[1.02] ${idx === 0 ? "aspect-[16/7]" : "aspect-[4/3]"}`}
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        );
+      }
+
+      const gridClass =
+        block.data.layout === "single"
+          ? "grid-cols-1"
+          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+      const isSingleLayout = block.data.layout === "single";
+
+      return (
+        <div key={block.id} className={`grid ${gridClass} gap-3 sm:gap-4`}>
+          {block.data.urls.map((url, idx) => (
+            <div
+              key={`${url}-${idx}`}
+              className="group rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all duration-300 hover:shadow-xl"
+            >
+              <img
+                src={url || PLACEHOLDER_IMG}
+                alt={`gallery-${idx + 1}`}
+                className={
+                  isSingleLayout
+                    ? "w-full h-[220px] sm:h-[300px] md:h-[clamp(360px,50vw,700px)] object-contain object-center transition duration-500 group-hover:scale-[1.01]"
+                    : "w-full h-full object-contain aspect-[4/3] transition duration-500 group-hover:scale-[1.02]"
+                }
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      );
+    }
+    case "list": {
+      if (!block.data.items?.length) return null;
+      if (block.data.style === "number") {
+        return (
+          <ol
+            key={block.id}
+            className="list-decimal pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 text-gray-700 marker:font-semibold marker:text-[#F58322]"
+          >
+            {block.data.items.map((item, idx) => (
+              <li key={idx}>{item}</li>
+            ))}
+          </ol>
+        );
+      }
+
+      const markerByStyle: Record<
+        "bullet" | "check" | "dash" | "arrow",
+        string
+      > = {
+        bullet: "•",
+        check: "✓",
+        dash: "—",
+        arrow: "→",
+      };
+      const marker = markerByStyle[block.data.style];
+
+      return (
+        <ul key={block.id} className="space-y-1.5 sm:space-y-2 text-gray-700">
+          {block.data.items.map((item, idx) => (
+            <li
+              key={idx}
+              className="flex gap-2 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 hover:bg-gray-100 transition-all duration-300"
+            >
+              <span className="text-[#F58322] font-semibold">{marker}</span>
+              <span className="flex-1">{item}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    case "cardGrid": {
+      const colsMap: Record<2 | 3 | 4, string> = {
+        2: "md:grid-cols-2",
+        3: "md:grid-cols-2 lg:grid-cols-3",
+        4: "md:grid-cols-2 lg:grid-cols-4",
+      };
+
+      const prevHeading =
+        prevBlock?.type === "heading" ? prevBlock.data.text : undefined;
+      const useMainSetLayout = isMainSetHeading(prevHeading);
+
+      if (useMainSetLayout) {
+        return (
+          <div key={block.id} className="space-y-3 sm:space-y-4 md:space-y-5">
+            {block.data.cards.map((card, idx) => renderMainSetItem(card, idx))}
+          </div>
+        );
+      }
+
+      return (
+        <div
+          key={block.id}
+          className={`grid grid-cols-1 ${colsMap[block.data.columns]} gap-3 sm:gap-4 md:gap-5`}
+        >
+          {block.data.cards.map((card, idx) =>
+            renderCardItem(card, idx, block.data.imageRatio),
+          )}
+        </div>
+      );
+    }
+    case "productLink":
+      return <ProductLinksBlock key={block.id} block={block} />;
+    default:
+      return null;
+  }
+};
+
+const ProductPage = () => {
+  const { productSlug } = useParams();
+  const dispatch = useAppDispatch();
+  const items = useAppSelector((state) => state.cart.items);
+  const compareItems = useAppSelector((state) => state.compare.items);
+  const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const { addAnimation } = useCartAnimation();
+
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useGetProductBySlugQuery(
+    productSlug ? { slug: productSlug, lang: i18n.language } : skipToken,
+  );
+  const { data: categories = [] } = useGetCategoriesTreeQuery({
+    lang: i18n.language,
+  });
+
+  const [activeImage, setActiveImage] = useState(0);
+  const [activeTab, setActiveTab] = useState<
+    "desc" | "specs" | "attachments" | "order"
+  >(
+    "desc",
+  );
+  const [selectedPreviewFileId, setSelectedPreviewFileId] = useState<number | null>(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [compareError, setCompareError] = useState<string | null>(null);
+  const [infoModalType, setInfoModalType] = useState<InfoModalType | null>(
+    null,
+  );
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
+
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const SWIPE_THRESHOLD = 50;
+  const descriptionGridRef = useRef<HTMLDivElement | null>(null);
+  const stickyColumnRef = useRef<HTMLElement | null>(null);
+  const stickyCardRef = useRef<HTMLDivElement | null>(null);
+  const [stickyMode, setStickyMode] = useState<StickyMode>("static");
+  const [stickyCardWidth, setStickyCardWidth] = useState<number | null>(null);
+  const [stickyCardLeft, setStickyCardLeft] = useState<number | null>(null);
+  const [stickyCardHeight, setStickyCardHeight] = useState<number | null>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const {
+    data: companySettingsData,
+    isFetching: workScheduleLoading,
+    isError: isWorkScheduleError,
+    refetch: refetchWorkSchedule,
+  } = useGetCompanySettingsQuery();
+  const workSchedule: CompanyWorkSchedule | null =
+    companySettingsData?.COMPANY_WORK_SCHEDULE ?? null;
+  const companyPhones =
+    companySettingsData?.COMPANY_CONTACT_PHONES?.phones
+      ?.map((entry) => entry.phone?.trim() ?? "")
+      .filter((phone) => phone.length > 0) ?? [];
+  const companyEmail =
+    companySettingsData?.COMPANY_CONTACT_PHONES?.email?.trim() ||
+    STORE_CONTACTS.email;
+  const companyManagers = companySettingsData?.COMPANY_MANAGERS?.managers ?? [];
+  const effectiveManagers =
+    companyManagers.length > 0
+      ? companyManagers
+      : SALES_MANAGERS.map((manager, idx) => ({
+          id: `fallback-manager-${idx}`,
+          firstName: manager.name,
+          lastName: "",
+          phone: manager.phone,
+          position: manager.role,
+        }));
+  const storeAddress =
+    companySettingsData?.COMPANY_CONTACT_PHONES?.address?.trim() ||
+    STORE_CONTACTS.address;
+  const workScheduleError = isWorkScheduleError
+    ? t("productPage.modal.scheduleLoadError")
+    : null;
+
+  const thumbsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!categories || categories.length === 0) return;
+    if (!product) return;
+
+    const breadcrumbs: BreadcrumbItem[] = [
+      { name: t("commonCatalog.catalog"), path: "/catalog" },
+    ];
+
+    const productCategoryId =
+      product.category?.id ?? Number(searchParams.get("categoryId"));
+
+    if (!productCategoryId) {
+      dispatch(setBreadcrumbs(breadcrumbs));
+      return;
+    }
+
+    const currentCategory = findCategoryById(
+      categories,
+      Number(productCategoryId),
+    );
+
+    if (!currentCategory) {
+      dispatch(setBreadcrumbs(breadcrumbs));
+      return;
+    }
+
+    const hasChildren = (cat: Category) => {
+      if (cat.children && cat.children.length > 0) return true;
+      return categories.some(
+        (node) => Number(node.parentId) === Number(cat.id),
+      );
+    };
+
+    const stack: Category[] = [];
+    let temp: Category | null = currentCategory;
+    while (temp) {
+      stack.push(temp);
+      temp = temp.parentId
+        ? findCategoryById(categories, Number(temp.parentId))
+        : null;
+    }
+
+    stack.reverse().forEach((cat) => {
+      breadcrumbs.push({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        path: hasChildren(cat)
+          ? `/catalog/${cat.slug}?categoryId=${cat.id}`
+          : `/catalog/${cat.slug}/products/${cat.id}`,
+      });
+    });
+
+    breadcrumbs.push({
+      id: product.id,
+      name: product.name,
+      path: `/catalog/product/${product.slug}`,
+    });
+
+    dispatch(setBreadcrumbs(breadcrumbs));
+  }, [product, categories, dispatch, searchParams, t]);
+
+  const gallery = useMemo(
+    () => normalizeGallery(product?.media),
+    [product?.media],
+  );
+  const activeMedia = gallery[activeImage] ?? gallery[0];
+  const cartImage = gallery[0]?.preview ?? PLACEHOLDER_IMG;
+
+  useEffect(() => {
+    setActiveImage(0);
+    setTimeout(() => {
+      const node = thumbsRef.current?.children?.[0] as HTMLElement | undefined;
+      node?.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }, 80);
+  }, [product?.id]);
+
+  useEffect(() => {
+    if (!product?.id) return;
+    addRecentlyViewedProductId(product.id);
+  }, [product?.id]);
+
+  useEffect(() => {
+    if (!product) return;
+
+    const previousTitle = document.title;
+    const descriptionFallback = t("catalogPage.seo.descriptionFallback", {
+      productName: product.name,
+    });
+    const description = normalizeSeoDescription(
+      product.description,
+      descriptionFallback,
+    );
+    const productUrl = toAbsoluteBaytechUrl(`/catalog/product/${product.slug}`);
+    const imageUrl = toAbsoluteBaytechUrl(
+      getPrimaryImage(product.media) || product.coverImage || PLACEHOLDER_IMG,
+    );
+    document.title = product.name;
+
+    const managedTags: HTMLMetaElement[] = [
+      upsertMetaTag("og:type", "product"),
+      upsertMetaTag("og:title", product.name),
+      upsertMetaTag("og:description", description),
+      upsertMetaTag("og:url", productUrl),
+      upsertMetaTag("og:image", imageUrl),
+      upsertMetaTag("og:site_name", t("catalogPage.seo.siteName")),
+    ];
+
+    return () => {
+      document.title = previousTitle;
+      managedTags.forEach((tag) => tag.remove());
+    };
+  }, [product]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        const ni = Math.max(0, activeImage - 1);
+        setActiveImage(ni);
+        const node = thumbsRef.current?.children?.[ni] as
+          | HTMLElement
+          | undefined;
+        node?.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+      }
+      if (e.key === "ArrowRight") {
+        const ni = Math.min(gallery.length - 1, activeImage + 1);
+        setActiveImage(ni);
+        const node = thumbsRef.current?.children?.[ni] as
+          | HTMLElement
+          | undefined;
+        node?.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [activeImage, gallery.length]);
+
+  const prevImage = () => {
+    const ni = Math.max(0, activeImage - 1);
+    setActiveImage(ni);
+    const node = thumbsRef.current?.children?.[ni] as HTMLElement | undefined;
+    node?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  };
+  const nextImage = () => {
+    const ni = Math.min(gallery.length - 1, activeImage + 1);
+    setActiveImage(ni);
+    const node = thumbsRef.current?.children?.[ni] as HTMLElement | undefined;
+    node?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.changedTouches.item(0);
+    if (!touch) return;
+    touchStartX.current = touch.clientX;
+    touchEndX.current = null;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const touch = e.changedTouches.item(0);
+    if (!touch) return;
+    touchEndX.current = touch.clientX;
+  };
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > SWIPE_THRESHOLD) {
+      if (diff > 0) nextImage();
+      else prevImage();
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
+  const goToIndex = (idx: number) => {
+    const index = Math.max(0, Math.min(gallery.length - 1, idx));
+    setActiveImage(index);
+    const node = thumbsRef.current?.children?.[index] as
+      | HTMLElement
+      | undefined;
+    node?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  };
+
+  const specRows = useMemo(() => {
+    const rows: Array<{
+      type: "header" | "attr";
+      name: string;
+      value?: string;
+    }> = [];
+    if (!product?.specifications || product.specifications.length === 0)
+      return rows;
+
+    const specifications = product.specifications as SpecGroup[];
+
+    specifications.forEach((item) => {
+      if ("isHeader" in item && item.isHeader) {
+        rows.push({ type: "header", name: item.name });
+      } else {
+        item.attributes?.forEach((atr: SpecificationAttribute) => {
+          rows.push({ type: "attr", name: atr.name, value: atr.value });
+        });
+      }
+    });
+
+    return rows;
+  }, [product?.specifications]);
+
+  const rowsWithBg = useMemo(() => {
+    let attrIndex = 0;
+    return specRows.map((row) => {
+      if (row.type === "attr") {
+        const bg = attrIndex % 2 === 0 ? "bg-[#F5F7FA]" : "bg-white";
+        attrIndex++;
+        return { ...row, bg };
+      }
+      return { ...row, bg: "bg-[#E6EDF5]" };
+    });
+  }, [specRows]);
+
+  const specColumns = useMemo(() => {
+    const source = (product?.specifications as SpecGroup[] | undefined) ?? [];
+    const columns: [SpecGroup[], SpecGroup[]] = [[], []];
+    const weights: [number, number] = [0, 0];
+
+    source.forEach((item) => {
+      const itemWeight =
+        "isHeader" in item && item.isHeader
+          ? 2
+          : Math.max(item.attributes?.length ?? 1, 1);
+      const columnIndex: 0 | 1 = weights[0] <= weights[1] ? 0 : 1;
+
+      columns[columnIndex].push(item);
+      weights[columnIndex] += itemWeight;
+    });
+
+    return columns;
+  }, [product?.specifications]);
+  const hasSpecifications = specColumns.some((column) => column.length > 0);
+
+  const normalizedContentBlocks = useMemo(
+    () => normalizeContentBlocks(product?.contentBlocks),
+    [product?.contentBlocks],
+  );
+
+  const productAttachments = useMemo(() => {
+    return [...(product?.attachments ?? [])].sort(
+      (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+    );
+  }, [product?.attachments]);
+  const hasAttachments = productAttachments.length > 0;
+  const otherInfoTabs = useMemo<
+    Array<{ key: "specs" | "attachments" | "order"; label: string }>
+  >(() => {
+    const tabs: Array<{ key: "specs" | "attachments" | "order"; label: string }> = [];
+
+    if (hasSpecifications) {
+      tabs.push({ key: "specs", label: t("productPage.certificate") });
+    }
+
+    if (hasAttachments) {
+      tabs.push({ key: "attachments", label: t("productPage.attachments") });
+    }
+
+    tabs.push({ key: "order", label: t("productPage.information") });
+    return tabs;
+  }, [hasAttachments, hasSpecifications, t]);
+
+  const selectedPreviewFile = useMemo(() => {
+    if (!productAttachments.length) return null;
+    return (
+      productAttachments.find((item) => item.id === selectedPreviewFileId) ??
+      productAttachments[0]
+    );
+  }, [productAttachments, selectedPreviewFileId]);
+
+  useEffect(() => {
+    if (activeTab === "attachments" && !hasAttachments) {
+      setActiveTab("desc");
+      setIsPreviewModalOpen(false);
+    }
+  }, [activeTab, hasAttachments]);
+
+  useEffect(() => {
+    if (activeTab === "specs" && !hasSpecifications) {
+      setActiveTab("desc");
+    }
+  }, [activeTab, hasSpecifications]);
+
+  const isInCompare = product
+    ? compareItems.some((item) => item.id === product.id)
+    : false;
+  const productPrice =
+    typeof product?.price === "number" && Number.isFinite(product.price)
+      ? product.price
+      : undefined;
+
+  const handleCompareToggle = () => {
+    if (!product) return;
+
+    if (isInCompare) {
+      dispatch(removeFromCompare(product.id));
+      return;
+    }
+
+    const productCategoryId = Number(product.category?.id);
+    const isValidCategory = Number.isFinite(productCategoryId);
+
+    if (!isValidCategory) {
+      setCompareError(t("compare.categoryUnknown"));
+      return;
+    }
+
+    dispatch(
+      addToCompare({
+        id: product.id,
+        slug: product.slug,
+        name: product.name,
+        image: cartImage,
+        price: productPrice ?? 0,
+        categoryId: productCategoryId,
+        categoryName: product.category?.name ?? "",
+      }),
+    );
+  };
+
+  const safeDescriptionHtml = useMemo(
+    () =>
+      DOMPurify.sanitize(product?.description || "", {
+        ALLOWED_TAGS: [
+          "p",
+          "br",
+          "ul",
+          "ol",
+          "li",
+          "strong",
+          "em",
+          "a",
+          "h2",
+          "h3",
+          "h4",
+          "blockquote",
+        ],
+        ALLOWED_ATTR: ["href", "target", "rel"],
+        ALLOW_DATA_ATTR: false,
+      }),
+    [product?.description],
+  );
+
+  const plainDescriptionText = useMemo(() => {
+    const htmlText = stripHtmlTags(safeDescriptionHtml);
+    const blockText = normalizedContentBlocks
+      .map((block) => getContentBlockText(block))
+      .join(" ");
+
+    return `${htmlText} ${blockText}`.replace(/\s+/g, " ").trim();
+  }, [normalizedContentBlocks, safeDescriptionHtml]);
+
+  const isLargeDescription = useMemo(() => {
+    const hasManyBlocks = normalizedContentBlocks.length >= 4;
+    const hasLongText = plainDescriptionText.length >= 700;
+
+    return hasManyBlocks || hasLongText;
+  }, [normalizedContentBlocks.length, plainDescriptionText.length]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (activeTab !== "desc") {
+      setStickyMode("static");
+      setStickyCardWidth(null);
+      setStickyCardLeft(null);
+      setStickyCardHeight(null);
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+
+    const updateStickyState = () => {
+      const grid = descriptionGridRef.current;
+      const column = stickyColumnRef.current;
+      const card = stickyCardRef.current;
+
+      if (!grid || !column || !card) {
+        setStickyMode("static");
+        return;
+      }
+
+      if (!mediaQuery.matches) {
+        setStickyMode("static");
+        setStickyCardWidth(null);
+        setStickyCardLeft(null);
+        setStickyCardHeight(null);
+        return;
+      }
+
+      const topOffset = 96;
+      const gridRect = grid.getBoundingClientRect();
+      const columnRect = column.getBoundingClientRect();
+      const cardHeight = card.offsetHeight;
+      const canStayFixed = gridRect.bottom - topOffset > cardHeight;
+
+      setStickyCardWidth(columnRect.width);
+      setStickyCardLeft(columnRect.left);
+      setStickyCardHeight(cardHeight);
+
+      if (gridRect.top > topOffset) {
+        setStickyMode("static");
+        return;
+      }
+
+      if (canStayFixed) {
+        setStickyMode("fixedTop");
+        return;
+      }
+
+      setStickyMode("fixedBottom");
+    };
+
+    updateStickyState();
+    window.addEventListener("scroll", updateStickyState, { passive: true });
+    window.addEventListener("resize", updateStickyState);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updateStickyState);
+    } else {
+      mediaQuery.addListener(updateStickyState);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", updateStickyState);
+      window.removeEventListener("resize", updateStickyState);
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", updateStickyState);
+      } else {
+        mediaQuery.removeListener(updateStickyState);
+      }
+    };
+  }, [
+    activeTab,
+    normalizedContentBlocks.length,
+    plainDescriptionText.length,
+    product?.id,
+    product?.variants?.length,
+  ]);
+
+  const scheduleDayLabels: Record<WorkScheduleDayKey, string> = {
+    monday: t("about.schedule.days.monday"),
+    tuesday: t("about.schedule.days.tuesday"),
+    wednesday: t("about.schedule.days.wednesday"),
+    thursday: t("about.schedule.days.thursday"),
+    friday: t("about.schedule.days.friday"),
+    saturday: t("about.schedule.days.saturday"),
+    sunday: t("about.schedule.days.sunday"),
+  };
+
+  const modalTitle =
+    infoModalType === "delivery"
+      ? t("productPage.delive")
+      : infoModalType === "payment"
+        ? t("productPage.pay")
+        : infoModalType === "schedule"
+          ? t("productPage.work")
+          : infoModalType === "address"
+            ? t("productPage.adress")
+            : "";
+
+  const renderInfoModalContent = () => {
+    const deliveryMethods = [
+      t("productPage.modal.deliveryMethodPickup"),
+      t("productPage.modal.deliveryMethodTransportCompany"),
+      t("productPage.modal.deliveryMethodAlmaty"),
+    ];
+    const freeDeliveryConditions = [
+      t("productPage.modal.freeDeliveryConditionMinOrder"),
+      t("productPage.modal.freeDeliveryConditionTime"),
+      t("productPage.modal.freeDeliveryConditionWeight"),
+      t("productPage.modal.freeDeliveryConditionDimensions"),
+    ];
+
+    if (infoModalType === "delivery") {
+      return (
+        <div className="space-y-4 text-sm text-gray-700">
+          <p className="font-medium text-gray-900">
+            {t("productPage.modal.deliveryPrepaymentText")}
+          </p>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">
+              {t("productPage.modal.deliveryMethods")}
+            </h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {deliveryMethods.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">
+              {t("productPage.modal.freeDelivery")}
+            </h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {freeDeliveryConditions.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    if (infoModalType === "payment") {
+      return (
+        <div className="space-y-4 text-sm text-gray-700">
+          <p className="font-medium text-gray-900">
+            {t("productPage.modal.deliveryPrepaymentText")}
+          </p>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">
+              {t("productPage.modal.deliveryMethods")}
+            </h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {deliveryMethods.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">
+              {t("productPage.modal.paymentMethods")}
+            </h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {PAYMENT_METHODS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <p className="mt-2">{PAYMENT_BANK_ACCOUNT}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">
+              {t("productPage.modal.warranty")}
+            </h4>
+            <p className="mt-2">{WARRANTY_TEXT}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">
+              {t("productPage.modal.vat")}
+            </h4>
+            <p className="mt-2">{VAT_TEXT}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">
+              {t("productPage.modal.additionalInfo")}
+            </h4>
+            <p className="mt-2">{t("productPage.modal.deliveryAdditionalInfo")}</p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900">
+              {t("productPage.modal.deliveryRegions")}
+            </h4>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {INTERNATIONAL_DELIVERY_REGIONS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+              <li>
+                {t('productPage.modal.kazakhstan')}:
+                <ul className="mt-1 list-disc space-y-1 pl-5">
+                  {KAZAKHSTAN_DELIVERY_REGIONS.map((region) => (
+                    <li key={region.name}>
+                      {region.name}
+                      {region.cities && region.cities.length > 0 && (
+                        <ul className="mt-1 list-disc space-y-1 pl-5">
+                          {region.cities.map((city) => (
+                            <li key={`${region.name}-${city}`}>{city}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            </ul>
+            <p className="mt-3">
+              {t("productPage.modal.moreDetails")}:{" "}
+              <a
+                href={DELIVERY_DETAILS_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#F58322] hover:underline"
+              >
+                {DELIVERY_DETAILS_URL}
+              </a>
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (infoModalType === "schedule") {
+      if (workScheduleLoading) {
+        return (
+          <p className="text-sm text-gray-600">
+            {t("productPage.modal.scheduleLoading")}
+          </p>
+        );
+      }
+
+      if (workScheduleError) {
+        return (
+          <div className="space-y-3">
+            <p className="text-sm text-red-600">{workScheduleError}</p>
+            <Button
+              variant="outlined"
+              color="warning"
+              onClick={() => refetchWorkSchedule()}
+            >
+              {t("productPage.modal.retry")}
+            </Button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-4 text-sm text-gray-700">
+          <p>
+            <span className="font-semibold text-gray-900">
+              {t("productPage.modal.timezone")}:
+            </span>{" "}
+            {workSchedule?.timezone || "-"}
+          </p>
+
+          <div className="overflow-x-auto rounded-xl border border-gray-200">
+            <table className="min-w-full border-collapse">
+              <tbody>
+                {WORK_DAYS_ORDER.map((day) => {
+                  const daySchedule = workSchedule?.regular?.[day];
+                  const dayValue = daySchedule?.isDayOff
+                    ? t("about.schedule.closed")
+                    : formatIntervals(daySchedule?.intervals);
+
+                  return (
+                    <tr
+                      key={day}
+                      className="border-b border-gray-200 last:border-b-0"
+                    >
+                      <td className="px-4 py-2 font-medium text-gray-900">
+                        {scheduleDayLabels[day]}
+                      </td>
+                      <td className="px-4 py-2">{dayValue || "-"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {workSchedule?.exceptions && workSchedule.exceptions.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-900">
+                {t("productPage.modal.exceptions")}
+              </h4>
+              <ul className="mt-2 space-y-2">
+                {workSchedule.exceptions.map((exception, idx) => (
+                  <li
+                    key={`${exception.startDate}-${exception.endDate}-${idx}`}
+                    className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2"
+                  >
+                    <p className="font-medium text-gray-900">
+                      {formatExceptionDateRange(
+                        exception.startDate,
+                        exception.endDate,
+                      )}
+                    </p>
+                    {exception.note && <p>{exception.note}</p>}
+                    <p>
+                      {exception.isDayOff
+                        ? t("about.schedule.closed")
+                        : formatIntervals(exception.intervals)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (infoModalType === "address") {
+      return (
+        <div className="space-y-4 text-sm text-gray-700">
+          <p className="font-medium text-gray-900">{STORE_CONTACTS.title}</p>
+          <p>{storeAddress}</p>
+
+          <div className="space-y-2">
+            {effectiveManagers.map((manager) => {
+              const managerName = getManagerFullName(manager);
+              const managerPhone = manager.phone?.trim() ?? "";
+              const managerPosition =
+                manager.position?.trim() || t("about.managers.phone");
+
+              if (!managerPhone) return null;
+
+              return (
+                <p key={manager.id || managerPhone}>
+                  <a
+                    href={`tel:${normalizePhoneHref(managerPhone)}`}
+                    className="font-semibold text-[#F58322] hover:underline"
+                  >
+                    {managerPhone}
+                  </a>{" "}
+                  - {managerName}, {managerPosition}
+                </p>
+              );
+            })}
+          </div>
+
+          {companyPhones.length > 0 && (
+            <div>
+              <p className="font-medium text-gray-900 mb-1">
+                {t("footer.phones.title")}
+              </p>
+              <div className="space-y-1">
+                {companyPhones.map((phone) => (
+                  <p key={phone}>
+                    <a
+                      href={`tel:${normalizePhoneHref(phone)}`}
+                      className="text-[#F58322] hover:underline"
+                    >
+                      {phone}
+                    </a>
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p>
+            {t('footer.email.title')}:{" "}
+            <a
+              href={`mailto:${companyEmail}`}
+              className="text-[#F58322] hover:underline"
+            >
+              {companyEmail}
+            </a>
+          </p>
+          {companyPhones[0] && (
+            <p>
+              {t('footer.phones.title')}:{" "}
+              <a
+                href={`tel:${normalizePhoneHref(companyPhones[0])}`}
+                className="text-[#F58322] hover:underline"
+              >
+                {companyPhones[0]}
+              </a>
+            </p>
+          )}
+          <p>
+            {t('common.website')}:{" "}
+            <a
+              href={STORE_CONTACTS.website}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[#F58322] hover:underline"
+            >
+              {STORE_CONTACTS.website}
+            </a>
+          </p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <div className="max-w-7xl mx-auto px-4 py-12 flex justify-center items-center min-h-[50vh]">
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="h-8 w-64 bg-gray-200 rounded mb-4"></div>
+            <div className="h-4 w-32 bg-gray-200 rounded"></div>
+            <span className="mt-4 text-gray-500">
+              {t("productPage.loadingProduct")}
+            </span>
+          </div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (isError || !product) {
+    return (
+      <PageContainer>
+        <div className="max-w-7xl mx-auto px-4 py-12 text-center min-h-[50vh] flex flex-col justify-center items-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            {t("productPage.notFoundTitle")}
+          </h2>
+          <p className="text-gray-600 mb-6">{t("productPage.error")}</p>
+          <Link
+            to="/catalog"
+            className="bg-[#F58322] text-white px-6 py-2 rounded hover:bg-[#DB741F] transition"
+          >
+            {t("productPage.errorBack")}
+          </Link>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  return (
+    <PageContainer>
+      <div className="px-4 md:px-6 lg:px-0 mb-20">
+        <div className="my-4 text-sm text-gray-500">
+          <Breadcrumbs />
+        </div>
+
+        <h1 className="font-manrope text-2xl md:text-3xl lg:text-4xl font-bold uppercase text-gray-900 mb-8 leading-tight">
+          {product.name}
+        </h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
+          <div>
+            <div
+              className={`rounded-2xl overflow-hidden mb-4 flex relative bg-white border border-gray-200 shadow-lg items-center justify-center ${
+                activeMedia?.kind === "image"
+                  ? "h-[260px] sm:h-[320px] md:h-[360px] lg:h-[400px] xl:h-[440px]"
+                  : "aspect-video"
+              }`}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {activeMedia?.kind === "image" && (
+                <img
+                  src={activeMedia.url || PLACEHOLDER_IMG}
+                  alt={product.name || "product image"}
+                  className="w-full h-full object-contain p-2 sm:p-3"
+                />
+              )}
+
+              {activeMedia?.kind === "videoExternal" && (
+                <iframe
+                  src={activeMedia.embedUrl || activeMedia.url}
+                  title={product.name || "product video"}
+                  className="w-full h-full min-h-[240px] md:min-h-[360px] bg-black"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              )}
+
+              {activeMedia?.kind === "videoFile" && (
+                <video
+                  src={activeMedia.url}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full max-h-[520px] bg-black"
+                />
+              )}
+
+              {product.discountPercent && (
+                <div className="absolute top-4 left-4 bg-red-600 text-white px-4 py-1.5 text-sm font-bold rounded-lg shadow-lg">
+                  -{product.discountPercent}%
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-full max-w-[720px] flex justify-center">
+                <div
+                  ref={thumbsRef}
+                  className="flex gap-3 overflow-x-auto px-2 py-1 scrollbar-thin"
+                >
+                  {gallery.map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => goToIndex(idx)}
+                      className={`
+                        flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 focus:outline-none transition-all duration-300
+                        ${
+                          activeImage === idx
+                            ? "border-[#F58322] ring-4 ring-[#F58322]/30 scale-105 shadow-lg"
+                            : "border-transparent hover:border-gray-300 hover:scale-105 hover:shadow-md"
+                        }
+                      `}
+                      aria-label={t("productPage.showImage", {
+                        index: idx + 1,
+                      })}
+                    >
+                      {item.kind === "image" ? (
+                        <img
+                          src={item.preview}
+                          alt={`${product.name}-${idx}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-black/80 text-white flex items-center justify-center relative">
+                          <img
+                            src={item.preview}
+                            alt={`${product.name}-${idx}`}
+                            className="absolute inset-0 w-full h-full object-cover opacity-60"
+                          />
+                          <span className="relative z-10 w-8 h-8 rounded-full bg-black/65 border border-white/40 flex items-center justify-center">
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div>
+              <div className="flex flex-col sm:flex-row border-b gap-5 border-gray-100 pb-6">
+                <div className="bg-gradient-to-br from-white to-gray-50 p-6 rounded-2xl border border-gray-200 shadow-lg w-full sm:w-2/3 transition-all duration-300 hover:shadow-xl">
+                  <div className="mb-4">
+                    {product.oldPrice && (
+                      <div className="text-gray-400 line-through text-lg font-medium">
+                        {formatPrice(
+                          product.oldPrice,
+                          t("commonCatalog.askPrice"),
+                        )}
+                      </div>
+                    )}
+                    <div className="text-3xl font-extrabold text-gray-900 mb-1">
+                      {formatPrice(product.price, t("commonCatalog.askPrice"))}
+                    </div>
+
+                    <div className="mb-5 flex flex-wrap items-center gap-2">
+                      <span
+                        className={`text-sm font-medium ${product.inStock ? "text-green-600" : "text-gray-500"}`}
+                      >
+                        {product.inStock
+                          ? t("productPage.have")
+                          : t("productPage.haveNot")}
+                      </span>
+                      {(product.newProduct ?? product.new) === true &&
+                        product.inStock && (
+                          <span className="inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
+                            {t("commonCatalog.new")}
+                          </span>
+                        )}
+                    </div>
+                  </div>
+                  {items.find((item) => item.id === product.id) ? (
+                    <div className="flex items-center justify-between bg-[#F58322] rounded-xl overflow-hidden shadow-lg">
+                      <button
+                        type="button"
+                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition-all duration-300"
+                        onClick={() => {
+                          const currentQty =
+                            items.find((item) => item.id === product.id)
+                              ?.quantity ?? 1;
+                          if (currentQty <= 1) {
+                            dispatch(removeFromCart(product.id));
+                          } else {
+                            dispatch(decrementQuantity(product.id));
+                          }
+                        }}
+                      >
+                        −
+                      </button>
+                      <span className="text-white font-bold text-lg">
+                        {items.find((item) => item.id === product.id)?.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition-all duration-300"
+                        onClick={() => {
+                          dispatch(incrementQuantity(product.id));
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(event) => {
+                        addAnimation(product.id, cartImage, event);
+                        dispatch(
+                          addToCart({
+                            id: product.id,
+                            slug: product.slug,
+                            name: product.name,
+                            image: cartImage,
+                            price: productPrice,
+                            oldPrice: product.oldPrice,
+                            inStock: product.inStock,
+                          }),
+                        );
+                      }}
+                      className={`w-full px-10 py-3 text-white font-bold uppercase transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] bg-[#F58322] hover:bg-[#DB741F]`}
+                    >
+                      {t("productPage.buy")}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleCompareToggle}
+                    className={`mt-3 w-full px-5 py-3 border rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2
+                      ${
+                        isInCompare
+                          ? "border-[#F58322] bg-[#F58322]/10 text-[#DB741F]"
+                          : "border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]"
+                      }`}
+                  >
+                    <CompareArrowsIcon fontSize="small" />
+                    {isInCompare
+                      ? t("compare.removeFromCompare")
+                      : t("compare.addToCompare")}
+                  </button>
+                </div>
+                <div className="space-y-3 text-sm pt-2 w-full sm:w-1/3">
+                  {rowsWithBg
+                    .filter((r) => r.type === "attr")
+                    .slice(0, 4)
+                    .map((r, i) => (
+                      <div
+                        key={`mini-${i}`}
+                        className="flex justify-between gap-2 border-b border-gray-100 pb-2"
+                      >
+                        <span className="text-gray-500">{r.name}</span>
+                        <span className="font-medium text-gray-900 text-right">
+                          {r.value || "—"}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              <div className="mt-8 space-y-3">
+                <div className="p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl text-sm text-gray-600 border border-gray-200 shadow-sm">
+                  <h5 className="text-[#F58322] font-bold mb-2 text-xs uppercase">
+                    {t("productPage.conditionsReturn")}
+                  </h5>
+                  <div className="flex justify-between flex-wrap gap-2">
+                    <p>{t("productPage.conditions")}</p>
+                    <button
+                      type="button"
+                      onClick={() => setReturnModalOpen(true)}
+                      className="font-bold hover:underline whitespace-nowrap text-[#F58322] hover:text-[#DB741F] transition-colors"
+                    >
+                      {t("productPage.more")} →
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-xs font-bold text-gray-500 uppercase mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setInfoModalType("delivery")}
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                  >
+                    <span className="text-[#F58322]">
+                      <EditableImage
+                        imageKey="product_page_info_delivery_icon"
+                        fallbackSrc={track}
+                        alt=""
+                        className="w-5 h-5"
+                      />
+                    </span>
+                    <span className="hover:text-[#DB741F] transition-colors">
+                      {t("productPage.delive")}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInfoModalType("payment")}
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                  >
+                    <span className="text-[#F58322]">
+                      <EditableImage
+                        imageKey="product_page_info_payment_icon"
+                        fallbackSrc={delivery}
+                        alt=""
+                        className="w-5 h-5"
+                      />
+                    </span>
+                    <span className="hover:text-[#DB741F] transition-colors">
+                      {t("productPage.pay")}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInfoModalType("schedule")}
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                  >
+                    <span className="text-[#F58322]">
+                      <EditableImage
+                        imageKey="product_page_info_schedule_icon"
+                        fallbackSrc={calendar}
+                        alt=""
+                        className="w-5 h-5"
+                      />
+                    </span>
+                    <span className="hover:text-[#DB741F] transition-colors">
+                      {t("productPage.work")}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInfoModalType("address")}
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                  >
+                    <span className="text-[#F58322]">
+                      <EditableImage
+                        imageKey="product_page_info_address_icon"
+                        fallbackSrc={address}
+                        alt=""
+                        className="w-5 h-5"
+                      />
+                    </span>
+                    <span className="hover:text-[#DB741F] transition-colors">
+                      {t("productPage.adress")}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* tabs */}
+        <div className="border-b border-gray-200 mb-8">
+          <div className="flex gap-8 overflow-x-auto">
+            <button
+              onClick={() => setActiveTab("desc")}
+              className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+                  ${activeTab === "desc" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+            >
+              {t("productPage.descriprion")}
+            </button>
+            {hasSpecifications && (
+              <button
+                onClick={() => setActiveTab("specs")}
+                className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+                  ${activeTab === "specs" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+              >
+                {t("productPage.certificate")}
+              </button>
+            )}
+            {hasAttachments && (
+              <button
+                onClick={() => setActiveTab("attachments")}
+                className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+                  ${activeTab === "attachments" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+              >
+                {t("productPage.attachments")}
+              </button>
+            )}
+            <button
+              onClick={() => setActiveTab("order")}
+              className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
+                  ${activeTab === "order" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+            >
+              {t("productPage.information")}
+            </button>
+          </div>
+        </div>
+
+        {activeTab === "desc" && (
+          <div className="animate-fade-in text-gray-800 product-content-adaptive">
+            <div
+              ref={descriptionGridRef}
+              className="relative grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8 items-start"
+            >
+              <div className="md:col-span-2">
+                {normalizedContentBlocks.length > 0 ? (
+                  <div className="space-y-4 sm:space-y-5 md:space-y-6 mb-6 sm:mb-8">
+                    {normalizedContentBlocks.map((block, index) =>
+                      renderContentBlock(
+                        block,
+                        normalizedContentBlocks[index - 1],
+                      ),
+                    )}
+                  </div>
+                ) : (
+                  <div className="mb-8">
+                    <div
+                      className="prose max-w-none text-sm leading-relaxed text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: safeDescriptionHtml }}
+                    />
+                  </div>
+                )}
+
+                {product.variants && product.variants.length > 0 && (
+                  <div className="mt-12 overflow-x-auto">
+                    <h4 className="font-bold uppercase mb-4 text-sm tracking-wide text-gray-800">
+                      {t("productPage.model")}
+                    </h4>
+                    <div className="md:hidden space-y-3">
+                      {product.variants.map((variant: ProductVariant) => (
+                        <article
+                          key={variant.id}
+                          className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md"
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div>
+                              <div className="text-[#F58322] font-bold leading-tight">
+                                {variant.name}
+                              </div>
+                              <div className="text-gray-400 text-xs mt-1">
+                                {variant.sku}
+                              </div>
+                            </div>
+                            <div className="text-right text-sm font-bold text-gray-900 whitespace-nowrap">
+                              {formatPrice(
+                                variant.price,
+                                t("commonCatalog.askPrice"),
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 rounded-xl border border-gray-100 bg-[#FAFAFA] p-3">
+                            {Object.entries(variant.attributes ?? {}).map(
+                              ([attrKey, attrValue]) => (
+                                <div
+                                  key={`${variant.id}-${attrKey}`}
+                                  className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-3 border-t border-gray-100 pt-2 first:border-t-0 first:pt-0 text-sm"
+                                >
+                                  <span className="text-gray-500">
+                                    {formatAttributeLabel(attrKey)}
+                                  </span>
+                                  <span className="font-medium text-gray-900 text-right break-words">
+                                    {String(attrValue ?? "—")}
+                                  </span>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+
+                    <table className="hidden md:table w-full min-w-[900px] border-collapse text-[13px] text-center border border-gray-300">
+                      <thead>
+                        <tr className="bg-white text-gray-800 font-bold border-b border-gray-300">
+                          <th className="p-3 border-r border-gray-300 text-left w-[180px]">
+                            {t("productPage.sku")}
+                          </th>
+                          <th className="p-3 border-r border-gray-300">
+                            {t("filters.price")}
+                          </th>
+                          {Object.keys(
+                            product.variants[0]?.attributes ?? {},
+                          ).map((attrName) => (
+                            <th
+                              key={attrName}
+                              className="p-3 border-r border-gray-300"
+                            >
+                              {formatAttributeLabel(attrName)}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {product.variants.map((variant: ProductVariant) => (
+                          <tr
+                            key={variant.id}
+                            className="border-b border-gray-300 last:border-0 hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="p-3 border-r border-gray-300 text-left align-top">
+                              <div className="text-[#F58322] font-bold leading-tight">
+                                {variant.name}
+                              </div>
+                              <div className="text-gray-400 text-xs mt-1">
+                                {variant.sku}
+                              </div>
+                            </td>
+                            <td className="p-3 border-r border-gray-300 font-medium text-gray-700 whitespace-nowrap">
+                              {formatPrice(
+                                variant.price,
+                                t("commonCatalog.askPrice"),
+                              )}
+                            </td>
+                            {Object.keys(
+                              product.variants[0]?.attributes ?? {},
+                            ).map((attrKey) => (
+                              <td
+                                key={attrKey}
+                                className="p-3 border-r border-gray-300 font-medium text-gray-700"
+                              >
+                                {variant.attributes[attrKey] ?? "—"}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {otherInfoTabs.length > 0 && (
+                  <div className="mt-10 rounded-2xl border border-[#F58322]/20 bg-[#FFF8F1] p-5">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {t("productPage.otherSectionsTitle")}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {otherInfoTabs.map((tab) => (
+                        <button
+                          key={tab.key}
+                          type="button"
+                          onClick={() => setActiveTab(tab.key)}
+                          className="inline-flex items-center rounded-full border border-[#F58322]/30 bg-white px-4 py-2 text-sm font-medium text-[#B25E18] transition-colors hover:bg-[#F58322]/10"
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <aside
+                ref={stickyColumnRef}
+                className="md:col-span-1 relative md:self-stretch"
+                style={
+                  stickyCardHeight ? { minHeight: stickyCardHeight } : undefined
+                }
+              >
+                <div
+                  ref={stickyCardRef}
+                  className="rounded-2xl border border-gray-200 bg-white p-4 md:p-5 shadow-sm z-20"
+                  style={
+                    stickyMode === "fixedTop"
+                      ? {
+                          position: "fixed",
+                          top: 96,
+                          left: stickyCardLeft ?? undefined,
+                          width: stickyCardWidth ?? undefined,
+                        }
+                      : stickyMode === "fixedBottom"
+                        ? {
+                            position: "absolute",
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                          }
+                        : undefined
+                  }
+                >
+                  <h3 className="font-manrope text-2xl font-bold uppercase mb-5 text-gray-900">
+                    {t("catalogPage.bid")}
+                  </h3>
+                  <Contact productId={product.id} />
+                </div>
+              </aside>
+            </div>
+          </div>
+        )}
+
+        {hasSpecifications && activeTab === "specs" && (
+          <div className="mt-4">
+            {product.specifications && product.specifications.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                {specColumns.map((column, columnIdx) => (
+                  <div key={`spec-column-${columnIdx}`} className="space-y-4">
+                    {column.map((item, blockIdx) => {
+                      if ("isHeader" in item && item.isHeader) {
+                        return (
+                          <div
+                            key={`header-${columnIdx}-${blockIdx}`}
+                            className="bg-gradient-to-r from-[#E6EDF5] to-[#F0F5FA] px-4 py-3 rounded-xl"
+                          >
+                            <div className="font-bold text-xs uppercase text-gray-800">
+                              • {item.name}
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      const mainIsGray = blockIdx % 2 === 0;
+                      const mainBg = mainIsGray ? "bg-[#F5F7FA]" : "bg-white";
+
+                      return (
+                        <div
+                          key={`block-${columnIdx}-${blockIdx}`}
+                          className={`${mainBg} rounded-2xl border border-gray-100 overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg`}
+                        >
+                          {item.name && (
+                            <div
+                              className={`${mainBg} px-4 py-3 border-b border-gray-100`}
+                            >
+                              <div className="font-semibold text-gray-800">
+                                {item.name}
+                              </div>
+                            </div>
+                          )}
+                          <div>
+                            {item.attributes?.map(
+                              (atr: SpecificationAttribute, aIdx: number) => {
+                                const childIsGray = mainIsGray
+                                  ? aIdx % 2 === 1
+                                  : aIdx % 2 === 0;
+                                const childBg = childIsGray
+                                  ? "bg-[#F5F7FA]"
+                                  : "bg-white";
+
+                                return (
+                                  <div
+                                    key={`atr-${columnIdx}-${blockIdx}-${aIdx}`}
+                                    className={`${childBg} px-4 py-3 flex justify-between items-start border-b border-gray-100 transition-colors hover:bg-gray-50`}
+                                  >
+                                    <div className="text-gray-600">
+                                      • {atr.name}
+                                    </div>
+                                    <div className="font-medium text-gray-900 text-right max-w-[60%] whitespace-pre-wrap">
+                                      {atr.value ?? "—"} {atr.unit}
+                                    </div>
+                                  </div>
+                                );
+                              },
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="py-4 text-gray-500">
+                {t("productPage.noChcaracter")}
+              </p>
+            )}
+          </div>
+        )}
+
+        {activeTab === "order" && (
+          <div className="animate-fade-in text-gray-800 py-4">
+            <p className="mb-4">{t("productPage.forOrder")}</p>
+            <ul className="list-disc pl-5 space-y-2">
+              {companyPhones.map((phone) => (
+                <li key={phone}>
+                  {t("productPage.phone")}{" "}
+                  <a
+                    href={`tel:${normalizePhoneHref(phone)}`}
+                    className="text-[#F58322] font-bold"
+                  >
+                    {phone}
+                  </a>
+                </li>
+              ))}
+              <li>
+                {t("productPage.Email")}{" "}
+                <a
+                  href={`mailto:${companyEmail}`}
+                  className="text-[#F58322] font-bold"
+                >
+                  {companyEmail}
+                </a>
+              </li>
+              <li>
+                {t("productPage.adress")}:{" "}
+                <span className="font-medium text-gray-700">
+                  {storeAddress}
+                </span>
+              </li>
+            </ul>
+            {effectiveManagers.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-sm font-semibold text-gray-900">
+                  {t("about.managers.title")}
+                </p>
+                {effectiveManagers.map((manager) => {
+                  const managerName = getManagerFullName(manager);
+                  const managerPhone = manager.phone?.trim() ?? "";
+                  const managerPosition = manager.position?.trim() ?? "";
+
+                  if (!managerPhone) return null;
+
+                  return (
+                    <p
+                      key={manager.id || managerPhone}
+                      className="text-sm text-gray-700"
+                    >
+                      <a
+                        href={`tel:${normalizePhoneHref(managerPhone)}`}
+                        className="text-[#F58322] font-semibold hover:underline"
+                      >
+                        {managerPhone}
+                      </a>{" "}
+                      - {managerName}
+                      {managerPosition ? `, ${managerPosition}` : ""}
+                    </p>
+                  );
+                })}
+              </div>
+            )}
+            <p className="mt-4 text-sm text-gray-500">
+              {t("productPage.artic")}:{" "}
+              <span className="font-bold text-gray-900">{product.sku}</span>
+            </p>
+          </div>
+        )}
+
+        {hasAttachments && activeTab === "attachments" && (
+          <div className="mt-4">
+            {productAttachments.length > 0 ? (
+              <>
+                <div className="space-y-3">
+                  {productAttachments.map((attachment) => {
+                    const resolvedUrl =
+                      attachment.downloadUrl || attachment.fileUrl
+                        ? toAbsoluteBaytechUrl(
+                            attachment.downloadUrl || attachment.fileUrl,
+                          )
+                        : "";
+                    const extensionLabel = (attachment.extension || "file")
+                      .replace(/^\./, "")
+                      .toUpperCase();
+
+                    return (
+                      <div
+                        key={attachment.id}
+                        className="rounded-2xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-3 sm:p-4 shadow-sm"
+                      >
+                        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                          <div className="min-w-0 flex items-start gap-3">
+                            <div className="h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-xl border border-[#F58322]/30 bg-[#FFF3E9] flex items-center justify-center text-[#F58322] font-extrabold text-[10px] sm:text-[11px] uppercase">
+                              {extensionLabel}
+                            </div>
+
+                            <div className="min-w-0">
+                              <p className="font-semibold text-gray-900 break-words">
+                                {attachment.name || attachment.originalFilename}
+                              </p>
+                              <p className="mt-1 text-sm text-gray-500 break-all">
+                                {attachment.originalFilename}
+                              </p>
+                              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-600 uppercase tracking-wide">
+                                <span className="rounded-full bg-gray-100 px-2 py-1">
+                                  {extensionLabel}
+                                </span>
+                                <span className="rounded-full bg-gray-100 px-2 py-1 normal-case">
+                                  {formatAttachmentSize(attachment.fileSize)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex w-full sm:w-auto flex-col sm:flex-row items-stretch sm:items-center gap-2 md:shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedPreviewFileId(attachment.id);
+                                setIsPreviewModalOpen(true);
+                              }}
+                              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg border border-[#F58322] px-4 py-2.5 text-sm font-semibold text-[#F58322] hover:bg-[#FFF3E9] transition-colors"
+                            >
+                              {t("productPage.previewAttachment")}
+                            </button>
+                            {resolvedUrl && (
+                              <a
+                                href={resolvedUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-[#F58322] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#DB741F] transition-colors"
+                              >
+                                {t("productPage.downloadAttachment")}
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <p className="py-4 text-gray-500">
+                {t("productPage.noAttachments")}
+              </p>
+            )}
+          </div>
+        )}
+        <ProductCollectionRenderer
+          placement="PRODUCT_ALTERNATIVES_COLLECTION"
+          layout="carousel"
+          className="mt-8 sm:mt-10 md:mt-12 mb-12 sm:mb-16 md:mb-20"
+        />
+        <CategoryInlineCollectionsSection
+          sectionTitle={t('collections.title')}
+          categoryId={product?.category?.id ?? null}
+        />
+        <RecentlyViewedProducts />
+        {!isLargeDescription && (
+          <section className="mb-16">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="px-2 md:px-0">
+                <h3 className="font-manrope text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
+                  {t("catalogPage.bid")}
+                </h3>
+                <Contact productId={product.id} />
+              </div>
+              <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0">
+                <EditableImage
+                  imageKey="catalog_product_bid_image"
+                  fallbackSrc={sampleImg}
+                  alt={t("catalogPage.machineImageAlt")}
+                  className="max-w-full w-72 sm:w-full object-contain"
+                />
+              </div>
+            </div>
+          </section>
+        )}
+      </div>
+
+      <Dialog
+        open={isPreviewModalOpen && Boolean(selectedPreviewFile)}
+        onClose={() => setIsPreviewModalOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        fullScreen={isMobile}
+        sx={{
+          "& .MuiDialog-paper": {
+            ...(isMobile
+              ? {
+                  margin: 0,
+                  maxHeight: "100dvh",
+                  borderRadius: 0,
+                }
+              : {}),
+          },
+        }}
+      >
+        <DialogTitle className="font-bold text-gray-900 text-sm sm:text-lg leading-snug break-words pr-10">
+          {t("productPage.previewAttachment")}
+          {selectedPreviewFile ? `: ${selectedPreviewFile.originalFilename}` : ""}
+        </DialogTitle>
+        <DialogContent
+          dividers={!isMobile}
+          className="p-0 sm:p-4"
+        >
+          {selectedPreviewFile && (
+            <iframe
+              title={selectedPreviewFile.originalFilename}
+              src={getAttachmentPreviewUrl(
+                toAbsoluteBaytechUrl(selectedPreviewFile.fileUrl),
+                selectedPreviewFile.mimeType,
+              )}
+              className="h-[calc(100dvh-140px)] min-h-[280px] sm:h-[75vh] sm:min-h-[540px] w-full rounded-none sm:rounded-xl border-0 sm:border sm:border-gray-200"
+            />
+          )}
+        </DialogContent>
+        <DialogActions className="px-3 pb-3 pt-2 sm:px-6 sm:pb-5">
+          <Button
+            onClick={() => setIsPreviewModalOpen(false)}
+            variant="outlined"
+            color="warning"
+            fullWidth={isMobile}
+          >
+            {t("productPage.modal.close")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={Boolean(infoModalType)}
+        onClose={() => setInfoModalType(null)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle className="font-bold text-gray-900">
+          {modalTitle}
+        </DialogTitle>
+        <DialogContent dividers>
+          <div className="max-h-[65vh] overflow-y-auto pr-1">
+            {renderInfoModalContent()}
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setInfoModalType(null)}
+            variant="outlined"
+            color="warning"
+          >
+            {t("productPage.modal.close")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={returnModalOpen}
+        onClose={() => setReturnModalOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle className="font-bold text-gray-900">
+          {RETURN_POLICY_TEXT[i18n.language]?.title ?? RETURN_POLICY_RU.title}
+        </DialogTitle>
+        <DialogContent dividers>
+          <div className="max-h-[65vh] overflow-y-auto pr-1 space-y-4 text-sm text-gray-700">
+            <p>{RETURN_POLICY_TEXT[i18n.language]?.intro ?? RETURN_POLICY_RU.intro}</p>
+            <div>
+              <h4 className="font-semibold text-gray-900">
+                {RETURN_POLICY_TEXT[i18n.language]?.termsTitle ?? RETURN_POLICY_RU.termsTitle}
+              </h4>
+              <ul className="list-disc pl-5 mt-2 space-y-1">
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.term ?? RETURN_POLICY_RU.term}</li>
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.deliveryNote ?? RETURN_POLICY_RU.deliveryNote}</li>
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.warranty ?? RETURN_POLICY_RU.warranty}</li>
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.exchangeDefective ?? RETURN_POLICY_RU.exchangeDefective}</li>
+                <li>{RETURN_POLICY_TEXT[i18n.language]?.noReturn ?? RETURN_POLICY_RU.noReturn}</li>
+              </ul>
+            </div>
+            <p>
+              <a
+                href={DELIVERY_DETAILS_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#F58322] hover:underline"
+              >
+                {RETURN_POLICY_TEXT[i18n.language]?.moreLink ?? RETURN_POLICY_RU.moreLink}
+              </a>
+            </p>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setReturnModalOpen(false)}
+            variant="outlined"
+            color="warning"
+          >
+            {t("productPage.modal.close")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={Boolean(compareError)}
+        autoHideDuration={3200}
+        onClose={() => setCompareError(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setCompareError(null)}
+          severity="warning"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {compareError}
+        </Alert>
+      </Snackbar>
+    </PageContainer>
+  );
+};
+
+export default ProductPage;

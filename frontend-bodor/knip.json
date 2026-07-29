@@ -1,0 +1,18 @@
+{
+  "entry": [
+    "index.{js,ts}",
+    "src/index.{js,ts}"
+  ],
+  "project": [
+    "**/*.{js,ts}"
+  ],
+  "ignore": [
+    "src/assets/**",
+    "src/components/ui/**",
+    "src/components/common/**",
+    "src/pages/Catalog/components/**",
+    "src/pages/Home/Components/**",
+    "src/pages/Catalog/CatalogPage.tsx",
+    "src/pages/Home/HomePage.tsx"
+  ]
+}
