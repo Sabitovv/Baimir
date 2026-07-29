@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+@theme {
+    --font-oswald: 'Oswald', sans-serif;
+    --font-manrope: 'Manrope', sans-serif;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}
+}
+@font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope-v20-latin-regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope-v20-latin-500.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope-v20-latin-600.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope-v20-latin-700.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope-v20-latin-800.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 103%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Oswald';
+    src: url('/fonts/oswald-v57-latin-regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 107%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Oswald';
+    src: url('/fonts/oswald-v57-latin-500.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 107%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Oswald';
+    src: url('/fonts/oswald-v57-latin-600.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 107%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Oswald';
+    src: url('/fonts/oswald-v57-latin-700.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: optional;
+    size-adjust: 100%;
+    ascent-override: 107%;
+    descent-override: 29%;
+    line-gap-override: 0%;
+}
+
+html,
+body {
+    overflow-x: hidden;
+    background-color: #F2F2F2;
+    font-family: 'Manrope', Arial, sans-serif;
+    font-size-adjust: 0.52;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+    overflow-y: scroll;
+}
+:root {
+    --brand: #F58322;
+    --brand-hover: #DB741F;
+    --brand-dark: #0b5fa1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+.calculator-header-select {
+    background: white;
+    border: 1px solid #cbd5e1;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+.product-content-adaptive {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+    .product-content-adaptive [style*="width"] {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .product-content-adaptive img,
+    .product-content-adaptive video,
+    .product-content-adaptive iframe,
+    .product-content-adaptive object,
+    .product-content-adaptive embed {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .product-content-adaptive table {
+        display: block;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .product-content-adaptive pre,
+    .product-content-adaptive code {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+}

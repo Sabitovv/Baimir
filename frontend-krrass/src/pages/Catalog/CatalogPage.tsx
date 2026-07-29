@@ -1,0 +1,280 @@
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/app/hooks";
+import { clearBreadcrumbs, setBreadcrumbs } from "@/features/catalogSlice";
+import { useGetCategoriesTreeQuery } from "@/api/categoriesApi";
+
+import PageContainer from "@/components/ui/PageContainer";
+import CategoriesMenu from "@/components/common/CategoriesMenu";
+import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+import DeferredSection from "@/components/common/DeferredSection";
+import StrategicCollectionBannerCarousel from "@/components/collections/StrategicCollectionBannerCarousel";
+
+import sampleImg from "@/assets/catalog/sample_machine.png";
+import { useTranslation } from "react-i18next";
+import { EditableImage } from "@/zustand/EditableImage";
+
+const Contact = lazy(() => import("@/components/common/Contact"));
+const CatalogDeepProductsPage = lazy(() => import("./components/CatalogDeepProductsPage"));
+const CategoryInlineCollectionsSection = lazy(() => import("./components/CategoryInlineCollectionsSection"));
+const RecentlyViewedProducts = lazy(() =>
+  import("./components/RecentlyViewedProducts").then((module) => ({
+    default: module.RecentlyViewedProducts,
+  })),
+);
+
+interface CategoryImageProps {
+  src?: string | null;
+  alt: string;
+  priority?: boolean;
+}
+
+const DeferredFallback = ({ className }: { className: string }) => (
+  <div className={`animate-pulse bg-[#F7F7F7] ${className}`} aria-hidden="true" />
+);
+
+const CategoryImage = ({ src, alt, priority = false }: CategoryImageProps) => {
+  const [resolvedSrc, setResolvedSrc] = useState(src || sampleImg);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setResolvedSrc(src || sampleImg);
+    setIsLoaded(false);
+  }, [src]);
+
+  return (
+    <div className="relative w-full h-[100px] sm:h-[130px] flex items-center justify-center overflow-hidden shrink-0">
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 bg-gray-100 transition-opacity duration-300 ${
+          isLoaded ? "opacity-0" : "opacity-100"
+        }`}
+      />
+      <img
+        src={resolvedSrc}
+        alt={alt}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
+        decoding="async"
+        width={130}
+        height={130}
+        sizes="(max-width: 768px) 45vw, (max-width: 1280px) 28vw, 220px"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          if (resolvedSrc !== sampleImg) {
+            setResolvedSrc(sampleImg);
+            return;
+          }
+          setIsLoaded(true);
+        }}
+        className={`w-full h-full object-contain transition-all duration-300 group-hover:scale-105 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    </div>
+  );
+};
+
+const CatalogPage = () => {
+  const { i18n, t } = useTranslation();
+  const { data } = useGetCategoriesTreeQuery({ lang: i18n.language });
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const location = useLocation();
+
+  const currentCategory = useMemo(() => {
+    if (!data) return null;
+    const pathSegments = location.pathname
+      .replace(/^\/catalog/, "")
+      .split("/")
+      .filter(Boolean)
+      .filter((seg) => seg !== "products");
+
+    const currentSlug = pathSegments[pathSegments.length - 1] ?? null;
+    return currentSlug
+      ? (data.find((i) => i.slug === currentSlug) ?? null)
+      : null;
+  }, [location.pathname, data]);
+
+  const currentCategoryId = useMemo(() => {
+    const rawId = currentCategory?.id;
+    const parsed = typeof rawId === "number" ? rawId : Number(rawId);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [currentCategory?.id]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (!currentCategory) {
+      dispatch(clearBreadcrumbs());
+      return;
+    }
+
+    const breadcrumbsList = [
+      { name: t("commonCatalog.catalog"), path: "/catalog" },
+    ];
+
+    const stack: typeof data = [];
+    let temp: typeof currentCategory | undefined | null = currentCategory;
+
+    while (temp) {
+      stack.push(temp);
+      const parent =
+        data.find((i) => Number(i.id) === Number(temp?.parentId)) || null;
+      temp = parent;
+    }
+
+    stack.reverse().forEach((cat) => {
+      breadcrumbsList.push({
+        name: cat.name,
+        path: `/catalog/${cat.slug}`,
+      });
+    });
+
+    dispatch(setBreadcrumbs(breadcrumbsList));
+  }, [currentCategory, data, dispatch, t]);
+
+  const visibleCategories = useMemo(() => {
+    if (!data) return [];
+    return currentCategory
+      ? data.filter((item) => item.parentId === currentCategory.id)
+      : data.filter((item) => item.parentId === null);
+  }, [data, currentCategory]);
+
+  const resolveProductCount = (value: {
+    productCount?: number | string;
+    productsCount?: number | string;
+    count?: number | string;
+  }): number | null => {
+    const raw = value.productCount ?? value.productsCount ?? value.count;
+    const parsed = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+
+  if (!data) return null;
+
+  return (
+    <PageContainer>
+      <div className="mt-8 sm:mt-12 px-4 md:px-6 lg:px-0">
+        <h1 className="font-manrope text-[22px] leading-tight sm:text-3xl md:text-4xl font-bold uppercase mb-6 sm:mb-10">
+          {t("catalogPage.title")}
+        </h1>
+
+        <div className="my-3 sm:my-4 text-xs sm:text-sm text-gray-500">
+          <Breadcrumbs />
+        </div>
+
+        <div className="hidden md:block mb-5 sm:mb-7">
+          <StrategicCollectionBannerCarousel />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
+          <aside className="hidden lg:block">
+            <CategoriesMenu />
+          </aside>
+
+          <main className="ml-0 lg:ml-5">
+            <div
+              key={location.pathname}
+              className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
+            >
+              {visibleCategories.map((item, index) => {
+                const productCountValue = resolveProductCount(item);
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => navigate(`/catalog/${item.slug}`)}
+                    className="bg-white shadow-sm hover:shadow-md hover:-translate-y-1
+                            transition-all duration-300 rounded-lg cursor-pointer
+                            flex flex-col items-center p-3 sm:p-6 h-[210px] sm:h-[240px] overflow-hidden group relative"
+                  >
+                    {productCountValue !== null && (
+                      <span className="absolute left-2.5 top-2.5 z-10 inline-flex items-center rounded-full bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-gray-700">
+                        {productCountValue}{" "}
+                        {t("catalogPage.productsCountUnit")}
+                      </span>
+                    )}
+                    <CategoryImage
+                      src={item.imageUrl}
+                      alt={item.name}
+                      priority={index === 0}
+                    />
+
+                    <div className="mt-3 sm:mt-4 text-center h-[56px] sm:h-[64px] flex flex-col items-center justify-center overflow-hidden">
+                      <p className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2">
+                        {item.name}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+              {visibleCategories.length === 0 && (
+                <div className="col-span-full text-center py-10 text-gray-500">
+                  {t("catalogPage.noSubcategories")}
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
+
+        <div className="mt-12 sm:mt-16 mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
+          <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
+            {t("catalogPage.deepProductsTitle")}
+          </h2>
+          <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
+        </div>
+
+        <DeferredSection placeholderClassName="min-h-[260px]">
+          <Suspense fallback={<DeferredFallback className="min-h-[260px]" />}>
+            <CategoryInlineCollectionsSection
+              categoryId={currentCategoryId}
+              requireCategoryId={false}
+            />
+          </Suspense>
+        </DeferredSection>
+
+        <DeferredSection placeholderClassName="mb-6 min-h-[360px] sm:mb-8">
+          <Suspense fallback={<DeferredFallback className="mb-6 min-h-[360px] sm:mb-8" />}>
+            <div className="mb-6 sm:mb-8">
+              <CatalogDeepProductsPage embedded />
+            </div>
+          </Suspense>
+        </DeferredSection>
+
+        <DeferredSection placeholderClassName="min-h-[260px]">
+          <Suspense fallback={<DeferredFallback className="min-h-[260px]" />}>
+            <RecentlyViewedProducts />
+          </Suspense>
+        </DeferredSection>
+
+        <DeferredSection placeholderClassName="mb-16 mt-8 min-h-[520px]">
+          <Suspense fallback={<DeferredFallback className="mb-16 mt-8 min-h-[520px]" />}>
+          <section className="mb-16 mt-8">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="px-2 md:px-0 order-2 md:order-1">
+                <h3 className="font-manrope text-2xl sm:text-4xl md:text-5xl font-bold uppercase mb-6 sm:mb-8 ml-2 sm:ml-4">
+                  {t("catalogPage.bid")}
+                </h3>
+                <Contact />
+              </div>
+              <div className="hidden md:flex justify-center md:justify-end px-2 md:px-0 order-1 md:order-2">
+                <EditableImage
+                  imageKey="catalog_page_bid_image"
+                  fallbackSrc={sampleImg}
+                  alt={t("catalogPage.sampleAlt")}
+                  loading="lazy"
+                  width="500"
+                  height="400"
+                  className="max-w-full w-72 sm:w-full object-contain"
+                />
+              </div>
+            </div>
+          </section>
+          </Suspense>
+        </DeferredSection>
+      </div>
+    </PageContainer>
+  );
+};
+
+export default CatalogPage;
