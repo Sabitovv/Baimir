@@ -87,7 +87,7 @@ const Hero = () => {
               */}
 
               <ScrollReveal delay={0.4}>
-                <Link to="/catalog">
+                <Link to="/catalog/lazernye-stanki">
                   <button
                     className="
                       mt-10 inline-flex min-h-11 items-center justify-center rounded-sm bg-[#FF4610] px-6 py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition

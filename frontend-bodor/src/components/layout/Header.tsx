@@ -117,7 +117,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     && (isEmptyStateFetching || hasEmptyStateSuggestions)
 
   const navItems = [
-    { id: 'catalog', path: '/catalog' },
+    { id: 'catalog', path: '/catalog/lazernye-stanki' },
     // { id: 'technologies', path: '/technology' },
     // { id: 'demo', path: '/demo' },
     { id: 'production', path: '/production' },

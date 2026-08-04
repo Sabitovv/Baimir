@@ -5,8 +5,8 @@ import { useAppDispatch } from '@/app/hooks'
 import { setBreadcrumbs } from '@/features/catalogSlice'
 import { useGetProductCollectionBySlugQuery } from '@/api/productCollectionsApi'
 import PageContainer from '@/components/ui/PageContainer'
-import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
-import CategoriesMenu from '@/components/common/CategoriesMenu'
+// import Breadcrumbs from '@/pages/Catalog/components/Breadcrumbs'
+// import CategoriesMenu from '@/components/common/CategoriesMenu'
 import ProductCollectionRenderer from '@/components/collections/ProductCollectionRenderer'
 import ProductGrid from '@/components/collections/ProductGrid'
 
@@ -39,13 +39,15 @@ const CollectionPage = () => {
           <h1 className='font-manrope text-[22px] leading-tight sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900'>
             {collection?.name ?? t('commonCatalog.catalog')}
           </h1>
-          <Breadcrumbs />
+          {/* Хлебные крошки скрыты: на bodorlaser.kz доступна только категория lazernye-stanki: <Breadcrumbs /> */}
         </div>
 
-        <div className='grid grid-cols-1 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr] gap-6 md:gap-7 lg:gap-8 mt-4'>
+        <div className='grid grid-cols-1 gap-6 md:gap-7 lg:gap-8 mt-4'>
+          {/* Левое меню категорий скрыто: на bodorlaser.kz доступна только категория lazernye-stanki
           <aside className='hidden lg:block space-y-2 pr-4'>
             <CategoriesMenu />
           </aside>
+          */}
 
           <main>
             <div className='space-y-4'>

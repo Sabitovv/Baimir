@@ -189,7 +189,7 @@ const CatalogDeepProductsPage = ({
     <PageContainer>
       <div className="mt-8 sm:mt-10 md:mt-11 lg:mt-12 px-4 md:px-5 lg:px-0">
         <div className="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500">
-          <Link to="/catalog" className="hover:text-[#E03A08] transition-colors">
+          <Link to="/catalog/lazernye-stanki" className="hover:text-[#E03A08] transition-colors">
             {t("commonCatalog.catalog")}
           </Link>
           <span className="mx-2">/</span>

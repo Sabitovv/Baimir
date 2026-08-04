@@ -1,5 +1,5 @@
 import PageContainer from '@/components/ui/PageContainer'
-import CategoriesMenu from '@/components/common/CategoriesMenu'
+// import CategoriesMenu from '@/components/common/CategoriesMenu'
 import { useTranslation } from 'react-i18next'
 // import { useRef } from 'react'
 import one from '@/assets/demoZal/one.svg'
@@ -40,12 +40,14 @@ const DemoPage = () => {
   return (
     <PageContainer>
       {/* ГЛАВНАЯ СЕТКА */}
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+      <div className="grid grid-cols-1 gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
 
         {/* SIDEBAR */}
+        {/* Левое меню категорий скрыто: на bodorlaser.kz доступна только категория lazernye-stanki
         <aside className="hidden lg:block w-full">
           <CategoriesMenu />
         </aside>
+        */}
 
         {/* CONTENT */}
         <main className="w-full min-w-0"> {/* Изменил <section> на <main> с min-w-0 для защиты сетки */}

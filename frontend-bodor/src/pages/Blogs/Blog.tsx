@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import PageContainer from '@/components/ui/PageContainer'
-import CategoriesMenu from '@/components/common/CategoriesMenu'
+// import CategoriesMenu from '@/components/common/CategoriesMenu'
 import BlogCard from '@/components/common/BlogCardProps'
 import { useGetBlogsQuery, type BlogContentBlock } from '@/api/blogsApi'
 
@@ -104,10 +104,12 @@ const BlogPage = () => {
 
   return (
     <PageContainer>
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-16">
+      <div className="grid grid-cols-1 gap-8 mt-16">
+        {/* Левое меню категорий скрыто: на bodorlaser.kz доступна только категория lazernye-stanki
         <aside className="hidden lg:block space-y-6">
           <CategoriesMenu />
         </aside>
+        */}
 
         <section>
           <ScrollReveal>

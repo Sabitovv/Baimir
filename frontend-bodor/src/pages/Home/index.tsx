@@ -11,9 +11,9 @@ const WhyChooseUs = lazy(() => import('./Components/WhyChooseUs'))
 const Service = lazy(() => import('./Components/Service'))
 const Warehouse = lazy(() => import('./Components/Warehouse'))
 const ForClients = lazy(() => import('./Components/ForClients'))
-const ReviewsSection = lazy(() => import('./Components/ReviewsSection'))
+// const ReviewsSection = lazy(() => import('./Components/ReviewsSection'))
 const ReviewForm = lazy(() => import('./Components/ReviewForm'))
-const RepairService = lazy(() => import('./Components/RepairService'))
+// const RepairService = lazy(() => import('./Components/RepairService'))
 // const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
 // const NewsSection = lazy(() => import('./Components/NewsSection'))
 const ContactForm = lazy(() => import('./Components/ContactForm'))
@@ -133,17 +133,21 @@ const Home = () => {
                 </Suspense>
             </DeferredSection>
 
+            {/* Секция "Отзывы наших клиентов" временно скрыта
             <DeferredSection placeholderClassName="min-h-[460px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[460px]" />}>
                     <ReviewsSection onOpenReviewModal={() => setIsReviewModalOpen(true)} />
                 </Suspense>
             </DeferredSection>
+            */}
 
+            {/* Секция "Сервис по ремонту станков" временно скрыта
             <DeferredSection placeholderClassName="min-h-[520px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
                     <RepairService />
                 </Suspense>
             </DeferredSection>
+            */}
 
             <DeferredSection placeholderClassName="min-h-[520px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>

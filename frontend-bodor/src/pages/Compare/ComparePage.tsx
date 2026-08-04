@@ -95,7 +95,7 @@ const ComparePage = () => {
       return;
     }
 
-    navigate("/catalog");
+    navigate("/catalog/lazernye-stanki");
   };
 
   if (compareItems.length === 0) {
@@ -113,7 +113,7 @@ const ComparePage = () => {
               {t("compare.emptyDescription")}
             </p>
             <Link
-              to="/catalog"
+              to="/catalog/lazernye-stanki"
               className="mt-5 inline-flex rounded-xl bg-[#FF4610] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#E03A08] sm:px-5 sm:py-3 sm:text-base"
             >
               {t("compare.goToCatalog")}

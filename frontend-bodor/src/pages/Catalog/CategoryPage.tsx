@@ -3,8 +3,8 @@ import { useLocation, useNavigate, useParams, useSearchParams } from "react-rout
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
 
-import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
-import CategoriesMenu from "@/components/common/CategoriesMenu";
+// import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+// import CategoriesMenu from "@/components/common/CategoriesMenu";
 import ProductCard from "@/components/common/ProductCard";
 import PageContainer from "@/components/ui/PageContainer";
 import CatalogFilters from "@/pages/Catalog/components/CatalogFilter";
@@ -453,13 +453,15 @@ const CategoryPage = () => {
               {currentCategory?.name ?? t("commonCatalog.catalog")}
             </h1>
           </ScrollReveal>
-          <Breadcrumbs />
+          {/* Хлебные крошки скрыты: на bodorlaser.kz доступна только категория lazernye-stanki: <Breadcrumbs /> */}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr] gap-6 md:gap-7 lg:gap-8 mt-4">
+        <div className="grid grid-cols-1 gap-6 md:gap-7 lg:gap-8 mt-4">
+          {/* Левое меню категорий скрыто: на bodorlaser.kz доступна только категория lazernye-stanki
           <aside className="hidden lg:block space-y-2 pr-4">
             <CategoriesMenu />
           </aside>
+          */}
 
           <main>
             {!isLoadingProducts && !hasProducts && hasSubcategories ? (

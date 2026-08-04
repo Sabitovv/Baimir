@@ -4,7 +4,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import DOMPurify from "dompurify";
 
 import PageContainer from "@/components/ui/PageContainer";
-import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+// import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setBreadcrumbs } from "@/features/catalogSlice";
 import {
@@ -2262,7 +2262,7 @@ const ProductPage = () => {
           </h2>
           <p className="text-gray-600 mb-6">{t("productPage.error")}</p>
           <Link
-            to="/catalog"
+            to="/catalog/lazernye-stanki"
             className="bg-[#FF4610] text-white px-6 py-2 rounded hover:bg-[#E03A08] transition"
           >
             {t("productPage.errorBack")}
@@ -2276,7 +2276,7 @@ const ProductPage = () => {
     <PageContainer>
       <div className="px-4 md:px-6 lg:px-0 mb-20">
         <div className="my-4 text-sm text-gray-500">
-          <Breadcrumbs />
+          {/* Хлебные крошки скрыты: на bodorlaser.kz доступна только категория lazernye-stanki: <Breadcrumbs /> */}
         </div>
 
         <h1 className="font-manrope text-2xl md:text-3xl lg:text-4xl font-bold uppercase text-gray-900 mb-8 leading-tight">

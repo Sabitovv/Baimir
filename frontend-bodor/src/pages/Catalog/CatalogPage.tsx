@@ -5,8 +5,8 @@ import { clearBreadcrumbs, setBreadcrumbs } from "@/features/catalogSlice";
 import { useGetCategoriesTreeQuery } from "@/api/categoriesApi";
 
 import PageContainer from "@/components/ui/PageContainer";
-import CategoriesMenu from "@/components/common/CategoriesMenu";
-import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+// import CategoriesMenu from "@/components/common/CategoriesMenu";
+// import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
 import DeferredSection from "@/components/common/DeferredSection";
 import StrategicCollectionBannerCarousel from "@/components/collections/StrategicCollectionBannerCarousel";
 
@@ -161,17 +161,19 @@ const CatalogPage = () => {
         </h1>
 
         <div className="my-3 sm:my-4 text-xs sm:text-sm text-gray-500">
-          <Breadcrumbs />
+          {/* Хлебные крошки скрыты: на bodorlaser.kz доступна только категория lazernye-stanki: <Breadcrumbs /> */}
         </div>
 
         <div className="hidden md:block mb-5 sm:mb-7">
           <StrategicCollectionBannerCarousel />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
+        <div className="grid grid-cols-1 gap-8">
+          {/* Левое меню категорий скрыто: на bodorlaser.kz доступна только категория lazernye-stanki
           <aside className="hidden lg:block">
             <CategoriesMenu />
           </aside>
+          */}
 
           <main className="ml-0 lg:ml-5">
             <div

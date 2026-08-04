@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import PageContainer from "@/components/ui/PageContainer";
-import CategoriesMenu from "@/components/common/CategoriesMenu";
+// import CategoriesMenu from "@/components/common/CategoriesMenu";
 import { useGetBlogBySlugQuery, type BlogContentBlock } from "@/api/blogsApi";
 import defaultImage from "@/assets/home/lazerStanok.webp";
 import { useGetProductsBatchQuery } from "@/api/productsApi";
@@ -602,10 +602,12 @@ const InnerBlog = () => {
 
   return (
     <PageContainer>
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-16">
+      <div className="grid grid-cols-1 gap-8 mt-16">
+        {/* Левое меню категорий скрыто: на bodorlaser.kz доступна только категория lazernye-stanki
         <aside className="hidden lg:block space-y-6">
           <CategoriesMenu />
         </aside>
+        */}
 
         <article className="max-w-[900px] mb-16">
           <h1 className="font-manrope font-bold text-3xl md:text-4xl xl:text-5xl uppercase mb-5">

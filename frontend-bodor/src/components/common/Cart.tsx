@@ -240,7 +240,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                 {t("cart.emptyDescription")}
               </p>
               <Link
-                to="/catalog"
+                to="/catalog/lazernye-stanki"
                 onClick={handleClose}
                 className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#FF4610] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#E03A08]"
               >
