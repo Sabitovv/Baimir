@@ -6,7 +6,7 @@ import ProductCollectionRenderer from '@/components/collections/ProductCollectio
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import { useTranslation } from 'react-i18next'
 
-const IndustryCatalog = lazy(() => import('./Components/IndustryCatalog'))
+// const IndustryCatalog = lazy(() => import('./Components/IndustryCatalog'))
 const WhyChooseUs = lazy(() => import('./Components/WhyChooseUs'))
 const Service = lazy(() => import('./Components/Service'))
 const Warehouse = lazy(() => import('./Components/Warehouse'))
@@ -14,8 +14,8 @@ const ForClients = lazy(() => import('./Components/ForClients'))
 const ReviewsSection = lazy(() => import('./Components/ReviewsSection'))
 const ReviewForm = lazy(() => import('./Components/ReviewForm'))
 const RepairService = lazy(() => import('./Components/RepairService'))
-const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
-const NewsSection = lazy(() => import('./Components/NewsSection'))
+// const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
+// const NewsSection = lazy(() => import('./Components/NewsSection'))
 const ContactForm = lazy(() => import('./Components/ContactForm'))
 
 const SectionFallback = ({ heightClassName }: { heightClassName: string }) => (
@@ -101,11 +101,13 @@ const Home = () => {
                 variant="recommendations"
                 title={t('home.personalizedRecommendations')}
             />
+            {/* Секция "Лидируем в индустрии" временно скрыта
             <DeferredSection placeholderClassName="min-h-[560px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[560px]" />}>
                     <IndustryCatalog />
                 </Suspense>
             </DeferredSection>
+            */}
 
             <DeferredSection placeholderClassName="min-h-[520px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
@@ -149,17 +151,21 @@ const Home = () => {
                 </Suspense>
             </DeferredSection>
 
+            {/* Секция "Сертификаты" временно скрыта
             <DeferredSection placeholderClassName="min-h-[420px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[420px]" />}>
                     <CertificateSection />
                 </Suspense>
             </DeferredSection>
+            */}
 
+            {/* Секция "Новости" временно скрыта
             <DeferredSection placeholderClassName="min-h-[420px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[420px]" />}>
                     <NewsSection />
                 </Suspense>
             </DeferredSection>
+            */}
 
             <div
                 className={`fixed inset-0 z-[130] transition-opacity duration-300 ease-out ${
