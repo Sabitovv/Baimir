@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +15,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { useAppSelector } from '@/app/hooks'
 import { useSearchProductsQuery } from '@/api/productsApi'
+import { useGetCategoriesTreeQuery } from '@/api/categoriesApi'
+import { findOnlyCategory } from '@/config/onlyCategory'
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import { EditableImage } from '@/zustand/EditableImage'
 //#FF4610
@@ -95,10 +97,23 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     return () => window.clearTimeout(timeoutId)
   }, [isMobileSearchVisible, open])
 
-  const shouldSearch = debouncedQuery.length >= 1
+  // Поиск ограничен единственной доступной категорией (и её подкатегориями)
+  const { data: searchCategories = [] } = useGetCategoriesTreeQuery({ lang: i18n.language })
+  const onlyCategoryId = useMemo(
+    () => findOnlyCategory(searchCategories)?.id,
+    [searchCategories],
+  )
+
+  const shouldSearch = debouncedQuery.length >= 1 && onlyCategoryId != null
   const { data: searchData, isFetching: isSearchFetching } = useSearchProductsQuery(
     shouldSearch
-      ? { query: debouncedQuery, page: 0, size: 20, sort: 'id,DESC' }
+      ? {
+          query: debouncedQuery,
+          page: 0,
+          size: 20,
+          sort: 'id,DESC',
+          categoryIds: [onlyCategoryId as number],
+        }
       : skipToken,
   )
   const searchResults = (searchData?.content ?? []).slice(0, 12)

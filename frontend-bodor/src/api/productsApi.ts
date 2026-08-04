@@ -488,11 +488,14 @@ export const productsApi = createApi({
 
     searchProducts: builder.query<
       PageResponse<Product>,
-      { query: string; page?: number; size?: number; sort?: string }
+      { query: string; page?: number; size?: number; sort?: string; categoryIds?: number[] }
     >({
-      query: ({ query, page = 0, size = 20, sort = "id,DESC" }) => ({
+      query: ({ query, page = 0, size = 20, sort = "id,DESC", categoryIds }) => ({
         url: "/products/search",
-        params: { query, page, size, sort },
+        // categoryIds не передаём вовсе, если он не задан — тогда бэкенд ищет по всему каталогу
+        params: categoryIds?.length
+          ? { query, page, size, sort, categoryIds: categoryIds.join(",") }
+          : { query, page, size, sort },
       }),
       providesTags: (result) =>
         result

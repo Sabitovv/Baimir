@@ -2,36 +2,9 @@ import ScrollToTop from '@/app/ScrollToTop'
 import { lazy, Suspense, type ReactElement } from 'react'
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useGetCategoriesTreeQuery, type Category } from '@/api/categoriesApi'
-
+import { useGetCategoriesTreeQuery } from '@/api/categoriesApi'
 // На bodorlaser.kz доступна только одна категория — все остальные пути каталога ведут на неё
-export const ONLY_CATEGORY_SLUG = 'lazernye-stanki'
-export const ONLY_CATEGORY_PATH = `/catalog/${ONLY_CATEGORY_SLUG}`
-
-const flattenCategories = (cats: Category[]): Category[] =>
-    cats.flatMap((cat) => [cat, ...flattenCategories(cat.children ?? [])])
-
-// Разрешена сама категория и любая вложенная в неё (связь идёт через parentId)
-const isAllowedCategory = (categories: Category[], slug?: string): boolean => {
-    if (!slug) return false
-    if (slug === ONLY_CATEGORY_SLUG) return true
-
-    const all = flattenCategories(categories)
-    const byId = new Map(all.map((cat) => [Number(cat.id), cat]))
-    const visited = new Set<number>()
-    let current = all.find((cat) => cat.slug === slug)
-
-    while (current) {
-        if (current.slug === ONLY_CATEGORY_SLUG) return true
-
-        const parentId = Number(current.parentId)
-        if (!Number.isFinite(parentId) || visited.has(parentId)) break
-        visited.add(parentId)
-        current = byId.get(parentId)
-    }
-
-    return false
-}
+import { ONLY_CATEGORY_PATH, ONLY_CATEGORY_SLUG, isAllowedCategory } from '@/config/onlyCategory'
 
 // const TechnologiesPage = lazy(() => import('@/pages/Technologies/TechnologiesPage'))
 // const InnerTechnologies = lazy(() => import('@/pages/Technologies/InnerTechbologies/InnerTechnologies'))
