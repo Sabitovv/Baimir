@@ -293,7 +293,7 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
     return (
       <blockquote
         key={key}
-        className="border-l-4 border-[#F58322] pl-5 py-1 mb-7 text-gray-700 italic"
+        className="border-l-4 border-[#FF4610] pl-5 py-1 mb-7 text-gray-700 italic"
       >
         <p>{quote}</p>
         {author && (
@@ -580,7 +580,7 @@ const InnerBlog = () => {
           <p className="text-gray-600 mb-6">{t("innerBlog.notFoundText")}</p>
           <Link
             to="/blog"
-            className="inline-block bg-[#F58322] text-white px-5 py-2 rounded hover:bg-[#DB741F] transition-colors"
+            className="inline-block bg-[#FF4610] text-white px-5 py-2 rounded hover:bg-[#E03A08] transition-colors"
           >
             {t("innerBlog.backToBlog")}
           </Link>

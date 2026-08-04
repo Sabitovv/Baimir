@@ -55,7 +55,7 @@ const CertificatesSection = () => {
       <PageContainer>
 
         <ScrollReveal>
-          <h2 className="font-manrope font-bold uppercase text-[#111111] text-3xl md:text-4xl xl:text-5xl mb-10">
+          <h2 className="font-manrope font-bold uppercase text-[#171B25] text-3xl md:text-4xl xl:text-5xl mb-10">
             {t('home.certificates.title')}
           </h2>
         </ScrollReveal>
@@ -101,7 +101,7 @@ const CertificatesSection = () => {
               spaceBetween={24}
               loop={canNavigate}
               pagination={canNavigate ? { clickable: true } : false}
-              className="[&_.swiper-pagination]:!relative [&_.swiper-pagination]:!mt-4 [&_.swiper-pagination-bullet]:bg-[#9CA3AF] [&_.swiper-pagination-bullet-active]:bg-[#F58322]"
+              className="[&_.swiper-pagination]:!relative [&_.swiper-pagination]:!mt-4 [&_.swiper-pagination-bullet]:bg-[#9CA3AF] [&_.swiper-pagination-bullet-active]:bg-[#FF4610]"
               breakpoints={{
                 320: { slidesPerView: 1.12, spaceBetween: 12 },
                 768: { slidesPerView: 2 },
@@ -210,7 +210,7 @@ const CertificatesSection = () => {
               type="button"
               aria-label={t('common.close')}
               onClick={() => setActiveCertificate(null)}
-              className="absolute right-2 top-2 z-10 w-8 h-7 md:w-10 md:h-10 rounded-full bg-white text-[#111111] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
+              className="absolute right-2 top-2 z-10 w-8 h-7 md:w-10 md:h-10 rounded-full bg-white text-[#171B25] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
             >
               x
             </button>

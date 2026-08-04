@@ -190,7 +190,7 @@ const Home = () => {
                             type="button"
                             aria-label={t('common.close')}
                             onClick={() => setIsReviewModalOpen(false)}
-                            className="absolute right-4 top-4 z-10 w-10 h-10 rounded-full bg-white text-[#111111] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
+                            className="absolute right-4 top-4 z-10 w-10 h-10 rounded-full bg-white text-[#171B25] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
                         >
                             ×
                         </button>

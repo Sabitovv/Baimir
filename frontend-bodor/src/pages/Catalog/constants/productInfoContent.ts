@@ -11,7 +11,8 @@ export const WARRANTY_TEXT = 'Гарантия против дефектов в 
 
 export const VAT_TEXT = 'Наша компания плательщик НДС 12%.'
 
-export const DELIVERY_DETAILS_URL = 'https://baymir.kz/p78828140-lazernyj-stanok-dlya.html'
+// Baymir mention — commented out for the Bodor build:
+// export const DELIVERY_DETAILS_URL = 'https://baymir.kz/p78828140-lazernyj-stanok-dlya.html'
 
 export type KazakhstanRegion = {
   name: string
@@ -80,7 +81,9 @@ export const SALES_MANAGERS = [
 export const STORE_CONTACTS = {
   title: 'Менеджер по продажам',
   address: 'Алатауский район, микрорайон Рахат, 244, Алматы, Казахстан',
-  email: 'baymir@inbox.ru',
+  // Baymir mentions — commented out for the Bodor build:
+  // email: 'baymir@inbox.ru',
+  // website: 'https://baymir.kz',
+  email: '',
   phone: '+77080055085',
-  website: 'https://baymir.kz',
 } as const

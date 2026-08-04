@@ -20,7 +20,7 @@
 
 //           <section className='flex flex-col mx-auto w-full'>
 //             <ScrollReveal>
-//               <h1 className="font-manrope font-semibold text-3xl md:text-4xl xl:text-[45px] uppercase text-[#F05023]">
+//               <h1 className="font-manrope font-semibold text-3xl md:text-4xl xl:text-[45px] uppercase text-[#DC0000]">
 //                 {t('technology.title')}
 //               </h1>
 //               <h3 className='text-xl font-bold mb-4 mt-1' style={{ whiteSpace: 'pre-line' }}>

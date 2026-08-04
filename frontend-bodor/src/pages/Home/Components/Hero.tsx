@@ -88,8 +88,8 @@ const Hero = () => {
                 <Link to="/catalog">
                   <button
                     className="
-                      mt-10 inline-flex min-h-11 items-center justify-center rounded-sm bg-[#F58322] px-6 py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition
-                      hover:bg-[#DB741F] hover:shadow-lg hover:shadow-[#F05023]/20
+                      mt-10 inline-flex min-h-11 items-center justify-center rounded-sm bg-[#FF4610] px-6 py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition
+                      hover:bg-[#E03A08] hover:shadow-lg hover:shadow-[#DC0000]/20
                       md:mt-10 md:px-10 md:py-4 md:text-sm
                     "
                   >
@@ -127,8 +127,8 @@ const Hero = () => {
                       }
                     }}
                     className="
-                      group hidden min-h-11 shrink-0 items-center gap-3 rounded-sm border border-[#F58322] bg-black/30 px-5 py-3
-                      font-manrope transition hover:bg-[#DB741F]
+                      group hidden min-h-11 shrink-0 items-center gap-3 rounded-sm border border-[#FF4610] bg-black/30 px-5 py-3
+                      font-manrope transition hover:bg-[#E03A08]
                       md:inline-flex
                     "
                   >
@@ -139,7 +139,7 @@ const Hero = () => {
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
-                      className="text-[#F58322] transition group-hover:text-white"
+                      className="text-[#FF4610] transition group-hover:text-white"
                     >
                       <rect x="3" y="3" width="18" height="18" rx="2" />
                       <path d="M15 3h6v6" />

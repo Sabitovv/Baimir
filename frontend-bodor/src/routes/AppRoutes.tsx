@@ -22,7 +22,7 @@ const ComparePage = lazy(() => import('@/pages/Compare/ComparePage'))
 
 const PageLoader = () => (
     <div className="flex items-center justify-center h-[60vh]">
-        <div className="w-10 h-10 border-4 border-gray-300 border-t-[#F05023] rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-gray-300 border-t-[#DC0000] rounded-full animate-spin" />
     </div>
 )
 

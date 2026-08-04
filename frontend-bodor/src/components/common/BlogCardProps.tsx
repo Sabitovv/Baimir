@@ -42,33 +42,33 @@ const BlogCard = ({
       </div>
 
       <div className="p-3 flex flex-col flex-1 min-h-0">
-        <h3 className="font-bold text-xs leading-tight line-clamp-2 mb-1.5 group-hover:text-[#DB741F] transition-colors">
+        <h3 className="font-bold text-xs leading-tight line-clamp-2 mb-1.5 group-hover:text-[#E03A08] transition-colors">
           {title}
         </h3>
 
         {excerpt && (
-          <p className="text-[11px] leading-snug text-[#4A5B5F] line-clamp-2 mb-2">
+          <p className="text-[11px] leading-snug text-[#4A5060] line-clamp-2 mb-2">
             {excerpt}
           </p>
         )}
 
         <div className="mt-auto pt-2 border-t border-gray-100 space-y-1.5 shrink-0">
-          <div className="flex items-center gap-1.5 text-[10px] text-[#55676B]">
-            <PersonOutlineRoundedIcon sx={{ fontSize: 12, color: '#F58322' }} />
+          <div className="flex items-center gap-1.5 text-[10px] text-[#61687C]">
+            <PersonOutlineRoundedIcon sx={{ fontSize: 12, color: '#FF4610' }} />
             <span className="truncate">{authorLabel}</span>
           </div>
 
-          <div className="flex items-center justify-between gap-2 text-[10px] text-[#55676B]">
+          <div className="flex items-center justify-between gap-2 text-[10px] text-[#61687C]">
             <div className="flex items-center gap-1">
-              <CalendarTodayRoundedIcon sx={{ fontSize: 10, color: '#7B8C90' }} />
+              <CalendarTodayRoundedIcon sx={{ fontSize: 10, color: '#828898' }} />
               <span className="truncate">{dateLabel}</span>
             </div>
             <div className="flex items-center gap-1">
-              <AccessTimeRoundedIcon sx={{ fontSize: 10, color: '#7B8C90' }} />
+              <AccessTimeRoundedIcon sx={{ fontSize: 10, color: '#828898' }} />
               <span>{readingLabel}</span>
             </div>
             <div className="flex items-center gap-1">
-              <VisibilityRoundedIcon sx={{ fontSize: 10, color: '#7B8C90' }} />
+              <VisibilityRoundedIcon sx={{ fontSize: 10, color: '#828898' }} />
               <span>{viewsLabel}</span>
             </div>
           </div>

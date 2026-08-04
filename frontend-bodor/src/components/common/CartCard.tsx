@@ -37,7 +37,7 @@ const CartCard = ({
           <h3 className="line-clamp-2 text-sm font-semibold text-gray-900">{title}</h3>
 
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-sm font-bold text-[#F58322]">{priceText}</span>
+            <span className="text-sm font-bold text-[#FF4610]">{priceText}</span>
             {showOldPrice && (
               <span className="text-xs text-gray-400 line-through">{formatPrice(oldPrice, i18n.language)}</span>
             )}

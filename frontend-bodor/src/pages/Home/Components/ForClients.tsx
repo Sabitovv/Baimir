@@ -54,7 +54,7 @@ const ForClients = () => {
           {benefits.map((item, index) => (
             <StaggerItem key={index} className="h-full">
               <div
-                className="border-[#F58322] border-4 p-4 md:p-8 hover:-translate-y-1 transition-transform duration-300 h-full flex flex-col overflow-hidden"
+                className="border-[#FF4610] border-4 p-4 md:p-8 hover:-translate-y-1 transition-transform duration-300 h-full flex flex-col overflow-hidden"
               >
                 <div className="flex justify-between items-start gap-3 mb-6 md:mb-8 xl:mb-12">
                   <h3 className="font-manrope font-bold text-xl md:text-2xl xl:text-3xl uppercase pr-2 min-w-0 break-words leading-tight">

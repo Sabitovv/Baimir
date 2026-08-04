@@ -57,7 +57,7 @@ const Warehouse = () => {
         <ScrollReveal>
           <h1
             className="
-            font-manrope font-bold uppercase text-[#111111]
+            font-manrope font-bold uppercase text-[#171B25]
             text-4xl md:text-5xl xl:text-6xl
             mb-10
           "
@@ -89,7 +89,7 @@ const Warehouse = () => {
                   key={index}
                   className={`
                   border-2
-                  ${imgChange == index ? "border-[#F58322]" : "border-none"}
+                  ${imgChange == index ? "border-[#FF4610]" : "border-none"}
                   transition
                   cursor-pointer
                 `}
@@ -119,7 +119,7 @@ const Warehouse = () => {
                 <div>
                   <div
                     className="
-                    font-manrope font-bold text-[#F58322]
+                    font-manrope font-bold text-[#FF4610]
                     text-4xl md:text-5xl
                     leading-none
                     mb-2

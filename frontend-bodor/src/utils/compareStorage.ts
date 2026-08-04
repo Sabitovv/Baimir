@@ -1,4 +1,6 @@
-const COMPARE_STORAGE_KEY = 'baymir_compare'
+// Baymir mention — commented out for the Bodor build:
+// const COMPARE_STORAGE_KEY = 'baymir_compare'
+const COMPARE_STORAGE_KEY = 'bodor_compare'
 
 export const readCompareStorage = (): unknown => {
   if (typeof window === 'undefined') return null

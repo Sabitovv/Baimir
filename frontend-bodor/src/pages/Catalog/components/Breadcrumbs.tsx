@@ -56,7 +56,7 @@ const Breadcrumbs = () => {
 
                             {isLast ? (
                                 <span
-                                    className="max-w-[170px] truncate px-1 py-1 font-semibold text-[#F58322] sm:max-w-none"
+                                    className="max-w-[170px] truncate px-1 py-1 font-semibold text-[#FF4610] sm:max-w-none"
                                     title={item.name}
                                 >
                                     {item.name}
@@ -64,7 +64,7 @@ const Breadcrumbs = () => {
                             ) : (
                                 <Link
                                     to={toPath}
-                                    className="max-w-[170px] truncate rounded px-1 py-1 transition-colors hover:text-[#DB741F] sm:max-w-none"
+                                    className="max-w-[170px] truncate rounded px-1 py-1 transition-colors hover:text-[#E03A08] sm:max-w-none"
                                     title={item.name}
                                 >
                                     {item.name}

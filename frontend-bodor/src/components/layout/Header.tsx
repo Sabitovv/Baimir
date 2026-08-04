@@ -6,15 +6,19 @@ import { skipToken } from '@reduxjs/toolkit/query'
 import SearchIcon from '@mui/icons-material/Search'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
-const LOGO_URL = '/images/logo.webp'
+// Baymir logo (kept for reference):
+// const LOGO_URL = '/images/logo.webp'
+// Bodor wordmark (200x76, white on transparent), vendored from
+// https://static.bodor.com/images/common/bodor-logo.webp
+const LOGO_URL = '/images/logo-bodor.webp'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { useAppSelector } from '@/app/hooks'
 import { useSearchProductsQuery } from '@/api/productsApi'
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import { EditableImage } from '@/zustand/EditableImage'
-//#F58322
-//#DB741F
+//#FF4610
+//#E03A08
 
 type HeaderProps = {
   setIsCartOpen: Dispatch<SetStateAction<boolean>>
@@ -129,8 +133,8 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
 
   const getLangClass = (lng: string) => {
     return i18n.language === lng
-      ? 'text-[#F58322] font-bold border-b border-[#F58322]'
-      : 'text-white hover:text-[#F58322] transition-colors'
+      ? 'text-[#FF4610] font-bold border-b border-[#FF4610]'
+      : 'text-white hover:text-[#FF4610] transition-colors'
   }
 
   const closeSearch = () => {
@@ -212,7 +216,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                             <span className='block truncate text-sm font-semibold text-gray-900'>
                               {product.name}
                             </span>
-                            <span className='block text-xs text-[#DB741F]'>
+                            <span className='block text-xs text-[#E03A08]'>
                               {formatPrice(product.price)}
                             </span>
                           </span>
@@ -242,7 +246,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-gray-900">{product.name}</span>
-                    <span className="block text-xs text-[#DB741F]">{formatPrice(product.price)}</span>
+                    <span className="block text-xs text-[#E03A08]">{formatPrice(product.price)}</span>
                   </span>
                 </button>
               </li>
@@ -279,7 +283,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-white">{product.name}</span>
-                    <span className="block text-xs text-[#F7A35C]">{formatPrice(product.price)}</span>
+                    <span className="block text-xs text-[#FF7A52]">{formatPrice(product.price)}</span>
                   </span>
                 </button>
               </li>
@@ -317,7 +321,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                             <span className="block truncate text-sm font-semibold text-white">
                               {product.name}
                             </span>
-                            <span className="block text-xs text-[#F7A35C]">
+                            <span className="block text-xs text-[#FF7A52]">
                               {formatPrice(product.price)}
                             </span>
                           </span>
@@ -359,7 +363,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-white">{product.name}</span>
-                    <span className="block text-xs text-[#F7A35C]">{formatPrice(product.price)}</span>
+                    <span className="block text-xs text-[#FF7A52]">{formatPrice(product.price)}</span>
                   </span>
                 </button>
               </li>
@@ -397,7 +401,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                             <span className="block truncate text-sm font-semibold text-white">
                               {product.name}
                             </span>
-                            <span className="block text-xs text-[#F7A35C]">
+                            <span className="block text-xs text-[#FF7A52]">
                               {formatPrice(product.price)}
                             </span>
                           </span>
@@ -415,11 +419,11 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full h-[88px] z-50 text-white overflow-visible bg-[#141414] font-manrope">
+    <header className="fixed top-0 left-0 right-0 w-full h-[88px] z-50 text-white overflow-visible bg-[#171B25] font-manrope">
       <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
         <div className="flex items-center gap-4 2xl:gap-8">
           <Link to="/" className="shrink-0">
-            <EditableImage imageKey="header_main_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" className="h-12 2xl:h-15" />
+            <EditableImage imageKey="header_main_logo" fallbackSrc={LOGO_URL} alt="Bodor Laser Logo" className="h-12 2xl:h-15" />
           </Link>
 
           <div
@@ -429,7 +433,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
             <div
               className={`${
                 isSearchOpen
-                  ? 'absolute left-0 top-1/2 z-[110] flex h-12 w-[460px] 2xl:w-[560px] 3xl:w-[640px] -translate-y-1/2 items-center rounded-lg border border-white/40 bg-black/90 shadow-[0_12px_30px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all focus-within:border-[#F58322] focus-within:shadow-[0_0_0_3px_rgba(245,131,34,0.2)]'
+                  ? 'absolute left-0 top-1/2 z-[110] flex h-12 w-[460px] 2xl:w-[560px] 3xl:w-[640px] -translate-y-1/2 items-center rounded-lg border border-white/40 bg-black/90 shadow-[0_12px_30px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all focus-within:border-[#FF4610] focus-within:shadow-[0_0_0_3px_rgba(255,70,16,0.2)]'
                   : 'flex h-10 w-full items-center border border-white/70 bg-black/30'
               }`}
             >
@@ -473,7 +477,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                 type="button"
                 className={`${
                   isSearchOpen
-                    ? 'ml-3 h-full px-5 border-l border-white/30 text-gray-100 hover:text-[#F7A35C]'
+                    ? 'ml-3 h-full px-5 border-l border-white/30 text-gray-100 hover:text-[#FF7A52]'
                     : 'px-4 border-l border-white/70 text-white'
                 } transition-colors`}
                 onClick={submitSearch}
@@ -496,7 +500,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               key={key.id}
               to={key.path}
               className={({ isActive }) =>
-                isActive ? 'text-[#F58322]' : 'hover:text-[#DB741F] transition-colors'
+                isActive ? 'text-[#FF4610]' : 'hover:text-[#E03A08] transition-colors'
               }
             >
               {t(`header.nav.${key.id}`)}
@@ -528,21 +532,21 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               EN
             </button>
           </div>
-          {/* <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
+          {/* <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#E03A08] transition-colors shrink-0">
             {t('header.cta')}
           </button> */}
           <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-desktop>
-            <ShoppingCartIcon className="hover:text-[#DB741F]" />
+            <ShoppingCartIcon className="hover:text-[#E03A08]" />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#FF4610] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
           </button>
           <Link to="/compare" className="relative" aria-label={t('compare.open')} title={t('compare.open')}>
-            <CompareArrowsIcon className="hover:text-[#DB741F]" />
+            <CompareArrowsIcon className="hover:text-[#E03A08]" />
             {compareCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#FF4610] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {compareCount}
               </span>
             )}
@@ -559,7 +563,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       )}
       <div className="xl:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
         <Link to="/">
-          <EditableImage imageKey="header_mobile_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" className="h-8" />
+          <EditableImage imageKey="header_mobile_logo" fallbackSrc={LOGO_URL} alt="Bodor Laser Logo" className="h-8" />
         </Link>
 
         <div className="flex items-center gap-3">
@@ -568,14 +572,14 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
             onClick={toggleMobileSearch}
             aria-label={t('header.search')}
             title={t('header.search')}
-            className={`transition-colors ${isMobileSearchVisible ? 'text-[#F58322]' : 'text-white hover:text-[#DB741F]'}`}
+            className={`transition-colors ${isMobileSearchVisible ? 'text-[#FF4610]' : 'text-white hover:text-[#E03A08]'}`}
           >
             <SearchIcon sx={{ fontSize: 26 }} />
           </button>
           <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-mobile>
             <ShoppingCartIcon sx={{ fontSize: 26 }} />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#FF4610] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
@@ -583,7 +587,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           <Link to="/compare" className="relative" aria-label={t('compare.open')} title={t('compare.open')}>
             <CompareArrowsIcon sx={{ fontSize: 26 }} />
             {compareCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#FF4610] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {compareCount}
               </span>
             )}
@@ -596,9 +600,9 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       {isMobileSearchVisible && (
         <div
           ref={mobileTopSearchRef}
-          className="xl:hidden fixed top-[88px] left-0 right-0 z-[60] px-4 pt-2 pb-3 bg-[#141414]/95 backdrop-blur-md border-b border-white/10"
+          className="xl:hidden fixed top-[88px] left-0 right-0 z-[60] px-4 pt-2 pb-3 bg-[#171B25]/95 backdrop-blur-md border-b border-white/10"
         >
-          <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#F58322]">
+          <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#FF4610]">
             <input
               ref={mobileInputRef}
               placeholder={t('header.search')}
@@ -641,7 +645,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       {open && (
         <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">
           <div className="flex items-center justify-between h-[88px] px-4 border-b border-white/10">
-            <EditableImage imageKey="header_drawer_logo" fallbackSrc={LOGO_URL} className="h-8" alt="Logo" />
+            <EditableImage imageKey="header_drawer_logo" fallbackSrc={LOGO_URL} className="h-8" alt="Bodor Laser Logo" />
             <button onClick={() => setOpen(false)}>
               <CloseIcon sx={{ fontSize: 28 }} />
             </button>
@@ -649,7 +653,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
 
           <div className="p-6 flex flex-col gap-8">
             <div ref={mobileSearchRef} className="relative">
-              <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#F58322]">
+              <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#FF4610]">
               <input
                 ref={mobileInputRef}
                 placeholder={t('header.search')}
@@ -695,7 +699,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   key={key.id}
                   to={key.path}
                   onClick={() => setOpen(false)}
-                  className="hover:text-[#DB741F] transition-colors"
+                  className="hover:text-[#E03A08] transition-colors"
                 >
                   {t(`header.nav.${key.id}`)}
                 </NavLink>

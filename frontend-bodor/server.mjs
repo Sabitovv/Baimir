@@ -20,9 +20,12 @@ const API_BASE_URL = (
   "https://baytech.kz/api/v1"
 ).replace(/\/$/, "");
 const BRAND_NAME = "Baytech";
-const BRAND_ALTERNATE_NAMES = ["BAYMIR Tech", "BAYMIR", "Baytech.kz"];
+// Baymir mentions — commented out for the Bodor build:
+// const BRAND_ALTERNATE_NAMES = ["BAYMIR Tech", "BAYMIR", "Baytech.kz"];
+const BRAND_ALTERNATE_NAMES = ["Bodor Laser", "Baytech.kz"];
 const DEFAULT_LANG = "ru-KZ";
-const COMPANY_EMAIL = "baymir@inbox.ru";
+// Baymir mention — commented out for the Bodor build:
+// const COMPANY_EMAIL = "baymir@inbox.ru";
 const COMPANY_PHONE = "+77080055085";
 const COMPANY_ADDRESS = "Алатауский район, микрорайон Рахат, 244";
 const COMPANY_CITY = "Алматы";
@@ -314,7 +317,8 @@ const buildGlobalGraph = () => [
     },
     description:
       "Baytech поставляет станки и промышленное оборудование в Казахстане: оборудование для металлообработки, лазерные станки, листогибочные станки, компрессоры, деревообработку, камнеобработку, электротехнику, запчасти и комплектующие.",
-    email: COMPANY_EMAIL,
+    // Baymir mention — commented out for the Bodor build:
+    // email: COMPANY_EMAIL,
     telephone: COMPANY_PHONE,
     address: {
       "@type": "PostalAddress",
@@ -343,7 +347,8 @@ const buildGlobalGraph = () => [
       {
         "@type": "ContactPoint",
         telephone: normalizePhone(COMPANY_PHONE),
-        email: COMPANY_EMAIL,
+        // Baymir mention — commented out for the Bodor build:
+        // email: COMPANY_EMAIL,
         contactType: "sales",
         areaServed: "KZ",
         availableLanguage: ["ru", "kk"],

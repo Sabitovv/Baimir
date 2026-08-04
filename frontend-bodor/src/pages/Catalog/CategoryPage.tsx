@@ -494,7 +494,7 @@ const CategoryPage = () => {
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                     <button
                       onClick={toggleFilter}
-                      className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md transition font-medium text-xs sm:text-sm ${isFilterOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
+                      className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md transition font-medium text-xs sm:text-sm ${isFilterOpen ? "bg-[#FF4610] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
                     >
                       {t("filters.showFilter")}
                     </button>
@@ -507,7 +507,7 @@ const CategoryPage = () => {
                         {t("filters.have")}
                       </span>
                       <div
-                        className={`w-9 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${inStock ? "bg-[#F58322]" : "bg-gray-300"}`}
+                        className={`w-9 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${inStock ? "bg-[#FF4610]" : "bg-gray-300"}`}
                       >
                         <div
                           className={`w-3.5 h-3.5 bg-white rounded-full absolute top-0.5 shadow-sm transition-all duration-200 ease-in-out ${inStock ? "right-1" : "left-1"}`}
@@ -527,7 +527,7 @@ const CategoryPage = () => {
                     <div className="hidden md:flex gap-2">
                       <button
                         onClick={toggleCalculator}
-                        className={`cursor-pointer px-3 py-2 rounded-md text-sm transition flex items-center gap-2 ${isCalculatorOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
+                        className={`cursor-pointer px-3 py-2 rounded-md text-sm transition flex items-center gap-2 ${isCalculatorOpen ? "bg-[#FF4610] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
                       >
                         {t("categoryPage.calculator")}
                       </button>
@@ -686,7 +686,7 @@ const CategoryPage = () => {
               <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
                 {t("catalogPage.deepProductsTitle")}
               </h2>
-              <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
+              <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#FF4610]" />
             </div>
 
             <CategoryInlineCollectionsSection categoryId={activeId} />

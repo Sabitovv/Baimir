@@ -221,7 +221,7 @@ const CatalogPage = () => {
           <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
             {t("catalogPage.deepProductsTitle")}
           </h2>
-          <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
+          <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#FF4610]" />
         </div>
 
         <DeferredSection placeholderClassName="min-h-[260px]">

@@ -100,11 +100,11 @@ const CategoryCalculator: React.FC<Props> = () => {
     <div className="w-full bg-white relative">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div>
-          <label className="block text-[#F58322] font-bold text-sm mb-1">
+          <label className="block text-[#FF4610] font-bold text-sm mb-1">
             {t("calculator.material")}
           </label>
           <select
-            className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#F58322]"
+            className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#FF4610]"
             value={material}
             onChange={(e) => setMaterial(e.target.value)}
           >
@@ -120,11 +120,11 @@ const CategoryCalculator: React.FC<Props> = () => {
         </div>
 
         <div>
-          <label className="block text-[#F58322] font-bold text-sm mb-1">
+          <label className="block text-[#FF4610] font-bold text-sm mb-1">
             {t("calculator.thickness")}
           </label>
           <select
-            className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#F58322]"
+            className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#FF4610]"
             value={thickness}
             onChange={(e) => setThickness(e.target.value)}
           >
@@ -143,11 +143,11 @@ const CategoryCalculator: React.FC<Props> = () => {
         </div>
 
         <div>
-          <label className="block text-[#F58322] font-bold text-sm mb-1">
+          <label className="block text-[#FF4610] font-bold text-sm mb-1">
             {t("calculator.angle")}
           </label>
           <select
-            className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#F58322]"
+            className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#FF4610]"
             value={angle}
             onChange={(e) => setAngle(e.target.value)}
           >
@@ -159,13 +159,13 @@ const CategoryCalculator: React.FC<Props> = () => {
         </div>
 
         <div>
-          <label className="block text-[#F58322] font-bold text-sm mb-1">
+          <label className="block text-[#FF4610] font-bold text-sm mb-1">
             {t("calculator.bendLength")}
           </label>
           <input
             type="number"
             min="0"
-            className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#F58322]"
+            className="w-full border border-gray-300 rounded-sm px-2 py-1.5 text-sm outline-none bg-white focus:border-[#FF4610]"
             value={length}
             onChange={(e) => setLength(e.target.value)}
             placeholder={t("calculator.placeholderLength")}
@@ -176,13 +176,13 @@ const CategoryCalculator: React.FC<Props> = () => {
       <div className="overflow-x-auto mb-6">
         <table className="w-full border-collapse bg-[#F8F9FA] text-sm text-center min-w-[750px] shadow-sm">
           <thead>
-            <tr className="bg-[#F58322] text-white">
+            <tr className="bg-[#FF4610] text-white">
               <th className="py-2 px-4 text-left w-[25%]">
                 {t("calculator.parameter")}
               </th>
               <th className="py-2 px-2 w-[15%]">▼</th>
               <th className="py-2 px-2 w-[15%]">▼</th>
-              <th className="py-1 px-2 w-[20%] font-bold leading-tight bg-[#DB741F]">
+              <th className="py-1 px-2 w-[20%] font-bold leading-tight bg-[#E03A08]">
                 {t("calculator.recommended")}
                 <br />▼
               </th>
@@ -198,7 +198,7 @@ const CategoryCalculator: React.FC<Props> = () => {
               {columns.map((col, idx) => (
                 <td
                   key={idx}
-                  className={`py-4 ${col.type === "rec" ? "bg-[#F58322] text-white font-bold" : ""}`}
+                  className={`py-4 ${col.type === "rec" ? "bg-[#FF4610] text-white font-bold" : ""}`}
                 >
                   {col.v ? col.v : col.status}
                 </td>
@@ -212,7 +212,7 @@ const CategoryCalculator: React.FC<Props> = () => {
               {columns.map((col, idx) => (
                 <td
                   key={idx}
-                  className={`py-4 ${col.type === "rec" ? "bg-[#F58322] text-white font-bold" : ""}`}
+                  className={`py-4 ${col.type === "rec" ? "bg-[#FF4610] text-white font-bold" : ""}`}
                 >
                   {col.h !== null && angle
                     ? col.h.toFixed(2)
@@ -229,7 +229,7 @@ const CategoryCalculator: React.FC<Props> = () => {
               {columns.map((col, idx) => (
                 <td
                   key={idx}
-                  className={`py-4 ${col.type === "rec" ? "bg-[#F58322] text-white font-bold" : ""}`}
+                  className={`py-4 ${col.type === "rec" ? "bg-[#FF4610] text-white font-bold" : ""}`}
                 >
                   {col.r !== null ? col.r.toFixed(2) : col.status}
                 </td>
@@ -243,7 +243,7 @@ const CategoryCalculator: React.FC<Props> = () => {
               {columns.map((col, idx) => (
                 <td
                   key={idx}
-                  className={`py-4 ${col.type === "rec" ? "bg-[#DB741F] text-white font-bold" : ""}`}
+                  className={`py-4 ${col.type === "rec" ? "bg-[#E03A08] text-white font-bold" : ""}`}
                 >
                   {col.f !== null
                     ? Math.ceil(col.f)
@@ -257,9 +257,9 @@ const CategoryCalculator: React.FC<Props> = () => {
         </table>
       </div>
       {recommendedForce && recommendedForce > 0 && (
-        <div className="bg-orange-50 border-l-4 border-[#F58322] p-4 rounded-r-md flex justify-between items-center animate-in fade-in">
+        <div className="bg-[#FFF2EE] border-l-4 border-[#FF4610] p-4 rounded-r-md flex justify-between items-center animate-in fade-in">
           <div>
-            <h4 className="text-[#DB741F] font-bold text-lg">
+            <h4 className="text-[#E03A08] font-bold text-lg">
               {t("calculator.resultTitle")}
             </h4>
             <p className="text-gray-700 mt-1">
@@ -275,7 +275,7 @@ const CategoryCalculator: React.FC<Props> = () => {
                 behavior: "smooth",
               });
             }}
-            className="hidden sm:block px-6 py-2 bg-[#F58322] hover:bg-[#DB741F] text-white font-medium rounded transition"
+            className="hidden sm:block px-6 py-2 bg-[#FF4610] hover:bg-[#E03A08] text-white font-medium rounded transition"
           >
             {t("calculator.pickMachine")}
           </button>

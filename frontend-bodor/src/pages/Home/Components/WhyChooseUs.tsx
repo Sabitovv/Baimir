@@ -36,7 +36,7 @@ const WhyChooseUs = () => {
         <div className="px-1 md:px-0">
 
           <ScrollReveal>
-            <h2 className="mb-6 font-manrope text-[32px] font-semibold uppercase leading-[1.06] text-[#111111] md:mb-12 md:text-5xl xl:text-6xl">
+            <h2 className="mb-6 font-manrope text-[32px] font-semibold uppercase leading-[1.06] text-[#171B25] md:mb-12 md:text-5xl xl:text-6xl">
               {t('home.why.title')}
             </h2>
           </ScrollReveal>
@@ -44,7 +44,7 @@ const WhyChooseUs = () => {
             {features.map((item, index) => (
               <StaggerItem key={index}>
                 <div className="group flex h-full flex-col rounded-xl border border-[#ECECEC] bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md md:p-8">
-                  <div className="mb-3 text-[#F58322]">
+                  <div className="mb-3 text-[#FF4610]">
                     <EditableImage
                       imageKey={item.key}
                       fallbackSrc={item.icon}

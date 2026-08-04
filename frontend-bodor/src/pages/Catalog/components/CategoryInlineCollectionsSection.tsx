@@ -45,7 +45,7 @@ const CategoryInlineCollectionsSection = ({
           <h2 className='font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900'>
             {sectionTitle}
           </h2>
-          <div className='mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]' />
+          <div className='mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#FF4610]' />
         </div>
       )}
 
@@ -62,7 +62,7 @@ const CategoryInlineCollectionsSection = ({
               <button
                 type='button'
                 onClick={() => navigate(`/collections/${collection.slug}`)}
-                className='shrink-0 rounded-full border border-[#F58322] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] text-[#DB741F] transition hover:bg-[#FFF4EA] sm:px-4 sm:py-1.5 sm:text-xs'
+                className='shrink-0 rounded-full border border-[#FF4610] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] text-[#E03A08] transition hover:bg-[#FFF2EE] sm:px-4 sm:py-1.5 sm:text-xs'
               >
                 {t('commonCatalog.showAll')}
               </button>

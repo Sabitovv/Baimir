@@ -114,7 +114,7 @@ const ComparePage = () => {
             </p>
             <Link
               to="/catalog"
-              className="mt-5 inline-flex rounded-xl bg-[#F58322] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#DB741F] sm:px-5 sm:py-3 sm:text-base"
+              className="mt-5 inline-flex rounded-xl bg-[#FF4610] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#E03A08] sm:px-5 sm:py-3 sm:text-base"
             >
               {t("compare.goToCatalog")}
             </Link>
@@ -137,7 +137,7 @@ const ComparePage = () => {
             <button
               type="button"
               onClick={handleBack}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#F58322] px-3 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#DB741F] sm:gap-2 sm:px-4 sm:text-sm"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#FF4610] px-3 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#E03A08] sm:gap-2 sm:px-4 sm:text-sm"
             >
               <ArrowBackRoundedIcon fontSize="inherit" />
               {t("common.back", { defaultValue: "Назад" })}
@@ -145,7 +145,7 @@ const ComparePage = () => {
             <button
               type="button"
               onClick={() => dispatch(clearCompare())}
-              className="rounded-xl border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 transition-colors hover:border-[#F58322] hover:text-[#DB741F] sm:px-4 sm:text-sm"
+              className="rounded-xl border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 transition-colors hover:border-[#FF4610] hover:text-[#E03A08] sm:px-4 sm:text-sm"
             >
               {t("compare.clear")}
             </button>
@@ -184,8 +184,8 @@ const ComparePage = () => {
                       onClick={() => setSelectedCategoryId(group.categoryId)}
                       className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold whitespace-nowrap transition sm:gap-2 sm:px-4 sm:text-sm ${
                         isActive
-                          ? "bg-[#F58322] text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-[#FFF4EA] hover:text-[#DB741F]"
+                          ? "bg-[#FF4610] text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-[#FFF2EE] hover:text-[#E03A08]"
                       }`}
                     >
                       <span>{group.categoryName}</span>
@@ -212,7 +212,7 @@ const ComparePage = () => {
                       activeGroup.products.map((product) => product.id),
                     )
                   }
-                  className="hidden rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-[#F58322] hover:text-[#DB741F] sm:inline-flex"
+                  className="hidden rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-[#FF4610] hover:text-[#E03A08] sm:inline-flex"
                 >
                   {t("compare.clear")}
                 </button>
@@ -224,8 +224,8 @@ const ComparePage = () => {
                   onClick={() => setShowOnlyDifferences(false)}
                   className={`w-full rounded-lg px-3 py-2 text-xs font-semibold transition sm:w-auto sm:px-4 sm:text-sm ${
                     !showOnlyDifferences
-                      ? "bg-[#F58322] text-white"
-                      : "bg-white text-gray-700 hover:text-[#DB741F] sm:border sm:border-gray-300 sm:hover:border-[#F58322]"
+                      ? "bg-[#FF4610] text-white"
+                      : "bg-white text-gray-700 hover:text-[#E03A08] sm:border sm:border-gray-300 sm:hover:border-[#FF4610]"
                   }`}
                 >
                   {t("compare.allCharacteristics")}
@@ -235,8 +235,8 @@ const ComparePage = () => {
                   onClick={() => setShowOnlyDifferences(true)}
                   className={`w-full rounded-lg px-3 py-2 text-xs font-semibold transition sm:w-auto sm:px-4 sm:text-sm ${
                     showOnlyDifferences
-                      ? "bg-[#F58322] text-white"
-                      : "bg-white text-gray-700 hover:text-[#DB741F] sm:border sm:border-gray-300 sm:hover:border-[#F58322]"
+                      ? "bg-[#FF4610] text-white"
+                      : "bg-white text-gray-700 hover:text-[#E03A08] sm:border sm:border-gray-300 sm:hover:border-[#FF4610]"
                   }`}
                 >
                   {t("compare.onlyDifferences")}
@@ -260,13 +260,13 @@ const ComparePage = () => {
                     <h3 className="mt-3 line-clamp-2 text-sm font-semibold text-gray-900">
                       {product.name}
                     </h3>
-                    <p className="mt-1 text-sm font-bold text-[#F58322]">
+                    <p className="mt-1 text-sm font-bold text-[#FF4610]">
                       {formatPrice(product.price)}
                     </p>
                     <button
                       type="button"
                       onClick={() => dispatch(removeFromCompare(product.id))}
-                      className="mt-3 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-[#F58322] hover:text-[#DB741F]"
+                      className="mt-3 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-[#FF4610] hover:text-[#E03A08]"
                     >
                       {t("compare.remove")}
                     </button>
@@ -306,7 +306,7 @@ const ComparePage = () => {
                               <h3 className="mt-2 line-clamp-2 text-[11px] font-semibold text-gray-900 sm:text-xs">
                                 {product.name}
                               </h3>
-                              <p className="mt-1 text-xs font-bold text-[#F58322]">
+                              <p className="mt-1 text-xs font-bold text-[#FF4610]">
                                 {formatPrice(product.price)}
                               </p>
                               <button
@@ -314,7 +314,7 @@ const ComparePage = () => {
                                 onClick={() =>
                                   dispatch(removeFromCompare(product.id))
                                 }
-                                className="mt-2 rounded-md border border-gray-300 px-2 py-1 text-[10px] font-semibold text-gray-700 transition-colors hover:border-[#F58322] hover:text-[#DB741F] sm:text-xs"
+                                className="mt-2 rounded-md border border-gray-300 px-2 py-1 text-[10px] font-semibold text-gray-700 transition-colors hover:border-[#FF4610] hover:text-[#E03A08] sm:text-xs"
                               >
                                 {t("compare.remove")}
                               </button>

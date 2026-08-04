@@ -89,7 +89,7 @@ const AttachmentList = ({ attachments, className = '' }: AttachmentListProps) =>
                 key={file.id}
                 className={`rounded-xl border p-3 transition-all ${
                   isActive
-                    ? 'border-[#F58322] bg-[#FFF7F0]'
+                    ? 'border-[#FF4610] bg-[#FFF8EE]'
                     : 'border-gray-200 bg-white hover:border-gray-300'
                 }`}
               >
@@ -107,7 +107,7 @@ const AttachmentList = ({ attachments, className = '' }: AttachmentListProps) =>
 
                 <a
                   href={normalizeDownloadUrl(file.downloadUrl)}
-                  className="mt-3 inline-flex rounded-md bg-[#F58322] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#DB741F]"
+                  className="mt-3 inline-flex rounded-md bg-[#FF4610] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#E03A08]"
                 >
                   Скачать
                 </a>

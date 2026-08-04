@@ -122,7 +122,7 @@
 html,
 body {
     overflow-x: hidden;
-    background-color: #F2F2F2;
+    background-color: #F6F6F6;
     font-family: 'Manrope', Arial, sans-serif;
     font-size-adjust: 0.52;
     -webkit-font-smoothing: antialiased;
@@ -133,9 +133,9 @@ html {
     overflow-y: scroll;
 }
 :root {
-    --brand: #F58322;
-    --brand-hover: #DB741F;
-    --brand-dark: #0b5fa1;
+    --brand: #FF4610;
+    --brand-hover: #E03A08;
+    --brand-dark: #171B25;
 }
 
 @media (prefers-reduced-motion: reduce) {

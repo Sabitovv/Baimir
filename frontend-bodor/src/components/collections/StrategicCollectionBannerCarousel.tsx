@@ -105,17 +105,17 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
         className='pointer-events-none absolute inset-0 h-full w-full object-cover opacity-30 blur-[2px]'
       />
       <div className='pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0B1220]/92 via-[#111827]/80 to-[#0F172A]/92' />
-      <div className='pointer-events-none absolute -right-10 -top-8 h-28 w-28 rounded-full bg-[#F58322]/20 blur-2xl' />
+      <div className='pointer-events-none absolute -right-10 -top-8 h-28 w-28 rounded-full bg-[#FF4610]/20 blur-2xl' />
 
       <div className='relative sm:hidden'>
-        <p className='mb-1 inline-flex rounded-full border border-[#FDBA74]/45 bg-[#FDBA74]/12 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#FCD9A5]'>
+        <p className='mb-1 inline-flex rounded-full border border-[#FFA88F]/45 bg-[#FFA88F]/12 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#FFC5B5]'>
           {t('collections.strategic')}
         </p>
         <h3 className='line-clamp-1 text-xs font-bold text-white/90'>
           {activeCollection.name}
         </h3>
         {periodLabel && (
-          <p className='mt-1 inline-flex rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[9px] font-semibold text-[#FDE7C3]'>
+          <p className='mt-1 inline-flex rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[9px] font-semibold text-[#FFD6CB]'>
             {t('collections.promo')} {periodLabel}
           </p>
         )}
@@ -159,7 +159,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
 
         <Link
           to={`/catalog/product/${coverProduct.slug}`}
-          className='mt-2.5 inline-flex rounded-full bg-[#F58322] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#DB741F]'
+          className='mt-2.5 inline-flex rounded-full bg-[#FF4610] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#E03A08]'
         >
           {t('collections.toProducts')}
         </Link>
@@ -167,14 +167,14 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
 
       <div className='relative hidden min-h-[150px] items-center gap-4 sm:grid xl:hidden sm:grid-cols-[1fr_1.1fr_auto]'>
         <div className='min-w-0'>
-          <p className='mb-1.5 inline-flex rounded-full border border-[#FDBA74]/45 bg-[#FDBA74]/12 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#FCD9A5]'>
+          <p className='mb-1.5 inline-flex rounded-full border border-[#FFA88F]/45 bg-[#FFA88F]/12 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#FFC5B5]'>
             {t('collections.strategic')}
           </p>
           <h3 className='line-clamp-2 text-sm font-extrabold leading-[1.2] text-white md:text-base'>
             {activeCollection.name}
           </h3>
           {periodLabel && (
-            <p className='mt-1.5 inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-[#FDE7C3]'>
+            <p className='mt-1.5 inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-[#FFD6CB]'>
               {t('collections.promo')} {periodLabel}
             </p>
           )}
@@ -186,7 +186,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
           </p>
           <Link
             to={`/catalog/product/${coverProduct.slug}`}
-            className='mt-2 inline-flex rounded-full bg-[#F58322] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#DB741F] md:mt-2.5 md:px-3.5 md:py-1.5 md:text-xs'
+            className='mt-2 inline-flex rounded-full bg-[#FF4610] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#E03A08] md:mt-2.5 md:px-3.5 md:py-1.5 md:text-xs'
           >
             {t('collections.toProducts')}
           </Link>
@@ -232,14 +232,14 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
 
       <div className='relative hidden min-h-[172px] xl:block'>
         <div className='absolute left-0 top-1/2 z-20 max-w-[38%] -translate-y-1/2'>
-          <p className='mb-2 inline-flex rounded-full border border-[#FDBA74]/45 bg-[#FDBA74]/12 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#FCD9A5] sm:mb-2.5 sm:px-3 sm:text-[11px]'>
+          <p className='mb-2 inline-flex rounded-full border border-[#FFA88F]/45 bg-[#FFA88F]/12 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#FFC5B5] sm:mb-2.5 sm:px-3 sm:text-[11px]'>
             {t('collections.strategic')}
           </p>
           <h3 className='line-clamp-2 text-base font-extrabold leading-[1.2] text-white sm:text-[20px]'>
             {activeCollection.name}
           </h3>
           {periodLabel && (
-            <p className='mt-2 inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold tracking-[0.02em] text-[#FDE7C3] sm:mt-2.5 sm:px-3 sm:text-xs'>
+            <p className='mt-2 inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold tracking-[0.02em] text-[#FFD6CB] sm:mt-2.5 sm:px-3 sm:text-xs'>
               {t('collections.promo')} {periodLabel}
             </p>
           )}
@@ -291,7 +291,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
         <div className='absolute bottom-0 left-1/2 z-20 -translate-x-1/2'>
           <Link
             to={`/catalog/product/${coverProduct.slug}`}
-            className='inline-flex rounded-full bg-[#F58322] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#DB741F] sm:px-3.5 sm:py-1.5 sm:text-xs'
+            className='inline-flex rounded-full bg-[#FF4610] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[#E03A08] sm:px-3.5 sm:py-1.5 sm:text-xs'
           >
             {t('collections.toProducts')}
           </Link>
@@ -329,7 +329,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
               }}
               className={`h-1.5 rounded-full transition-all ${
                 index === activeIndex
-                  ? 'w-6 bg-[#F58322]'
+                  ? 'w-6 bg-[#FF4610]'
                   : 'w-3 bg-white/35 hover:bg-white/60'
               }`}
             />

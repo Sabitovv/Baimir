@@ -376,8 +376,8 @@ const CatalogFilters = ({
         input[type=range]::-webkit-slider-runnable-track { height: 4px; background: transparent; border: none; }
         input[type=range]::-moz-range-track { height: 4px; background: transparent; border: none; }
         input[type=range]::-moz-range-progress { background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #F58322; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 50; }
-        input[type=range]::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #F58322; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 50; border: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #FF4610; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 50; }
+        input[type=range]::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #FF4610; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 50; border: none; }
       `}</style>
 
       <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-x-12 gap-y-8">
@@ -496,7 +496,7 @@ const CatalogFilters = ({
                               setRange(f.code, "from", e.target.value)
                             }
                             onBlur={() => commitAndNormalize(f.code)}
-                            className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors"
+                            className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#FF4610] transition-colors"
                           />
                           {f.unitCode != null && f.unitCode !== "" && (
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
@@ -519,7 +519,7 @@ const CatalogFilters = ({
                               setRange(f.code, "to", e.target.value)
                             }
                             onBlur={() => commitAndNormalize(f.code)}
-                            className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors"
+                            className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#FF4610] transition-colors"
                           />
                           {f.unitCode != null && f.unitCode !== "" && (
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
@@ -531,7 +531,7 @@ const CatalogFilters = ({
                       <div className="relative h-6 mb-4 select-none overflow-hidden">
                         <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1 bg-gray-200 rounded" />
                         <div
-                          className="absolute top-1/2 -translate-y-1/2 h-1 bg-[#F58322] rounded z-10"
+                          className="absolute top-1/2 -translate-y-1/2 h-1 bg-[#FF4610] rounded z-10"
                           style={{
                             left: `${(rangeStart / sliderSteps) * 100}%`,
                             right: `${100 - (rangeEnd / sliderSteps) * 100}%`,
@@ -572,7 +572,7 @@ const CatalogFilters = ({
                       <button
                         key={v.id}
                         onClick={() => toggleCheckbox(f.code, String(v.id))}
-                        className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#F58322] text-white border-[#F58322]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
+                        className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#FF4610] text-white border-[#FF4610]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
                       >
                         {v.label}{" "}
                         {v.count > 0 && (
@@ -593,7 +593,7 @@ const CatalogFilters = ({
                       <button
                         key={v.id}
                         onClick={() => setRadioValue(f.code, String(v.id))}
-                        className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#F58322] text-white border-[#F58322]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
+                        className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#FF4610] text-white border-[#FF4610]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
                       >
                         {v.label}{" "}
                         {v.count > 0 && (
@@ -618,7 +618,7 @@ const CatalogFilters = ({
         </button>
         <button
           onClick={applyRanges}
-          className="bg-[#F58322] text-white px-8 py-3 text-sm font-medium rounded hover:bg-[#DB741F] transition-colors"
+          className="bg-[#FF4610] text-white px-8 py-3 text-sm font-medium rounded hover:bg-[#E03A08] transition-colors"
         >
           {t("filters.apply")}
         </button>

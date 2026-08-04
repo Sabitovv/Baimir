@@ -50,7 +50,7 @@ const ServicePage = () => {
 
           <ScrollReveal>
             <section>
-              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight">
+              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#FF4610] leading-tight">
                 {t('service.title')}
               </h1>
               <h3 className="text-base sm:text-lg lg:text-xl mt-2 font-bold font-manrope text-gray-800">
@@ -75,7 +75,7 @@ const ServicePage = () => {
 
           <section className="mt-12 sm:mt-16 lg:mt-20">
             <ScrollReveal>
-              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#F58322] mb-6 sm:mb-8">
+              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#FF4610] mb-6 sm:mb-8">
                 {t('service.services.title')}
               </h2>
             </ScrollReveal>
@@ -84,7 +84,7 @@ const ServicePage = () => {
               {services.map((item, i) => (
                 <StaggerItem
                   key={i}
-                  className="flex items-center justify-center text-[#F58322] bg-white p-6 sm:py-8 md:py-10 text-center font-bold hover:shadow-lg transition-shadow duration-300 cursor-pointer text-lg sm:text-xl rounded-sm border border-gray-100"
+                  className="flex items-center justify-center text-[#FF4610] bg-white p-6 sm:py-8 md:py-10 text-center font-bold hover:shadow-lg transition-shadow duration-300 cursor-pointer text-lg sm:text-xl rounded-sm border border-gray-100"
                 >
                   {item}
                 </StaggerItem>
@@ -128,7 +128,7 @@ const ServicePage = () => {
                 <StaggerContainer className="space-y-6 sm:space-y-8">
                   {['certification', 'experience', 'coverage', 'speed'].map((item, i) => (
                     <StaggerItem key={i}>
-                      <p className="text-[#F58322] font-bold text-lg mb-1 sm:mb-2">
+                      <p className="text-[#FF4610] font-bold text-lg mb-1 sm:mb-2">
                         {t(`service.engineers.${item}.title`)}
                       </p>
                       <p className="text-gray-700 text-sm sm:text-base leading-relaxed">

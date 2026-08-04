@@ -56,7 +56,7 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
 
   const title = (
     <h2 className={`
-      font-manrope font-semibold uppercase text-[#111111]
+      font-manrope font-semibold uppercase text-[#171B25]
       tracking-tight
       ${isModal ? 'text-2xl md:text-3xl mb-6 md:mb-7 text-left' : 'text-3xl md:text-4xl xl:text-[54px] mb-10 md:mb-12 xl:mb-16 text-center'}
     `}>
@@ -69,10 +69,10 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
     bg-white
     border border-[#D1D5DB]
     rounded-xl
-    text-[#111111]
+    text-[#171B25]
     placeholder:text-[#9CA3AF]
-    focus:border-[#0B5FA1]
-    focus:ring-2 focus:ring-[#0B5FA1]/15
+    focus:border-[#171B25]
+    focus:ring-2 focus:ring-[#171B25]/15
     outline-none
     transition-all duration-200
   `
@@ -180,15 +180,15 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
                   disabled={isLoading}
                   className="
                     min-w-[220px] px-8 py-3 
-                    bg-[#F58322] text-white 
+                    bg-[#FF4610] text-white 
                     font-semibold 
                     text-base tracking-wide
                     rounded-xl 
-                    hover:bg-[#DB741F] 
+                    hover:bg-[#E03A08] 
                     transition-all duration-200
                     disabled:opacity-70 disabled:cursor-not-allowed
-                    disabled:hover:bg-[#F58322]
-                    focus:ring-2 focus:ring-[#F58322]/30 focus:ring-offset-2
+                    disabled:hover:bg-[#FF4610]
+                    focus:ring-2 focus:ring-[#FF4610]/30 focus:ring-offset-2
                     outline-none
                   "
                 >

@@ -152,7 +152,7 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
                           {title ?? collection.name}
                         </h2>
                         {(collection.startDate || collection.endDate) && (
-                          <p className='mt-1.5 inline-flex max-w-full items-center rounded-full border border-[#FFD7B8] bg-[#FFF4EA] px-2 py-0.5 text-[9px] font-semibold text-[#B45309] sm:mt-2 sm:px-3 sm:py-1 sm:text-xs'>
+                          <p className='mt-1.5 inline-flex max-w-full items-center rounded-full border border-[#FFD6CB] bg-[#FFF2EE] px-2 py-0.5 text-[9px] font-semibold text-[#B32E05] sm:mt-2 sm:px-3 sm:py-1 sm:text-xs'>
                             {(() => {
                               const startLabel = formatPromoDate(collection.startDate, i18n.language)
                               const endLabel = formatPromoDate(collection.endDate, i18n.language)
@@ -167,7 +167,7 @@ const ProductCollectionRenderer: FC<ProductCollectionRendererProps> = ({
                       <button
                         type='button'
                         onClick={() => navigate(`/collections/${collection.slug}`)}
-                        className='shrink-0 rounded-full border border-[#F58322] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] text-[#DB741F] transition hover:bg-[#FFF4EA] sm:px-4 sm:py-1.5 sm:text-xs'
+                        className='shrink-0 rounded-full border border-[#FF4610] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.06em] text-[#E03A08] transition hover:bg-[#FFF2EE] sm:px-4 sm:py-1.5 sm:text-xs'
                       >
                         {t('commonCatalog.showAll')}
                       </button>

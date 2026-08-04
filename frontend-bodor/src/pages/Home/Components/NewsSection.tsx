@@ -96,11 +96,11 @@ const NewsSection = () => {
 
         <ScrollReveal>
           <div className='flex items-end justify-between'>
-            <h2 className="font-manrope font-bold uppercase text-[#111111]
+            <h2 className="font-manrope font-bold uppercase text-[#171B25]
                 text-3xl md:text-4xl xl:text-5xl mb-10">
               {t('home.news.title')}
             </h2>
-            <Link to="/Blog" className='font-manrope font-semibold uppercase text-[#111111] text-sm md:text-md xl:text-xl mb-10 hover:text-[#DB741F] hover:underline'>
+            <Link to="/Blog" className='font-manrope font-semibold uppercase text-[#171B25] text-sm md:text-md xl:text-xl mb-10 hover:text-[#E03A08] hover:underline'>
               {t('home.news.readmore')}
             </Link>
           </div>
@@ -109,7 +109,7 @@ const NewsSection = () => {
 
         {isLoading && (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#F58322]"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#FF4610]"></div>
           </div>
         )}
 
@@ -148,7 +148,7 @@ const NewsSection = () => {
                       </div>
 
                       <div className="p-4 flex flex-col flex-grow">
-                        <h3 className="font-bold text-sm leading-snug line-clamp-2 mb-2 group-hover:text-[#F58322] transition-colors duration-300">
+                        <h3 className="font-bold text-sm leading-snug line-clamp-2 mb-2 group-hover:text-[#FF4610] transition-colors duration-300">
                           {title}
                         </h3>
 
@@ -161,7 +161,7 @@ const NewsSection = () => {
                         <div className="mt-auto pt-3 border-t border-gray-100">
                           <div className="flex items-center justify-between text-[11px] text-gray-500">
                             <div className="flex items-center gap-1">
-                              <PersonOutlineRoundedIcon sx={{ fontSize: 14, color: '#F58322' }} />
+                              <PersonOutlineRoundedIcon sx={{ fontSize: 14, color: '#FF4610' }} />
                               <span className="truncate max-w-[80px]">{authorName || '—'}</span>
                             </div>
                             <div className="flex items-center gap-1">
