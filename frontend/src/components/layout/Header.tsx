@@ -419,7 +419,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
         <div className="flex items-center gap-4 2xl:gap-8">
           <Link to="/" className="shrink-0">
-            <EditableImage imageKey="header_main_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" width={120} height={60} className="h-12 2xl:h-15" />
+            <EditableImage imageKey="header_main_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" className="h-12 2xl:h-15" />
           </Link>
 
           <div
@@ -559,7 +559,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       )}
       <div className="xl:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
         <Link to="/">
-          <EditableImage imageKey="header_mobile_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" width={80} height={32} className="h-8" />
+          <EditableImage imageKey="header_mobile_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" className="h-8" />
         </Link>
 
         <div className="flex items-center gap-3">
@@ -641,7 +641,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       {open && (
         <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">
           <div className="flex items-center justify-between h-[88px] px-4 border-b border-white/10">
-            <EditableImage imageKey="header_drawer_logo" fallbackSrc={LOGO_URL} className="h-8" alt="Logo" width={80} height={32} />
+            <EditableImage imageKey="header_drawer_logo" fallbackSrc={LOGO_URL} className="h-8" alt="Logo" />
             <button onClick={() => setOpen(false)}>
               <CloseIcon sx={{ fontSize: 28 }} />
             </button>
