@@ -181,12 +181,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
     >
       <div className={`relative flex items-center justify-center overflow-hidden ${isMini ? "h-16 aspect-square mb-1" : isCompact ? "h-24 aspect-[4/3] sm:h-28 md:h-28 lg:h-32 mb-1.5 sm:mb-2 md:mb-2 lg:mb-2.5" : "h-28 aspect-[4/3] sm:h-32 md:h-28 lg:h-32 xl:h-40 mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 xl:mb-4"}`}>
         {isNew === true && !isOutOfStock && (
-          <span className={`absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] text-[#DB741F] font-semibold ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"}`}>
+          <span className={`absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#EAF3FA] text-[#066AAB] font-semibold ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"}`}>
             {t("commonCatalog.new")}
           </span>
         )}
         {discountPercent !== null && discountPercent > 0 && (
-          <span className={`absolute right-2 top-2 z-20 inline-flex items-center rounded-full bg-gradient-to-r from-[#D94A2A] to-[#DB741F] text-white font-extrabold shadow-sm ring-1 ring-white/60 ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"}`}>
+          <span className={`absolute right-2 top-2 z-20 inline-flex items-center rounded-full bg-gradient-to-r from-[#063D7E] to-[#066AAB] text-white font-extrabold shadow-sm ring-1 ring-white/60 ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"}`}>
             -{discountPercent}%
           </span>
         )}
@@ -203,7 +203,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
       </div>
 
-      <h3 className={`font-manrope font-extrabold text-gray-800 leading-snug sm:leading-tight group-hover:text-[#DB741F] transition-colors line-clamp-2 ${isMini ? "text-[10px] mb-1" : isCompact ? "text-[11px] sm:text-xs md:text-[13px] mb-1 sm:mb-1.5" : "text-xs sm:text-sm md:text-[13px] lg:text-sm mb-1.5 sm:mb-2"}`}>
+      <h3 className={`font-manrope font-extrabold text-gray-800 leading-snug sm:leading-tight group-hover:text-[#066AAB] transition-colors line-clamp-2 ${isMini ? "text-[10px] mb-1" : isCompact ? "text-[11px] sm:text-xs md:text-[13px] mb-1 sm:mb-1.5" : "text-xs sm:text-sm md:text-[13px] lg:text-sm mb-1.5 sm:mb-2"}`}>
         {name}
       </h3>
 
@@ -282,8 +282,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
               }}
               className={`flex shrink-0 items-center justify-center rounded-sm border transition ${isCompact ? "h-8 w-8 sm:h-9 sm:w-9" : "h-9 w-9 sm:h-10 sm:w-10"} ${
                 isInCompare
-                  ? "border-[#F58322] bg-[#FFF4EA] text-[#DB741F]"
-                  : "border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]"
+                  ? "border-[#238ECE] bg-[#EAF3FA] text-[#066AAB]"
+                  : "border-gray-300 text-gray-700 hover:border-[#238ECE] hover:text-[#066AAB]"
               }`}
               aria-label={
                 isInCompare
@@ -305,10 +305,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
 
           {cartItem ? (
-            <div className="flex w-full items-center justify-between bg-[#F58322] rounded-sm">
+            <div className="flex w-full items-center justify-between bg-[#238ECE] rounded-sm">
               <button
                 type="button"
-                className={`${isMini ? "w-6 h-6 text-xs" : isCompact ? "w-8 h-8 sm:w-9 sm:h-9 text-sm" : "w-9 h-9 sm:w-10 sm:h-10"} flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition`}
+                className={`${isMini ? "w-6 h-6 text-xs" : isCompact ? "w-8 h-8 sm:w-9 sm:h-9 text-sm" : "w-9 h-9 sm:w-10 sm:h-10"} flex items-center justify-center text-white font-bold hover:bg-[#066AAB] transition`}
                 onClick={(event) => {
                   event.preventDefault();
                   if (cartItem.quantity <= 1) {
@@ -325,7 +325,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </span>
               <button
                 type="button"
-                className={`${isMini ? "w-6 h-6 text-xs" : isCompact ? "w-8 h-8 sm:w-9 sm:h-9 text-sm" : "w-9 h-9 sm:w-10 sm:h-10"} flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition`}
+                className={`${isMini ? "w-6 h-6 text-xs" : isCompact ? "w-8 h-8 sm:w-9 sm:h-9 text-sm" : "w-9 h-9 sm:w-10 sm:h-10"} flex items-center justify-center text-white font-bold hover:bg-[#066AAB] transition`}
                 onClick={(event) => {
                   event.preventDefault();
                   dispatch(incrementQuantity(id));
@@ -337,7 +337,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <button
               type="button"
-               className={`w-full font-extrabold uppercase rounded-sm transition bg-[#F58322] text-white hover:bg-[#DB741F] ${isMini ? "py-1 text-[9px]" : isCompact ? "py-1.5 sm:py-2 text-[10px] sm:text-xs md:text-[13px]" : "py-2 text-[11px] sm:text-[13px] md:text-xs lg:text-sm"}`}
+               className={`w-full font-extrabold uppercase rounded-sm transition bg-[#238ECE] text-white hover:bg-[#066AAB] ${isMini ? "py-1 text-[9px]" : isCompact ? "py-1.5 sm:py-2 text-[10px] sm:text-xs md:text-[13px]" : "py-2 text-[11px] sm:text-[13px] md:text-xs lg:text-sm"}`}
               onClick={(event) => {
                 event.preventDefault();
 

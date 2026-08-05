@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -6,15 +6,21 @@ import { skipToken } from '@reduxjs/toolkit/query'
 import SearchIcon from '@mui/icons-material/Search'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
-const LOGO_URL = '/images/logo.webp'
+// Baymir logo (kept for reference):
+// const LOGO_URL = '/images/logo.webp'
+// KRRASS wordmark (276x55 SVG, blue mark + white type — built for dark headers), vendored from
+// https://www.krrass.com/wp-content/uploads/2022/09/Logo-w.svg
+const LOGO_URL = '/images/logo-krrass.svg'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { useAppSelector } from '@/app/hooks'
 import { useSearchProductsQuery } from '@/api/productsApi'
+import { useGetCategoriesTreeQuery } from '@/api/categoriesApi'
+import { findOnlyCategory } from '@/config/onlyCategory'
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import { EditableImage } from '@/zustand/EditableImage'
-//#F58322
-//#DB741F
+//#238ECE
+//#066AAB
 
 type HeaderProps = {
   setIsCartOpen: Dispatch<SetStateAction<boolean>>
@@ -91,10 +97,23 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     return () => window.clearTimeout(timeoutId)
   }, [isMobileSearchVisible, open])
 
-  const shouldSearch = debouncedQuery.length >= 1
+  // Поиск ограничен единственной доступной категорией (и её подкатегориями)
+  const { data: searchCategories = [] } = useGetCategoriesTreeQuery({ lang: i18n.language })
+  const onlyCategoryId = useMemo(
+    () => findOnlyCategory(searchCategories)?.id,
+    [searchCategories],
+  )
+
+  const shouldSearch = debouncedQuery.length >= 1 && onlyCategoryId != null
   const { data: searchData, isFetching: isSearchFetching } = useSearchProductsQuery(
     shouldSearch
-      ? { query: debouncedQuery, page: 0, size: 20, sort: 'id,DESC' }
+      ? {
+          query: debouncedQuery,
+          page: 0,
+          size: 20,
+          sort: 'id,DESC',
+          categoryIds: [onlyCategoryId as number],
+        }
       : skipToken,
   )
   const searchResults = (searchData?.content ?? []).slice(0, 12)
@@ -113,14 +132,15 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     && (isEmptyStateFetching || hasEmptyStateSuggestions)
 
   const navItems = [
-    { id: 'catalog', path: '/catalog' },
+    { id: 'catalog', path: '/catalog/listogibochnye-stanki' },
     // { id: 'technologies', path: '/technology' },
     // { id: 'demo', path: '/demo' },
     { id: 'production', path: '/production' },
-    { id: 'storage', path: '/storage' },
-    { id: 'service', path: '/service' },
-    { id: 'blog', path: '/blog' },
-    { id: 'about', path: '/about' },
+    // Скрыты из навигации: Склад, Сервис, Блог, О компании
+    // { id: 'storage', path: '/storage' },
+    // { id: 'service', path: '/service' },
+    // { id: 'blog', path: '/blog' },
+    // { id: 'about', path: '/about' },
   ]
 
   const changeLanguage = (lng: string) => {
@@ -129,8 +149,8 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
 
   const getLangClass = (lng: string) => {
     return i18n.language === lng
-      ? 'text-[#F58322] font-bold border-b border-[#F58322]'
-      : 'text-white hover:text-[#F58322] transition-colors'
+      ? 'text-[#238ECE] font-bold border-b border-[#238ECE]'
+      : 'text-white hover:text-[#238ECE] transition-colors'
   }
 
   const closeSearch = () => {
@@ -212,7 +232,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                             <span className='block truncate text-sm font-semibold text-gray-900'>
                               {product.name}
                             </span>
-                            <span className='block text-xs text-[#DB741F]'>
+                            <span className='block text-xs text-[#066AAB]'>
                               {formatPrice(product.price)}
                             </span>
                           </span>
@@ -242,7 +262,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-gray-900">{product.name}</span>
-                    <span className="block text-xs text-[#DB741F]">{formatPrice(product.price)}</span>
+                    <span className="block text-xs text-[#066AAB]">{formatPrice(product.price)}</span>
                   </span>
                 </button>
               </li>
@@ -279,7 +299,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-white">{product.name}</span>
-                    <span className="block text-xs text-[#F7A35C]">{formatPrice(product.price)}</span>
+                    <span className="block text-xs text-[#5FB0E0]">{formatPrice(product.price)}</span>
                   </span>
                 </button>
               </li>
@@ -317,7 +337,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                             <span className="block truncate text-sm font-semibold text-white">
                               {product.name}
                             </span>
-                            <span className="block text-xs text-[#F7A35C]">
+                            <span className="block text-xs text-[#5FB0E0]">
                               {formatPrice(product.price)}
                             </span>
                           </span>
@@ -359,7 +379,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-white">{product.name}</span>
-                    <span className="block text-xs text-[#F7A35C]">{formatPrice(product.price)}</span>
+                    <span className="block text-xs text-[#5FB0E0]">{formatPrice(product.price)}</span>
                   </span>
                 </button>
               </li>
@@ -397,7 +417,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                             <span className="block truncate text-sm font-semibold text-white">
                               {product.name}
                             </span>
-                            <span className="block text-xs text-[#F7A35C]">
+                            <span className="block text-xs text-[#5FB0E0]">
                               {formatPrice(product.price)}
                             </span>
                           </span>
@@ -415,11 +435,11 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full h-[88px] z-50 text-white overflow-visible bg-[#141414] font-manrope">
+    <header className="fixed top-0 left-0 right-0 w-full h-[88px] z-50 text-white overflow-visible bg-[#000000] font-manrope">
       <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
         <div className="flex items-center gap-4 2xl:gap-8">
           <Link to="/" className="shrink-0">
-            <EditableImage imageKey="header_main_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" className="h-12 2xl:h-15" />
+            <EditableImage imageKey="header_main_logo" fallbackSrc={LOGO_URL} alt="KRRASS Logo" className="h-8 2xl:h-9 w-auto" />
           </Link>
 
           <div
@@ -429,7 +449,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
             <div
               className={`${
                 isSearchOpen
-                  ? 'absolute left-0 top-1/2 z-[110] flex h-12 w-[460px] 2xl:w-[560px] 3xl:w-[640px] -translate-y-1/2 items-center rounded-lg border border-white/40 bg-black/90 shadow-[0_12px_30px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all focus-within:border-[#F58322] focus-within:shadow-[0_0_0_3px_rgba(245,131,34,0.2)]'
+                  ? 'absolute left-0 top-1/2 z-[110] flex h-12 w-[460px] 2xl:w-[560px] 3xl:w-[640px] -translate-y-1/2 items-center rounded-lg border border-white/40 bg-black/90 shadow-[0_12px_30px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all focus-within:border-[#238ECE] focus-within:shadow-[0_0_0_3px_rgba(35,142,206,0.2)]'
                   : 'flex h-10 w-full items-center border border-white/70 bg-black/30'
               }`}
             >
@@ -473,7 +493,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                 type="button"
                 className={`${
                   isSearchOpen
-                    ? 'ml-3 h-full px-5 border-l border-white/30 text-gray-100 hover:text-[#F7A35C]'
+                    ? 'ml-3 h-full px-5 border-l border-white/30 text-gray-100 hover:text-[#5FB0E0]'
                     : 'px-4 border-l border-white/70 text-white'
                 } transition-colors`}
                 onClick={submitSearch}
@@ -496,7 +516,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               key={key.id}
               to={key.path}
               className={({ isActive }) =>
-                isActive ? 'text-[#F58322]' : 'hover:text-[#DB741F] transition-colors'
+                isActive ? 'text-[#238ECE]' : 'hover:text-[#066AAB] transition-colors'
               }
             >
               {t(`header.nav.${key.id}`)}
@@ -528,21 +548,21 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               EN
             </button>
           </div>
-          {/* <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
+          {/* <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#066AAB] transition-colors shrink-0">
             {t('header.cta')}
           </button> */}
           <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-desktop>
-            <ShoppingCartIcon className="hover:text-[#DB741F]" />
+            <ShoppingCartIcon className="hover:text-[#066AAB]" />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#238ECE] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
           </button>
           <Link to="/compare" className="relative" aria-label={t('compare.open')} title={t('compare.open')}>
-            <CompareArrowsIcon className="hover:text-[#DB741F]" />
+            <CompareArrowsIcon className="hover:text-[#066AAB]" />
             {compareCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#238ECE] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {compareCount}
               </span>
             )}
@@ -559,7 +579,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       )}
       <div className="xl:hidden flex items-center justify-between h-full px-4 bg-black/60 backdrop-blur">
         <Link to="/">
-          <EditableImage imageKey="header_mobile_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" className="h-8" />
+          <EditableImage imageKey="header_mobile_logo" fallbackSrc={LOGO_URL} alt="KRRASS Logo" className="h-6 w-auto" />
         </Link>
 
         <div className="flex items-center gap-3">
@@ -568,14 +588,14 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
             onClick={toggleMobileSearch}
             aria-label={t('header.search')}
             title={t('header.search')}
-            className={`transition-colors ${isMobileSearchVisible ? 'text-[#F58322]' : 'text-white hover:text-[#DB741F]'}`}
+            className={`transition-colors ${isMobileSearchVisible ? 'text-[#238ECE]' : 'text-white hover:text-[#066AAB]'}`}
           >
             <SearchIcon sx={{ fontSize: 26 }} />
           </button>
           <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-mobile>
             <ShoppingCartIcon sx={{ fontSize: 26 }} />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#238ECE] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
@@ -583,7 +603,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           <Link to="/compare" className="relative" aria-label={t('compare.open')} title={t('compare.open')}>
             <CompareArrowsIcon sx={{ fontSize: 26 }} />
             {compareCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#238ECE] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {compareCount}
               </span>
             )}
@@ -596,9 +616,9 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       {isMobileSearchVisible && (
         <div
           ref={mobileTopSearchRef}
-          className="xl:hidden fixed top-[88px] left-0 right-0 z-[60] px-4 pt-2 pb-3 bg-[#141414]/95 backdrop-blur-md border-b border-white/10"
+          className="xl:hidden fixed top-[88px] left-0 right-0 z-[60] px-4 pt-2 pb-3 bg-[#000000]/95 backdrop-blur-md border-b border-white/10"
         >
-          <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#F58322]">
+          <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#238ECE]">
             <input
               ref={mobileInputRef}
               placeholder={t('header.search')}
@@ -641,7 +661,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
       {open && (
         <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">
           <div className="flex items-center justify-between h-[88px] px-4 border-b border-white/10">
-            <EditableImage imageKey="header_drawer_logo" fallbackSrc={LOGO_URL} className="h-8" alt="Logo" />
+            <EditableImage imageKey="header_drawer_logo" fallbackSrc={LOGO_URL} className="h-6 w-auto" alt="KRRASS Logo" />
             <button onClick={() => setOpen(false)}>
               <CloseIcon sx={{ fontSize: 28 }} />
             </button>
@@ -649,7 +669,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
 
           <div className="p-6 flex flex-col gap-8">
             <div ref={mobileSearchRef} className="relative">
-              <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#F58322]">
+              <div className="flex items-center h-11 border border-white/30 rounded-lg bg-black/30 transition-colors focus-within:border-[#238ECE]">
               <input
                 ref={mobileInputRef}
                 placeholder={t('header.search')}
@@ -695,7 +715,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   key={key.id}
                   to={key.path}
                   onClick={() => setOpen(false)}
-                  className="hover:text-[#DB741F] transition-colors"
+                  className="hover:text-[#066AAB] transition-colors"
                 >
                   {t(`header.nav.${key.id}`)}
                 </NavLink>

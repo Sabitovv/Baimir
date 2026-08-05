@@ -111,7 +111,7 @@ const Footer = () => {
 // const year = new Date().getFullYear()
 
   return (
-    <footer className="min-h-[600px] bg-[#233337] text-white py-12 px-6 md:min-h-[240px] md:px-20 text-center md:text-left">
+    <footer className="min-h-[600px] bg-[#222222] text-white py-12 px-6 md:min-h-[240px] md:px-20 text-center md:text-left">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
@@ -132,7 +132,7 @@ const Footer = () => {
                   rel="noreferrer"
                   aria-label={data.platform}
                   title={data.platform}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:border-[#F58322] hover:text-[#F58322]"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:border-[#238ECE] hover:text-[#238ECE]"
                 >
                   {getSocialIcon(data.platform)}
                 </a>
@@ -163,7 +163,7 @@ const Footer = () => {
               <div className="mt-3 min-h-[3rem] space-y-1 text-sm text-gray-200">
                 {phones.map((phone) => (
                   <p key={phone}>
-                    <a href={`tel:${normalizePhoneHref(phone)}`} className="hover:text-[#F58322] transition-colors">
+                    <a href={`tel:${normalizePhoneHref(phone)}`} className="hover:text-[#238ECE] transition-colors">
                       {formatDisplayPhone(phone)}
                     </a>
                   </p>
@@ -193,7 +193,7 @@ const Footer = () => {
                       {managerPhone !== '-' && (
                         <>
                           <br />
-                          <a href={`tel:${normalizePhoneHref(managerPhone)}`} className="hover:text-[#F58322] transition-colors">
+                          <a href={`tel:${normalizePhoneHref(managerPhone)}`} className="hover:text-[#238ECE] transition-colors">
                             {managerPhone}
                           </a>
                         </>
@@ -210,7 +210,7 @@ const Footer = () => {
               {t('footer.email.title')}
             </h4>
             <p className="mt-3 break-all text-sm text-gray-200">
-              <a href={`mailto:${contactEmail}`} className="hover:text-[#F58322] transition-colors">
+              <a href={`mailto:${contactEmail}`} className="hover:text-[#238ECE] transition-colors">
                 {contactEmail}
               </a>
             </p>

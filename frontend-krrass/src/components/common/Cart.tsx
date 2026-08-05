@@ -240,9 +240,9 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                 {t("cart.emptyDescription")}
               </p>
               <Link
-                to="/catalog"
+                to="/catalog/listogibochnye-stanki"
                 onClick={handleClose}
-                className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#F58322] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#DB741F]"
+                className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#238ECE] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#066AAB]"
               >
                 {t("cart.goToCatalog")}
               </Link>
@@ -279,7 +279,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
               <button
                 type="button"
                 onClick={() => setIsScheduleDialogOpen(true)}
-                className="mt-2 inline-flex text-xs font-semibold text-[#DB741F] hover:text-[#b85f18] hover:underline"
+                className="mt-2 inline-flex text-xs font-semibold text-[#066AAB] hover:text-[#063D7E] hover:underline"
               >
                 {t("home.contact.viewSchedule")}
               </button>
@@ -298,7 +298,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
 
           <button
             disabled={items.length === 0}
-            className="w-full rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F] disabled:cursor-not-allowed disabled:bg-gray-300"
+            className="w-full rounded-lg bg-[#238ECE] py-3 text-sm font-semibold text-white transition hover:bg-[#066AAB] disabled:cursor-not-allowed disabled:bg-gray-300"
             onClick={() => setOpenUp(true)}
           >
             {t("cart.submitRequest")}
@@ -323,7 +323,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
 
               <button
                 onClick={handleClose}
-                className="mt-4 w-full rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F]"
+                className="mt-4 w-full rounded-lg bg-[#238ECE] py-3 text-sm font-semibold text-white transition hover:bg-[#066AAB]"
               >
                 {t("cart.backToShopping")}
               </button>
@@ -353,7 +353,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                       type="text"
                       name="name"
                       required
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#238ECE] focus:border-transparent outline-none transition-all"
                       placeholder={t("cart.form.namePlaceholder")}
                     />
                   </div>
@@ -366,7 +366,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                       type="tel"
                       name="phone"
                       required
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#238ECE] focus:border-transparent outline-none transition-all"
                       placeholder={t("cart.form.phonePlaceholder")}
                     />
                   </div>
@@ -379,7 +379,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                       type="email"
                       name="email"
                       required
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#238ECE] focus:border-transparent outline-none transition-all"
                       placeholder={t("cart.form.emailPlaceholder")}
                     />
                   </div>
@@ -391,7 +391,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                     <textarea
                       name="message"
                       rows={4}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#F58322] focus:border-transparent outline-none transition-all resize-none"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#238ECE] focus:border-transparent outline-none transition-all resize-none"
                       placeholder={t("cart.form.commentPlaceholder")}
                     />
                   </div>
@@ -404,7 +404,7 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full rounded-lg bg-[#F58322] py-3 text-sm font-semibold text-white transition hover:bg-[#DB741F] disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center"
+                      className="w-full rounded-lg bg-[#238ECE] py-3 text-sm font-semibold text-white transition hover:bg-[#066AAB] disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center"
                     >
                       {isLoading ? (
                         <>

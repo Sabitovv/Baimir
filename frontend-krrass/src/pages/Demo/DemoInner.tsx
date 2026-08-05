@@ -1,5 +1,5 @@
 import PageContainer from '@/components/ui/PageContainer'
-import CategoriesMenu from '@/components/common/CategoriesMenu'
+// import CategoriesMenu from '@/components/common/CategoriesMenu'
 import Contact from '@/components/common/Contact'
 import demoImg from '@/assets/img_review.png'
 import { useTranslation } from 'react-i18next'
@@ -11,11 +11,13 @@ const DemoInnerPage = () => {
   return (
     <PageContainer>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10 mt-16">
+      <div className="grid grid-cols-1 gap-10 mt-16">
 
+        {/* Левое меню категорий скрыто: на krrass.kz доступна только категория listogibochnye-stanki
         <aside className="hidden lg:block">
           <CategoriesMenu />
         </aside>
+        */}
         <section className="max-w-[1000px]">
           <h1 className="font-manrope text-[40px] font-bold uppercase mb-6">
             {t('demoInner.title')}

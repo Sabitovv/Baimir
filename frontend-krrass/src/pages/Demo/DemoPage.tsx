@@ -1,5 +1,5 @@
 import PageContainer from '@/components/ui/PageContainer'
-import CategoriesMenu from '@/components/common/CategoriesMenu'
+// import CategoriesMenu from '@/components/common/CategoriesMenu'
 import { useTranslation } from 'react-i18next'
 // import { useRef } from 'react'
 import one from '@/assets/demoZal/one.svg'
@@ -40,12 +40,14 @@ const DemoPage = () => {
   return (
     <PageContainer>
       {/* ГЛАВНАЯ СЕТКА */}
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+      <div className="grid grid-cols-1 gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
 
         {/* SIDEBAR */}
+        {/* Левое меню категорий скрыто: на krrass.kz доступна только категория listogibochnye-stanki
         <aside className="hidden lg:block w-full">
           <CategoriesMenu />
         </aside>
+        */}
 
         {/* CONTENT */}
         <main className="w-full min-w-0"> {/* Изменил <section> на <main> с min-w-0 для защиты сетки */}
@@ -53,7 +55,7 @@ const DemoPage = () => {
           {/* HERO */}
           <section>
             <ScrollReveal>
-              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#F05023] leading-tight">
+              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#063D7E] leading-tight">
                 {t('demo.title')}
               </h1>
 
@@ -96,7 +98,7 @@ const DemoPage = () => {
             <StaggerContainer className="text-sm sm:text-base space-y-3 sm:space-y-4 text-gray-700">
               {[1, 2, 3, 4].map((n) => (
                 <StaggerItem key={n} className="leading-relaxed flex items-start">
-                  <span className="text-[#F05023] font-bold mr-2">•</span>
+                  <span className="text-[#063D7E] font-bold mr-2">•</span>
                   <span>
                     <span className="font-bold text-gray-900">
                       {t(`demo.whymain${n}`)}
@@ -111,7 +113,7 @@ const DemoPage = () => {
           {/* HOW IT WORKS */}
           <section className="max-w-4xl mx-auto mb-20 sm:mb-28">
             <ScrollReveal>
-              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-bold text-[#F05023] uppercase mb-8 sm:mb-10 text-center sm:text-left">
+              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-bold text-[#063D7E] uppercase mb-8 sm:mb-10 text-center sm:text-left">
                 {t("demo.work")}
               </h2>
             </ScrollReveal>

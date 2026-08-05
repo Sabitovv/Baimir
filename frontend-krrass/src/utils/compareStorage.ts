@@ -1,4 +1,6 @@
-const COMPARE_STORAGE_KEY = 'baymir_compare'
+// Baymir mention — commented out for the KRRASS build:
+// const COMPARE_STORAGE_KEY = 'baymir_compare'
+const COMPARE_STORAGE_KEY = 'krrass_compare'
 
 export const readCompareStorage = (): unknown => {
   if (typeof window === 'undefined') return null

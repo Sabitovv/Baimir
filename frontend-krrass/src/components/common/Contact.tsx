@@ -194,7 +194,7 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
             <button
               type="button"
               onClick={() => setIsScheduleDialogOpen(true)}
-              className="mt-1 inline-flex font-semibold text-[#DB741F] hover:text-[#b85f18] hover:underline"
+              className="mt-1 inline-flex font-semibold text-[#066AAB] hover:text-[#063D7E] hover:underline"
             >
               {t('home.contact.viewSchedule')}
             </button>
@@ -212,8 +212,8 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
           variant="outlined"
           inputProps={{ maxLength: LIMITS.NAME }}
           sx={{
-            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#F58322' } },
-            '& label.Mui-focused': { color: '#F58322' },
+            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#238ECE' } },
+            '& label.Mui-focused': { color: '#238ECE' },
           }}
         />
 
@@ -228,8 +228,8 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
           variant="outlined"
           inputProps={{ maxLength: LIMITS.PHONE, pattern: "[0-9+()\\-\\s]*" }}
           sx={{
-            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#F58322' } },
-            '& label.Mui-focused': { color: '#F58322' },
+            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#238ECE' } },
+            '& label.Mui-focused': { color: '#238ECE' },
           }}
         />
 
@@ -245,8 +245,8 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
           variant="outlined"
           inputProps={{ maxLength: LIMITS.EMAIL }}
           sx={{
-            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#F58322' } },
-            '& label.Mui-focused': { color: '#F58322' },
+            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#238ECE' } },
+            '& label.Mui-focused': { color: '#238ECE' },
           }}
         />
 
@@ -263,8 +263,8 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
           helperText={errors.message ?? `${form.message.length}/${LIMITS.MESSAGE}`}
           inputProps={{ maxLength: LIMITS.MESSAGE }}
           sx={{
-            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#F58322' } },
-            '& label.Mui-focused': { color: '#F58322' },
+            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#238ECE' } },
+            '& label.Mui-focused': { color: '#238ECE' },
           }}
         />
 
@@ -274,7 +274,7 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
             <Checkbox
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
-              sx={{ color: '#F58322', '&.Mui-checked': { color: '#F58322' } }}
+              sx={{ color: '#238ECE', '&.Mui-checked': { color: '#238ECE' } }}
             />
           }
           label={<span className="text-xs sm:text-sm text-gray-600">{t('home.contact.consent', { defaultValue: 'Я даю согласие на обработку данных' })}</span>}
@@ -286,8 +286,8 @@ const Contact: React.FC<ContactProps> = ({ productId }) => {
             variant="contained"
             fullWidth={isMobile}
             sx={{
-              backgroundColor: '#F58322',
-              '&:hover': { backgroundColor: '#DB741F' },
+              backgroundColor: '#238ECE',
+              '&:hover': { backgroundColor: '#066AAB' },
               textTransform: 'uppercase',
               fontSize: { xs: '0.8125rem', sm: '0.875rem' },
               py: { xs: 1, sm: 1.25 },

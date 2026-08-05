@@ -5,8 +5,8 @@ import { clearBreadcrumbs, setBreadcrumbs } from "@/features/catalogSlice";
 import { useGetCategoriesTreeQuery } from "@/api/categoriesApi";
 
 import PageContainer from "@/components/ui/PageContainer";
-import CategoriesMenu from "@/components/common/CategoriesMenu";
-import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+// import CategoriesMenu from "@/components/common/CategoriesMenu";
+// import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
 import DeferredSection from "@/components/common/DeferredSection";
 import StrategicCollectionBannerCarousel from "@/components/collections/StrategicCollectionBannerCarousel";
 
@@ -161,17 +161,19 @@ const CatalogPage = () => {
         </h1>
 
         <div className="my-3 sm:my-4 text-xs sm:text-sm text-gray-500">
-          <Breadcrumbs />
+          {/* Хлебные крошки скрыты: на krrass.kz доступна только категория listogibochnye-stanki: <Breadcrumbs /> */}
         </div>
 
         <div className="hidden md:block mb-5 sm:mb-7">
           <StrategicCollectionBannerCarousel />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
+        <div className="grid grid-cols-1 gap-8">
+          {/* Левое меню категорий скрыто: на krrass.kz доступна только категория listogibochnye-stanki
           <aside className="hidden lg:block">
             <CategoriesMenu />
           </aside>
+          */}
 
           <main className="ml-0 lg:ml-5">
             <div
@@ -221,7 +223,7 @@ const CatalogPage = () => {
           <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
             {t("catalogPage.deepProductsTitle")}
           </h2>
-          <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
+          <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#238ECE]" />
         </div>
 
         <DeferredSection placeholderClassName="min-h-[260px]">

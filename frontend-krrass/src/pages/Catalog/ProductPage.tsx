@@ -4,7 +4,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import DOMPurify from "dompurify";
 
 import PageContainer from "@/components/ui/PageContainer";
-import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+// import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setBreadcrumbs } from "@/features/catalogSlice";
 import {
@@ -60,7 +60,8 @@ import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import {
-  DELIVERY_DETAILS_URL,
+  // Baymir mention — commented out for the KRRASS build:
+  // DELIVERY_DETAILS_URL,
   INTERNATIONAL_DELIVERY_REGIONS,
   KAZAKHSTAN_DELIVERY_REGIONS,
   PAYMENT_BANK_ACCOUNT,
@@ -113,7 +114,8 @@ const RETURN_POLICY_RU = {
   warranty: "На все поставляемое оборудование - Гарантия в течение 12 (двенадцати) месяцев.",
   exchangeDefective: "Бесплатному обмену подлежат дефектные части оборудования.",
   noReturn: "Возврат оборудования не предусмотрен.",
-  moreLink: "Подробнее: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
+  // Baymir mention — commented out for the KRRASS build:
+  // moreLink: "Подробнее: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
 };
 
 const RETURN_POLICY_TEXT: Record<string, Record<string, string>> = {
@@ -127,7 +129,8 @@ const RETURN_POLICY_TEXT: Record<string, Record<string, string>> = {
     warranty: "Барлық жеткізілетін жабдыққа - 12 (он екі) ай кепілдік.",
     exchangeDefective: "Ақаулы жабдық бөлшектері тегін алмастырылады.",
     noReturn: "Жабдықты қайтару қарастырылмаған.",
-    moreLink: "Толығырақ: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
+    // Baymir mention — commented out for the KRRASS build:
+    // moreLink: "Толығырақ: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
   },
   en: {
     title: "Return and exchange policy",
@@ -138,7 +141,8 @@ const RETURN_POLICY_TEXT: Record<string, Record<string, string>> = {
     warranty: "All supplied equipment has a 12 (twelve) month warranty.",
     exchangeDefective: "Defective parts of the equipment are subject to free exchange.",
     noReturn: "Return of equipment is not provided.",
-    moreLink: "More details: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
+    // Baymir mention — commented out for the KRRASS build:
+    // moreLink: "More details: https://baymir.kz/p78828140-lazernyj-stanok-dlya.html",
   },
 };
 
@@ -1029,7 +1033,7 @@ const renderContentBlock = (
       return (
         <div
           key={block.id}
-          className="space-y-1.5 sm:space-y-2 border-l-4 border-[#F58322] pl-3 sm:pl-4 md:pl-5"
+          className="space-y-1.5 sm:space-y-2 border-l-4 border-[#238ECE] pl-3 sm:pl-4 md:pl-5"
         >
           <HeadingTag className="font-bold text-gray-900 text-lg sm:text-xl md:text-2xl leading-tight">
             {block.data.text}
@@ -1162,7 +1166,7 @@ const renderContentBlock = (
               {body.map((row, rowIdx) => (
                 <tr
                   key={rowIdx}
-                  className="border-b border-gray-100 last:border-b-0 odd:bg-white even:bg-gray-50/55 hover:bg-[#FFF6EF] transition-colors"
+                  className="border-b border-gray-100 last:border-b-0 odd:bg-white even:bg-gray-50/55 hover:bg-[#F2F8FC] transition-colors"
                 >
                   {row.map((cell, cellIdx) => (
                     <td
@@ -1281,7 +1285,7 @@ const renderContentBlock = (
         return (
           <ol
             key={block.id}
-            className="list-decimal pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 text-gray-700 marker:font-semibold marker:text-[#F58322]"
+            className="list-decimal pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 text-gray-700 marker:font-semibold marker:text-[#238ECE]"
           >
             {block.data.items.map((item, idx) => (
               <li key={idx}>{item}</li>
@@ -1308,7 +1312,7 @@ const renderContentBlock = (
               key={idx}
               className="flex gap-2 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 hover:bg-gray-100 transition-all duration-300"
             >
-              <span className="text-[#F58322] font-semibold">{marker}</span>
+              <span className="text-[#238ECE] font-semibold">{marker}</span>
               <span className="flex-1">{item}</span>
             </li>
           ))}
@@ -2036,17 +2040,19 @@ const ProductPage = () => {
                 </ul>
               </li>
             </ul>
+            {/* Baymir mention — commented out for the KRRASS build:
             <p className="mt-3">
               {t("productPage.modal.moreDetails")}:{" "}
               <a
                 href={DELIVERY_DETAILS_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#F58322] hover:underline"
+                className="text-[#238ECE] hover:underline"
               >
                 {DELIVERY_DETAILS_URL}
               </a>
             </p>
+            */}
           </div>
         </div>
       );
@@ -2161,7 +2167,7 @@ const ProductPage = () => {
                 <p key={manager.id || managerPhone}>
                   <a
                     href={`tel:${normalizePhoneHref(managerPhone)}`}
-                    className="font-semibold text-[#F58322] hover:underline"
+                    className="font-semibold text-[#238ECE] hover:underline"
                   >
                     {managerPhone}
                   </a>{" "}
@@ -2181,7 +2187,7 @@ const ProductPage = () => {
                   <p key={phone}>
                     <a
                       href={`tel:${normalizePhoneHref(phone)}`}
-                      className="text-[#F58322] hover:underline"
+                      className="text-[#238ECE] hover:underline"
                     >
                       {phone}
                     </a>
@@ -2195,7 +2201,7 @@ const ProductPage = () => {
             {t('footer.email.title')}:{" "}
             <a
               href={`mailto:${companyEmail}`}
-              className="text-[#F58322] hover:underline"
+              className="text-[#238ECE] hover:underline"
             >
               {companyEmail}
             </a>
@@ -2205,23 +2211,25 @@ const ProductPage = () => {
               {t('footer.phones.title')}:{" "}
               <a
                 href={`tel:${normalizePhoneHref(companyPhones[0])}`}
-                className="text-[#F58322] hover:underline"
+                className="text-[#238ECE] hover:underline"
               >
                 {companyPhones[0]}
               </a>
             </p>
           )}
+          {/* Baymir mention — commented out for the KRRASS build:
           <p>
             {t('common.website')}:{" "}
             <a
               href={STORE_CONTACTS.website}
               target="_blank"
               rel="noreferrer"
-              className="text-[#F58322] hover:underline"
+              className="text-[#238ECE] hover:underline"
             >
               {STORE_CONTACTS.website}
             </a>
           </p>
+          */}
         </div>
       );
     }
@@ -2254,8 +2262,8 @@ const ProductPage = () => {
           </h2>
           <p className="text-gray-600 mb-6">{t("productPage.error")}</p>
           <Link
-            to="/catalog"
-            className="bg-[#F58322] text-white px-6 py-2 rounded hover:bg-[#DB741F] transition"
+            to="/catalog/listogibochnye-stanki"
+            className="bg-[#238ECE] text-white px-6 py-2 rounded hover:bg-[#066AAB] transition"
           >
             {t("productPage.errorBack")}
           </Link>
@@ -2268,7 +2276,7 @@ const ProductPage = () => {
     <PageContainer>
       <div className="px-4 md:px-6 lg:px-0 mb-20">
         <div className="my-4 text-sm text-gray-500">
-          <Breadcrumbs />
+          {/* Хлебные крошки скрыты: на krrass.kz доступна только категория listogibochnye-stanki: <Breadcrumbs /> */}
         </div>
 
         <h1 className="font-manrope text-2xl md:text-3xl lg:text-4xl font-bold uppercase text-gray-900 mb-8 leading-tight">
@@ -2337,7 +2345,7 @@ const ProductPage = () => {
                         flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 focus:outline-none transition-all duration-300
                         ${
                           activeImage === idx
-                            ? "border-[#F58322] ring-4 ring-[#F58322]/30 scale-105 shadow-lg"
+                            ? "border-[#238ECE] ring-4 ring-[#238ECE]/30 scale-105 shadow-lg"
                             : "border-transparent hover:border-gray-300 hover:scale-105 hover:shadow-md"
                         }
                       `}
@@ -2405,17 +2413,17 @@ const ProductPage = () => {
                       </span>
                       {(product.newProduct ?? product.new) === true &&
                         product.inStock && (
-                          <span className="inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
+                          <span className="inline-flex items-center rounded-full bg-[#EAF3FA] px-2.5 py-1 text-[11px] font-semibold text-[#066AAB]">
                             {t("commonCatalog.new")}
                           </span>
                         )}
                     </div>
                   </div>
                   {items.find((item) => item.id === product.id) ? (
-                    <div className="flex items-center justify-between bg-[#F58322] rounded-xl overflow-hidden shadow-lg">
+                    <div className="flex items-center justify-between bg-[#238ECE] rounded-xl overflow-hidden shadow-lg">
                       <button
                         type="button"
-                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition-all duration-300"
+                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#066AAB] transition-all duration-300"
                         onClick={() => {
                           const currentQty =
                             items.find((item) => item.id === product.id)
@@ -2434,7 +2442,7 @@ const ProductPage = () => {
                       </span>
                       <button
                         type="button"
-                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition-all duration-300"
+                        className="w-12 h-12 flex items-center justify-center text-white font-bold hover:bg-[#066AAB] transition-all duration-300"
                         onClick={() => {
                           dispatch(incrementQuantity(product.id));
                         }}
@@ -2458,7 +2466,7 @@ const ProductPage = () => {
                           }),
                         );
                       }}
-                      className={`w-full px-10 py-3 text-white font-bold uppercase transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] bg-[#F58322] hover:bg-[#DB741F]`}
+                      className={`w-full px-10 py-3 text-white font-bold uppercase transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] bg-[#238ECE] hover:bg-[#066AAB]`}
                     >
                       {t("productPage.buy")}
                     </button>
@@ -2469,8 +2477,8 @@ const ProductPage = () => {
                     className={`mt-3 w-full px-5 py-3 border rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2
                       ${
                         isInCompare
-                          ? "border-[#F58322] bg-[#F58322]/10 text-[#DB741F]"
-                          : "border-gray-300 text-gray-700 hover:border-[#F58322] hover:text-[#DB741F]"
+                          ? "border-[#238ECE] bg-[#238ECE]/10 text-[#066AAB]"
+                          : "border-gray-300 text-gray-700 hover:border-[#238ECE] hover:text-[#066AAB]"
                       }`}
                   >
                     <CompareArrowsIcon fontSize="small" />
@@ -2499,7 +2507,7 @@ const ProductPage = () => {
 
               <div className="mt-8 space-y-3">
                 <div className="p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl text-sm text-gray-600 border border-gray-200 shadow-sm">
-                  <h5 className="text-[#F58322] font-bold mb-2 text-xs uppercase">
+                  <h5 className="text-[#238ECE] font-bold mb-2 text-xs uppercase">
                     {t("productPage.conditionsReturn")}
                   </h5>
                   <div className="flex justify-between flex-wrap gap-2">
@@ -2507,7 +2515,7 @@ const ProductPage = () => {
                     <button
                       type="button"
                       onClick={() => setReturnModalOpen(true)}
-                      className="font-bold hover:underline whitespace-nowrap text-[#F58322] hover:text-[#DB741F] transition-colors"
+                      className="font-bold hover:underline whitespace-nowrap text-[#238ECE] hover:text-[#066AAB] transition-colors"
                     >
                       {t("productPage.more")} →
                     </button>
@@ -2518,9 +2526,9 @@ const ProductPage = () => {
                   <button
                     type="button"
                     onClick={() => setInfoModalType("delivery")}
-                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#238ECE]"
                   >
-                    <span className="text-[#F58322]">
+                    <span className="text-[#238ECE]">
                       <EditableImage
                         imageKey="product_page_info_delivery_icon"
                         fallbackSrc={track}
@@ -2528,16 +2536,16 @@ const ProductPage = () => {
                         className="w-5 h-5"
                       />
                     </span>
-                    <span className="hover:text-[#DB741F] transition-colors">
+                    <span className="hover:text-[#066AAB] transition-colors">
                       {t("productPage.delive")}
                     </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setInfoModalType("payment")}
-                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#238ECE]"
                   >
-                    <span className="text-[#F58322]">
+                    <span className="text-[#238ECE]">
                       <EditableImage
                         imageKey="product_page_info_payment_icon"
                         fallbackSrc={delivery}
@@ -2545,16 +2553,16 @@ const ProductPage = () => {
                         className="w-5 h-5"
                       />
                     </span>
-                    <span className="hover:text-[#DB741F] transition-colors">
+                    <span className="hover:text-[#066AAB] transition-colors">
                       {t("productPage.pay")}
                     </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setInfoModalType("schedule")}
-                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#238ECE]"
                   >
-                    <span className="text-[#F58322]">
+                    <span className="text-[#238ECE]">
                       <EditableImage
                         imageKey="product_page_info_schedule_icon"
                         fallbackSrc={calendar}
@@ -2562,16 +2570,16 @@ const ProductPage = () => {
                         className="w-5 h-5"
                       />
                     </span>
-                    <span className="hover:text-[#DB741F] transition-colors">
+                    <span className="hover:text-[#066AAB] transition-colors">
                       {t("productPage.work")}
                     </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setInfoModalType("address")}
-                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#F58322]"
+                    className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-300 text-[#238ECE]"
                   >
-                    <span className="text-[#F58322]">
+                    <span className="text-[#238ECE]">
                       <EditableImage
                         imageKey="product_page_info_address_icon"
                         fallbackSrc={address}
@@ -2579,7 +2587,7 @@ const ProductPage = () => {
                         className="w-5 h-5"
                       />
                     </span>
-                    <span className="hover:text-[#DB741F] transition-colors">
+                    <span className="hover:text-[#066AAB] transition-colors">
                       {t("productPage.adress")}
                     </span>
                   </button>
@@ -2595,7 +2603,7 @@ const ProductPage = () => {
             <button
               onClick={() => setActiveTab("desc")}
               className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
-                  ${activeTab === "desc" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+                  ${activeTab === "desc" ? "border-[#238ECE] text-[#238ECE]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
             >
               {t("productPage.descriprion")}
             </button>
@@ -2603,7 +2611,7 @@ const ProductPage = () => {
               <button
                 onClick={() => setActiveTab("specs")}
                 className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
-                  ${activeTab === "specs" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+                  ${activeTab === "specs" ? "border-[#238ECE] text-[#238ECE]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
               >
                 {t("productPage.certificate")}
               </button>
@@ -2612,7 +2620,7 @@ const ProductPage = () => {
               <button
                 onClick={() => setActiveTab("attachments")}
                 className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
-                  ${activeTab === "attachments" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+                  ${activeTab === "attachments" ? "border-[#238ECE] text-[#238ECE]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
               >
                 {t("productPage.attachments")}
               </button>
@@ -2620,7 +2628,7 @@ const ProductPage = () => {
             <button
               onClick={() => setActiveTab("order")}
               className={`pb-4 px-2 font-bold uppercase text-sm transition-all duration-300 whitespace-nowrap border-b-2 
-                  ${activeTab === "order" ? "border-[#F58322] text-[#F58322]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
+                  ${activeTab === "order" ? "border-[#238ECE] text-[#238ECE]" : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"}`}
             >
               {t("productPage.information")}
             </button>
@@ -2665,7 +2673,7 @@ const ProductPage = () => {
                         >
                           <div className="flex items-start justify-between gap-3 mb-3">
                             <div>
-                              <div className="text-[#F58322] font-bold leading-tight">
+                              <div className="text-[#238ECE] font-bold leading-tight">
                                 {variant.name}
                               </div>
                               <div className="text-gray-400 text-xs mt-1">
@@ -2729,7 +2737,7 @@ const ProductPage = () => {
                             className="border-b border-gray-300 last:border-0 hover:bg-gray-50 transition-colors"
                           >
                             <td className="p-3 border-r border-gray-300 text-left align-top">
-                              <div className="text-[#F58322] font-bold leading-tight">
+                              <div className="text-[#238ECE] font-bold leading-tight">
                                 {variant.name}
                               </div>
                               <div className="text-gray-400 text-xs mt-1">
@@ -2760,7 +2768,7 @@ const ProductPage = () => {
                 )}
 
                 {otherInfoTabs.length > 0 && (
-                  <div className="mt-10 rounded-2xl border border-[#F58322]/20 bg-[#FFF8F1] p-5">
+                  <div className="mt-10 rounded-2xl border border-[#238ECE]/20 bg-[#F2F8FC] p-5">
                     <p className="text-sm font-semibold text-gray-900">
                       {t("productPage.otherSectionsTitle")}
                     </p>
@@ -2770,7 +2778,7 @@ const ProductPage = () => {
                           key={tab.key}
                           type="button"
                           onClick={() => setActiveTab(tab.key)}
-                          className="inline-flex items-center rounded-full border border-[#F58322]/30 bg-white px-4 py-2 text-sm font-medium text-[#B25E18] transition-colors hover:bg-[#F58322]/10"
+                          className="inline-flex items-center rounded-full border border-[#238ECE]/30 bg-white px-4 py-2 text-sm font-medium text-[#063D7E] transition-colors hover:bg-[#238ECE]/10"
                         >
                           {tab.label}
                         </button>
@@ -2903,7 +2911,7 @@ const ProductPage = () => {
                   {t("productPage.phone")}{" "}
                   <a
                     href={`tel:${normalizePhoneHref(phone)}`}
-                    className="text-[#F58322] font-bold"
+                    className="text-[#238ECE] font-bold"
                   >
                     {phone}
                   </a>
@@ -2913,7 +2921,7 @@ const ProductPage = () => {
                 {t("productPage.Email")}{" "}
                 <a
                   href={`mailto:${companyEmail}`}
-                  className="text-[#F58322] font-bold"
+                  className="text-[#238ECE] font-bold"
                 >
                   {companyEmail}
                 </a>
@@ -2944,7 +2952,7 @@ const ProductPage = () => {
                     >
                       <a
                         href={`tel:${normalizePhoneHref(managerPhone)}`}
-                        className="text-[#F58322] font-semibold hover:underline"
+                        className="text-[#238ECE] font-semibold hover:underline"
                       >
                         {managerPhone}
                       </a>{" "}
@@ -2985,7 +2993,7 @@ const ProductPage = () => {
                       >
                         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                           <div className="min-w-0 flex items-start gap-3">
-                            <div className="h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-xl border border-[#F58322]/30 bg-[#FFF3E9] flex items-center justify-center text-[#F58322] font-extrabold text-[10px] sm:text-[11px] uppercase">
+                            <div className="h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-xl border border-[#238ECE]/30 bg-[#EAF3FA] flex items-center justify-center text-[#238ECE] font-extrabold text-[10px] sm:text-[11px] uppercase">
                               {extensionLabel}
                             </div>
 
@@ -3014,7 +3022,7 @@ const ProductPage = () => {
                                 setSelectedPreviewFileId(attachment.id);
                                 setIsPreviewModalOpen(true);
                               }}
-                              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg border border-[#F58322] px-4 py-2.5 text-sm font-semibold text-[#F58322] hover:bg-[#FFF3E9] transition-colors"
+                              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg border border-[#238ECE] px-4 py-2.5 text-sm font-semibold text-[#238ECE] hover:bg-[#EAF3FA] transition-colors"
                             >
                               {t("productPage.previewAttachment")}
                             </button>
@@ -3023,7 +3031,7 @@ const ProductPage = () => {
                                 href={resolvedUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-[#F58322] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#DB741F] transition-colors"
+                                className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg bg-[#238ECE] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#066AAB] transition-colors"
                               >
                                 {t("productPage.downloadAttachment")}
                               </a>
@@ -3172,16 +3180,18 @@ const ProductPage = () => {
                 <li>{RETURN_POLICY_TEXT[i18n.language]?.noReturn ?? RETURN_POLICY_RU.noReturn}</li>
               </ul>
             </div>
+            {/* Baymir mention — commented out for the KRRASS build:
             <p>
               <a
                 href={DELIVERY_DETAILS_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#F58322] hover:underline"
+                className="text-[#238ECE] hover:underline"
               >
                 {RETURN_POLICY_TEXT[i18n.language]?.moreLink ?? RETURN_POLICY_RU.moreLink}
               </a>
             </p>
+            */}
           </div>
         </DialogContent>
         <DialogActions>

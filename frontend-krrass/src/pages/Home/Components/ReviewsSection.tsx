@@ -116,7 +116,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                 absolute -left-6 xl:-left-16 top-1/2 -translate-y-1/2
                 w-12 h-12 rounded-full border-2 border-[#6B7280] bg-white/90
                 items-center justify-center
-                text-[#374151] hover:bg-[#0B5FA1] hover:text-white hover:border-[#0B5FA1]
+                text-[#374151] hover:bg-[#222222] hover:text-white hover:border-[#222222]
                 transition z-50 shadow-sm
                 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white/90 disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]
               "
@@ -252,7 +252,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                               href={profileLink}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-[#F59E0B] hover:text-[#DB741F] font-semibold whitespace-nowrap"
+                              className="inline-flex items-center gap-1 text-[#F59E0B] hover:text-[#066AAB] font-semibold whitespace-nowrap"
                             >
                               {t("home.reviews.source", {
                                 defaultValue: "Источник",
@@ -281,7 +281,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                 absolute -right-6 xl:-right-16 top-1/2 -translate-y-1/2
                 w-12 h-12 rounded-full border-2 border-[#6B7280] bg-white/90
                 items-center justify-center
-                text-[#374151] hover:bg-[#0B5FA1] hover:text-white hover:border-[#0B5FA1]
+                text-[#374151] hover:bg-[#222222] hover:text-white hover:border-[#222222]
                 transition z-50 shadow-sm
                 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white/90 disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]
               "
@@ -298,7 +298,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                 }}
                 disabled={!canNavigate}
                 aria-label={t("commonCatalog.prev", { defaultValue: "Предыдущий" })}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#6B7280] bg-white text-[#374151] transition hover:bg-[#0B5FA1] hover:text-white hover:border-[#0B5FA1] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#6B7280] bg-white text-[#374151] transition hover:bg-[#222222] hover:text-white hover:border-[#222222] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]"
               >
                 <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
               </button>
@@ -310,7 +310,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                 }}
                 disabled={!canNavigate}
                 aria-label={t("commonCatalog.next", { defaultValue: "Следующий" })}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#6B7280] bg-white text-[#374151] transition hover:bg-[#0B5FA1] hover:text-white hover:border-[#0B5FA1] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#6B7280] bg-white text-[#374151] transition hover:bg-[#222222] hover:text-white hover:border-[#222222] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-[#374151] disabled:hover:border-[#6B7280]"
               >
                 <ArrowForwardIosIcon sx={{ fontSize: 16 }} />
               </button>
@@ -323,12 +323,12 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
             onClick={onOpenReviewModal}
             className="
               mt-8 md:mt-12
-              bg-[#F58322] hover:bg-[#DB741F]
+              bg-[#238ECE] hover:bg-[#066AAB]
               px-8 md:px-10 py-3 md:py-4
               font-bold uppercase tracking-widest
               transition
               text-xs md:text-sm
-              hover:shadow-lg hover:shadow-[#F05023]/20
+              hover:shadow-lg hover:shadow-[#063D7E]/20
               text-white
             "
           >

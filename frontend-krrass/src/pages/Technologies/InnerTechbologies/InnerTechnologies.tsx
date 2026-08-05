@@ -27,7 +27,7 @@
 
 //           {/* Главный блок с фото */}
 //           <ScrollReveal>
-//             <h1 className="font-manrope text-xl sm:text-2xl md:text-3xl xl:text-4xl font-bold uppercase text-[#F05023]">
+//             <h1 className="font-manrope text-xl sm:text-2xl md:text-3xl xl:text-4xl font-bold uppercase text-[#063D7E]">
 //               {title}
 //             </h1>
 //             <h3 className="text-base sm:text-lg md:text-xl font-bold my-4 mb-4 md:mb-6 whitespace-pre-line">
@@ -48,7 +48,7 @@
 //                 <button
 //                   className="
 //                     w-full flex items-center justify-between
-//                     bg-[#F05023] text-white
+//                     bg-[#063D7E] text-white
 //                     px-4 py-2
 //                     text-sm font-semibold
 //                     rounded-t-sm
@@ -65,19 +65,19 @@
 //                   "
 //                 >
 //                   <ul>
-//                     <li onClick={() => setChoose(1)} className={`${choose === 1 ? 'text-[#F05023]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
+//                     <li onClick={() => setChoose(1)} className={`${choose === 1 ? 'text-[#063D7E]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
 //                       1. Этапы производства воздуховодов
 //                     </li>
-//                     <li onClick={() => setChoose(2)} className={`${choose === 2 ? 'text-[#F05023]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
+//                     <li onClick={() => setChoose(2)} className={`${choose === 2 ? 'text-[#063D7E]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
 //                       2. Автоматизация
 //                     </li>
-//                     <li onClick={() => setChoose(3)} className={`${choose === 3 ? 'text-[#F05023]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
+//                     <li onClick={() => setChoose(3)} className={`${choose === 3 ? 'text-[#063D7E]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
 //                       3. Производство
 //                     </li>
-//                     <li onClick={() => setChoose(4)} className={`${choose === 4 ? 'text-[#F05023]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
+//                     <li onClick={() => setChoose(4)} className={`${choose === 4 ? 'text-[#063D7E]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
 //                       4. Что-то еще
 //                     </li>
-//                     <li onClick={() => setChoose(5)} className={`${choose === 5 ? 'text-[#F05023]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
+//                     <li onClick={() => setChoose(5)} className={`${choose === 5 ? 'text-[#063D7E]' : 'text-gray-800'}  px-4 py-1 hover:bg-gray-100 cursor-pointer transition-colors`}>
 //                       5. Что-то еще
 //                     </li>
 //                   </ul>
@@ -191,7 +191,7 @@
 //               </StaggerContainer>
 
 //               <ScrollReveal y={15}>
-//                 <button className="w-full sm:w-1/3 bg-[#F05023] hover:bg-[#e4491f] font-semibold py-3 px-6 rounded-sm text-white transition-colors duration-300">
+//                 <button className="w-full sm:w-1/3 bg-[#063D7E] hover:bg-[#063D7E] font-semibold py-3 px-6 rounded-sm text-white transition-colors duration-300">
 //                   Перейти в каталог →
 //                 </button>
 //               </ScrollReveal>

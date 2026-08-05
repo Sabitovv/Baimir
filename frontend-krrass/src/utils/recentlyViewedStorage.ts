@@ -1,4 +1,6 @@
-const RECENTLY_VIEWED_STORAGE_KEY = 'baymir_recently_viewed_products'
+// Baymir mention — commented out for the KRRASS build:
+// const RECENTLY_VIEWED_STORAGE_KEY = 'baymir_recently_viewed_products'
+const RECENTLY_VIEWED_STORAGE_KEY = 'krrass_recently_viewed_products'
 const MAX_RECENTLY_VIEWED_PRODUCTS = 12
 
 const normalizeIds = (value: unknown): number[] => {

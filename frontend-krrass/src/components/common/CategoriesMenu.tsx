@@ -125,7 +125,7 @@ const CategoriesMenu = () => {
                                 <Link
                                     to={getCategoryLink(cat)}
                                     onClick={() => toggleCategory(Number(cat.id), rootCategories)}
-                                    className={`flex-1 font-semibold text-lg transition ${isActive ? 'text-[#F58322]' : 'text-gray-700'}`}
+                                    className={`flex-1 font-semibold text-lg transition ${isActive ? 'text-[#238ECE]' : 'text-gray-700'}`}
                                 >
                                     {cat.name}
                                 </Link>
@@ -158,7 +158,7 @@ const CategoriesMenu = () => {
                                                                 toggleCategory(Number(child.id), cat.children)
                                                             }
                                                         }}
-                                                        className={`flex-1 text-xs transition ${isChildActive ? 'text-[#F58322] font-bold' : 'hover:text-[#DB741F]'}`}
+                                                        className={`flex-1 text-xs transition ${isChildActive ? 'text-[#238ECE] font-bold' : 'hover:text-[#066AAB]'}`}
                                                     >
                                                         {child.name}
                                                     </Link>
@@ -188,7 +188,7 @@ const CategoriesMenu = () => {
                                                                 <div key={grandChild.id}>
                                                                     <Link
                                                                         to={getCategoryLink(grandChild)}
-                                                                        className={`block text-xs py-1 ${isGrandChildActive ? 'text-[#F05023] font-medium' : ' hover:text-[#F05023]'}`}
+                                                                        className={`block text-xs py-1 ${isGrandChildActive ? 'text-[#063D7E] font-medium' : ' hover:text-[#063D7E]'}`}
                                                                     >
                                                                         {grandChild.name}
                                                                     </Link>

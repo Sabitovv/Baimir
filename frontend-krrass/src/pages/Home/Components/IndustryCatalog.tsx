@@ -41,7 +41,7 @@ const IndustryCatalog = () => {
       <PageContainer>
         <ScrollReveal>
           <div className="mb-6 md:mb-10">
-            <h1 className="font-manrope text-[32px] font-semibold uppercase leading-[1.05] text-[#111111] md:text-5xl xl:text-6xl">
+            <h1 className="font-manrope text-[32px] font-semibold uppercase leading-[1.05] text-[#222222] md:text-5xl xl:text-6xl">
               {t("home.catalog.title")}
             </h1>
 
@@ -76,14 +76,14 @@ const IndustryCatalog = () => {
             slidesPerView={1.12}
             spaceBetween={12}
             pagination={{ clickable: true }}
-            className="pb-10 [&_.swiper-pagination-bullet]:bg-[#B0B0B0] [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-colors [&_.swiper-pagination-bullet-active]:bg-[#F58322]"
+            className="pb-10 [&_.swiper-pagination-bullet]:bg-[#B0B0B0] [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-colors [&_.swiper-pagination-bullet-active]:bg-[#238ECE]"
           >
             {cards.map((card, index) => (
               <SwiperSlide key={index} className="h-auto">
                 <Link to={card.path} className="flex flex-col h-full">
-                  <div className="group flex min-h-[320px] flex-col rounded-xl border border-[#EFEFEF] bg-gradient-to-b from-[#FCFCFC] to-[#F6F6F6] p-5">
+                  <div className="group flex min-h-[320px] flex-col rounded-xl border border-[#EFEFEF] bg-gradient-to-b from-[#FCFCFC] to-[#F0F0F0] p-5">
                     <h1
-                      className="mb-3 text-center font-manrope text-sm font-bold uppercase leading-5 text-[#111111] transition-colors group-hover:text-[#DB741F]"
+                      className="mb-3 text-center font-manrope text-sm font-bold uppercase leading-5 text-[#222222] transition-colors group-hover:text-[#066AAB]"
                     >
                       {card.title}
                     </h1>
@@ -100,7 +100,7 @@ const IndustryCatalog = () => {
                         sizes="(max-width: 767px) 90vw, 320px"
                       />
                     </div>
-                    <span className="mt-4 hidden text-xs font-bold uppercase tracking-widest text-[#F58322] md:inline">
+                    <span className="mt-4 hidden text-xs font-bold uppercase tracking-widest text-[#238ECE] md:inline">
                       {t("home.catalog.link")} &gt;
                     </span>
                   </div>
@@ -129,7 +129,7 @@ const IndustryCatalog = () => {
                     className="
                       font-manrope font-bold uppercase text-center
                       text-base md:text-lg
-                      group-hover:text-[#DB741F]
+                      group-hover:text-[#066AAB]
                       mb-4
                     "
                   >
@@ -153,7 +153,7 @@ const IndustryCatalog = () => {
                 <Link
                   to={card.path}
                   className="
-                    text-[#F58322]
+                    text-[#238ECE]
                     text-xs
                     font-bold uppercase tracking-widest
                     self-end mt-3

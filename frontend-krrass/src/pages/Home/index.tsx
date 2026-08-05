@@ -6,16 +6,16 @@ import ProductCollectionRenderer from '@/components/collections/ProductCollectio
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import { useTranslation } from 'react-i18next'
 
-const IndustryCatalog = lazy(() => import('./Components/IndustryCatalog'))
+// const IndustryCatalog = lazy(() => import('./Components/IndustryCatalog'))
 const WhyChooseUs = lazy(() => import('./Components/WhyChooseUs'))
 const Service = lazy(() => import('./Components/Service'))
 const Warehouse = lazy(() => import('./Components/Warehouse'))
 const ForClients = lazy(() => import('./Components/ForClients'))
-const ReviewsSection = lazy(() => import('./Components/ReviewsSection'))
+// const ReviewsSection = lazy(() => import('./Components/ReviewsSection'))
 const ReviewForm = lazy(() => import('./Components/ReviewForm'))
-const RepairService = lazy(() => import('./Components/RepairService'))
-const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
-const NewsSection = lazy(() => import('./Components/NewsSection'))
+// const RepairService = lazy(() => import('./Components/RepairService'))
+// const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
+// const NewsSection = lazy(() => import('./Components/NewsSection'))
 const ContactForm = lazy(() => import('./Components/ContactForm'))
 
 const SectionFallback = ({ heightClassName }: { heightClassName: string }) => (
@@ -101,11 +101,13 @@ const Home = () => {
                 variant="recommendations"
                 title={t('home.personalizedRecommendations')}
             />
+            {/* Секция "Лидируем в индустрии" временно скрыта
             <DeferredSection placeholderClassName="min-h-[560px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[560px]" />}>
                     <IndustryCatalog />
                 </Suspense>
             </DeferredSection>
+            */}
 
             <DeferredSection placeholderClassName="min-h-[520px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
@@ -131,17 +133,21 @@ const Home = () => {
                 </Suspense>
             </DeferredSection>
 
+            {/* Секция "Отзывы наших клиентов" временно скрыта
             <DeferredSection placeholderClassName="min-h-[460px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[460px]" />}>
                     <ReviewsSection onOpenReviewModal={() => setIsReviewModalOpen(true)} />
                 </Suspense>
             </DeferredSection>
+            */}
 
+            {/* Секция "Сервис по ремонту станков" временно скрыта
             <DeferredSection placeholderClassName="min-h-[520px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
                     <RepairService />
                 </Suspense>
             </DeferredSection>
+            */}
 
             <DeferredSection placeholderClassName="min-h-[520px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
@@ -149,17 +155,21 @@ const Home = () => {
                 </Suspense>
             </DeferredSection>
 
+            {/* Секция "Сертификаты" временно скрыта
             <DeferredSection placeholderClassName="min-h-[420px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[420px]" />}>
                     <CertificateSection />
                 </Suspense>
             </DeferredSection>
+            */}
 
+            {/* Секция "Новости" временно скрыта
             <DeferredSection placeholderClassName="min-h-[420px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[420px]" />}>
                     <NewsSection />
                 </Suspense>
             </DeferredSection>
+            */}
 
             <div
                 className={`fixed inset-0 z-[130] transition-opacity duration-300 ease-out ${
@@ -190,7 +200,7 @@ const Home = () => {
                             type="button"
                             aria-label={t('common.close')}
                             onClick={() => setIsReviewModalOpen(false)}
-                            className="absolute right-4 top-4 z-10 w-10 h-10 rounded-full bg-white text-[#111111] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
+                            className="absolute right-4 top-4 z-10 w-10 h-10 rounded-full bg-white text-[#222222] border border-[#E5E7EB] hover:bg-[#F9FAFB] transition"
                         >
                             ×
                         </button>

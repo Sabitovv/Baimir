@@ -1,4 +1,6 @@
-const CART_STORAGE_KEY = 'baymir_cart'
+// Baymir mention — commented out for the KRRASS build:
+// const CART_STORAGE_KEY = 'baymir_cart'
+const CART_STORAGE_KEY = 'krrass_cart'
 
 export const readCartStorage = (): unknown => {
   if (typeof window === 'undefined') return null

@@ -1,6 +1,6 @@
 {
-  "name": "Baytech",
-  "short_name": "Baytech",
+  "name": "KRRASS",
+  "short_name": "KRRASS",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#F58322",
+  "theme_color": "#063D7E",
   "background_color": "#ffffff",
   "display": "standalone"
 }

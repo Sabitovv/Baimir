@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import PageContainer from '@/components/ui/PageContainer'
-import CategoriesMenu from '@/components/common/CategoriesMenu'
+// import CategoriesMenu from '@/components/common/CategoriesMenu'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
@@ -80,7 +80,9 @@ const AboutPage = () => {
   const companyInfoSections = companySettingsData?.COMPANY_INFO_SECTIONS?.sections ?? []
   const companyManagers = companySettingsData?.COMPANY_MANAGERS?.managers ?? []
   const contactAddress = companySettingsData?.COMPANY_CONTACT_PHONES?.address?.trim() || t('about.contacts.address')
-  const contactEmail = companySettingsData?.COMPANY_CONTACT_PHONES?.email?.trim() || 'baymir@inbox.ru'
+  // Baymir mention — commented out for the KRRASS build:
+  // const contactEmail = companySettingsData?.COMPANY_CONTACT_PHONES?.email?.trim() || 'baymir@inbox.ru'
+  const contactEmail = companySettingsData?.COMPANY_CONTACT_PHONES?.email?.trim() || ''
   const contactPhones = companySettingsData?.COMPANY_CONTACT_PHONES?.phones
     ?.map((entry) => entry.phone?.trim() ?? '')
     .filter((phone) => phone.length > 0) ?? []
@@ -124,16 +126,18 @@ const AboutPage = () => {
 
   return (
     <PageContainer>
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+      <div className="grid grid-cols-1 gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+        {/* Левое меню категорий скрыто: на krrass.kz доступна только категория listogibochnye-stanki
         <aside className="hidden lg:block w-full">
           <CategoriesMenu />
         </aside>
+        */}
 
         <main className="w-full min-w-0 relative">
           <ScrollReveal>
-            <section className="relative overflow-hidden rounded-2xl border border-[#F58322]/25 bg-gradient-to-br from-[#fff3e9] via-[#ffffff] to-[#f3f6fa] p-5 sm:p-8 lg:p-10 grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-6 lg:gap-10 items-center">
-              <div className="absolute -top-16 -left-16 w-40 h-40 rounded-full bg-[#F58322]/20 blur-2xl" />
-              <div className="absolute -bottom-20 right-8 w-56 h-56 rounded-full bg-[#0b5fa1]/10 blur-3xl" />
+            <section className="relative overflow-hidden rounded-2xl border border-[#238ECE]/25 bg-gradient-to-br from-[#EAF3FA] via-[#ffffff] to-[#f3f6fa] p-5 sm:p-8 lg:p-10 grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-6 lg:gap-10 items-center">
+              <div className="absolute -top-16 -left-16 w-40 h-40 rounded-full bg-[#238ECE]/20 blur-2xl" />
+              <div className="absolute -bottom-20 right-8 w-56 h-56 rounded-full bg-[#222222]/10 blur-3xl" />
               <motion.div
                 className="absolute inset-y-0 -left-1/3 w-1/2 bg-gradient-to-r from-transparent via-white/45 to-transparent"
                 animate={{ x: ['0%', '250%'] }}
@@ -148,7 +152,7 @@ const AboutPage = () => {
                 transition={{ duration: 0.55, ease: 'easeOut' }}
               >
                 <motion.p
-                  className="text-xs sm:text-sm uppercase tracking-[0.2em] text-[#F58322] font-bold"
+                  className="text-xs sm:text-sm uppercase tracking-[0.2em] text-[#238ECE] font-bold"
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.35 }}
@@ -157,7 +161,7 @@ const AboutPage = () => {
                   {t('about.hero.kicker')}
                 </motion.p>
                 <motion.h1
-                  className="mt-3 font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight"
+                  className="mt-3 font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#238ECE] leading-tight"
                   initial={{ opacity: 0, y: 12 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.35 }}
@@ -205,8 +209,8 @@ const AboutPage = () => {
             <StaggerContainer className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {stats.map((item) => (
                 <StaggerItem key={item.label} className="relative overflow-hidden bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-[0_18px_30px_-26px_rgba(0,0,0,0.55)] hover:-translate-y-0.5 transition-transform">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#F58322] to-[#DB741F]" />
-                  <p className="font-manrope text-3xl sm:text-4xl text-[#F58322]">{item.value}</p>
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#238ECE] to-[#066AAB]" />
+                  <p className="font-manrope text-3xl sm:text-4xl text-[#238ECE]">{item.value}</p>
                   <p className="mt-2 text-sm sm:text-base text-gray-700 leading-snug">{item.label}</p>
                 </StaggerItem>
               ))}
@@ -215,7 +219,7 @@ const AboutPage = () => {
 
           <section className="mt-12 sm:mt-16 lg:mt-20">
             <ScrollReveal>
-              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#F58322]">
+              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold uppercase text-[#238ECE]">
                 {t('about.advantages.title')}
               </h2>
             </ScrollReveal>
@@ -226,8 +230,8 @@ const AboutPage = () => {
                   key={item.title}
                   className={`rounded-xl p-6 sm:p-7 text-white border border-white/10 ${
                     index % 2 === 0
-                      ? 'bg-gradient-to-br from-[#141414] to-[#20262a]'
-                      : 'bg-gradient-to-br from-[#1e252b] to-[#141414]'
+                      ? 'bg-gradient-to-br from-[#222222] to-[#20262a]'
+                      : 'bg-gradient-to-br from-[#1e252b] to-[#222222]'
                   } shadow-[0_18px_32px_-24px_rgba(20,20,20,0.9)]`}
                 >
                   <h3 className="font-manrope text-xl sm:text-2xl uppercase">{item.title}</h3>
@@ -299,7 +303,7 @@ const AboutPage = () => {
                             loading="lazy"
                           />
                         ) : (
-                          <div className="h-14 w-14 rounded-full bg-[#FFF4EA] border border-[#F58322]/25 text-[#DB741F] font-semibold flex items-center justify-center">
+                          <div className="h-14 w-14 rounded-full bg-[#EAF3FA] border border-[#238ECE]/25 text-[#066AAB] font-semibold flex items-center justify-center">
                             {getManagerInitials(manager)}
                           </div>
                         )}
@@ -321,9 +325,9 @@ const AboutPage = () => {
             </section>
           )}
 
-          <ScrollReveal className="mt-12 sm:mt-16 lg:mt-20 relative overflow-hidden bg-gradient-to-r from-[#141414] via-[#1d2328] to-[#0f1418] border border-gray-700 rounded-2xl p-6 sm:p-8">
-            <div className="absolute -right-20 -top-20 w-56 h-56 rounded-full border border-[#F58322]/25" />
-            <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-[#F58322]/8 blur-2xl" />
+          <ScrollReveal className="mt-12 sm:mt-16 lg:mt-20 relative overflow-hidden bg-gradient-to-r from-[#222222] via-[#1d2328] to-[#0f1418] border border-gray-700 rounded-2xl p-6 sm:p-8">
+            <div className="absolute -right-20 -top-20 w-56 h-56 rounded-full border border-[#238ECE]/25" />
+            <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-[#238ECE]/8 blur-2xl" />
 
             <h2 className="relative z-10 font-manrope text-2xl sm:text-3xl uppercase text-white">
               {t('about.brands.title')}
@@ -335,7 +339,7 @@ const AboutPage = () => {
               {['Bodor', 'Krrass', 'LOCK'].map((brand) => (
                 <span
                   key={brand}
-                  className="px-4 py-2 rounded-full border border-[#F58322]/45 text-[#ffd7b8] bg-[#F58322]/15 font-semibold"
+                  className="px-4 py-2 rounded-full border border-[#238ECE]/45 text-[#CFE4F3] bg-[#238ECE]/15 font-semibold"
                 >
                   {brand}
                 </span>
@@ -356,7 +360,7 @@ const AboutPage = () => {
                   <button
                     type="button"
                     onClick={() => refetchSchedule()}
-                    className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-[#F58322] hover:text-[#DB741F]"
+                    className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-[#238ECE] hover:text-[#066AAB]"
                   >
                     {t('about.schedule.retry')}
                   </button>
@@ -406,8 +410,8 @@ const AboutPage = () => {
               )}
             </ScrollReveal>
 
-            <ScrollReveal delay={0.15} className="relative overflow-hidden bg-[#141414] text-white rounded-xl p-6 sm:p-8 border border-gray-700 shadow-[0_22px_35px_-24px_rgba(20,20,20,0.95)]">
-              <div className="absolute -top-16 right-0 w-44 h-44 rounded-full bg-[#F58322]/15 blur-2xl" />
+            <ScrollReveal delay={0.15} className="relative overflow-hidden bg-[#222222] text-white rounded-xl p-6 sm:p-8 border border-gray-700 shadow-[0_22px_35px_-24px_rgba(20,20,20,0.95)]">
+              <div className="absolute -top-16 right-0 w-44 h-44 rounded-full bg-[#238ECE]/15 blur-2xl" />
               <h2 className="font-manrope text-2xl sm:text-3xl uppercase">{t('about.contacts.title')}</h2>
               <p className="mt-4 text-gray-300">{contactAddress}</p>
 
@@ -416,17 +420,21 @@ const AboutPage = () => {
                   <a
                     key={phone}
                     href={`tel:${normalizePhoneHref(phone)}`}
-                    className="block text-lg sm:text-xl hover:text-[#F58322] transition-colors"
+                    className="block text-lg sm:text-xl hover:text-[#238ECE] transition-colors"
                   >
                     {phone}
                   </a>
                 ))}
-                <a href={`mailto:${contactEmail}`} className="block text-base sm:text-lg text-gray-300 hover:text-[#F58322] transition-colors">
-                  {contactEmail}
-                </a>
-                <a href="https://baymir.kz" target="_blank" rel="noreferrer" className="block text-base sm:text-lg text-gray-300 hover:text-[#F58322] transition-colors">
+                {contactEmail && (
+                  <a href={`mailto:${contactEmail}`} className="block text-base sm:text-lg text-gray-300 hover:text-[#238ECE] transition-colors">
+                    {contactEmail}
+                  </a>
+                )}
+                {/* Baymir mention — commented out for the KRRASS build:
+                <a href="https://baymir.kz" target="_blank" rel="noreferrer" className="block text-base sm:text-lg text-gray-300 hover:text-[#238ECE] transition-colors">
                   baymir.kz
                 </a>
+                */}
               </div>
 
               <p className="mt-8 text-sm sm:text-base text-gray-300 leading-relaxed">
@@ -444,7 +452,7 @@ const AboutPage = () => {
                 href="https://2gis.kz/almaty/firm/70000001037135847"
                 target="_blank"
                 rel="noreferrer"
-                className="text-sm sm:text-base font-semibold text-[#F58322] hover:text-[#DB741F] transition-colors"
+                className="text-sm sm:text-base font-semibold text-[#238ECE] hover:text-[#066AAB] transition-colors"
               >
                 {t('about.map.openIn2gis')}
               </a>

@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import PageContainer from "@/components/ui/PageContainer";
-import CategoriesMenu from "@/components/common/CategoriesMenu";
+// import CategoriesMenu from "@/components/common/CategoriesMenu";
 import { useGetBlogBySlugQuery, type BlogContentBlock } from "@/api/blogsApi";
 import defaultImage from "@/assets/home/lazerStanok.webp";
 import { useGetProductsBatchQuery } from "@/api/productsApi";
@@ -293,7 +293,7 @@ const renderContentBlock = (block: BlogContentBlock, index: number) => {
     return (
       <blockquote
         key={key}
-        className="border-l-4 border-[#F58322] pl-5 py-1 mb-7 text-gray-700 italic"
+        className="border-l-4 border-[#238ECE] pl-5 py-1 mb-7 text-gray-700 italic"
       >
         <p>{quote}</p>
         {author && (
@@ -580,7 +580,7 @@ const InnerBlog = () => {
           <p className="text-gray-600 mb-6">{t("innerBlog.notFoundText")}</p>
           <Link
             to="/blog"
-            className="inline-block bg-[#F58322] text-white px-5 py-2 rounded hover:bg-[#DB741F] transition-colors"
+            className="inline-block bg-[#238ECE] text-white px-5 py-2 rounded hover:bg-[#066AAB] transition-colors"
           >
             {t("innerBlog.backToBlog")}
           </Link>
@@ -602,10 +602,12 @@ const InnerBlog = () => {
 
   return (
     <PageContainer>
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-16">
+      <div className="grid grid-cols-1 gap-8 mt-16">
+        {/* Левое меню категорий скрыто: на krrass.kz доступна только категория listogibochnye-stanki
         <aside className="hidden lg:block space-y-6">
           <CategoriesMenu />
         </aside>
+        */}
 
         <article className="max-w-[900px] mb-16">
           <h1 className="font-manrope font-bold text-3xl md:text-4xl xl:text-5xl uppercase mb-5">

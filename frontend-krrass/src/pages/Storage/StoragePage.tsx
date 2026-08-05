@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import PageContainer from "@/components/ui/PageContainer";
-import CategoriesMenu from "@/components/common/CategoriesMenu";
+// import CategoriesMenu from "@/components/common/CategoriesMenu";
 import MainPhoto from "@/assets/storage/MainPhoto.webp";
 import Photo from "@/assets/storage/Photo.webp";
 import Photo2 from "@/assets/storage/Photo1.webp";
@@ -134,15 +134,17 @@ const StoragePage = () => {
 
   return (
     <PageContainer>
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+      <div className="grid grid-cols-1 gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+        {/* Левое меню категорий скрыто: на krrass.kz доступна только категория listogibochnye-stanki
         <aside className="hidden lg:block w-full">
           <CategoriesMenu />
         </aside>
+        */}
 
         <main className="w-full min-w-0">
           <section>
             <ScrollReveal>
-              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight">
+              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#238ECE] leading-tight">
                 {t("storage.title")}
               </h1>
               <h3 className="text-lg sm:text-xl font-bold my-4 mb-8 whitespace-pre-line">
@@ -175,7 +177,7 @@ const StoragePage = () => {
                         }}
                         className={`cursor-pointer text-center transition-all duration-300 p-1 sm:p-2 rounded-lg ${
                           choose === index
-                            ? "border-2 border-[#F58322] shadow-sm"
+                            ? "border-2 border-[#238ECE] shadow-sm"
                             : "border-2 border-transparent hover:border-gray-200"
                         }`}
                       >
@@ -285,7 +287,7 @@ const StoragePage = () => {
             <ScrollReveal className="flex justify-center sm:justify-end mt-8">
               <Link
                 to="/blog"
-                className="font-bold text-base sm:text-lg text-[#F58322] flex items-center gap-2 hover:translate-x-1 transition-transform"
+                className="font-bold text-base sm:text-lg text-[#238ECE] flex items-center gap-2 hover:translate-x-1 transition-transform"
               >
                 {t("storage.other")}
                 <span className="text-xl leading-none">→</span>

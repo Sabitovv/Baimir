@@ -1,5 +1,5 @@
 import PageContainer from "@/components/ui/PageContainer";
-import CategoriesMenu from "@/components/common/CategoriesMenu";
+// import CategoriesMenu from "@/components/common/CategoriesMenu";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import StaggerContainer from "@/components/animations/StaggerContainer";
 import StaggerItem from "@/components/animations/StaggerItem";
@@ -64,15 +64,17 @@ const ProductionPage = () => {
 
   return (
     <PageContainer>
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+      <div className="grid grid-cols-1 gap-6 lg:gap-10 mt-6 sm:mt-8 md:mt-12">
+        {/* Левое меню категорий скрыто: на krrass.kz доступна только категория listogibochnye-stanki
         <aside className="hidden lg:block w-full">
           <CategoriesMenu />
         </aside>
+        */}
 
         <main className="w-full min-w-0">
           <ScrollReveal>
             <section>
-              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#F58322] leading-tight">
+              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#238ECE] leading-tight">
                 {t("production.title")}
               </h1>
               <h3 className="text-lg sm:text-xl lg:text-2xl mt-2 font-bold font-manrope text-gray-800">
@@ -84,7 +86,7 @@ const ProductionPage = () => {
               <button
                 type="button"
                 onClick={scrollToProductionContact}
-                className="mt-8 sm:mt-10 bg-[#F58322] w-full sm:w-auto px-8 py-3 text-white font-medium hover:bg-[#DB741F] transition-colors rounded-sm shadow-sm"
+                className="mt-8 sm:mt-10 bg-[#238ECE] w-full sm:w-auto px-8 py-3 text-white font-medium hover:bg-[#066AAB] transition-colors rounded-sm shadow-sm"
               >
                 {t("production.signUpDemo")}
               </button>
@@ -113,7 +115,7 @@ const ProductionPage = () => {
                       }}
                       className={`cursor-pointer transition-all duration-300 rounded-lg p-1 ${
                         choose === index
-                          ? "border-2 border-[#F58322] shadow-sm"
+                          ? "border-2 border-[#238ECE] shadow-sm"
                           : "border-2 border-transparent hover:border-gray-200"
                       }`}
                     >
@@ -167,7 +169,7 @@ const ProductionPage = () => {
 
           <section className="mt-20 sm:mt-24 mb-16 sm:mb-20 px-2 sm:px-0">
             <ScrollReveal>
-              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#F58322] uppercase mb-8 sm:mb-10 text-center sm:text-left">
+              <h2 className="font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#238ECE] uppercase mb-8 sm:mb-10 text-center sm:text-left">
                 {t("production.howItWork.title")}
               </h2>
             </ScrollReveal>
@@ -218,7 +220,7 @@ const ProductionPage = () => {
                   key={i}
                   className="p-6 sm:p-8 bg-gray-50 rounded-sm border border-gray-100 hover:shadow-md transition-shadow"
                 >
-                  <p className="text-[#F58322] font-bold text-lg mb-3 sm:mb-4">
+                  <p className="text-[#238ECE] font-bold text-lg mb-3 sm:mb-4">
                     {t(`production.benefits.${item}.title`)}
                   </p>
                   <p className="font-light text-sm sm:text-base text-gray-700 leading-relaxed">
@@ -233,7 +235,7 @@ const ProductionPage = () => {
 
       <section className="mt-20 sm:mt-28 border-t border-gray-200 pt-16 sm:pt-20">
         <ScrollReveal>
-          <h2 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#F58322] mb-4 sm:mb-6 text-center lg:text-left">
+          <h2 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-bold uppercase text-[#238ECE] mb-4 sm:mb-6 text-center lg:text-left">
             {t("production.platformsTitle")}
           </h2>
           <p className="mb-10 sm:mb-12 font-bold text-base sm:text-lg lg:text-xl text-gray-800 text-center lg:text-left max-w-4xl">

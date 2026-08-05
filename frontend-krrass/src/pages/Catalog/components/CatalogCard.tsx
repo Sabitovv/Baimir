@@ -128,12 +128,12 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
       <div className="h-40 flex items-center justify-center mb-4 relative">
         {(product.newProduct ?? product.new) === true &&
           product.inStock !== false && (
-            <span className="absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">
+            <span className="absolute left-2 top-2 z-20 inline-flex items-center rounded-full bg-[#EAF3FA] px-2.5 py-1 text-[11px] font-semibold text-[#066AAB]">
               {t("commonCatalog.new")}
             </span>
           )}
         {discountPercent !== null && discountPercent > 0 && (
-          <span className="absolute right-2 top-2 z-20 inline-flex items-center rounded-full bg-gradient-to-r from-[#D94A2A] to-[#DB741F] px-2.5 py-1 text-[11px] font-extrabold text-white shadow-sm ring-1 ring-white/60">
+          <span className="absolute right-2 top-2 z-20 inline-flex items-center rounded-full bg-gradient-to-r from-[#063D7E] to-[#066AAB] px-2.5 py-1 text-[11px] font-extrabold text-white shadow-sm ring-1 ring-white/60">
             -{discountPercent}%
           </span>
         )}
@@ -149,7 +149,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
         />
       </div>
 
-      <h3 className="font-manrope text-sm font-extrabold text-gray-800 leading-tight mb-3 group-hover:text-[#DB741F] transition-colors line-clamp-2">
+      <h3 className="font-manrope text-sm font-extrabold text-gray-800 leading-tight mb-3 group-hover:text-[#066AAB] transition-colors line-clamp-2">
         {product.name}
       </h3>
 
@@ -204,10 +204,10 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
         </div>
 
         {cartItem ? (
-          <div className="flex items-center justify-between bg-[#F58322] rounded-sm">
+          <div className="flex items-center justify-between bg-[#238ECE] rounded-sm">
             <button
               type="button"
-              className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+              className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#066AAB] transition"
               onClick={(event) => {
                 event.preventDefault();
                 if (cartItem.quantity <= 1) {
@@ -222,7 +222,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
             <span className="text-white font-bold">{cartItem.quantity}</span>
             <button
               type="button"
-              className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#DB741F] transition"
+              className="w-10 h-10 flex items-center justify-center text-white font-bold hover:bg-[#066AAB] transition"
               onClick={(event) => {
                 event.preventDefault();
                 dispatch(incrementQuantity(product.id));
@@ -256,7 +256,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
             className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
               product.inStock === false
                 ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-[#F58322] text-white hover:bg-[#DB741F]"
+                : "bg-[#238ECE] text-white hover:bg-[#066AAB]"
             }`}
             disabled={product.inStock === false}
           >

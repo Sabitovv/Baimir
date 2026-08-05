@@ -110,7 +110,6 @@ const Hero = () => {
                     lg:flex-row lg:items-end
                   "
                 >
-                  {/* Описание "Baymir — официальный представитель лазерных станков Bodor..." временно скрыто
                   <p
                     className="
                       w-full max-w-[38ch] text-[15px] font-medium leading-[1.55] text-white md:max-w-none
@@ -120,7 +119,6 @@ const Hero = () => {
                   >
                     {t('hero.description')}
                   </p>
-                  */}
 
                   <button
                     onClick={(e) => {

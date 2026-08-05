@@ -63,12 +63,12 @@ const CategoryCarousel = ({ group }: { group: CategoryProductGroup }) => {
           <h2 className="font-manrope text-sm sm:text-xl md:text-2xl lg:text-[28px] xl:text-3xl font-bold uppercase text-gray-900 truncate">
             {group.category.name}
           </h2>
-          <div className="mt-1 h-[3px] w-12 sm:w-14 md:w-12 lg:w-16 rounded-full bg-[#F58322]" />
+          <div className="mt-1 h-[3px] w-12 sm:w-14 md:w-12 lg:w-16 rounded-full bg-[#238ECE]" />
         </div>
 
         <Link
           to={categoryLink}
-          className="shrink-0 rounded-full border border-[#F3C9A8] bg-[#FFF4EA] w-8 h-8 sm:w-auto sm:h-auto px-0 sm:px-3 md:px-2.5 lg:px-4 py-0 sm:py-1.5 md:py-1.5 lg:py-2 flex items-center justify-center text-[10px] sm:text-xs md:text-[11px] lg:text-sm font-semibold uppercase tracking-wide text-[#DB741F] hover:bg-[#FFE9D8] transition-colors"
+          className="shrink-0 rounded-full border border-[#CFE4F3] bg-[#EAF3FA] w-8 h-8 sm:w-auto sm:h-auto px-0 sm:px-3 md:px-2.5 lg:px-4 py-0 sm:py-1.5 md:py-1.5 lg:py-2 flex items-center justify-center text-[10px] sm:text-xs md:text-[11px] lg:text-sm font-semibold uppercase tracking-wide text-[#066AAB] hover:bg-[#DCEBF7] transition-colors"
           aria-label={t("catalogPage.goToCategory")}
           title={t("catalogPage.goToCategory")}
         >
@@ -189,7 +189,7 @@ const CatalogDeepProductsPage = ({
     <PageContainer>
       <div className="mt-8 sm:mt-10 md:mt-11 lg:mt-12 px-4 md:px-5 lg:px-0">
         <div className="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500">
-          <Link to="/catalog" className="hover:text-[#DB741F] transition-colors">
+          <Link to="/catalog/listogibochnye-stanki" className="hover:text-[#066AAB] transition-colors">
             {t("commonCatalog.catalog")}
           </Link>
           <span className="mx-2">/</span>

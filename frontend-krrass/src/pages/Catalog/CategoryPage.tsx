@@ -3,8 +3,8 @@ import { useLocation, useNavigate, useParams, useSearchParams } from "react-rout
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
 
-import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
-import CategoriesMenu from "@/components/common/CategoriesMenu";
+// import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+// import CategoriesMenu from "@/components/common/CategoriesMenu";
 import ProductCard from "@/components/common/ProductCard";
 import PageContainer from "@/components/ui/PageContainer";
 import CatalogFilters from "@/pages/Catalog/components/CatalogFilter";
@@ -453,13 +453,15 @@ const CategoryPage = () => {
               {currentCategory?.name ?? t("commonCatalog.catalog")}
             </h1>
           </ScrollReveal>
-          <Breadcrumbs />
+          {/* Хлебные крошки скрыты: на krrass.kz доступна только категория listogibochnye-stanki: <Breadcrumbs /> */}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr] gap-6 md:gap-7 lg:gap-8 mt-4">
+        <div className="grid grid-cols-1 gap-6 md:gap-7 lg:gap-8 mt-4">
+          {/* Левое меню категорий скрыто: на krrass.kz доступна только категория listogibochnye-stanki
           <aside className="hidden lg:block space-y-2 pr-4">
             <CategoriesMenu />
           </aside>
+          */}
 
           <main>
             {!isLoadingProducts && !hasProducts && hasSubcategories ? (
@@ -494,7 +496,7 @@ const CategoryPage = () => {
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                     <button
                       onClick={toggleFilter}
-                      className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md transition font-medium text-xs sm:text-sm ${isFilterOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
+                      className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md transition font-medium text-xs sm:text-sm ${isFilterOpen ? "bg-[#238ECE] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
                     >
                       {t("filters.showFilter")}
                     </button>
@@ -507,7 +509,7 @@ const CategoryPage = () => {
                         {t("filters.have")}
                       </span>
                       <div
-                        className={`w-9 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${inStock ? "bg-[#F58322]" : "bg-gray-300"}`}
+                        className={`w-9 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${inStock ? "bg-[#238ECE]" : "bg-gray-300"}`}
                       >
                         <div
                           className={`w-3.5 h-3.5 bg-white rounded-full absolute top-0.5 shadow-sm transition-all duration-200 ease-in-out ${inStock ? "right-1" : "left-1"}`}
@@ -527,7 +529,7 @@ const CategoryPage = () => {
                     <div className="hidden md:flex gap-2">
                       <button
                         onClick={toggleCalculator}
-                        className={`cursor-pointer px-3 py-2 rounded-md text-sm transition flex items-center gap-2 ${isCalculatorOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
+                        className={`cursor-pointer px-3 py-2 rounded-md text-sm transition flex items-center gap-2 ${isCalculatorOpen ? "bg-[#238ECE] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
                       >
                         {t("categoryPage.calculator")}
                       </button>
@@ -686,7 +688,7 @@ const CategoryPage = () => {
               <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
                 {t("catalogPage.deepProductsTitle")}
               </h2>
-              <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
+              <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#238ECE]" />
             </div>
 
             <CategoryInlineCollectionsSection categoryId={activeId} />

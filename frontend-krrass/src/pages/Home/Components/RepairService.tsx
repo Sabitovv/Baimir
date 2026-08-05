@@ -44,7 +44,7 @@ const RepairService = () => {
             {/* ── MOBILE LAYOUT (< 650px) ── stacked cards */}
             <div className="block min-[650px]:hidden">
               {/* Orange card – engineer */}
-              <div className="bg-[#F58322] px-6 py-10 text-[#233337]">
+              <div className="bg-[#238ECE] px-6 py-10 text-[#222222]">
                 <h3 className="font-manrope text-2xl uppercase mb-6 font-bold">
                   {t('home.repair.engineer.title')}
                 </h3>
@@ -61,7 +61,7 @@ const RepairService = () => {
               </div>
 
               {/* Dark card – client */}
-              <div className="bg-[#233337] px-6 py-10 text-white">
+              <div className="bg-[#222222] px-6 py-10 text-white">
                 <h3 className="font-manrope text-2xl uppercase mb-6 font-bold">
                   {t('home.repair.client.title')}
                 </h3>
@@ -82,7 +82,7 @@ const RepairService = () => {
             </div>
 
             {/* ── DESKTOP LAYOUT (≥ 650px) ── diagonal split */}
-            <div className="hidden min-[650px]:block relative min-h-[420px] bg-[#F58322]">
+            <div className="hidden min-[650px]:block relative min-h-[420px] bg-[#238ECE]">
 
               {/* Left worker image — original positioning */}
               <EditableImage
@@ -100,7 +100,7 @@ const RepairService = () => {
               {/* Diagonal dark panel */}
               <div
                 className="absolute top-0 bottom-0 left-1/2 w-[60%]
-                           bg-[#233337] -skew-x-[10deg] origin-left overflow-hidden z-10"
+                           bg-[#222222] -skew-x-[10deg] origin-left overflow-hidden z-10"
               >
                 {/* Right worker image — original positioning */}
                 <EditableImage
@@ -120,7 +120,7 @@ const RepairService = () => {
               <div className="relative z-20 block min-[650px]:flex w-full h-full min-[650px]:justify-between">
 
                 {/* Left column – engineer */}
-                <div className="w-full min-[650px]:w-[40%] px-6 min-[650px]:px-12 py-8 min-[650px]:py-12 text-[#233337] mt-6 min-[650px]:mt-10">
+                <div className="w-full min-[650px]:w-[40%] px-6 min-[650px]:px-12 py-8 min-[650px]:py-12 text-[#222222] mt-6 min-[650px]:mt-10">
                   <h3 className="font-manrope text-3xl uppercase mb-6 font-bold">
                     {t('home.repair.engineer.title')}
                   </h3>
