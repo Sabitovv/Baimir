@@ -77,15 +77,21 @@ const vendorChunks: Record<string, string[]> = {
     'framer-motion',
     'motion-dom',
     'motion-utils',
-    '@tolgee/react',
     'react-i18next',
     '@cyntler/react-doc-viewer',
     '@mui',
     '@emotion',
   ],
-  'vendor-i18n': [
+  // Tolgee is only reached through dynamic imports (edit mode via ?editor_key).
+  // It must stay in its own chunk — grouping it with the statically imported
+  // i18next packages turns the whole in-context editor (CodeMirror + MUI, ~1 MB)
+  // into an eager chunk that every visitor downloads and parses.
+  'vendor-tolgee': [
+    '@tolgee/react',
     '@tolgee/i18next',
     '@tolgee/web',
+  ],
+  'vendor-i18n': [
     'i18next',
     'i18next-browser-languagedetector',
     'i18next-http-backend',

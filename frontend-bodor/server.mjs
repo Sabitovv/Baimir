@@ -127,17 +127,47 @@ const send = (res, status, body, contentType = "text/plain; charset=utf-8") => {
   res.end(body);
 };
 
-const serveFile = async (res, filePath) => {
+// The build emits .br/.gz siblings for every compressible asset; prefer them
+// over letting the proxy re-compress at request time.
+const PRECOMPRESSED_VARIANTS = [
+  { suffix: ".br", encoding: "br" },
+  { suffix: ".gz", encoding: "gzip" },
+];
+
+const acceptsEncoding = (req, encoding) =>
+  String(req.headers["accept-encoding"] || "")
+    .split(",")
+    .some((part) => part.trim().split(";")[0].toLowerCase() === encoding);
+
+const resolvePrecompressed = async (req, filePath) => {
+  for (const { suffix, encoding } of PRECOMPRESSED_VARIANTS) {
+    if (!acceptsEncoding(req, encoding)) continue;
+
+    try {
+      const variantStat = await stat(`${filePath}${suffix}`);
+      if (variantStat.isFile()) return { path: `${filePath}${suffix}`, encoding };
+    } catch {
+      // No variant for this encoding, try the next one.
+    }
+  }
+
+  return null;
+};
+
+const serveFile = async (req, res, filePath) => {
   try {
     const fileStat = await stat(filePath);
     if (!fileStat.isFile()) return false;
     const ext = path.extname(filePath).toLowerCase();
     const contentType = CONTENT_TYPES[ext] || "application/octet-stream";
-    const body = await readFile(filePath);
+    const variant = await resolvePrecompressed(req, filePath);
+    const body = await readFile(variant ? variant.path : filePath);
     res.writeHead(200, {
       "Content-Type": contentType,
       "Cache-Control":
         ext === ".html" ? "no-cache" : "public, max-age=31536000, immutable",
+      Vary: "Accept-Encoding",
+      ...(variant ? { "Content-Encoding": variant.encoding } : {}),
     });
     res.end(body);
     return true;
@@ -780,7 +810,7 @@ const server = createServer(async (req, res) => {
     }
 
     const candidatePath = path.join(DIST_DIR, pathname.replace(/^\/+/, ""));
-    const served = await serveFile(res, candidatePath);
+    const served = await serveFile(req, res, candidatePath);
     if (served) return;
 
     const spaHtml = await readFile(INDEX_PATH, "utf-8");
