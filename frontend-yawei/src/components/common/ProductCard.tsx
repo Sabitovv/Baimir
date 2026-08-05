@@ -317,6 +317,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     dispatch(decrementQuantity(id));
                   }
                 }}
+                aria-label={t('cart.decreaseQuantity', { defaultValue: 'Уменьшить количество' })}
               >
                 −
               </button>
@@ -330,6 +331,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   event.preventDefault();
                   dispatch(incrementQuantity(id));
                 }}
+                aria-label={t('cart.increaseQuantity', { defaultValue: 'Увеличить количество' })}
               >
                 +
               </button>

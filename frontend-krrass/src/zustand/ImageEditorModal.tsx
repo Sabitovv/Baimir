@@ -36,7 +36,7 @@ export const ImageEditorModal: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md relative">
-        <button onClick={closeEditor} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800">✕</button>
+        <button onClick={closeEditor} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800" aria-label={t('common.close', { defaultValue: 'Закрыть' })}>✕</button>
 
         <h3 className="text-xl font-bold mb-2">{t('imageEditor.title')}</h3>
         <p className="text-xs text-gray-400 mb-4 font-mono">{editingKey}</p>

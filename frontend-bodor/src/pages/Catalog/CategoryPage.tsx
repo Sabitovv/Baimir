@@ -573,6 +573,7 @@ const CategoryPage = () => {
                     <button
                       onClick={closePanels}
                       className="absolute top-4 right-4 p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 rounded-md transition-colors"
+                      aria-label={t('common.close', { defaultValue: 'Закрыть' })}
                     >
                       <svg
                         width="20"

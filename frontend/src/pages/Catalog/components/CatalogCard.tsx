@@ -216,6 +216,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
                   dispatch(decrementQuantity(product.id));
                 }
               }}
+              aria-label={t('cart.decreaseQuantity', { defaultValue: 'Уменьшить количество' })}
             >
               −
             </button>
@@ -227,6 +228,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
                 event.preventDefault();
                 dispatch(incrementQuantity(product.id));
               }}
+              aria-label={t('cart.increaseQuantity', { defaultValue: 'Увеличить количество' })}
             >
               +
             </button>

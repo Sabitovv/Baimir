@@ -32,7 +32,11 @@
       "ru": "Русский",
       "kz": "Қазақша",
       "en": "English"
-    }
+    },
+    "clearSearch": "Іздеуді тазалау",
+    "openCart": "Себетті ашу",
+    "openMenu": "Мәзірді ашу",
+    "closeMenu": "Мәзірді жабу"
   },
   "footer": {
     "company": {

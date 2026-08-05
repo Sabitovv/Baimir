@@ -460,8 +460,8 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                 <button
                   type="button"
                   onClick={clearSearch}
-                  aria-label="Clear search"
-                  title="Clear search"
+                  aria-label={t('header.clearSearch', { defaultValue: 'Очистить поиск' })}
+                  title={t('header.clearSearch', { defaultValue: 'Очистить поиск' })}
                   className={`transition-colors ${
                     isSearchOpen ? 'text-gray-300 hover:text-white' : 'text-gray-400 hover:text-white'
                   }`}
@@ -477,6 +477,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                     : 'px-4 border-l border-white/70 text-white'
                 } transition-colors`}
                 onClick={submitSearch}
+                aria-label={t('header.search')}
               >
                 <SearchIcon sx={{ fontSize: 20 }} />
               </button>
@@ -531,7 +532,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           {/* <button className="border border-white px-3 py-2 2xl:py-2.5 text-[10px] 2xl:text-xs font-bold uppercase tracking-widest hover:bg-[#DB741F] transition-colors shrink-0">
             {t('header.cta')}
           </button> */}
-          <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-desktop>
+          <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-desktop aria-label={t('header.openCart', { defaultValue: 'Открыть корзину' })}>
             <ShoppingCartIcon className="hover:text-[#DB741F]" />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
@@ -572,7 +573,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           >
             <SearchIcon sx={{ fontSize: 26 }} />
           </button>
-          <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-mobile>
+          <button onClick={() => setIsCartOpen(true)} className="relative" data-cart-button-mobile aria-label={t('header.openCart', { defaultValue: 'Открыть корзину' })}>
             <ShoppingCartIcon sx={{ fontSize: 26 }} />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-[#F58322] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
@@ -588,7 +589,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               </span>
             )}
           </Link>
-          <button onClick={() => { setOpen(true); setIsMobileSearchVisible(false); setIsSearchOpen(false) }}>
+          <button onClick={() => { setOpen(true); setIsMobileSearchVisible(false); setIsSearchOpen(false) }} aria-label={t('header.openMenu', { defaultValue: 'Открыть меню' })}>
             <MenuIcon sx={{ fontSize: 28 }} />
           </button>
         </div>
@@ -623,6 +624,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                 type="button"
                 onClick={clearSearch}
                 className="mr-1 text-gray-300 hover:text-white"
+                aria-label={t('header.clearSearch', { defaultValue: 'Очистить поиск' })}
               >
                 <CloseIcon sx={{ fontSize: 18 }} />
               </button>
@@ -631,6 +633,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
               type="button"
               onClick={submitSearch}
               className="mr-2 text-gray-200 hover:text-white"
+              aria-label={t('header.search')}
             >
               <SearchIcon sx={{ fontSize: 20 }} />
             </button>
@@ -642,7 +645,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
         <div className="fixed inset-0 bg-black text-white z-50 overflow-y-auto">
           <div className="flex items-center justify-between h-[88px] px-4 border-b border-white/10">
             <EditableImage imageKey="header_drawer_logo" fallbackSrc={LOGO_URL} className="h-8" alt="Logo" />
-            <button onClick={() => setOpen(false)}>
+            <button onClick={() => setOpen(false)} aria-label={t('header.closeMenu', { defaultValue: 'Закрыть меню' })}>
               <CloseIcon sx={{ fontSize: 28 }} />
             </button>
           </div>
@@ -674,6 +677,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                   type="button"
                   onClick={clearSearch}
                   className="mr-1 text-gray-300 hover:text-white"
+                  aria-label={t('header.clearSearch', { defaultValue: 'Очистить поиск' })}
                 >
                   <CloseIcon sx={{ fontSize: 18 }} />
                 </button>
@@ -682,6 +686,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
                 type="button"
                 onClick={submitSearch}
                 className="mr-2 text-gray-200 hover:text-white"
+                aria-label={t('header.search')}
               >
                 <SearchIcon sx={{ fontSize: 20 }} />
               </button>

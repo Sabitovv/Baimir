@@ -19,7 +19,11 @@
       "ru": "Russian",
       "kz": "Kazakh",
       "en": "English"
-    }
+    },
+    "clearSearch": "Clear search",
+    "openCart": "Open cart",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "hero": {
     "title": "Directly from Kazakhstan",

@@ -2426,6 +2426,7 @@ const ProductPage = () => {
                             dispatch(decrementQuantity(product.id));
                           }
                         }}
+                        aria-label={t('cart.decreaseQuantity', { defaultValue: 'Уменьшить количество' })}
                       >
                         −
                       </button>
@@ -2438,6 +2439,7 @@ const ProductPage = () => {
                         onClick={() => {
                           dispatch(incrementQuantity(product.id));
                         }}
+                        aria-label={t('cart.increaseQuantity', { defaultValue: 'Увеличить количество' })}
                       >
                         +
                       </button>
