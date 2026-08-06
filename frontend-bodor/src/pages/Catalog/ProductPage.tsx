@@ -2279,7 +2279,7 @@ const ProductPage = () => {
           {/* Хлебные крошки скрыты: на bodorlaser.kz доступна только категория lazernye-stanki: <Breadcrumbs /> */}
         </div>
 
-        <h1 className="font-manrope text-2xl md:text-3xl lg:text-4xl font-bold uppercase text-gray-900 mb-8 leading-tight">
+        <h1 className="font-rubik text-2xl md:text-3xl lg:text-4xl font-bold uppercase text-gray-900 mb-8 leading-tight">
           {product.name}
         </h1>
 
@@ -2817,7 +2817,7 @@ const ProductPage = () => {
                         : undefined
                   }
                 >
-                  <h3 className="font-manrope text-2xl font-bold uppercase mb-5 text-gray-900">
+                  <h3 className="font-rubik text-2xl font-bold uppercase mb-5 text-gray-900">
                     {t("catalogPage.bid")}
                   </h3>
                   <Contact productId={product.id} />
@@ -3066,7 +3066,7 @@ const ProductPage = () => {
           <section className="mb-16">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="px-2 md:px-0">
-                <h3 className="font-manrope text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
+                <h3 className="font-rubik text-4xl sm:text-5xl font-bold uppercase mb-8 ml-4">
                   {t("catalogPage.bid")}
                 </h3>
                 <Contact productId={product.id} />

@@ -144,7 +144,7 @@ const StoragePage = () => {
         <main className="w-full min-w-0">
           <section>
             <ScrollReveal>
-              <h1 className="font-manrope text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#FF4610] leading-tight">
+              <h1 className="font-rubik text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase text-[#FF4610] leading-tight">
                 {t("storage.title")}
               </h1>
               <h3 className="text-lg sm:text-xl font-bold my-4 mb-8 whitespace-pre-line">
@@ -302,7 +302,7 @@ const StoragePage = () => {
         className="mt-20 mb-16 sm:mt-28 sm:mb-20 flex flex-col-reverse lg:flex-row items-center lg:items-stretch gap-10 lg:gap-16"
       >
         <div className="w-full lg:w-1/2">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-manrope font-semibold mb-6 sm:mb-8 uppercase text-center lg:text-left text-gray-900">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-rubik font-semibold mb-6 sm:mb-8 uppercase text-center lg:text-left text-gray-900">
             {t("storage.contact")}
           </h2>
           <div className="max-w-xl mx-auto lg:mx-0">

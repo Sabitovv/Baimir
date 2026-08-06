@@ -42,7 +42,7 @@ const CategoryInlineCollectionsSection = ({
     <section className={`${sectionTitle ? 'mt-8 sm:mt-10 md:mt-12' : ''} mb-6 sm:mb-8 md:mb-10`}>
       {sectionTitle && (
         <div className='mb-5 sm:mb-6 md:mb-7 px-1 sm:px-2'>
-          <h2 className='font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900'>
+          <h2 className='font-rubik text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900'>
             {sectionTitle}
           </h2>
           <div className='mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#FF4610]' />

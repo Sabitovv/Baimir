@@ -39,7 +39,7 @@ const Warehouse = () => {
         <ScrollReveal>
           <h1
             className="
-            font-manrope font-bold uppercase text-[#171B25]
+            font-rubik font-bold uppercase text-[#171B25]
             text-4xl md:text-5xl xl:text-6xl
             mb-10
           "
@@ -104,7 +104,7 @@ const Warehouse = () => {
 
             <StaggerItem>
               <div>
-                <div className="font-manrope font-bold uppercase text-[#171B25] text-sm tracking-widest mb-4">
+                <div className="font-rubik font-bold uppercase text-[#171B25] text-sm tracking-widest mb-4">
                   {t("home.warehouse.statusesLabel")}
                 </div>
 

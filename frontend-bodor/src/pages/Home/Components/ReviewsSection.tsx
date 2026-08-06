@@ -91,7 +91,7 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
         <ScrollReveal>
           <h2
             className="
-              font-manrope font-semibold text-center 
+              font-rubik font-semibold text-center 
               text-3xl md:text-4xl xl:text-[54px]
               mb-10 md:mb-12 xl:mb-16
               tracking-tight leading-none
@@ -184,13 +184,13 @@ const ReviewsSection = ({ onOpenReviewModal }: ReviewsSectionProps) => {
                               className="w-12 h-12 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-full bg-[#F59E0B] text-white flex items-center justify-center font-manrope text-xl">
+                            <div className="w-12 h-12 rounded-full bg-[#F59E0B] text-white flex items-center justify-center font-rubik text-xl">
                               {getInitial(review.authorName)}
                             </div>
                           )}
 
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-manrope font-semibold text-[17px] leading-tight text-[#111827] mb-1 truncate">
+                            <h4 className="font-rubik font-semibold text-[17px] leading-tight text-[#111827] mb-1 truncate">
                               {review.authorName}
                             </h4>
 

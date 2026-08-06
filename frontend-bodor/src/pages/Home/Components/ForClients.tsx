@@ -57,7 +57,7 @@ const ForClients = () => {
                 className="border-[#FF4610] border-4 p-4 md:p-8 hover:-translate-y-1 transition-transform duration-300 h-full flex flex-col overflow-hidden"
               >
                 <div className="flex justify-between items-start gap-3 mb-4 md:mb-6">
-                  <h3 className="font-manrope font-bold text-lg md:text-xl uppercase pr-2 min-w-0 break-words leading-tight">
+                  <h3 className="font-rubik font-bold text-lg md:text-xl uppercase pr-2 min-w-0 break-words leading-tight">
                     {t(item.titleKey)}
                   </h3>
                   <EditableImage

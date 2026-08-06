@@ -96,11 +96,11 @@ const NewsSection = () => {
 
         <ScrollReveal>
           <div className='flex items-end justify-between'>
-            <h2 className="font-manrope font-bold uppercase text-[#171B25]
+            <h2 className="font-rubik font-bold uppercase text-[#171B25]
                 text-3xl md:text-4xl xl:text-5xl mb-10">
               {t('home.news.title')}
             </h2>
-            <Link to="/Blog" className='font-manrope font-semibold uppercase text-[#171B25] text-sm md:text-md xl:text-xl mb-10 hover:text-[#E03A08] hover:underline'>
+            <Link to="/Blog" className='font-rubik font-semibold uppercase text-[#171B25] text-sm md:text-md xl:text-xl mb-10 hover:text-[#E03A08] hover:underline'>
               {t('home.news.readmore')}
             </Link>
           </div>

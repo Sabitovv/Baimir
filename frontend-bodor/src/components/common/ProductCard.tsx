@@ -203,7 +203,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
       </div>
 
-      <h3 className={`font-manrope font-extrabold text-gray-800 leading-snug sm:leading-tight group-hover:text-[#E03A08] transition-colors line-clamp-2 ${isMini ? "text-[10px] mb-1" : isCompact ? "text-[11px] sm:text-xs md:text-[13px] mb-1 sm:mb-1.5" : "text-xs sm:text-sm md:text-[13px] lg:text-sm mb-1.5 sm:mb-2"}`}>
+      <h3 className={`font-rubik font-extrabold text-gray-800 leading-snug sm:leading-tight group-hover:text-[#E03A08] transition-colors line-clamp-2 ${isMini ? "text-[10px] mb-1" : isCompact ? "text-[11px] sm:text-xs md:text-[13px] mb-1 sm:mb-1.5" : "text-xs sm:text-sm md:text-[13px] lg:text-sm mb-1.5 sm:mb-2"}`}>
         {name}
       </h3>
 

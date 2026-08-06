@@ -19,7 +19,7 @@ const DemoInnerPage = () => {
         </aside>
         */}
         <section className="max-w-[1000px]">
-          <h1 className="font-manrope text-[40px] font-bold uppercase mb-6">
+          <h1 className="font-rubik text-[40px] font-bold uppercase mb-6">
             {t('demoInner.title')}
           </h1>
           <div className="mb-12">
@@ -43,7 +43,7 @@ const DemoInnerPage = () => {
           <div className="max-w-[860px] space-y-10 text-[#2A2A2A]">
 
             <div>
-              <h2 className="font-manrope text-xl font-bold mb-2">
+              <h2 className="font-rubik text-xl font-bold mb-2">
                 {t('demoInner.intro.title')}
               </h2>
 
@@ -53,7 +53,7 @@ const DemoInnerPage = () => {
             </div>
 
             <div>
-              <h2 className="font-manrope text-xl font-bold mb-3">
+              <h2 className="font-rubik text-xl font-bold mb-3">
                 {t('demoInner.why.title')}
               </h2>
 
@@ -90,7 +90,7 @@ const DemoInnerPage = () => {
 
       <div className="mt-24 text-center max-w-[600px] mx-auto">
 
-        <h2 className="font-manrope text-[42px] font-bold uppercase mb-8">
+        <h2 className="font-rubik text-[42px] font-bold uppercase mb-8">
           {t('demoInner.contactTitle')}
         </h2>
 

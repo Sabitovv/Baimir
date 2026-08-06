@@ -55,7 +55,7 @@ const CertificatesSection = () => {
       <PageContainer>
 
         <ScrollReveal>
-          <h2 className="font-manrope font-bold uppercase text-[#171B25] text-3xl md:text-4xl xl:text-5xl mb-10">
+          <h2 className="font-rubik font-bold uppercase text-[#171B25] text-3xl md:text-4xl xl:text-5xl mb-10">
             {t('home.certificates.title')}
           </h2>
         </ScrollReveal>
