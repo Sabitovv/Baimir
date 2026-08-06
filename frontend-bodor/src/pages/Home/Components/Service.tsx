@@ -11,13 +11,14 @@ const SERVICE_BG = '/images/bg_service.webp'
 const Service = () => {
   const { t } = useTranslation()
 
+  // Порядок соответствует блоку сервиса в документе главной страницы
   const services: string[] = [
     'home.service.items.preparation',
-    'home.service.items.visit',
     'home.service.items.setup',
-    'home.service.items.repair',
+    'home.service.items.modes',
     'home.service.items.training',
-    'home.service.items.support'
+    'home.service.items.repair',
+    'home.service.items.visit'
   ]
 
   const CheckCircleIconCustom = (props: SvgIconProps) => (

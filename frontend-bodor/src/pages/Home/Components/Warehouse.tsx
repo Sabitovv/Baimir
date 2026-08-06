@@ -14,34 +14,16 @@ type WarehouseImageItem = {
   src: string;
 };
 
-type StatItem = {
-  valueKey: string;
-  fallbackValue: string;
-  unit?: string;
-  textKey: string;
-};
-
 const Warehouse = () => {
   const { t } = useTranslation();
 
   const [imgChange, setImgChange] = useState(0);
 
-  const stats: StatItem[] = [
-    {
-      valueKey: "home.warehouse.values.space",
-      fallbackValue: "5 500 m2",
-      textKey: "home.warehouse.stats.space",
-    },
-    {
-      valueKey: "home.warehouse.values.staff",
-      fallbackValue: "120+",
-      textKey: "home.warehouse.stats.staff",
-    },
-    {
-      valueKey: "home.warehouse.values.since",
-      fallbackValue: "2012",
-      textKey: "home.warehouse.stats.since",
-    },
+  const statusKeys: string[] = [
+    "home.warehouse.statuses.inStock",
+    "home.warehouse.statuses.inTransit",
+    "home.warehouse.statuses.atFactory",
+    "home.warehouse.statuses.onOrder",
   ];
 
   const images: WarehouseImageItem[] = [
@@ -114,32 +96,47 @@ const Warehouse = () => {
             staggerDelay={0.15}
             className="w-full lg:w-[420px] flex flex-col gap-8"
           >
-            {stats.map((item, index) => (
-              <StaggerItem key={index}>
-                <div>
-                  <div
-                    className="
-                    font-manrope font-bold text-[#FF4610]
-                    text-4xl md:text-5xl
-                    leading-none
-                    mb-2
-                  "
-                  >
-                    {t(item.valueKey, { defaultValue: item.fallbackValue })}
+            <StaggerItem>
+              <p className="text-gray-600 text-base leading-relaxed">
+                {t("home.warehouse.description")}
+              </p>
+            </StaggerItem>
 
-                    {item.unit && (
-                      <span className="text-xl md:text-2xl ml-1 font-manrope font-semibold">
-                        {t(`home.warehouse.units.${item.unit}`)}
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {t(item.textKey)}
-                  </p>
+            <StaggerItem>
+              <div>
+                <div className="font-manrope font-bold uppercase text-[#171B25] text-sm tracking-widest mb-4">
+                  {t("home.warehouse.statusesLabel")}
                 </div>
-              </StaggerItem>
-            ))}
+
+                <ul className="flex flex-col gap-3">
+                  {statusKeys.map((key) => (
+                    <li key={key} className="flex items-start gap-3">
+                      <span className="mt-[7px] h-2 w-2 shrink-0 rounded-full bg-[#FF4610]" />
+                      <span className="text-gray-600 text-sm leading-relaxed">
+                        {t(key)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </StaggerItem>
+
+            <StaggerItem>
+              <button
+                onClick={() =>
+                  document
+                    .getElementById("contact-section")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+                className="
+                  inline-flex min-h-11 items-center justify-center rounded-sm bg-[#FF4610] px-6 py-3
+                  text-[11px] font-bold uppercase tracking-[0.16em] text-white transition
+                  hover:bg-[#E03A08] md:px-8 md:py-4 md:text-sm
+                "
+              >
+                {t("home.warehouse.cta")}
+              </button>
+            </StaggerItem>
           </StaggerContainer>
         </div>
       </PageContainer>

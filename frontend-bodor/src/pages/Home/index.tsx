@@ -101,13 +101,33 @@ const Home = () => {
                 variant="recommendations"
                 title={t('home.personalizedRecommendations')}
             />
-            {/* Секция "Лидируем в индустрии" временно скрыта
+            {/* Секция "Лидируем в индустрии" временно скрыта.
+                Документ описывает на её месте "Блок категорий оборудования" (6 категорий Bodor:
+                лист, труба, комбинированные, профиль, сварка, автоматизация), но IndustryCatalog
+                берёт карточки из общего каталога Baytech (useGetCategoriesTreeQuery) — первые
+                4 корневые категории там: Металлообработка, Камнеобработка, Компрессоры,
+                Деревообработка. Раскомментировать можно только после перевода блока на
+                статический список из документа.
             <DeferredSection placeholderClassName="min-h-[560px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[560px]" />}>
                     <IndustryCatalog />
                 </Suspense>
             </DeferredSection>
             */}
+
+            {/* Порядок блоков соответствует документу «Готовый текст главной страницы»:
+                первый экран → строка доверия → в наличии → почему из Китая → сервис → заявка */}
+            <DeferredSection placeholderClassName="min-h-[380px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[380px]" />}>
+                    <ForClients />
+                </Suspense>
+            </DeferredSection>
+
+            <DeferredSection placeholderClassName="min-h-[520px]">
+                <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
+                    <Warehouse />
+                </Suspense>
+            </DeferredSection>
 
             <DeferredSection placeholderClassName="min-h-[520px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
@@ -118,18 +138,6 @@ const Home = () => {
             <DeferredSection placeholderClassName="min-h-[360px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[360px]" />}>
                     <Service />
-                </Suspense>
-            </DeferredSection>
-
-            <DeferredSection placeholderClassName="min-h-[520px]">
-                <Suspense fallback={<SectionFallback heightClassName="min-h-[520px]" />}>
-                    <Warehouse />
-                </Suspense>
-            </DeferredSection>
-
-            <DeferredSection placeholderClassName="min-h-[380px]">
-                <Suspense fallback={<SectionFallback heightClassName="min-h-[380px]" />}>
-                    <ForClients />
                 </Suspense>
             </DeferredSection>
 

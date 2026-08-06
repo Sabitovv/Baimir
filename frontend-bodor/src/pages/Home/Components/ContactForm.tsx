@@ -23,6 +23,9 @@ const ContactForm = () => {
                 ">
                 {t('home.contact.title')}
               </h2>
+              <p className="mb-8 max-w-[60ch] text-base leading-relaxed text-gray-600 md:mb-10 md:text-lg">
+                {t('home.contact.description')}
+              </p>
               <Contact />
             </div>
           </ScrollReveal>

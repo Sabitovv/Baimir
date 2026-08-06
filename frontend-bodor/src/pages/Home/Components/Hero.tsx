@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 import ScrollReveal from '@/components/animations/ScrollReveal'
-import { Link } from 'react-router-dom'
 import PageContainer from '@/components/ui/PageContainer'
 import { EditableImage } from '@/zustand/EditableImage'
 
@@ -10,6 +9,12 @@ const HERO_BG_TABLET = '/images/background_main-tablet.webp'
 
 const Hero = () => {
   const { t } = useTranslation()
+
+  const scrollToContacts = () => {
+    document
+      .getElementById('contact-section')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <section className="relative flex min-h-[100svh] flex-col text-white">
@@ -87,17 +92,35 @@ const Hero = () => {
               */}
 
               <ScrollReveal delay={0.4}>
-                <Link to="/catalog/lazernye-stanki">
+                <div className="mt-10 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
                   <button
+                    onClick={scrollToContacts}
                     className="
-                      mt-10 inline-flex min-h-11 items-center justify-center rounded-sm bg-[#FF4610] px-6 py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition
+                      inline-flex min-h-11 items-center justify-center rounded-sm bg-[#FF4610] px-6 py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition
                       hover:bg-[#E03A08] hover:shadow-lg hover:shadow-[#DC0000]/20
-                      md:mt-10 md:px-10 md:py-4 md:text-sm
+                      md:px-10 md:py-4 md:text-sm
                     "
                   >
-                    {t('hero.buttons.catalog')}
+                    {t('hero.buttons.calculation')}
                   </button>
-                </Link>
+
+                  <button
+                    onClick={scrollToContacts}
+                    className="
+                      inline-flex min-h-11 items-center justify-center rounded-sm border border-white/70 bg-black/20 px-6 py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition
+                      hover:border-[#FF4610] hover:bg-[#E03A08]
+                      md:px-10 md:py-4 md:text-sm
+                    "
+                  >
+                    {t('hero.buttons.testCut')}
+                  </button>
+                </div>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.5}>
+                <p className="mt-4 max-w-[46ch] text-[12px] leading-[1.5] text-gray-300 md:text-[13px]">
+                  {t('hero.note')}
+                </p>
               </ScrollReveal>
 
             </div>
@@ -123,10 +146,7 @@ const Hero = () => {
                   <button
                     onClick={(e) => {
                       e.preventDefault()
-                      const contactSection = document.getElementById('contact-section')
-                      if (contactSection) {
-                        contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                      }
+                      scrollToContacts()
                     }}
                     className="
                       group hidden min-h-11 shrink-0 items-center gap-3 rounded-sm border border-[#FF4610] bg-black/30 px-5 py-3
