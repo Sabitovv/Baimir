@@ -14,7 +14,7 @@ const ForClients = lazy(() => import('./Components/ForClients'))
 // const ReviewsSection = lazy(() => import('./Components/ReviewsSection'))
 const ReviewForm = lazy(() => import('./Components/ReviewForm'))
 // const RepairService = lazy(() => import('./Components/RepairService'))
-// const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
+const CertificateSection = lazy(() => import('./Components/CertificatesSection'))
 // const NewsSection = lazy(() => import('./Components/NewsSection'))
 const ContactForm = lazy(() => import('./Components/ContactForm'))
 
@@ -163,13 +163,11 @@ const Home = () => {
                 </Suspense>
             </DeferredSection>
 
-            {/* Секция "Сертификаты" временно скрыта
             <DeferredSection placeholderClassName="min-h-[420px]">
                 <Suspense fallback={<SectionFallback heightClassName="min-h-[420px]" />}>
                     <CertificateSection />
                 </Suspense>
             </DeferredSection>
-            */}
 
             {/* Секция "Новости" временно скрыта
             <DeferredSection placeholderClassName="min-h-[420px]">

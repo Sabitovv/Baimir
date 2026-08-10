@@ -136,11 +136,11 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
     // { id: 'technologies', path: '/technology' },
     // { id: 'demo', path: '/demo' },
     { id: 'production', path: '/production' },
-    // Скрыты из навигации: Склад, Сервис, Блог, О компании
+    // Скрыты из навигации: Склад, Сервис, Блог
     // { id: 'storage', path: '/storage' },
     // { id: 'service', path: '/service' },
     // { id: 'blog', path: '/blog' },
-    // { id: 'about', path: '/about' },
+    { id: 'about', path: '/about' },
   ]
 
   const changeLanguage = (lng: string) => {
