@@ -62,6 +62,12 @@ export type ProductsResponse = {
   products: Product[];
 };
 
+export type PressBrakeOptions = {
+  available: boolean;
+  totalProducts: number;
+  capabilities: { force: number; length: number; count: number }[];
+};
+
 // добавили lang? явно
 export type ProductsQueryParams = {
   categoryId: number;
@@ -107,6 +113,10 @@ export const categoriesApi = createApi({
   }),
   tagTypes: ["Category", "Product"],
   endpoints: (builder) => ({
+    getPressBrakeOptions: builder.query<PressBrakeOptions, number>({
+      query: (categoryId) => `/products/category/${categoryId}/press-brake-options`,
+      providesTags: [{ type: "Product", id: "LIST" }, { type: "Category", id: "LIST" }],
+    }),
     getCategoriesTree: builder.query<Category[], { lang?: string } | void>({
       query: (arg) => {
         const lang = (arg as { lang?: string })?.lang;
@@ -143,9 +153,9 @@ export const categoriesApi = createApi({
     }),
 
     getProducts: builder.query<ProductsResponse, ProductsQueryParams>({
-      query: ({ categoryId, lang, ...params }) => ({
+      query: ({ categoryId, lang, limit, ...params }) => ({
         url: `/products/category/${categoryId}`,
-        params,
+        params: { ...params, size: limit },
         headers: lang ? { "Accept-Language": lang } : undefined,
       }),
       providesTags: (result) =>
@@ -176,6 +186,7 @@ export const categoriesApi = createApi({
 });
 
 export const {
+  useGetPressBrakeOptionsQuery,
   useGetCategoriesTreeQuery,
   useGetCategoriesRootQuery,
   useGetProductsQuery,

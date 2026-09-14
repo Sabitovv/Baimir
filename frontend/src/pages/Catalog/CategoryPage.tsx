@@ -15,6 +15,7 @@ import sampleImg from "@/assets/catalog/sample_machine.png";
 import {
   useGetCategoriesTreeQuery,
   useGetProductsQuery,
+  useGetPressBrakeOptionsQuery,
   type Category,
   type Filter,
 } from "@/api/categoriesApi";
@@ -27,6 +28,7 @@ import { EditableImage } from "@/zustand/EditableImage";
 import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
 import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
 import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
+import { calculatePressBrake, CALCULATOR_PARAMS, readPressBrakeDraft, type PressBrakeDraft } from "@/utils/pressBrakeCalculator";
 
 type BreadcrumbItem = {
   id?: number | string;
@@ -152,6 +154,9 @@ const CategoryPage = () => {
   };
 
   const toggleCalculator = () => {
+    if (!isCalculatorOpen) {
+      void refetchPressOptions();
+    }
     setIsCalculatorOpen((prev) => !prev);
     setIsFilterOpen(false);
   };
@@ -173,6 +178,7 @@ const CategoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const inStock = searchParams.get("is_stock") === "true";
+  const isPressSelection = searchParams.get("press_brake") === "true";
 
   const toggleStock = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -191,7 +197,8 @@ const CategoryPage = () => {
     isError: isErrorCategories,
   } = useGetCategoriesTreeQuery({ lang: i18n.language });
 
-  const activeId = useMemo(() => {
+  const queryCategoryId = searchParams.get("categoryId");
+  const activeId = (() => {
     const fromParam = Number(categoryId);
     if (Number.isFinite(fromParam) && fromParam > 0) return fromParam;
 
@@ -199,11 +206,11 @@ const CategoryPage = () => {
     const slugId = Number(fromSlug?.id);
     if (Number.isFinite(slugId) && slugId > 0) return slugId;
 
-    const fromQuery = Number(searchParams.get("categoryId"));
+    const fromQuery = Number(queryCategoryId);
     if (Number.isFinite(fromQuery) && fromQuery > 0) return fromQuery;
 
     return null;
-  }, [categoryId, categorySlug, categories, searchParams]);
+  })();
 
   const currentCategory = useMemo(() => {
     if (!categories.length || !activeId) return null;
@@ -221,15 +228,51 @@ const CategoryPage = () => {
   const filters = { ...allParams };
   delete filters.page;
   delete filters.categoryId;
+  for (const key of Object.values(CALCULATOR_PARAMS)) delete filters[key];
+  const calculatorDraft = readPressBrakeDraft(searchParams);
 
   const queryArg = activeId
     ? { categoryId: activeId, page, limit, ...filters, sort: effectiveSort }
     : skipToken;
 
-  const { data: productsResponse, isLoading: isLoadingProducts } =
+  const { currentData: productsResponse, isFetching: isFetchingProducts, isError: isErrorProducts, refetch: refetchProducts } =
     useGetProductsQuery(
       queryArg === skipToken ? skipToken : { ...queryArg, lang: i18n.language },
+      { refetchOnMountOrArgChange: true, pollingInterval: isPressSelection ? 15000 : 0 },
     );
+  const isLoadingProducts = isFetchingProducts && !productsResponse;
+
+  const {
+    currentData: pressOptions,
+    isFetching: isLoadingPressOptions,
+    isError: isErrorPressOptions,
+    refetch: refetchPressOptions,
+  } = useGetPressBrakeOptionsQuery(activeId ?? skipToken, {
+    refetchOnMountOrArgChange: true,
+    pollingInterval: isPressSelection ? 15000 : 0,
+  });
+
+  const applyPressSelection = (draft: PressBrakeDraft) => {
+    const { result } = calculatePressBrake(draft);
+    if (!result) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("press_brake", "true");
+    params.set("bending_force", `${result.requiredKN},`);
+    params.set("bending_length", `${result.length},`);
+    for (const field of Object.keys(CALCULATOR_PARAMS) as (keyof PressBrakeDraft)[]) {
+      params.set(CALCULATOR_PARAMS[field], draft[field]);
+    }
+    params.set("page", "1");
+    setSearchParams(params);
+  };
+
+  const resetPressSelection = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const code of ["press_brake", "bending_force", "bending_length", ...Object.values(CALCULATOR_PARAMS)]) params.delete(code);
+    params.set("page", "1");
+    setSearchParams(params);
+    setIsCalculatorOpen(false);
+  };
 
   const products = useMemo(
     () => productsResponse?.products ?? [],
@@ -377,7 +420,7 @@ const CategoryPage = () => {
 
   const changePage = (newPage: number) => {
     const safePage = Math.max(1, Math.min(totalPages, newPage));
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(safePage));
     setSearchParams(params, { replace: false });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -462,7 +505,7 @@ const CategoryPage = () => {
           </aside>
 
           <main>
-            {!isLoadingProducts && !hasProducts && hasSubcategories ? (
+            {!isPressSelection && !isErrorProducts && !isLoadingProducts && !hasProducts && hasSubcategories ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                 {childCategories.map((sub: Category) => {
                   const productCountValue = resolveProductCount(sub);
@@ -524,14 +567,14 @@ const CategoryPage = () => {
                       </button>
                     </div>
 
-                    <div className="hidden md:flex gap-2">
+                    {(pressOptions?.available || isErrorPressOptions || isPressSelection) && <div className="flex gap-2">
                       <button
                         onClick={toggleCalculator}
                         className={`cursor-pointer px-3 py-2 rounded-md text-sm transition flex items-center gap-2 ${isCalculatorOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
                       >
-                        {t("categoryPage.calculator")}
+                        {t("bendCalculator.title", { defaultValue: "Калькулятор гибки" })}
                       </button>
-                    </div>
+                    </div>}
                   </div>
                 </div>
 
@@ -588,11 +631,38 @@ const CategoryPage = () => {
                       </svg>
                     </button>
                     <h3 className="text-xl font-bold mb-6 text-gray-900">
-                      {t("categoryPage.calculator")}
+                      {t("bendCalculator.title", { defaultValue: "Калькулятор гибки" })}
                     </h3>
-                    <CategoryCalculator onClose={closePanels} />
+                    <CategoryCalculator
+                      key={`${activeId}-${JSON.stringify(calculatorDraft)}`}
+                      options={pressOptions}
+                      isLoading={isLoadingPressOptions}
+                      isError={isErrorPressOptions}
+                      initialDraft={calculatorDraft}
+                      hasAppliedCalculation={isPressSelection && searchParams.has(CALCULATOR_PARAMS.thickness)}
+                      onApply={applyPressSelection}
+                      onRetry={() => { void refetchPressOptions(); }}
+                    />
                   </div>
                 )}
+
+                {isPressSelection && <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-md bg-orange-50 p-4">
+                  <div>
+                  <p role="status" className="text-sm text-gray-800">
+                    {isLoadingProducts
+                      ? t("pressSelection.searching", { defaultValue: "Подбираем прессы…" })
+                      : isErrorProducts
+                        ? t("pressSelection.resultsError", { defaultValue: "Не удалось загрузить результаты подбора." })
+                        : t("pressSelection.results", { defaultValue: "Найдено: {{count}}. Только товары с заполненными усилием и длиной гибки.", count: productsResponse?.meta.totalElements ?? 0 })}
+                  </p>
+                  {searchParams.get("bending_force")?.split(",")[0] && searchParams.get("bending_length")?.split(",")[0] && <p className="mt-1 text-xs text-gray-600">
+                    {t("bendCalculator.applied", { defaultValue: "Применено: усилие от {{force}} кН, рабочая длина от {{length}} мм.", force: searchParams.get("bending_force")?.split(",")[0], length: searchParams.get("bending_length")?.split(",")[0] })}
+                  </p>}
+                  </div>
+                  <button type="button" onClick={resetPressSelection} className="text-sm text-gray-800 underline">
+                    {t("pressSelection.reset", { defaultValue: "Сбросить подбор" })}
+                  </button>
+                </div>}
 
                 {/* products grid */}
                 <div
@@ -604,12 +674,20 @@ const CategoryPage = () => {
                       {t("productPage.loadingProduct")}
                     </p>
                   )}
-                  {!isLoadingProducts && !hasProducts && (
+                  {!isLoadingProducts && isErrorProducts && <div role="alert" className="col-span-full py-8 text-center">
+                    <p>{t("pressSelection.resultsError", { defaultValue: "Не удалось загрузить результаты подбора." })}</p>
+                    <button type="button" onClick={() => { void refetchProducts(); }} className="mt-3 text-[#F58322] underline">
+                      {t("pressSelection.retry", { defaultValue: "Повторить" })}
+                    </button>
+                  </div>}
+                  {!isLoadingProducts && !isErrorProducts && !hasProducts && (
                     <div className="col-span-full py-8">
                       <p className="text-center text-gray-500 pb-5">
                         {t("productPage.notFoundTitle")}
                       </p>
-                      <p className="text-center text-sm sm:text-base font-semibold text-gray-900 pb-4">
+                      {isPressSelection ? <p className="text-center text-sm text-gray-600">
+                        {t("pressSelection.empty", { defaultValue: "Нет прессов с заполненными характеристиками, подходящих под выбранные параметры и фильтры. Измените условия или сбросьте подбор." })}
+                      </p> : <><p className="text-center text-sm sm:text-base font-semibold text-gray-900 pb-4">
                         {t("common.maybeInterested")}
                       </p>
                       <ProductCollectionRenderer
@@ -618,9 +696,10 @@ const CategoryPage = () => {
                         variant="recommendations"
                         maxItems={8}
                       />
+                      </>}
                     </div>
                   )}
-                  {products.map((product) => (
+                  {!isLoadingProducts && !isErrorProducts && products.map((product) => (
                     <ProductCard
                       key={product.id}
                       id={product.id}
@@ -639,7 +718,7 @@ const CategoryPage = () => {
                   ))}
                 </div>
 
-                {hasProducts && (
+                {!isLoadingProducts && !isErrorProducts && hasProducts && (
                   <div className="mt-8 sm:mt-12 flex justify-center items-center gap-1.5 sm:gap-2">
                     <button
                       disabled={page === 1}
@@ -677,11 +756,11 @@ const CategoryPage = () => {
           </main>
         </div>
 
-        {hasProducts && (
+        {!isPressSelection && hasProducts && (
           <CategoryInlineCollectionsSection sectionTitle={t('collections.title')} categoryId={activeId} />
         )}
 
-        {!hasProducts && (
+        {!isPressSelection && !hasProducts && (
           <>
             <div className="mt-12 sm:mt-16 mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
               <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
@@ -696,7 +775,7 @@ const CategoryPage = () => {
           </>
         )}
 
-        <RecentlyViewedProducts />
+        {!isPressSelection && <RecentlyViewedProducts />}
 
         <section className="mb-12 sm:mb-14 md:mb-16">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-7 lg:gap-8 items-center">

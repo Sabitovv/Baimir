@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/verify-precompressed.mjs",
     "lint": "eslint .",
+    "test:calculator": "node --experimental-strip-types --test scripts/test-press-brake-calculator.mjs",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",

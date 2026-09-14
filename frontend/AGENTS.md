@@ -18,7 +18,8 @@ High-signal guidance for OpenCode sessions in this repo.
 
 ## Verification expectations
 
-- No test runner is configured and no `*.test.*`/`*.spec.*` files exist.
+- `npm run test:calculator` runs the bending formula regression tests with the built-in Node test runner (Node 22.6+). No general UI test runner is configured.
+- Run this command when changing the calculator or its calculation helper.
 - For meaningful verification, run: `npm run lint` then `npm run build`.
 
 ## Architecture map (frontend)

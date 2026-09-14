@@ -49,9 +49,9 @@ Command intent:
 
 ## 5) Test commands (including single-test guidance)
 Current reality:
-- No test runner is configured in `frontend/package.json`
-- No `*.test.*` or `*.spec.*` files found
-- No working `npm test` command today
+- `npm run test:calculator` runs the focused bending calculation tests using the built-in Node test runner (Node 22.6+), without additional dependencies.
+- Single named case: `node --experimental-strip-types --test --test-name-pattern="reference example" scripts/test-press-brake-calculator.mjs`.
+- No general `npm test` command or UI test runner is configured.
 
 Validation commands you should run now:
 - `npm run lint`
