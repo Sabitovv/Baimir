@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   calculatePressBrake, calculateMatrixVariants, matrixOpenings, CALCULATOR_PARAMS,
-  DEFAULT_PRESS_BRAKE_DRAFT, MATERIAL_STRENGTH, readPressBrakeDraft, panelBenderRequest, bendingSelectionParams,
+  DEFAULT_PRESS_BRAKE_DRAFT, MATERIAL_STRENGTH, readPressBrakeDraft, panelBenderRequest, bendingSelectionParams, bendingMethodParams,
 } from '../src/utils/pressBrakeCalculator.ts';
 
 const calculate = (changes = {}) => calculatePressBrake({ ...DEFAULT_PRESS_BRAKE_DRAFT, ...changes });
@@ -113,4 +113,23 @@ test('switching methods clears incompatible filters, preserves catalog filters a
   assert.equal(returned.get('bending_force'), '181,');
   for (const key of ['panel_bender', 'panel_material', 'panel_thickness']) assert.ok(!returned.has(key));
   assert.equal(bendingSelectionParams(panel, { ...panelDraft, thickness: '' }), null);
+});
+
+test('method changes immediately filter machine type without applying unfinished parameters', () => {
+  const current = bendingSelectionParams(new URLSearchParams('page=3&sort=price,DESC&is_stock=true'), DEFAULT_PRESS_BRAKE_DRAFT);
+  current.set('page', '2');
+  const draft = { ...DEFAULT_PRESS_BRAKE_DRAFT, method: 'panel', thickness: '', length: '0' };
+  const params = bendingMethodParams(current, draft);
+  assert.equal(params.get('bending_machine_type'), 'Панелегиб');
+  assert.equal(params.get('page'), '1');
+  assert.equal(params.get('sort'), 'price,DESC');
+  assert.equal(params.get('is_stock'), 'true');
+  for (const key of ['press_brake', 'panel_bender', 'bending_force', 'bending_length', 'panel_material', 'panel_thickness']) assert.ok(!params.has(key));
+  assert.deepEqual(readPressBrakeDraft(new URLSearchParams(params.toString())), draft);
+  const applied = bendingSelectionParams(params, { ...draft, thickness: '1', length: '1000' });
+  assert.equal(applied.get('panel_bender'), 'true');
+  assert.ok(!applied.has('bending_machine_type'));
+  const presses = bendingMethodParams(applied, { ...draft, method: 'press' });
+  assert.equal(presses.get('bending_machine_type'), 'Листогибочный пресс');
+  assert.ok(!presses.has('panel_bender'));
 });

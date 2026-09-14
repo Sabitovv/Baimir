@@ -33,10 +33,11 @@ export const CALCULATOR_PARAMS = {
   material: "calc_material", thickness: "calc_thickness", angle: "calc_angle", length: "calc_length",
   strength: "calc_strength", dieOpening: "calc_die", margin: "calc_margin",
 } as const;
+export const BENDING_MACHINE_TYPES = { press: "Листогибочный пресс", panel: "Панелегиб" } as const;
 
 export function readPressBrakeDraft(params: URLSearchParams): PressBrakeDraft {
   const draft = { ...DEFAULT_PRESS_BRAKE_DRAFT };
-  draft.method = params.get("panel_bender") === "true" || params.get(CALCULATOR_PARAMS.method) === "panel" ? "panel" : "press";
+  draft.method = params.get("panel_bender") === "true" || params.get("bending_machine_type") === BENDING_MACHINE_TYPES.panel || params.get(CALCULATOR_PARAMS.method) === "panel" ? "panel" : "press";
   for (const field of ["thickness", "angle", "length", "strength", "dieOpening", "margin"] as const) {
     draft[field] = params.get(CALCULATOR_PARAMS[field]) ?? draft[field];
   }
@@ -52,7 +53,18 @@ export function panelBenderRequest(draft: PressBrakeDraft) {
   return { panel_bender: "true", panel_material: draft.material, panel_thickness: String(thickness), bending_length: `${length},` };
 }
 
-export const BENDING_FILTER_PARAMS = ["press_brake", "panel_bender", "panel_material", "panel_thickness", "bending_force", "bending_length"];
+export const BENDING_FILTER_PARAMS = ["press_brake", "panel_bender", "panel_material", "panel_thickness", "bending_force", "bending_length", "bending_machine_type"];
+
+// Selecting a method browses that machine type, even with an unfinished draft.
+// Only the Apply button claims a match to the calculation or material limits.
+export function bendingMethodParams(current: URLSearchParams, draft: PressBrakeDraft): URLSearchParams {
+  const params = new URLSearchParams(current);
+  for (const key of BENDING_FILTER_PARAMS) params.delete(key);
+  params.set("bending_machine_type", BENDING_MACHINE_TYPES[draft.method]);
+  for (const field of Object.keys(CALCULATOR_PARAMS) as (keyof PressBrakeDraft)[]) params.set(CALCULATOR_PARAMS[field], draft[field]);
+  params.set("page", "1");
+  return params;
+}
 
 export function bendingSelectionParams(current: URLSearchParams, draft: PressBrakeDraft): URLSearchParams | null {
   const request = draft.method === "panel" ? panelBenderRequest(draft) : (() => {

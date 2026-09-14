@@ -13,10 +13,11 @@ type Props = {
   initialDraft: PressBrakeDraft;
   hasAppliedCalculation: boolean;
   onApply: (draft: PressBrakeDraft) => void;
+  onMethodChange: (draft: PressBrakeDraft) => void;
   onRetry: () => void;
 };
 
-const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppliedCalculation, onApply, onRetry }: Props) => {
+const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppliedCalculation, onApply, onMethodChange, onRetry }: Props) => {
   const { t, i18n } = useTranslation();
   const [draft, setDraft] = useState(initialDraft);
   const [customThickness, setCustomThickness] = useState(!THICKNESSES.includes(Number(initialDraft.thickness)));
@@ -59,9 +60,11 @@ const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppl
         <span className="relative block min-w-0">
           <select value={draft.method} className={selectClass} onChange={(event) => {
             const method = event.target.value as PressBrakeDraft["method"];
-            setDraft(previous => ({ ...previous, method,
-              ...(method === "panel" && previous.material === "custom" ? { material: "mild", strength: String(MATERIAL_STRENGTH.mild) } : {}),
-            }));
+            const next: PressBrakeDraft = { ...draft, method,
+              ...(method === "panel" && draft.material === "custom" ? { material: "mild", strength: String(MATERIAL_STRENGTH.mild) } : {}),
+            };
+            setDraft(next);
+            onMethodChange(next);
           }}>
             <option value="press">{t("bendCalculator.pressMethod", { defaultValue: "На листогибочном прессе" })}</option>
             <option value="panel">{t("bendCalculator.panelMethod", { defaultValue: "На панелегибе" })}</option>

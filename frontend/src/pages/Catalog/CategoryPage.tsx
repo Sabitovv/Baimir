@@ -28,7 +28,7 @@ import { EditableImage } from "@/zustand/EditableImage";
 import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
 import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
 import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
-import { bendingSelectionParams, BENDING_FILTER_PARAMS, CALCULATOR_PARAMS, readPressBrakeDraft, type PressBrakeDraft } from "@/utils/pressBrakeCalculator";
+import { bendingSelectionParams, bendingMethodParams, BENDING_FILTER_PARAMS, BENDING_MACHINE_TYPES, CALCULATOR_PARAMS, readPressBrakeDraft, type PressBrakeDraft } from "@/utils/pressBrakeCalculator";
 
 type BreadcrumbItem = {
   id?: number | string;
@@ -178,8 +178,11 @@ const CategoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const inStock = searchParams.get("is_stock") === "true";
-  const isPanelSelection = searchParams.get("panel_bender") === "true";
-  const isBendingSelection = searchParams.get("press_brake") === "true" || isPanelSelection;
+  const hasAppliedCalculation = searchParams.get("press_brake") === "true" || searchParams.get("panel_bender") === "true";
+  const machineType = searchParams.get("bending_machine_type");
+  const isMethodSelection = !hasAppliedCalculation && (machineType === BENDING_MACHINE_TYPES.panel || machineType === BENDING_MACHINE_TYPES.press);
+  const isPanelSelection = searchParams.get("panel_bender") === "true" || (isMethodSelection && machineType === BENDING_MACHINE_TYPES.panel);
+  const isBendingSelection = hasAppliedCalculation || isMethodSelection;
 
   const toggleStock = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -632,8 +635,9 @@ const CategoryPage = () => {
                       isLoading={isLoadingPressOptions}
                       isError={isErrorPressOptions}
                       initialDraft={calculatorDraft}
-                      hasAppliedCalculation={isBendingSelection && searchParams.has(CALCULATOR_PARAMS.thickness)}
+                      hasAppliedCalculation={hasAppliedCalculation && searchParams.has(CALCULATOR_PARAMS.thickness)}
                       onApply={applyBendingSelection}
+                      onMethodChange={(draft) => setSearchParams(bendingMethodParams(searchParams, draft))}
                       onRetry={() => { void refetchPressOptions(); }}
                     />
                   </div>
@@ -646,10 +650,11 @@ const CategoryPage = () => {
                       ? t("bendCalculator.searchingMachines", { defaultValue: "Подбираем станки…" })
                       : isErrorProducts
                         ? t("pressSelection.resultsError", { defaultValue: "Не удалось загрузить результаты подбора." })
+                        : isMethodSelection ? t("bendCalculator.methodResults", { defaultValue: "{{type}}: {{count}}. Для подбора по параметрам нажмите «Подобрать станок».", type: isPanelSelection ? t("bendCalculator.panelType", { defaultValue: "Панелегибы" }) : t("bendCalculator.pressType", { defaultValue: "Листогибочные прессы" }), count: productsResponse?.meta.totalElements ?? 0 })
                         : isPanelSelection ? t("bendCalculator.panelResults", { defaultValue: "Найдено панелегибов: {{count}}. Подбор по допустимой толщине материала и рабочей длине.", count: productsResponse?.meta.totalElements ?? 0 })
                         : t("pressSelection.results", { defaultValue: "Найдено: {{count}}. Только товары с заполненными усилием и длиной гибки.", count: productsResponse?.meta.totalElements ?? 0 })}
                   </p>
-                  {isPanelSelection && <p className="mt-1 text-xs text-gray-600">
+                  {hasAppliedCalculation && isPanelSelection && <p className="mt-1 text-xs text-gray-600">
                     {t("bendCalculator.panelApplied", { defaultValue: "Применено: {{material}}, толщина {{thickness}} мм, длина гиба {{length}} мм.",
                       material: t(`bendCalculator.${searchParams.get("panel_material")}`, { defaultValue: ({ mild: "Конструкционная сталь", stainless: "Нержавеющая сталь", aluminium: "Алюминий" } as Record<string, string>)[searchParams.get("panel_material") ?? ""] ?? "—" }),
                       thickness: searchParams.get("panel_thickness"), length: searchParams.get("bending_length")?.split(",")[0] })}
@@ -685,7 +690,7 @@ const CategoryPage = () => {
                         {t("productPage.notFoundTitle")}
                       </p>
                       {isBendingSelection ? <p className="text-center text-sm text-gray-600">
-                        {isPanelSelection ? t("bendCalculator.panelsEmpty", { defaultValue: "Нет панелегибов с заполненными характеристиками, подходящих под выбранные параметры и фильтры. Измените материал, толщину или длину гиба." }) : t("pressSelection.empty", { defaultValue: "Нет прессов с заполненными характеристиками, подходящих под выбранные параметры и фильтры. Измените условия или сбросьте подбор." })}
+                        {isMethodSelection ? t("bendCalculator.methodEmpty", { defaultValue: "Нет станков выбранного типа с учётом фильтров каталога. Измените фильтры или сбросьте подбор." }) : isPanelSelection ? t("bendCalculator.panelsEmpty", { defaultValue: "Нет панелегибов с заполненными характеристиками, подходящих под выбранные параметры и фильтры. Измените материал, толщину или длину гиба." }) : t("pressSelection.empty", { defaultValue: "Нет прессов с заполненными характеристиками, подходящих под выбранные параметры и фильтры. Измените условия или сбросьте подбор." })}
                       </p> : <><p className="text-center text-sm sm:text-base font-semibold text-gray-900 pb-4">
                         {t("common.maybeInterested")}
                       </p>
