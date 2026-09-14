@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   calculatePressBrake, calculateMatrixVariants, matrixOpenings, CALCULATOR_PARAMS,
-  DEFAULT_PRESS_BRAKE_DRAFT, MATERIAL_STRENGTH, readPressBrakeDraft,
+  DEFAULT_PRESS_BRAKE_DRAFT, MATERIAL_STRENGTH, readPressBrakeDraft, panelBenderRequest, bendingSelectionParams,
 } from '../src/utils/pressBrakeCalculator.ts';
 
 const calculate = (changes = {}) => calculatePressBrake({ ...DEFAULT_PRESS_BRAKE_DRAFT, ...changes });
@@ -89,4 +89,28 @@ test('draft preserves angle, selected matrix and exact material strength in the 
   for (const [field, key] of Object.entries(CALCULATOR_PARAMS)) params.set(key, draft[field]);
   assert.deepEqual(readPressBrakeDraft(new URLSearchParams(params.toString())), draft);
   assert.deepEqual(readPressBrakeDraft(new URLSearchParams()), DEFAULT_PRESS_BRAKE_DRAFT);
+});
+
+test('panel selection uses material limits and never depends on hidden press inputs', () => {
+  const draft = { ...DEFAULT_PRESS_BRAKE_DRAFT, method: 'panel', material: 'stainless', thickness: '1,5', angle: '', strength: '', dieOpening: '0', margin: '-5' };
+  assert.deepEqual(panelBenderRequest(draft), { panel_bender: 'true', panel_material: 'stainless', panel_thickness: '1.5', bending_length: '1000,' });
+  for (const field of ['thickness', 'length']) {
+    for (const value of ['', ' ', '0', '-1', 'NaN', 'Infinity', '1e300']) assert.equal(panelBenderRequest({ ...draft, [field]: value }), null);
+  }
+  assert.equal(panelBenderRequest({ ...draft, material: 'custom' }), null);
+});
+
+test('switching methods clears incompatible filters, preserves catalog filters and resets pagination', () => {
+  const press = bendingSelectionParams(new URLSearchParams('page=3&sort=price,DESC&is_stock=true'), DEFAULT_PRESS_BRAKE_DRAFT);
+  const panelDraft = { ...DEFAULT_PRESS_BRAKE_DRAFT, method: 'panel' };
+  const panel = bendingSelectionParams(press, panelDraft);
+  assert.equal(panel.get('page'), '1');
+  assert.equal(panel.get('sort'), 'price,DESC');
+  assert.equal(panel.get('is_stock'), 'true');
+  assert.ok(!panel.has('press_brake') && !panel.has('bending_force'));
+  assert.deepEqual(readPressBrakeDraft(new URLSearchParams(panel.toString())), panelDraft);
+  const returned = bendingSelectionParams(panel, DEFAULT_PRESS_BRAKE_DRAFT);
+  assert.equal(returned.get('bending_force'), '181,');
+  for (const key of ['panel_bender', 'panel_material', 'panel_thickness']) assert.ok(!returned.has(key));
+  assert.equal(bendingSelectionParams(panel, { ...panelDraft, thickness: '' }), null);
 });

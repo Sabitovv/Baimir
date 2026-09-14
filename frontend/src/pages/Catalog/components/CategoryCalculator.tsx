@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { PressBrakeOptions } from "@/api/categoriesApi";
 import {
   ANGLES, THICKNESSES, calculatePressBrake, calculateMatrixVariants,
-  MATERIAL_STRENGTH, type Material, type PressBrakeDraft,
+  MATERIAL_STRENGTH, panelBenderRequest, type Material, type PressBrakeDraft,
 } from "@/utils/pressBrakeCalculator";
 
 type Props = {
@@ -20,6 +20,8 @@ const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppl
   const { t, i18n } = useTranslation();
   const [draft, setDraft] = useState(initialDraft);
   const [customThickness, setCustomThickness] = useState(!THICKNESSES.includes(Number(initialDraft.thickness)));
+  const isPanel = draft.method === "panel";
+  const panelRequest = panelBenderRequest(draft);
   const calculation = calculatePressBrake(draft);
   const variants = calculateMatrixVariants(draft);
   const result = calculation.result;
@@ -32,7 +34,10 @@ const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppl
   const selectArrow = <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500">
     <path d="m6 8 4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>;
-  const canApply = !!result && options?.available && !isError && !isLoading;
+  const valid = isPanel ? !!panelRequest : !!result;
+  const available = isPanel ? options?.panelBenders?.available : options?.available;
+  const productCount = isPanel ? options?.panelBenders?.totalProducts : options?.totalProducts;
+  const canApply = valid && available && !isError && !isLoading;
   const errors = {
     positiveNumbers: t("bendCalculator.positiveNumbers", { defaultValue: "Введите положительные значения толщины, длины, прочности и раскрытия матрицы." }),
     angle: t("bendCalculator.angleError", { defaultValue: "Выберите угол гибки из списка." }),
@@ -49,10 +54,26 @@ const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppl
 
   return (
     <form onSubmit={(event) => { event.preventDefault(); if (canApply) onApply(draft); }} className="space-y-6">
+      <label className={`${labelClass} sm:max-w-sm`}>
+        {t("bendCalculator.method", { defaultValue: "Способ гибки" })}
+        <span className="relative block min-w-0">
+          <select value={draft.method} className={selectClass} onChange={(event) => {
+            const method = event.target.value as PressBrakeDraft["method"];
+            setDraft(previous => ({ ...previous, method,
+              ...(method === "panel" && previous.material === "custom" ? { material: "mild", strength: String(MATERIAL_STRENGTH.mild) } : {}),
+            }));
+          }}>
+            <option value="press">{t("bendCalculator.pressMethod", { defaultValue: "На листогибочном прессе" })}</option>
+            <option value="panel">{t("bendCalculator.panelMethod", { defaultValue: "На панелегибе" })}</option>
+          </select>
+          {selectArrow}
+        </span>
+      </label>
       <p className="text-sm leading-relaxed text-gray-600">
-        {t("bendCalculator.tableIntro", { defaultValue: "Укажите материал и размеры детали. Калькулятор покажет варианты матриц, минимальную полку, внутренний радиус и необходимое усилие. Выберите столбец для подбора станка." })}
+        {isPanel ? t("bendCalculator.panelIntro", { defaultValue: "Укажите материал, толщину и длину гиба. Подберём панелегибы по допустимой толщине для выбранного материала и рабочей длине из характеристик товаров." })
+          : t("bendCalculator.tableIntro", { defaultValue: "Укажите материал и размеры детали. Калькулятор покажет варианты матриц, минимальную полку, внутренний радиус и необходимое усилие. Выберите столбец для подбора станка." })}
       </p>
-      <div className="grid grid-cols-1 items-start gap-x-4 gap-y-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.7fr)_repeat(3,minmax(0,1fr))]">
+      <div className={`grid grid-cols-1 items-start gap-x-4 gap-y-3 sm:grid-cols-2 ${isPanel ? "xl:grid-cols-[minmax(0,1.7fr)_repeat(2,minmax(0,1fr))]" : "xl:grid-cols-[minmax(0,1.7fr)_repeat(3,minmax(0,1fr))]"}`}>
         <label className={labelClass}>
           {t("bendCalculator.material", { defaultValue: "Материал" })}
           <span className="relative block min-w-0">
@@ -63,7 +84,7 @@ const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppl
               <option value="mild">{t("bendCalculator.mild", { defaultValue: "Конструкционная сталь" })}</option>
               <option value="stainless">{t("bendCalculator.stainless", { defaultValue: "Нержавеющая сталь" })}</option>
               <option value="aluminium">{t("bendCalculator.aluminium", { defaultValue: "Алюминий" })}</option>
-              <option value="custom">{t("bendCalculator.custom", { defaultValue: "Свой материал / прочность" })}</option>
+              {!isPanel && <option value="custom">{t("bendCalculator.custom", { defaultValue: "Свой материал / прочность" })}</option>}
             </select>
             {selectArrow}
           </span>
@@ -86,7 +107,7 @@ const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppl
           {customThickness && <input aria-label={t("bendCalculator.customThickness", { defaultValue: "Своя толщина" })} type="number" min="0" step="any" required value={draft.thickness}
             onChange={(event) => setDraft((previous) => ({ ...previous, thickness: event.target.value, dieOpening: "" }))} className={inputClass} />}
         </div>
-        <label className={labelClass}>
+        {!isPanel && <label className={labelClass}>
           {t("bendCalculator.angle", { defaultValue: "Угол, град. (α)" })}
           <span className="relative block min-w-0">
             <select value={draft.angle} className={selectClass} onChange={(event) => setField("angle", event.target.value)}>
@@ -94,14 +115,14 @@ const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppl
             </select>
             {selectArrow}
           </span>
-        </label>
+        </label>}
         <label className={labelClass}>
           {t("bendCalculator.length", { defaultValue: "Длина гиба, мм (L)" })}
           <input type="number" min="0" step="any" required value={draft.length} onChange={(event) => setField("length", event.target.value)} className={inputClass} />
         </label>
       </div>
 
-      <div className="overflow-x-auto rounded-md border border-gray-200">
+      {!isPanel && <><div className="overflow-x-auto rounded-md border border-gray-200">
         <table className="w-full min-w-[730px] border-collapse text-sm sm:text-base">
           <caption className="sr-only">{t("bendCalculator.table", { defaultValue: "Сравнение пяти вариантов матрицы" })}</caption>
           <thead className="bg-[#F58322] text-white">
@@ -167,21 +188,29 @@ const CategoryCalculator = ({ options, isLoading, isError, initialDraft, hasAppl
             <p className="mt-1 text-sm text-gray-600">≈ {number(result.requiredTonnes)} {t("bendCalculator.tonnes", { defaultValue: "тс" })} · {t("bendCalculator.lengthResult", { defaultValue: "рабочая длина от {{length}} мм", length: number(result.length) })}</p>
           </div>
         </div>
-        <p className="mt-4 text-xs leading-relaxed text-gray-600">{t("bendCalculator.pressSelectionNote", { defaultValue: "Подбор учитывает усилие и рабочую длину листогибочных прессов. Панелегибы используют другой способ гибки и в этом расчёте не участвуют. Совместимость и допустимую нагрузку оснастки нужно уточнить отдельно." })}</p>
+        <p className="mt-4 text-xs leading-relaxed text-gray-600">{t("bendCalculator.pressMethodNote", { defaultValue: "Подбор учитывает усилие и рабочую длину листогибочных прессов. Для панелегибов выберите другой способ гибки выше. Совместимость и допустимую нагрузку оснастки нужно уточнить отдельно." })}</p>
+      </div>}</>}
+      {isPanel && !panelRequest && <p role="alert" className="rounded-md bg-amber-50 p-4 text-sm text-amber-900">
+        {t("bendCalculator.panelInputError", { defaultValue: "Выберите материал из списка и введите положительные значения толщины и длины гиба." })}
+      </p>}
+      {isPanel && panelRequest && <div className="rounded-lg border-l-4 border-[#F58322] bg-orange-50 p-5 sm:p-6" aria-live="polite">
+        <h4 className="text-lg font-bold text-[#DE741A]">{t("bendCalculator.panelResultTitle", { defaultValue: "Подбор по характеристикам панелегиба" })}</h4>
+        <p className="mt-3 text-sm text-gray-800">{t("bendCalculator.panelResult", { defaultValue: "Допустимая толщина выбранного материала — от {{thickness}} мм, рабочая длина — от {{length}} мм. Указанная минимальная толщина листа также учитывается.", thickness: number(Number(panelRequest.panel_thickness)), length: number(Number(draft.length.replace(",", "."))) })}</p>
+        <p className="mt-3 text-xs leading-relaxed text-gray-600">{t("bendCalculator.panelLimits", { defaultValue: "Предварительный подбор по паспортным пределам. Они зависят от марки и прочности металла; материал, геометрию детали и комплектацию нужно сверить с паспортом станка. Если минимальная толщина не указана, её необходимо уточнить отдельно." })}</p>
       </div>}
-      {changed && result && <p role="status" className="text-sm text-amber-800">{t("bendCalculator.changed", { defaultValue: "Расчёт обновлён. Нажмите «Подобрать станок», чтобы обновить товары ниже." })}</p>}
+      {changed && valid && <p role="status" className="text-sm text-amber-800">{t("bendCalculator.changed", { defaultValue: "Расчёт обновлён. Нажмите «Подобрать станок», чтобы обновить товары ниже." })}</p>}
       {isError && <div role="alert" className="text-sm text-gray-700">
-        <p>{t("bendCalculator.catalogError", { defaultValue: "Расчёт доступен, но параметры станков не загрузились." })}</p>
+        <p>{isPanel ? t("bendCalculator.panelCatalogError", { defaultValue: "Параметры панелегибов не загрузились. Повторите загрузку, чтобы выполнить подбор." }) : t("bendCalculator.catalogError", { defaultValue: "Расчёт доступен, но параметры станков не загрузились." })}</p>
         <button type="button" onClick={onRetry} className="mt-2 text-[#D96912] underline">{t("pressSelection.retry", { defaultValue: "Повторить" })}</button>
       </div>}
       {!isError && isLoading && <p role="status" className="text-sm text-gray-600">{t("pressSelection.loading", { defaultValue: "Загружаем параметры товаров…" })}</p>}
-      {!isError && !isLoading && (!options?.available || !options.totalProducts) && <p role="status" className="text-sm text-gray-600">{t("pressSelection.unavailable", { defaultValue: "Пока нет товаров с заполненными усилием пресса и рабочей длиной гибки." })}</p>}
+      {!isError && !isLoading && (!available || !productCount) && <p role="status" className="text-sm text-gray-600">{isPanel ? t("bendCalculator.panelsUnavailable", { defaultValue: "Пока нет панелегибов с заполненными допустимой толщиной материала и рабочей длиной." }) : t("pressSelection.unavailable", { defaultValue: "Пока нет товаров с заполненными усилием пресса и рабочей длиной гибки." })}</p>}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <button type="submit" disabled={!canApply} className="w-full sm:w-auto rounded-md bg-[#F58322] px-6 py-3 font-semibold text-white hover:bg-[#df741b] disabled:opacity-50">{t("pressSelection.apply", { defaultValue: "Подобрать станок" })}</button>
-        <details className="text-xs text-gray-500">
+        {!isPanel && <details className="text-xs text-gray-500">
           <summary className="cursor-pointer underline">{t("bendCalculator.formulaOnly", { defaultValue: "Формула расчёта" })}</summary>
           <p className="mt-2">F = 1,42 × Rm × S² × L / (1000 × V), {t("bendCalculator.kn", { defaultValue: "кН" })}</p>
-        </details>
+        </details>}
       </div>
     </form>
   );

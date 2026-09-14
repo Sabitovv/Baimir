@@ -14,6 +14,7 @@ const RADIUS_FACTORS: Record<keyof typeof MATERIAL_STRENGTH, number> = { mild: 5
 const OPENINGS = [6, 8, 10, 12, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250];
 
 export type PressBrakeDraft = {
+  method: "press" | "panel";
   material: Material;
   thickness: string;
   angle: string;
@@ -24,22 +25,47 @@ export type PressBrakeDraft = {
 };
 
 export const DEFAULT_PRESS_BRAKE_DRAFT: PressBrakeDraft = {
-  material: "mild", thickness: "2", angle: "90", length: "1000",
+  method: "press", material: "mild", thickness: "2", angle: "90", length: "1000",
   strength: String(MATERIAL_STRENGTH.mild), dieOpening: "", margin: "15",
 };
 export const CALCULATOR_PARAMS = {
+  method: "calc_method",
   material: "calc_material", thickness: "calc_thickness", angle: "calc_angle", length: "calc_length",
   strength: "calc_strength", dieOpening: "calc_die", margin: "calc_margin",
 } as const;
 
 export function readPressBrakeDraft(params: URLSearchParams): PressBrakeDraft {
   const draft = { ...DEFAULT_PRESS_BRAKE_DRAFT };
+  draft.method = params.get("panel_bender") === "true" || params.get(CALCULATOR_PARAMS.method) === "panel" ? "panel" : "press";
   for (const field of ["thickness", "angle", "length", "strength", "dieOpening", "margin"] as const) {
     draft[field] = params.get(CALCULATOR_PARAMS[field]) ?? draft[field];
   }
   const material = params.get(CALCULATOR_PARAMS.material);
   if (material === "mild" || material === "stainless" || material === "aluminium" || material === "custom") draft.material = material;
   return draft;
+}
+
+export function panelBenderRequest(draft: PressBrakeDraft) {
+  const thickness = Number(draft.thickness.replace(",", "."));
+  const length = Number(draft.length.replace(",", "."));
+  if (draft.material === "custom" || ![thickness, length].every(value => Number.isFinite(value) && value > 0 && value <= Number.MAX_SAFE_INTEGER)) return null;
+  return { panel_bender: "true", panel_material: draft.material, panel_thickness: String(thickness), bending_length: `${length},` };
+}
+
+export const BENDING_FILTER_PARAMS = ["press_brake", "panel_bender", "panel_material", "panel_thickness", "bending_force", "bending_length"];
+
+export function bendingSelectionParams(current: URLSearchParams, draft: PressBrakeDraft): URLSearchParams | null {
+  const request = draft.method === "panel" ? panelBenderRequest(draft) : (() => {
+    const { result } = calculatePressBrake(draft);
+    return result ? { press_brake: "true", bending_force: `${result.requiredKN},`, bending_length: `${result.length},` } : null;
+  })();
+  if (!request) return null;
+  const params = new URLSearchParams(current);
+  for (const key of BENDING_FILTER_PARAMS) params.delete(key);
+  for (const [key, value] of Object.entries(request)) params.set(key, value);
+  for (const field of Object.keys(CALCULATOR_PARAMS) as (keyof PressBrakeDraft)[]) params.set(CALCULATOR_PARAMS[field], draft[field]);
+  params.set("page", "1");
+  return params;
 }
 
 // The source's five-column table is centred on the standard opening nearest 8*S.

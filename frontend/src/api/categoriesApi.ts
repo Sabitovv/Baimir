@@ -66,6 +66,7 @@ export type PressBrakeOptions = {
   available: boolean;
   totalProducts: number;
   capabilities: { force: number; length: number; count: number }[];
+  panelBenders?: { available: boolean; totalProducts: number; materials: string[] };
 };
 
 // добавили lang? явно
