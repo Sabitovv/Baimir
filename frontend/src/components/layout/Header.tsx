@@ -416,7 +416,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
 
   return (
     <header className="fixed top-0 left-0 right-0 w-full h-[88px] z-50 text-white overflow-visible bg-[#141414] font-manrope">
-      <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center justify-between">
+      <div className="hidden xl:flex h-full max-w-[1920px] mx-auto px-6 2xl:px-[90px] items-center gap-6 2xl:gap-8">
         <div className="flex items-center gap-4 2xl:gap-8">
           <Link to="/" className="shrink-0">
             <EditableImage imageKey="header_main_logo" fallbackSrc={LOGO_URL} alt="Baymir Logo" className="h-12 2xl:h-15" />
@@ -491,7 +491,7 @@ const Header = ({ setIsCartOpen }: HeaderProps) => {
           </div>
         </div>
 
-        <nav className="flex items-center gap-3 2xl:gap-5 text-[13px] 2xl:text-xs uppercase font-bold tracking-wider 2xl:tracking-widest whitespace-nowrap shrink-0">
+        <nav className="ml-auto flex items-center gap-6 2xl:gap-8 text-[13px] 2xl:text-xs uppercase font-bold tracking-wider 2xl:tracking-widest whitespace-nowrap shrink-0">
           {navItems.map((key) => (
             <NavLink
               key={key.id}
