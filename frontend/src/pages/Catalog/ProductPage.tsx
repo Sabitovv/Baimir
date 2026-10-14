@@ -1,10 +1,11 @@
 import { useEffect, useState, useMemo, useRef } from "react";
-import { useParams, Link, useSearchParams } from "react-router-dom";
+import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
 import DOMPurify from "dompurify";
 
 import PageContainer from "@/components/ui/PageContainer";
 import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+import { localizedBlocks } from '../../../seo.mjs';
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setBreadcrumbs } from "@/features/catalogSlice";
 import {
@@ -37,6 +38,7 @@ import { useTranslation } from "react-i18next";
 import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts";
 import sampleImg from "@/assets/catalog/sample_machine.png";
 import productPlaceholder from "@/assets/catalog/productPlaceholder.svg";
+import ProductAvailabilityBadge from '@/components/common/ProductAvailabilityBadge';
 import Contact from "@/components/common/Contact";
 import ProductCard from "@/components/common/ProductCard";
 import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
@@ -158,8 +160,6 @@ const findCategoryById = (
 
 const PLACEHOLDER_IMG = productPlaceholder;
 const SEO_BASE_URL = "https://baytech.kz";
-const SEO_DESCRIPTION_MAX_LENGTH = 500;
-const SEO_DESCRIPTION_MIN_LENGTH = 10;
 
 type GalleryItem = {
   kind: "image" | "videoExternal" | "videoFile";
@@ -555,24 +555,6 @@ const stripHtmlTags = (value: string): string => {
     .trim();
 };
 
-const normalizeSeoDescription = (
-  raw: string | null | undefined,
-  fallback: string,
-): string => {
-  const cleaned = stripHtmlTags(raw ?? "")
-    .replace(/[\u0000-\u001F\u007F]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const fallbackClean = stripHtmlTags(fallback).trim() || "Baytech product";
-  const base = cleaned.length >= SEO_DESCRIPTION_MIN_LENGTH ? cleaned : fallbackClean;
-  const limited = base.slice(0, SEO_DESCRIPTION_MAX_LENGTH).trim();
-
-  return limited.length >= SEO_DESCRIPTION_MIN_LENGTH
-    ? limited
-    : fallbackClean.slice(0, SEO_DESCRIPTION_MAX_LENGTH);
-};
-
 const getContentBlockText = (block: ProductContentBlock): string => {
   switch (block.type) {
     case "heading":
@@ -597,7 +579,6 @@ const getContentBlockText = (block: ProductContentBlock): string => {
 const renderCardItem = (
   card: GridCardItem,
   idx: number,
-  _ratio: "square" | "video" | "portrait",
 ) => (
   <article
     key={`${card.title}-${idx}`}
@@ -717,21 +698,6 @@ const getAttachmentPreviewUrl = (fileUrl: string, mimeType: string): string => {
   return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
 };
 
-const upsertMetaTag = (property: string, content: string): HTMLMetaElement => {
-  let tag = document.head.querySelector(
-    `meta[property="${property}"]`,
-  ) as HTMLMetaElement | null;
-
-  if (!tag) {
-    tag = document.createElement("meta");
-    tag.setAttribute("property", property);
-    document.head.appendChild(tag);
-  }
-
-  tag.setAttribute("content", content);
-  return tag;
-};
-
 const ProductLinksBlock = ({
   block,
 }: {
@@ -739,9 +705,9 @@ const ProductLinksBlock = ({
 }) => {
   const dispatch = useAppDispatch();
   const { i18n, t } = useTranslation();
-  const [items, setItems] = useState<ProductDetail[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [hasResolved, setHasResolved] = useState(false);
+  const [loadedItems, setItems] = useState<ProductDetail[]>([]);
+  const [loadingKey, setLoadingKey] = useState<string | null>(null);
+  const [resolvedKey, setResolvedKey] = useState<string | null>(null);
   const requestNonceRef = useRef(0);
 
   const productTokens = useMemo(() => {
@@ -757,14 +723,12 @@ const ProductLinksBlock = ({
   }, [block.data.productIds]);
 
   const productIdsKey = productTokens.join("|");
+  const hasResolved = !productIdsKey || resolvedKey === productIdsKey;
+  const items = productIdsKey && hasResolved ? loadedItems : [];
+  const loading = !hasResolved && loadingKey === productIdsKey;
 
   useEffect(() => {
-    if (!productIdsKey) {
-      setItems([]);
-      setLoading(false);
-      setHasResolved(true);
-      return;
-    }
+    if (!productIdsKey) return;
 
     const REQUEST_TIMEOUT_MS = 10000;
     const requestNonce = ++requestNonceRef.current;
@@ -772,12 +736,9 @@ const ProductLinksBlock = ({
 
     const tokens = productIdsKey.split("|").filter(Boolean);
 
-    setHasResolved(false);
-    setLoading(false);
-
     const loadingTimer = window.setTimeout(() => {
       if (!cancelled && requestNonceRef.current === requestNonce) {
-        setLoading(true);
+        setLoadingKey(productIdsKey);
       }
     }, 150);
 
@@ -791,17 +752,6 @@ const ProductLinksBlock = ({
         slugs.push(token);
       }
     });
-
-    if (ids.length === 0 && slugs.length === 0) {
-      window.clearTimeout(loadingTimer);
-
-      if (!cancelled && requestNonceRef.current === requestNonce) {
-        setItems([]);
-        setLoading(false);
-        setHasResolved(true);
-      }
-      return;
-    }
 
     const subscriptions: Array<{
       unsubscribe: () => void;
@@ -898,8 +848,7 @@ const ProductLinksBlock = ({
       .finally(() => {
         window.clearTimeout(loadingTimer);
         if (!cancelled && requestNonceRef.current === requestNonce) {
-          setLoading(false);
-          setHasResolved(true);
+          setResolvedKey(productIdsKey);
         }
       });
 
@@ -947,6 +896,8 @@ const ProductLinksBlock = ({
               price={item.price}
               oldPrice={item.oldPrice}
               inStock={item.inStock}
+              availability={item.availability}
+              deliveryDays={item.deliveryDays}
               isNew={item.newProduct}
               categoryId={item.category?.id}
               categoryName={item.category?.name ?? ""}
@@ -984,6 +935,8 @@ const ProductLinksBlock = ({
                 price={item.price}
                 oldPrice={item.oldPrice}
                 inStock={item.inStock}
+                availability={item.availability}
+                deliveryDays={item.deliveryDays}
                 isNew={item.newProduct ?? item.new}
                 categoryId={item.category?.id}
                 categoryName={item.category?.name ?? ""}
@@ -1006,6 +959,8 @@ const ProductLinksBlock = ({
               price={item.price}
               oldPrice={item.oldPrice}
               inStock={item.inStock}
+              availability={item.availability}
+              deliveryDays={item.deliveryDays}
               isNew={item.newProduct ?? item.new}
               categoryId={item.category?.id}
               categoryName={item.category?.name ?? ""}
@@ -1340,7 +1295,7 @@ const renderContentBlock = (
           className={`grid grid-cols-1 ${colsMap[block.data.columns]} gap-3 sm:gap-4 md:gap-5`}
         >
           {block.data.cards.map((card, idx) =>
-            renderCardItem(card, idx, block.data.imageRatio),
+            renderCardItem(card, idx),
           )}
         </div>
       );
@@ -1354,6 +1309,7 @@ const renderContentBlock = (
 
 const ProductPage = () => {
   const { productSlug } = useParams();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.cart.items);
   const compareItems = useAppSelector((state) => state.compare.items);
@@ -1372,6 +1328,13 @@ const ProductPage = () => {
   const { data: categories = [] } = useGetCategoriesTreeQuery({
     lang: i18n.language,
   });
+  useEffect(() => {
+    const canonical = product?.canonicalSlug;
+    if (canonical && /^[a-z0-9-]+$/.test(canonical) && canonical !== productSlug) {
+      const query = searchParams.toString();
+      navigate(`/catalog/product/${canonical}${query ? `?${query}` : ''}`, { replace: true });
+    }
+  }, [product?.canonicalSlug, productSlug, navigate, searchParams]);
 
   const [activeImage, setActiveImage] = useState(0);
   const [activeTab, setActiveTab] = useState<
@@ -1522,38 +1485,6 @@ const ProductPage = () => {
   }, [product?.id]);
 
   useEffect(() => {
-    if (!product) return;
-
-    const previousTitle = document.title;
-    const descriptionFallback = t("catalogPage.seo.descriptionFallback", {
-      productName: product.name,
-    });
-    const description = normalizeSeoDescription(
-      product.description,
-      descriptionFallback,
-    );
-    const productUrl = toAbsoluteBaytechUrl(`/catalog/product/${product.slug}`);
-    const imageUrl = toAbsoluteBaytechUrl(
-      getPrimaryImage(product.media) || product.coverImage || PLACEHOLDER_IMG,
-    );
-    document.title = product.name;
-
-    const managedTags: HTMLMetaElement[] = [
-      upsertMetaTag("og:type", "product"),
-      upsertMetaTag("og:title", product.name),
-      upsertMetaTag("og:description", description),
-      upsertMetaTag("og:url", productUrl),
-      upsertMetaTag("og:image", imageUrl),
-      upsertMetaTag("og:site_name", t("catalogPage.seo.siteName")),
-    ];
-
-    return () => {
-      document.title = previousTitle;
-      managedTags.forEach((tag) => tag.remove());
-    };
-  }, [product]);
-
-  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
         const ni = Math.max(0, activeImage - 1);
@@ -1697,8 +1628,8 @@ const ProductPage = () => {
   const hasSpecifications = specColumns.some((column) => column.length > 0);
 
   const normalizedContentBlocks = useMemo(
-    () => normalizeContentBlocks(product?.contentBlocks),
-    [product?.contentBlocks],
+    () => normalizeContentBlocks(localizedBlocks(product?.contentBlocks, i18n.language)),
+    [product?.contentBlocks, i18n.language],
   );
 
   const productAttachments = useMemo(() => {
@@ -2383,7 +2314,7 @@ const ProductPage = () => {
               <div className="flex flex-col sm:flex-row border-b gap-5 border-gray-100 pb-6">
                 <div className="bg-gradient-to-br from-white to-gray-50 p-6 rounded-2xl border border-gray-200 shadow-lg w-full sm:w-2/3 transition-all duration-300 hover:shadow-xl">
                   <div className="mb-4">
-                    {product.oldPrice && (
+                    {typeof product.price === 'number' && typeof product.oldPrice === 'number' && product.oldPrice > product.price && (
                       <div className="text-gray-400 line-through text-lg font-medium">
                         {formatPrice(
                           product.oldPrice,
@@ -2396,13 +2327,7 @@ const ProductPage = () => {
                     </div>
 
                     <div className="mb-5 flex flex-wrap items-center gap-2">
-                      <span
-                        className={`text-sm font-medium ${product.inStock ? "text-green-600" : "text-gray-500"}`}
-                      >
-                        {product.inStock
-                          ? t("productPage.have")
-                          : t("productPage.haveNot")}
-                      </span>
+                      <ProductAvailabilityBadge product={product} className="px-2.5 py-1 text-sm" />
                       {(product.newProduct ?? product.new) === true &&
                         product.inStock && (
                           <span className="inline-flex items-center rounded-full bg-[#FFF4EA] px-2.5 py-1 text-[11px] font-semibold text-[#DB741F]">

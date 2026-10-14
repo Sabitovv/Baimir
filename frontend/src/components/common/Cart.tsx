@@ -185,6 +185,12 @@ const Cart = ({ isOpen = false, onClose }: CartProps) => {
         productId: item.id,
         quantity: item.quantity,
       })),
+      crmItems: items.map((item) => ({
+        productId: item.id,
+        productNameSnapshot: item.name,
+        priceSnapshot: item.price,
+        quantity: item.quantity,
+      })),
       sourceUrl: window.location.href,
     };
 

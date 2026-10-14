@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import PageContainer from '@/components/ui/PageContainer'
@@ -13,6 +13,7 @@ import { useImageEditorStore } from '@/zustand/ImageEditorState'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import StaggerContainer from '@/components/animations/StaggerContainer'
 import StaggerItem from '@/components/animations/StaggerItem'
+import { pageNumber } from '../../../seo.mjs'
 
 type LocalizedText = {
   ru?: string
@@ -85,7 +86,14 @@ const pickNumberField = (source: Record<string, unknown>, keys: string[]) => {
 }
 
 const BlogPage = () => {
-  const [page, setPage] = useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const page = pageNumber(searchParams.get('page'))
+  const setPage = (zeroBasedPage: number) => {
+    const params = new URLSearchParams(searchParams)
+    if (zeroBasedPage === 0) params.delete('page')
+    else params.set('page', String(zeroBasedPage + 1))
+    setSearchParams(params)
+  }
   const pageSize = 12
   const { i18n, t } = useTranslation()
   const fallbackBlogImage = useImageEditorStore((state) => state.images.blog_page_default_card || img1)
@@ -175,7 +183,7 @@ const BlogPage = () => {
             <ScrollReveal y={20}>
               <div className="flex justify-center gap-2 mt-12 mb-12 flex-wrap">
                 <button
-                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                  onClick={() => setPage(Math.max(page - 2, 0))}
                   disabled={data?.first}
                   className="px-3 h-8 border text-xs rounded-sm disabled:opacity-40"
                 >
@@ -197,7 +205,7 @@ const BlogPage = () => {
                 ))}
 
                 <button
-                  onClick={() => setPage((prev) => Math.min(prev + 1, (data?.totalPages ?? 1) - 1))}
+                  onClick={() => setPage(Math.min(page, (data?.totalPages ?? 1) - 1))}
                   disabled={data?.last}
                   className="px-3 h-8 border text-xs rounded-sm disabled:opacity-40"
                 >

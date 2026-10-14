@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import type { Filter, FilterValue } from "@/api/productsApi";
 import { useTranslation } from "react-i18next";
+import { prioritizeManufacturerFilters } from '@/utils/catalogFilters';
 
 type CatalogFiltersProps = {
   onClose: () => void;
@@ -11,8 +12,23 @@ type CatalogFiltersProps = {
 };
 
 type RangeValues = { from: string; to: string };
-const SLIDER_STEPS_FLOAT = 1000;
-const SLIDER_STEPS_PRICE = 100;
+type RangePart = keyof RangeValues;
+type Limits = {
+  min: number;
+  max: number;
+  step: number;
+  precision: number;
+  // The step came from the backend, so typed values have to follow it too.
+  strictStep: boolean;
+};
+
+const COLLAPSED_COUNT = 7;
+const SEARCHABLE_FROM = 9;
+const POPOVER_WIDTH = 328;
+const MAX_PRECISION = 6;
+const COMPACT_FROM = 1_000_000;
+const PRICE_UNIT = "₸";
+const EPSILON = 1e-9;
 
 const isPriceRangeFilter = (filter: Filter): boolean => {
   const code = String(filter.code ?? "").toLowerCase();
@@ -57,44 +73,343 @@ const toNumber = (value: string): number => {
     .replace(/(?!^)-/g, "")
     .replace(/(\..*)\./g, "$1");
 
+  if (!/\d/.test(normalized)) return Number.NaN;
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : Number.NaN;
 };
 
-const roundToStep = (
-  value: number,
-  min: number,
-  step: number,
-  precision: number,
-): number => {
-  if (!Number.isFinite(step) || step <= 0) {
-    return Number(value.toFixed(precision));
-  }
-  const stepped = min + Math.round((value - min) / step) * step;
-  return Number(stepped.toFixed(precision));
+const formatDisplay = (value: number, precision: number, lang: string) =>
+  value.toLocaleString(lang, { maximumFractionDigits: precision });
+
+const formatCompact = (value: number, precision: number, lang: string) =>
+  Math.abs(value) >= COMPACT_FROM
+    ? new Intl.NumberFormat(lang, {
+        notation: "compact",
+        maximumFractionDigits: 1,
+      }).format(value)
+    : formatDisplay(value, precision, lang);
+
+// The backend rarely sends a step; pick a round one so the slider lands on tidy values.
+const niceStep = (min: number, max: number): number => {
+  const range = max - min;
+  if (!(range > 0)) return 1;
+  const step = Number(`1e${Math.floor(Math.log10(range / 50))}`);
+  return Number.isInteger(min) && Number.isInteger(max)
+    ? Math.max(1, step)
+    : step;
 };
 
-const valueToSlider = (
-  value: number,
-  min: number,
-  max: number,
-  sliderSteps: number,
-): number => {
-  const range = max - min;
-  if (range === 0) return 0;
-  const ratio = ((value - min) / range) * sliderSteps;
-  return clamp(Math.round(ratio), 0, sliderSteps);
+const normalizeRange = (
+  value: RangeValues | undefined,
+  limits: Limits,
+  lead: RangePart = "from",
+): { from: number; to: number } => {
+  const { min, max, step, precision, strictStep } = limits;
+  const fix = (raw: string | undefined, fallback: number) => {
+    const parsed = toNumber(raw ?? "");
+    if (Number.isNaN(parsed)) return fallback;
+    const clamped = clamp(parsed, min, max);
+    const stepped = strictStep
+      ? min + Math.round((clamped - min) / step) * step
+      : clamped;
+    return Number(clamp(stepped, min, max).toFixed(precision));
+  };
+
+  const from = fix(value?.from, min);
+  const to = fix(value?.to, max);
+  if (from <= to) return { from, to };
+  return lead === "from" ? { from, to: from } : { from: to, to };
 };
 
-const sliderToValue = (
-  sliderValue: number,
-  min: number,
-  max: number,
-  sliderSteps: number,
-): number => {
-  const range = max - min;
-  if (range === 0) return min;
-  return min + (sliderValue / sliderSteps) * range;
+// A generated step is anchored at zero, so the stops are round numbers and not offsets from an odd minimum.
+const stepAnchor = (limits: Limits) => (limits.strictStep ? limits.min : 0);
+
+const sliderBounds = (limits: Limits) => {
+  const anchor = stepAnchor(limits);
+  return {
+    first: Math.floor((limits.min - anchor) / limits.step + EPSILON),
+    last: Math.ceil((limits.max - anchor) / limits.step - EPSILON),
+  };
+};
+
+const indexToValue = (index: number, limits: Limits): number =>
+  Number(
+    clamp(
+      stepAnchor(limits) + index * limits.step,
+      limits.min,
+      limits.max,
+    ).toFixed(limits.precision),
+  );
+
+const valueToIndex = (value: number, limits: Limits): number => {
+  const { first, last } = sliderBounds(limits);
+  if (value <= limits.min) return first;
+  if (value >= limits.max) return last;
+  return clamp(
+    Math.round((value - stepAnchor(limits)) / limits.step),
+    first,
+    last,
+  );
+};
+
+const ChevronIcon = ({ open }: { open: boolean }) => (
+  <svg
+    viewBox="0 0 16 16"
+    aria-hidden="true"
+    className={`h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+  >
+    <path
+      d="M4 6l4 4 4-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg viewBox="0 0 16 16" aria-hidden="true" className="h-3.5 w-3.5">
+    <path
+      d="M4 4l8 8M12 4l-8 8"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg viewBox="0 0 16 16" aria-hidden="true" className="h-3 w-3">
+    <path
+      d="M3.5 8.5l3 3 6-7"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+type RangeControlProps = {
+  limits: Limits;
+  value: RangeValues;
+  unit: string;
+  lang: string;
+  fromLabel: string;
+  toLabel: string;
+  onChange: (next: RangeValues) => void;
+  onSubmit?: () => void;
+};
+
+const RangeControl = ({
+  limits,
+  value,
+  unit,
+  lang,
+  fromLabel,
+  toLabel,
+  onChange,
+  onSubmit,
+}: RangeControlProps) => {
+  const [editing, setEditing] = useState<{
+    part: RangePart;
+    text: string;
+  } | null>(null);
+  const { min, max, precision } = limits;
+  const normalized = normalizeRange(value, limits);
+  const { first, last } = sliderBounds(limits);
+  const span = Math.max(1, last - first);
+  const fromIndex = valueToIndex(normalized.from, limits);
+  const toIndex = valueToIndex(normalized.to, limits);
+  // Thumbs can meet anywhere; keep the one that still has room to move on top.
+  const fromOnTop = fromIndex >= toIndex && fromIndex > first;
+
+  const commit = (next: { from: number; to: number }) =>
+    onChange({
+      from: formatNumber(next.from, precision),
+      to: formatNumber(next.to, precision),
+    });
+
+  const handleType = (part: RangePart, raw: string) => {
+    const text = raw.replace(precision === 0 ? /[^\d-]/g : /[^\d.,-]/g, "");
+    setEditing({ part, text });
+    onChange({ ...value, [part]: text });
+  };
+
+  const handleSlide = (part: RangePart, index: number) => {
+    const next = indexToValue(index, limits);
+    commit(
+      part === "from"
+        ? { from: Math.min(next, normalized.to), to: normalized.to }
+        : { from: normalized.from, to: Math.max(next, normalized.from) },
+    );
+  };
+
+  // The thumb centre travels between 9px and 100% - 9px, so the fill has to follow it.
+  const trackOffset = (index: number) =>
+    `calc(9px + ${(index - first) / span} * (100% - 18px))`;
+
+  const renderInput = (part: RangePart, label: string) => (
+    <label className="flex h-10 min-w-0 flex-1 cursor-text items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 transition-colors focus-within:border-[#F58322] focus-within:bg-white">
+      <span className="text-xs text-gray-400">{label}</span>
+      <input
+        type="text"
+        inputMode={precision === 0 ? "numeric" : "decimal"}
+        value={
+          editing?.part === part
+            ? editing.text
+            : formatDisplay(normalized[part], precision, lang)
+        }
+        onFocus={(e) => {
+          const input = e.currentTarget;
+          setEditing({
+            part,
+            text: normalized[part].toLocaleString(lang, {
+              useGrouping: false,
+              maximumFractionDigits: precision,
+            }),
+          });
+          // The click that focuses the field also places the caret, so select once it has settled.
+          requestAnimationFrame(() => {
+            if (document.activeElement === input) input.select();
+          });
+        }}
+        onChange={(e) => handleType(part, e.target.value)}
+        onBlur={() => {
+          setEditing(null);
+          commit(normalizeRange(value, limits, part));
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSubmit?.();
+        }}
+        className="w-full min-w-0 bg-transparent text-sm text-gray-900 outline-none"
+      />
+      {unit && <span className="shrink-0 text-xs text-gray-400">{unit}</span>}
+    </label>
+  );
+
+  const renderThumb = (part: RangePart, index: number, onTop: boolean) => (
+    <input
+      type="range"
+      aria-label={part === "from" ? fromLabel : toLabel}
+      min={first}
+      max={last}
+      step={1}
+      value={index}
+      onChange={(e) => handleSlide(part, Number(e.target.value))}
+      className={`catalog-range absolute inset-x-0 top-1/2 m-0 h-5 w-full -translate-y-1/2 ${onTop ? "z-30" : "z-20"}`}
+    />
+  );
+
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        {renderInput("from", fromLabel)}
+        <span className="h-px w-2 shrink-0 bg-gray-300" />
+        {renderInput("to", toLabel)}
+      </div>
+      <div className="relative mt-4 h-5 select-none">
+        <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-gray-200" />
+        <div
+          className="absolute top-1/2 z-10 h-1 -translate-y-1/2 rounded-full bg-[#F58322]"
+          style={{
+            left: trackOffset(fromIndex),
+            right: `calc(100% - ${trackOffset(toIndex)})`,
+          }}
+        />
+        {renderThumb("from", fromIndex, fromOnTop)}
+        {renderThumb("to", toIndex, !fromOnTop)}
+      </div>
+      <div className="mt-1 flex justify-between text-[11px] tabular-nums text-gray-400">
+        <span>{formatDisplay(min, precision, lang)}</span>
+        <span>{formatDisplay(max, precision, lang)}</span>
+      </div>
+    </div>
+  );
+};
+
+type ListControlProps = {
+  values: FilterValue[];
+  selected: string[];
+  multiple: boolean;
+  searchLabel: string;
+  emptyLabel: string;
+  onToggle: (id: string) => void;
+};
+
+const ListControl = ({
+  values,
+  selected,
+  multiple,
+  searchLabel,
+  emptyLabel,
+  onToggle,
+}: ListControlProps) => {
+  const [query, setQuery] = useState("");
+  const needle = query.trim().toLowerCase();
+  const shown = needle
+    ? values.filter((v) => v.label.toLowerCase().includes(needle))
+    : values;
+
+  return (
+    <div>
+      {values.length >= SEARCHABLE_FROM && (
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={searchLabel}
+          aria-label={searchLabel}
+          className="mb-2 h-9 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm outline-none transition-colors focus:border-[#F58322] focus:bg-white"
+        />
+      )}
+      <div
+        role={multiple ? "group" : "radiogroup"}
+        className="-mx-2 max-h-64 overflow-y-auto overscroll-contain"
+      >
+        {shown.map((v) => {
+          const id = String(v.id);
+          const isActive = selected.includes(id);
+          return (
+            <button
+              key={id}
+              type="button"
+              role={multiple ? "checkbox" : "radio"}
+              aria-checked={isActive}
+              onClick={() => onToggle(id)}
+              className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-gray-50 ${!isActive && v.count === 0 ? "opacity-50" : ""}`}
+            >
+              <span
+                className={`grid h-[18px] w-[18px] shrink-0 place-items-center border transition-colors ${multiple ? "rounded-[5px]" : "rounded-full"} ${isActive ? "border-[#F58322] bg-[#F58322] text-white" : "border-gray-300 bg-white"}`}
+              >
+                {isActive &&
+                  (multiple ? (
+                    <CheckIcon />
+                  ) : (
+                    <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                  ))}
+              </span>
+              <span className="min-w-0 flex-1 truncate text-gray-800">
+                {v.label}
+              </span>
+              {v.count > 0 && (
+                <span className="text-xs tabular-nums text-gray-400">
+                  {v.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+        {shown.length === 0 && (
+          <p className="px-2 py-3 text-sm text-gray-400">{emptyLabel}</p>
+        )}
+      </div>
+    </div>
+  );
 };
 
 const CatalogFilters = ({
@@ -107,7 +422,24 @@ const CatalogFilters = ({
   const [draftRanges, setDraftRanges] = useState<Record<string, RangeValues>>(
     {},
   );
-  const { t } = useTranslation();
+  const [openCode, setOpenCode] = useState<string | null>(null);
+  const [alignRight, setAlignRight] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const openRef = useRef<HTMLDivElement>(null);
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+
+  // The page drops its data while the next response loads; keep the last filters
+  // of this category so the pills and an open popover do not flash away.
+  const { pathname } = useLocation();
+  const [kept, setKept] = useState({ pathname, filters });
+  if (filters ? filters !== kept.filters : pathname !== kept.pathname) {
+    setKept({ pathname, filters });
+  }
+  const currentFilters = filters ?? kept.filters;
+  const fromLabel = t("filters.from", { defaultValue: "от" });
+  const toLabel = t("filters.to", { defaultValue: "до" });
+  const resetLabel = t("filters.reset", { defaultValue: "Сбросить" });
 
   const getDisplayValues = useCallback(
     (filter: Filter): FilterValue[] => {
@@ -120,201 +452,158 @@ const CatalogFilters = ({
     [],
   );
 
-  const rangeFilters = useMemo(
-    () => (filters ?? []).filter((f) => f.uiType === "RANGE_SLIDER"),
-    [filters],
-  );
-
   const getLimits = useCallback(
-    (f: Filter) => {
+    (f: Filter): Limits => {
       const fallback = bounds[f.code];
-      const rawMin = f.range?.min ?? fallback?.min ?? 0;
-      const rawMax = f.range?.max ?? fallback?.max ?? 0;
-      const min = Number(rawMin);
-      const max = Number(rawMax);
-      const stepCandidate = Number(f.range?.step ?? 1);
-      const step =
-        Number.isFinite(stepCandidate) && stepCandidate > 0 ? stepCandidate : 1;
-      const safeMin = Math.min(min, max);
-      const safeMax = Math.max(min, max);
+      const rawMin = Number(f.range?.min ?? fallback?.min ?? 0);
+      const rawMax = Number(f.range?.max ?? fallback?.max ?? 0);
+      const low = Number.isFinite(rawMin) ? rawMin : 0;
+      const high = Number.isFinite(rawMax) ? rawMax : 0;
       const useIntegerRange = isPriceRangeFilter(f);
+      const min = useIntegerRange
+        ? Math.floor(Math.min(low, high))
+        : Math.min(low, high);
+      const max = useIntegerRange
+        ? Math.ceil(Math.max(low, high))
+        : Math.max(low, high);
+
+      const backendStep = Number(f.range?.step);
+      const strictStep =
+        !useIntegerRange && Number.isFinite(backendStep) && backendStep > 0;
+      const step = strictStep ? backendStep : niceStep(min, max);
       const precision = useIntegerRange
         ? 0
-        : Math.max(
-            getDecimalPlaces(safeMin),
-            getDecimalPlaces(safeMax),
-            getDecimalPlaces(step),
+        : Math.min(
+            MAX_PRECISION,
+            Math.max(
+              getDecimalPlaces(min),
+              getDecimalPlaces(max),
+              getDecimalPlaces(step),
+            ),
           );
 
-      const normalizedMin = useIntegerRange ? Math.floor(safeMin) : safeMin;
-      const normalizedMax = useIntegerRange ? Math.ceil(safeMax) : safeMax;
-      const normalizedStep = useIntegerRange ? 1 : step;
-
       return {
-        min: normalizedMin,
-        max:
-          normalizedMin === normalizedMax
-            ? normalizedMin + normalizedStep
-            : normalizedMax,
-        step: normalizedStep,
+        min,
+        max: min === max ? min + step : max,
+        step,
         precision,
+        strictStep,
       };
     },
     [bounds],
   );
 
-  const baseRanges = useMemo(() => {
-    const nextRanges: Record<string, RangeValues> = {};
-
-    rangeFilters.forEach((f) => {
-      const { min, max } = getLimits(f);
-      const raw = searchParams.get(f.code) ?? "";
-
-      if (!raw) {
-        nextRanges[f.code] = {
-          from: formatNumber(min, getLimits(f).precision),
-          to: formatNumber(max, getLimits(f).precision),
-        };
-      } else {
-        const parts = raw.split(",", 2);
-        nextRanges[f.code] = {
-          from: parts[0] ?? formatNumber(min, getLimits(f).precision),
-          to: parts[1] ?? formatNumber(max, getLimits(f).precision),
-        };
-      }
-    });
-
-    return nextRanges;
-  }, [getLimits, rangeFilters, searchParams]);
-
-  const ranges = useMemo(
-    () => ({ ...baseRanges, ...draftRanges }),
-    [baseRanges, draftRanges],
+  const visibleFilters = useMemo(
+    () =>
+      prioritizeManufacturerFilters(currentFilters ?? []).filter((f) => {
+        if (searchParams.has(f.code)) return true;
+        if (f.uiType === "RANGE_SLIDER") {
+          // A range with a single value cannot narrow anything.
+          const raw = f.range ?? bounds[f.code];
+          return raw != null && Number(raw.max) > Number(raw.min);
+        }
+        return getDisplayValues(f).length > 0;
+      }),
+    [currentFilters, bounds, searchParams, getDisplayValues],
   );
 
-  const setRange = (code: string, part: "from" | "to", value: string) => {
-    const filter = (filters ?? []).find((x) => x.code === code);
-    if (!filter) return;
+  const closePopover = useCallback(() => {
+    setOpenCode(null);
+    setDraftRanges({});
+  }, []);
 
-    const { min, max, step, precision } = getLimits(filter);
-    const isInteger = precision === 0;
-    const normalizedRaw = String(value).replace(/,/g, ".");
+  useEffect(() => {
+    if (inDrawer || !openCode) return;
 
-    let sanitized = isInteger
-      ? normalizedRaw.replace(/\D/g, "")
-      : normalizedRaw.replace(/[^\d.]/g, "").replace(/\.(?=.*\.)/g, "");
-
-    if (!sanitized) {
-      sanitized = formatNumber(min, precision);
-    }
-
-    let nextNumber = Number(sanitized);
-    if (!Number.isFinite(nextNumber)) {
-      nextNumber = min;
-    }
-
-    nextNumber = clamp(nextNumber, min, max);
-    nextNumber = roundToStep(nextNumber, min, step, precision);
-
-    const nextValue = formatNumber(nextNumber, precision);
-
-    setDraftRanges((prev) => {
-      const current = prev[code] ??
-        ranges[code] ?? {
-          from: formatNumber(min, precision),
-          to: formatNumber(max, precision),
-        };
-      const next = { ...current, [part]: nextValue };
-
-      const fromValue = Number.isFinite(toNumber(next.from))
-        ? toNumber(next.from)
-        : min;
-      const toValue = Number.isFinite(toNumber(next.to))
-        ? toNumber(next.to)
-        : max;
-
-      if (fromValue > toValue) {
-        if (part === "from") {
-          next.to = next.from;
-        } else {
-          next.from = next.to;
-        }
+    const handlePointerDown = (e: PointerEvent) => {
+      if (openRef.current && !openRef.current.contains(e.target as Node)) {
+        closePopover();
       }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closePopover();
+    };
 
-      return {
-        ...prev,
-        [code]: next,
-      };
-    });
-  };
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [inDrawer, openCode, closePopover]);
 
-  const normalizeRange = (
-    f: Filter,
-    value: RangeValues | undefined,
-  ): RangeValues => {
-    const { min: safeMin, max: safeMax, step, precision } = getLimits(f);
-    const rawFrom = value?.from ?? "";
-    const rawTo = value?.to ?? "";
-    let numFrom = toNumber(rawFrom);
-    let numTo = toNumber(rawTo);
+  const unitOf = (f: Filter) =>
+    f.unitCode || (isPriceRangeFilter(f) ? PRICE_UNIT : "");
 
-    if (Number.isNaN(numFrom)) numFrom = safeMin;
-    if (Number.isNaN(numTo)) numTo = safeMax;
+  const selectedIds = (code: string) =>
+    searchParams.get(code)?.split(",").filter(Boolean) ?? [];
 
-    numFrom = clamp(numFrom, safeMin, safeMax);
-    numTo = clamp(numTo, safeMin, safeMax);
+  const getRange = (f: Filter, withDraft = true): RangeValues => {
+    const draft = withDraft ? draftRanges[f.code] : undefined;
+    if (draft) return draft;
 
-    numFrom = roundToStep(numFrom, safeMin, step, precision);
-    numTo = roundToStep(numTo, safeMin, step, precision);
-
-    if (numFrom > numTo) numTo = numFrom;
-
+    const { min, max, precision } = getLimits(f);
+    const [from, to] = (searchParams.get(f.code) ?? "").split(",", 2);
     return {
-      from: formatNumber(numFrom, precision),
-      to: formatNumber(numTo, precision),
+      from: from || formatNumber(min, precision),
+      to: to || formatNumber(max, precision),
     };
   };
 
-  const commitAndNormalize = (code: string) => {
-    const f = (filters ?? []).find((x) => x.code === code);
-    if (!f) return;
+  const getSummary = (f: Filter, withDraft: boolean): string => {
+    if (f.uiType !== "RANGE_SLIDER") {
+      const ids = selectedIds(f.code);
+      if (ids.length === 0) return "";
+      const [firstLabel, ...otherLabels] = (f.values ?? [])
+        .filter((v) => ids.includes(String(v.id)))
+        .map((v) => v.label);
+      if (firstLabel === undefined) return String(ids.length);
+      return otherLabels.length > 0
+        ? `${firstLabel} +${otherLabels.length}`
+        : firstLabel;
+    }
 
-    const normalized = normalizeRange(f, ranges[code]);
-    setDraftRanges((prev) => ({ ...prev, [code]: normalized }));
+    const isApplied = searchParams.has(f.code);
+    if (!isApplied && !(withDraft && f.code in draftRanges)) return "";
+
+    const limits = getLimits(f);
+    const { from, to } = normalizeRange(getRange(f, withDraft), limits);
+    const fromMoved = from > limits.min;
+    const toMoved = to < limits.max;
+    if (!isApplied && !fromMoved && !toMoved) return "";
+
+    const format = (v: number) => formatCompact(v, limits.precision, lang);
+    const body =
+      fromMoved && !toMoved
+        ? `${fromLabel} ${format(from)}`
+        : toMoved && !fromMoved
+          ? `${toLabel} ${format(to)}`
+          : `${format(from)} – ${format(to)}`;
+    const unit = unitOf(f);
+    return unit ? `${body} ${unit}` : body;
   };
 
-  const applyRanges = () => {
+  const applyRanges = (targets: Filter[]) => {
     const params = new URLSearchParams(searchParams);
 
-    rangeFilters.forEach((f) => params.delete(f.code));
+    targets.forEach((f) => {
+      const limits = getLimits(f);
+      const { from, to } = normalizeRange(getRange(f), limits);
+      const epsilon = Math.pow(10, -(limits.precision + 2));
 
-    rangeFilters.forEach((f) => {
-      const normalized = normalizeRange(f, ranges[f.code]);
-      const { min, max, precision } = getLimits(f);
-      const cleanFrom = Number.isFinite(toNumber(normalized.from))
-        ? toNumber(normalized.from)
-        : min;
-      const cleanTo = Number.isFinite(toNumber(normalized.to))
-        ? toNumber(normalized.to)
-        : max;
-      const epsilon = Math.pow(10, -(precision + 2));
-
-      if (
-        Math.abs(cleanFrom - min) <= epsilon &&
-        Math.abs(cleanTo - max) <= epsilon
-      ) {
+      if (from - limits.min <= epsilon && limits.max - to <= epsilon) {
         params.delete(f.code);
       } else {
         params.set(
           f.code,
-          `${formatNumber(cleanFrom, precision)},${formatNumber(cleanTo, precision)}`,
+          `${formatNumber(from, limits.precision)},${formatNumber(to, limits.precision)}`,
         );
       }
     });
 
     params.set("page", "1");
     setSearchParams(params, { replace: false });
-    onClose();
+    setDraftRanges({});
   };
 
   const toggleCheckbox = (filterCode: string, valueId: string) => {
@@ -350,6 +639,20 @@ const CatalogFilters = ({
     setSearchParams(params, { replace: false });
   };
 
+  const clearFilter = (code: string) => {
+    setDraftRanges((prev) => {
+      const next = { ...prev };
+      delete next[code];
+      return next;
+    });
+    if (!searchParams.has(code)) return;
+
+    const params = new URLSearchParams(searchParams);
+    params.delete(code);
+    params.set("page", "1");
+    setSearchParams(params, { replace: false });
+  };
+
   const clearAll = () => {
     const params = new URLSearchParams();
     const categoryId = searchParams.get("categoryId");
@@ -360,268 +663,299 @@ const CatalogFilters = ({
     params.set("page", "1");
     setSearchParams(params, { replace: false });
     setDraftRanges({});
-    onClose();
+    setOpenCode(null);
+    if (inDrawer) onClose();
   };
 
-  return (
-    <div
-      className={
-        inDrawer
-          ? "bg-white"
-          : "bg-white border border-gray-200 rounded-md mb-6 shadow-sm"
-      }
-    >
-      <style>{`
-        input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-runnable-track { height: 4px; background: transparent; border: none; }
-        input[type=range]::-moz-range-track { height: 4px; background: transparent; border: none; }
-        input[type=range]::-moz-range-progress { background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #F58322; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 50; }
-        input[type=range]::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #F58322; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 50; border: none; }
-      `}</style>
+  const togglePopover = (code: string, anchor: HTMLElement) => {
+    if (openCode === code) {
+      closePopover();
+      return;
+    }
+    const { left } = anchor.getBoundingClientRect();
+    setAlignRight(
+      left + POPOVER_WIDTH > document.documentElement.clientWidth - 16,
+    );
+    setDraftRanges({});
+    setOpenCode(code);
+  };
 
-      <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-x-12 gap-y-8">
-        {(filters ?? []).map((f) => (
-          <div key={f.code} className="space-y-6">
-            <div>
-              <h4 className="font-bold text-sm mb-3">
-                {f.name}
-                {f.unitCode != null && f.unitCode !== "" && (
-                  <span className="font-normal text-gray-500 ml-1">
-                    ({f.unitCode})
+  const renderControl = (f: Filter) => {
+    if (f.uiType === "RANGE_SLIDER") {
+      return (
+        <RangeControl
+          limits={getLimits(f)}
+          value={getRange(f)}
+          unit={unitOf(f)}
+          lang={lang}
+          fromLabel={fromLabel}
+          toLabel={toLabel}
+          onChange={(next) =>
+            setDraftRanges((prev) => ({ ...prev, [f.code]: next }))
+          }
+          onSubmit={
+            inDrawer
+              ? undefined
+              : () => {
+                  applyRanges([f]);
+                  setOpenCode(null);
+                }
+          }
+        />
+      );
+    }
+
+    const multiple = f.uiType === "CHECKBOX_LIST";
+    return (
+      <ListControl
+        values={getDisplayValues(f)}
+        selected={selectedIds(f.code)}
+        multiple={multiple}
+        searchLabel={t("filters.search", { defaultValue: "Поиск" })}
+        emptyLabel={t("filters.nothingFound", {
+          defaultValue: "Ничего не найдено",
+        })}
+        onToggle={(id) =>
+          multiple ? toggleCheckbox(f.code, id) : setRadioValue(f.code, id)
+        }
+      />
+    );
+  };
+
+  const rangeStyles = (
+    <style>{`
+      .catalog-range { -webkit-appearance: none; appearance: none; background: transparent; pointer-events: none; outline: none; }
+      .catalog-range::-webkit-slider-runnable-track { height: 4px; background: transparent; border: none; }
+      .catalog-range::-moz-range-track { height: 4px; background: transparent; border: none; }
+      .catalog-range::-moz-range-progress { background: transparent; }
+      .catalog-range::-webkit-slider-thumb { -webkit-appearance: none; box-sizing: border-box; pointer-events: auto; width: 18px; height: 18px; margin-top: -7px; border-radius: 50%; background: #fff; border: 2px solid #F58322; box-shadow: 0 1px 3px rgba(16,24,40,0.2); cursor: grab; transition: box-shadow 0.15s ease; }
+      .catalog-range::-moz-range-thumb { box-sizing: border-box; pointer-events: auto; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid #F58322; box-shadow: 0 1px 3px rgba(16,24,40,0.2); cursor: grab; transition: box-shadow 0.15s ease; }
+      .catalog-range:hover::-webkit-slider-thumb, .catalog-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(245,131,34,0.18); }
+      .catalog-range:hover::-moz-range-thumb, .catalog-range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 5px rgba(245,131,34,0.18); }
+      .catalog-range:active::-webkit-slider-thumb { cursor: grabbing; }
+      .catalog-range:active::-moz-range-thumb { cursor: grabbing; }
+    `}</style>
+  );
+
+  if (inDrawer) {
+    return (
+      <div className="bg-white">
+        {rangeStyles}
+        <div className="divide-y divide-gray-100">
+          {visibleFilters.map((f) => {
+            const isOpen = openCode === f.code;
+            const summary = getSummary(f, true);
+            return (
+              <div key={f.code}>
+                <button
+                  type="button"
+                  aria-expanded={isOpen}
+                  onClick={() => setOpenCode(isOpen ? null : f.code)}
+                  className="flex w-full items-center justify-between gap-3 py-3.5 text-left"
+                >
+                  <span className="text-sm font-medium text-gray-900">
+                    {f.name}
                   </span>
+                  <span className="flex min-w-0 shrink-0 items-center gap-2">
+                    {summary && (
+                      <span className="max-w-[9rem] truncate text-sm font-medium text-[#DB741F]">
+                        {summary}
+                      </span>
+                    )}
+                    <ChevronIcon open={isOpen} />
+                  </span>
+                </button>
+                {isOpen && <div className="pb-4">{renderControl(f)}</div>}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Engines disagree on whether the drawer padding insets a sticky box; the shadow covers that strip either way. */}
+        <div className="sticky bottom-0 z-40 -mx-4 mt-2 flex gap-3 border-t border-gray-200 bg-white px-4 py-3 shadow-[0_16px_0_0_#fff]">
+          <button
+            type="button"
+            onClick={clearAll}
+            className="h-11 flex-1 rounded-lg bg-gray-100 text-sm text-gray-700 transition-colors hover:bg-gray-200"
+          >
+            {t("filters.resetAll")}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              applyRanges(
+                visibleFilters.filter((f) => f.code in draftRanges),
+              );
+              onClose();
+            }}
+            className="h-11 flex-1 rounded-lg bg-[#F58322] text-sm font-medium text-white transition-colors hover:bg-[#DB741F]"
+          >
+            {t("filters.apply")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const collapsible = visibleFilters.length > COLLAPSED_COUNT + 1;
+  const shownFilters =
+    !collapsible || showAll
+      ? visibleFilters
+      : visibleFilters.filter(
+          (f, index) =>
+            index < COLLAPSED_COUNT ||
+            searchParams.has(f.code) ||
+            f.code === openCode,
+        );
+  const hiddenCount = visibleFilters.length - shownFilters.length;
+  const hasActive = visibleFilters.some((f) => searchParams.has(f.code));
+
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white p-2.5 shadow-sm">
+      {rangeStyles}
+      <div className="flex flex-wrap items-center gap-2">
+        {shownFilters.map((f) => {
+          const isOpen = openCode === f.code;
+          const isActive = searchParams.has(f.code);
+          const summary = getSummary(f, false);
+          const unit = unitOf(f);
+
+          return (
+            <div
+              key={f.code}
+              ref={isOpen ? openRef : undefined}
+              className="relative"
+            >
+              <div
+                className={`inline-flex h-8 items-center rounded-full border text-[13px] transition-colors ${
+                  isActive
+                    ? "border-[#F58322] bg-[#F58322]/10"
+                    : isOpen
+                      ? "border-gray-900 bg-white"
+                      : "border-gray-200 bg-white hover:border-gray-400"
+                }`}
+              >
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-expanded={isOpen}
+                  title={f.name}
+                  onClick={(e) => togglePopover(f.code, e.currentTarget)}
+                  className={`inline-flex h-full items-center gap-1.5 rounded-full pl-3 outline-none focus-visible:ring-2 focus-visible:ring-[#F58322]/40 ${isActive ? "pr-1.5" : "pr-2"}`}
+                >
+                  <span
+                    className={`max-w-[13rem] truncate ${isActive ? "text-gray-600" : "text-gray-800"}`}
+                  >
+                    {f.name}
+                    {isActive && ":"}
+                  </span>
+                  {summary && (
+                    <span className="max-w-[12rem] truncate font-semibold text-gray-900">
+                      {summary}
+                    </span>
+                  )}
+                  {!isActive && <ChevronIcon open={isOpen} />}
+                </button>
+                {isActive && (
+                  <button
+                    type="button"
+                    aria-label={`${resetLabel}: ${f.name}`}
+                    onClick={() => {
+                      clearFilter(f.code);
+                      if (isOpen) setOpenCode(null);
+                    }}
+                    className="mr-1 grid h-6 w-6 place-items-center rounded-full text-gray-500 outline-none transition-colors hover:bg-[#F58322]/20 hover:text-gray-900 focus-visible:ring-2 focus-visible:ring-[#F58322]/40"
+                  >
+                    <CloseIcon />
+                  </button>
                 )}
-              </h4>
+              </div>
 
-              {f.uiType === "RANGE_SLIDER" &&
-                (() => {
-                  const {
-                    min: safeMin,
-                    max: safeMax,
-                    step,
-                    precision,
-                  } = getLimits(f);
-                  const sliderSteps = isPriceRangeFilter(f)
-                    ? SLIDER_STEPS_PRICE
-                    : SLIDER_STEPS_FLOAT;
+              {isOpen && (
+                <div
+                  role="dialog"
+                  aria-label={f.name}
+                  style={{ width: POPOVER_WIDTH }}
+                  className={`absolute top-full z-40 mt-2 max-w-[calc(100vw-2rem)] rounded-xl border border-gray-200 bg-white p-4 shadow-xl ${alignRight ? "right-0" : "left-0"}`}
+                >
+                  <h4 className="mb-3 text-sm font-semibold text-gray-900">
+                    {f.name}
+                    {unit && (
+                      <span className="ml-1 font-normal text-gray-400">
+                        {unit}
+                      </span>
+                    )}
+                  </h4>
 
-                  if (safeMin === 0 && safeMax === 0) return null;
+                  {renderControl(f)}
 
-                  const fromStr =
-                    ranges[f.code]?.from ?? formatNumber(safeMin, precision);
-                  const toStr =
-                    ranges[f.code]?.to ?? formatNumber(safeMax, precision);
-                  const normalizedForView = normalizeRange(f, {
-                    from: fromStr,
-                    to: toStr,
-                  });
-                  const parsedFrom = toNumber(normalizedForView.from);
-                  const parsedTo = toNumber(normalizedForView.to);
-                  const numericFrom = Number.isFinite(parsedFrom)
-                    ? parsedFrom
-                    : safeMin;
-                  const numericTo = Number.isFinite(parsedTo)
-                    ? parsedTo
-                    : safeMax;
-
-                  const percentFrom = valueToSlider(
-                    numericFrom,
-                    safeMin,
-                    safeMax,
-                    sliderSteps,
-                  );
-                  const percentTo = valueToSlider(
-                    numericTo,
-                    safeMin,
-                    safeMax,
-                    sliderSteps,
-                  );
-                  const rangeStart = Math.min(percentFrom, percentTo);
-                  const rangeEnd = Math.max(percentFrom, percentTo);
-                  const fromThumbOnTop = percentFrom >= percentTo;
-
-                  const handleSliderFromChange = (
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ) => {
-                    const sliderVal = Number(e.target.value);
-                    const rawVal = sliderToValue(
-                      sliderVal,
-                      safeMin,
-                      safeMax,
-                      sliderSteps,
-                    );
-                    const realVal = roundToStep(
-                      rawVal,
-                      safeMin,
-                      step,
-                      precision,
-                    );
-                    setRange(f.code, "from", formatNumber(realVal, precision));
-                  };
-
-                  const handleSliderToChange = (
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ) => {
-                    const sliderVal = Number(e.target.value);
-                    const rawVal = sliderToValue(
-                      sliderVal,
-                      safeMin,
-                      safeMax,
-                      sliderSteps,
-                    );
-                    const realVal = roundToStep(
-                      rawVal,
-                      safeMin,
-                      step,
-                      precision,
-                    );
-                    setRange(f.code, "to", formatNumber(realVal, precision));
-                  };
-
-                  return (
-                    <div key={`range-${f.code}`}>
-                      <div className="flex gap-2 mb-4">
-                        <div className="relative flex-1">
-                          <input
-                            type="number"
-                            inputMode={precision === 0 ? "numeric" : "decimal"}
-                            pattern={
-                              precision === 0 ? "[0-9]*" : "[0-9]*[.,]?[0-9]*"
-                            }
-                            min={safeMin}
-                            max={safeMax}
-                            step={step > 0 ? step : "any"}
-                            value={fromStr}
-                            onChange={(e) =>
-                              setRange(f.code, "from", e.target.value)
-                            }
-                            onBlur={() => commitAndNormalize(f.code)}
-                            className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors"
-                          />
-                          {f.unitCode != null && f.unitCode !== "" && (
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
-                              {f.unitCode}
-                            </span>
-                          )}
-                        </div>
-                        <div className="relative flex-1">
-                          <input
-                            type="number"
-                            inputMode={precision === 0 ? "numeric" : "decimal"}
-                            pattern={
-                              precision === 0 ? "[0-9]*" : "[0-9]*[.,]?[0-9]*"
-                            }
-                            min={safeMin}
-                            max={safeMax}
-                            step={step > 0 ? step : "any"}
-                            value={toStr}
-                            onChange={(e) =>
-                              setRange(f.code, "to", e.target.value)
-                            }
-                            onBlur={() => commitAndNormalize(f.code)}
-                            className="w-full border border-gray-300 rounded px-3 py-2 pr-8 text-sm outline-none focus:border-[#F58322] transition-colors"
-                          />
-                          {f.unitCode != null && f.unitCode !== "" && (
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
-                              {f.unitCode}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="relative h-6 mb-4 select-none overflow-hidden">
-                        <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1 bg-gray-200 rounded" />
-                        <div
-                          className="absolute top-1/2 -translate-y-1/2 h-1 bg-[#F58322] rounded z-10"
-                          style={{
-                            left: `${(rangeStart / sliderSteps) * 100}%`,
-                            right: `${100 - (rangeEnd / sliderSteps) * 100}%`,
-                          }}
-                        />
-                        <input
-                          type="range"
-                          min={0}
-                          max={sliderSteps}
-                          value={percentFrom}
-                          onChange={handleSliderFromChange}
-                          onPointerUp={() => commitAndNormalize(f.code)}
-                          className={`absolute left-0 w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-none h-6 cursor-pointer ${fromThumbOnTop ? "z-30" : "z-20"}`}
-                          style={{ background: "transparent" }}
-                        />
-                        <input
-                          type="range"
-                          min={0}
-                          max={sliderSteps}
-                          value={percentTo}
-                          onChange={handleSliderToChange}
-                          onPointerUp={() => commitAndNormalize(f.code)}
-                          className={`absolute left-0 w-full top-1/2 -translate-y-1/2 appearance-none pointer-events-none h-6 cursor-pointer ${fromThumbOnTop ? "z-20" : "z-30"}`}
-                          style={{ background: "transparent" }}
-                        />
-                      </div>
+                  {f.uiType === "RANGE_SLIDER" ? (
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          clearFilter(f.code);
+                          if (isActive) setOpenCode(null);
+                        }}
+                        className="text-sm text-gray-500 transition-colors hover:text-gray-900"
+                      >
+                        {resetLabel}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          applyRanges([f]);
+                          setOpenCode(null);
+                        }}
+                        className="h-9 rounded-lg bg-[#F58322] px-5 text-sm font-medium text-white transition-colors hover:bg-[#DB741F]"
+                      >
+                        {t("filters.apply")}
+                      </button>
                     </div>
-                  );
-                })()}
-
-              {f.uiType === "CHECKBOX_LIST" && (
-                <div className="flex flex-wrap gap-2">
-                  {getDisplayValues(f).map((v: FilterValue) => {
-                    const isActive = (
-                      searchParams.get(f.code)?.split(",") || []
-                    ).includes(String(v.id));
-                    return (
+                  ) : (
+                    isActive && (
                       <button
-                        key={v.id}
-                        onClick={() => toggleCheckbox(f.code, String(v.id))}
-                        className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#F58322] text-white border-[#F58322]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
+                        type="button"
+                        onClick={() => clearFilter(f.code)}
+                        className="mt-3 text-sm text-gray-500 transition-colors hover:text-gray-900"
                       >
-                        {v.label}{" "}
-                        {v.count > 0 && (
-                          <span className="opacity-70">({v.count})</span>
-                        )}
+                        {resetLabel}
                       </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {f.uiType === "RADIO_LIST" && (
-                <div className="flex flex-wrap gap-2">
-                  {getDisplayValues(f).map((v: FilterValue) => {
-                    const isActive = searchParams.get(f.code) === String(v.id);
-
-                    return (
-                      <button
-                        key={v.id}
-                        onClick={() => setRadioValue(f.code, String(v.id))}
-                        className={`border rounded px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-[#F58322] text-white border-[#F58322]" : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"}`}
-                      >
-                        {v.label}{" "}
-                        {v.count > 0 && (
-                          <span className="opacity-70">({v.count})</span>
-                        )}
-                      </button>
-                    );
-                  })}
+                    )
+                  )}
                 </div>
               )}
             </div>
-          </div>
-        ))}
-      </div>
+          );
+        })}
 
-      <div className="m-4 flex justify-end gap-3">
-        <button
-          onClick={clearAll}
-          className="px-4 py-2 bg-gray-100 rounded text-sm hover:bg-gray-200 transition-colors"
-        >
-          {t("filters.resetAll")}
-        </button>
-        <button
-          onClick={applyRanges}
-          className="bg-[#F58322] text-white px-8 py-3 text-sm font-medium rounded hover:bg-[#DB741F] transition-colors"
-        >
-          {t("filters.apply")}
-        </button>
+        {collapsible && (showAll || hiddenCount > 0) && (
+          <button
+            type="button"
+            aria-expanded={showAll}
+            onClick={() => setShowAll((prev) => !prev)}
+            className="inline-flex h-8 items-center gap-1.5 rounded-full border border-dashed border-gray-300 pl-3 pr-2 text-[13px] text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-900"
+          >
+            {showAll
+              ? t("filters.collapse", { defaultValue: "Свернуть" })
+              : t("filters.more", {
+                  defaultValue: "Ещё {{n}}",
+                  n: hiddenCount,
+                })}
+            <ChevronIcon open={showAll} />
+          </button>
+        )}
+
+        {hasActive && (
+          <button
+            type="button"
+            onClick={clearAll}
+            className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[13px] text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          >
+            <CloseIcon />
+            {t("filters.resetAll")}
+          </button>
+        )}
       </div>
     </div>
   );

@@ -13,6 +13,9 @@ import { addToCompare, removeFromCompare } from "@/features/compareSlice";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import productPlaceholder from "@/assets/catalog/productPlaceholder.svg";
+import ProductAvailabilityBadge from './ProductAvailabilityBadge';
+import { availabilityStatus } from '@/utils/productAvailability';
+import type { AvailabilityInfo } from '@/utils/productAvailability';
 
 type KeyFeature = {
   code: string;
@@ -21,7 +24,7 @@ type KeyFeature = {
   unit?: string;
 };
 
-type ProductCardProps = {
+type ProductCardProps = AvailabilityInfo & {
   id: number;
   slug: string;
   name: string;
@@ -70,6 +73,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   oldPrice,
   inStock,
+  availability,
+  deliveryDays,
   isNew,
   keyFeatures,
   categoryId,
@@ -121,7 +126,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const formattedOldPrice = showOldPrice
     ? `${oldPriceNumber.toLocaleString(i18n.language)} ₸`
     : null;
-  const isOutOfStock = inStock === false;
+  const stockInfo = { inStock, availability, deliveryDays };
+  const isOutOfStock = availabilityStatus(stockInfo) === 'OUT_OF_STOCK';
 
   const handleCompareToggle = React.useCallback(() => {
     if (isInCompare) {
@@ -209,17 +215,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {!isMini && (
         <div className={`flex flex-wrap items-center ${isCompact ? "mb-1.5 sm:mb-2 gap-1.5" : "mb-2 sm:mb-2.5 md:mb-2 lg:mb-3 gap-1.5 sm:gap-2"}`}>
-          <span
-            className={`inline-flex items-center rounded-full font-semibold ${isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"} ${
-              isOutOfStock
-                ? "bg-gray-100 text-gray-600"
-                : "bg-green-50 text-green-700"
-            }`}
-          >
-            {isOutOfStock
-              ? t("commonCatalog.outOfStock")
-              : t("commonCatalog.inStock")}
-          </span>
+          <ProductAvailabilityBadge product={stockInfo} className={isCompact ? "px-1.5 py-0.5 text-[9px] sm:px-2 sm:text-[10px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px]"} />
         </div>
       )}
 

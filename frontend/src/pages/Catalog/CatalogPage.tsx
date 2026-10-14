@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/hooks";
 import { clearBreadcrumbs, setBreadcrumbs } from "@/features/catalogSlice";
@@ -23,57 +23,11 @@ const RecentlyViewedProducts = lazy(() =>
   })),
 );
 
-interface CategoryImageProps {
-  src?: string | null;
-  alt: string;
-  priority?: boolean;
-}
 
 const DeferredFallback = ({ className }: { className: string }) => (
   <div className={`animate-pulse bg-[#F7F7F7] ${className}`} aria-hidden="true" />
 );
 
-const CategoryImage = ({ src, alt, priority = false }: CategoryImageProps) => {
-  const [resolvedSrc, setResolvedSrc] = useState(src || sampleImg);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setResolvedSrc(src || sampleImg);
-    setIsLoaded(false);
-  }, [src]);
-
-  return (
-    <div className="relative w-full h-[100px] sm:h-[130px] flex items-center justify-center overflow-hidden shrink-0">
-      <div
-        aria-hidden="true"
-        className={`absolute inset-0 bg-gray-100 transition-opacity duration-300 ${
-          isLoaded ? "opacity-0" : "opacity-100"
-        }`}
-      />
-      <img
-        src={resolvedSrc}
-        alt={alt}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
-        decoding="async"
-        width={130}
-        height={130}
-        sizes="(max-width: 768px) 45vw, (max-width: 1280px) 28vw, 220px"
-        onLoad={() => setIsLoaded(true)}
-        onError={() => {
-          if (resolvedSrc !== sampleImg) {
-            setResolvedSrc(sampleImg);
-            return;
-          }
-          setIsLoaded(true);
-        }}
-        className={`w-full h-full object-contain transition-all duration-300 group-hover:scale-105 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
-      />
-    </div>
-  );
-};
 
 const CatalogPage = () => {
   const { i18n, t } = useTranslation();
@@ -278,3 +232,4 @@ const CatalogPage = () => {
 };
 
 export default CatalogPage;
+import CategoryImage from "@/components/common/CategoryImage";

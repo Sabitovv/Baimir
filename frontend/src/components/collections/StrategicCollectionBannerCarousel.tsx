@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useProductCollectionPlacement } from '@/features/productCollections/useProductCollectionPlacement'
 import type { ResolvedPlacementCollection } from '@/api/productCollectionsApi'
 import productPlaceholder from '@/assets/catalog/productPlaceholder.svg'
+import ProductAvailabilityBadge from '@/components/common/ProductAvailabilityBadge'
 
 type StrategicCollectionBannerCarouselProps = {
   className?: string
@@ -26,8 +27,8 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
   autoRotateMs = 4500,
 }) => {
   const { t, i18n } = useTranslation()
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [activeProductIndex, setActiveProductIndex] = useState(0)
+  const [selectedIndex, setActiveIndex] = useState(0)
+  const [selectedProduct, setSelectedProduct] = useState<{ collectionId: number; index: number } | null>(null)
 
   const { collections, isLoading, isFetching, isError } =
     useProductCollectionPlacement('CATALOG_TOP_STRATEGIC_COLLECTION', {
@@ -40,30 +41,24 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
     [collections],
   )
 
-  useEffect(() => {
-    if (activeIndex < visibleCollections.length) return
-    setActiveIndex(0)
-  }, [activeIndex, visibleCollections.length])
-
+  const activeIndex = selectedIndex < visibleCollections.length ? selectedIndex : 0
   const activeCollection = visibleCollections[activeIndex]
   const products = activeCollection?.products ?? []
+  const activeProductIndex = selectedProduct?.collectionId === activeCollection?.id ? selectedProduct?.index ?? 0 : 0
   const safeProductIndex =
     activeProductIndex < products.length ? activeProductIndex : 0
   const coverProduct = products[safeProductIndex] ?? null
 
   useEffect(() => {
-    setActiveProductIndex(0)
-  }, [activeIndex])
-
-  useEffect(() => {
-    if (products.length <= 1) return
+    if (products.length <= 1 || !activeCollection) return
+    const collectionId = activeCollection.id
 
     const timer = window.setInterval(() => {
-      setActiveProductIndex((prev) => (prev + 1) % products.length)
+      setSelectedProduct((prev) => ({ collectionId, index: ((prev?.collectionId === collectionId ? prev.index : 0) + 1) % products.length }))
     }, autoRotateMs)
 
     return () => window.clearInterval(timer)
-  }, [products.length, autoRotateMs, activeCollection?.id])
+  }, [products.length, autoRotateMs, activeCollection])
 
   if (
     isLoading ||
@@ -145,15 +140,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
                 maximumFractionDigits: 0,
               }).format(coverProduct.price)}
             </p>
-            <p
-              className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold ${
-                coverProduct.inStock
-                  ? 'bg-emerald-500/25 text-emerald-200'
-                  : 'bg-gray-500/30 text-gray-200'
-              }`}
-            >
-              {coverProduct.inStock ? t('commonCatalog.inStock') : t('commonCatalog.outOfStock')}
-            </p>
+            <ProductAvailabilityBadge product={coverProduct} className="mt-1 px-2 py-0.5 text-[9px]" />
           </div>
         </div>
 
@@ -202,15 +189,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
                 maximumFractionDigits: 0,
               }).format(coverProduct.price)}
             </p>
-            <p
-              className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold ${
-                coverProduct.inStock
-                  ? 'bg-emerald-500/25 text-emerald-200'
-                  : 'bg-gray-500/30 text-gray-200'
-              }`}
-            >
-              {coverProduct.inStock ? t('commonCatalog.inStock') : t('commonCatalog.outOfStock')}
-            </p>
+            <ProductAvailabilityBadge product={coverProduct} className="mt-1 px-2 py-0.5 text-[9px]" />
           </div>
 
           <div className='relative h-[124px] w-[124px] shrink-0 overflow-hidden rounded-2xl border border-white/25 bg-gradient-to-b from-white/20 to-white/5 p-2 shadow-[0_14px_34px_rgba(0,0,0,0.3)] backdrop-blur-sm md:h-[138px] md:w-[138px]'>
@@ -261,15 +240,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
                 maximumFractionDigits: 0,
               }).format(coverProduct.price)}
             </p>
-            <p
-              className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold sm:text-[10px] ${
-                coverProduct.inStock
-                  ? 'bg-emerald-500/25 text-emerald-200'
-                  : 'bg-gray-500/30 text-gray-200'
-              }`}
-            >
-              {coverProduct.inStock ? t('commonCatalog.inStock') : t('commonCatalog.outOfStock')}
-            </p>
+            <ProductAvailabilityBadge product={coverProduct} className="mt-1 px-2 py-0.5 text-[9px] sm:text-[10px]" />
           </div>
 
           <div className='relative h-[112px] w-[112px] shrink-0 overflow-hidden rounded-2xl border border-white/25 bg-gradient-to-b from-white/20 to-white/5 p-2 shadow-[0_14px_34px_rgba(0,0,0,0.3)] backdrop-blur-sm sm:h-[156px] sm:w-[156px]'>
@@ -305,7 +276,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
               key={product.id}
               type='button'
               aria-label={t('collections.showProduct', { index: index + 1 })}
-              onClick={() => setActiveProductIndex(index)}
+              onClick={() => setSelectedProduct({ collectionId: activeCollection.id, index })}
               className={`h-1.5 rounded-full transition-all ${
                 index === safeProductIndex
                   ? 'w-6 bg-[#FDE68A]'
@@ -325,7 +296,7 @@ const StrategicCollectionBannerCarousel: FC<StrategicCollectionBannerCarouselPro
               aria-label={t('collections.showCollection', { index: index + 1 })}
               onClick={() => {
                 setActiveIndex(index)
-                setActiveProductIndex(0)
+                setSelectedProduct(null)
               }}
               className={`h-1.5 rounded-full transition-all ${
                 index === activeIndex

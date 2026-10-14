@@ -28,6 +28,7 @@ export type BlogContentBlock = {
 }
 
 export type BlogListItem = {
+  seoLanguages?: string[]
   id: number
   slug: string
   title?: LocalizedText | string
@@ -44,6 +45,7 @@ export type BlogListItem = {
 }
 
 export type BlogDetail = {
+  seoLanguages?: string[]
   id: number
   slug: string
   title?: LocalizedText | string

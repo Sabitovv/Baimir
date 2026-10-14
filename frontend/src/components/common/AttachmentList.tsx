@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 import '@cyntler/react-doc-viewer/dist/index.css'
 
@@ -47,23 +47,8 @@ const AttachmentList = ({ attachments, className = '' }: AttachmentListProps) =>
     [attachments],
   )
 
-  const [selectedFile, setSelectedFile] = useState<Attachment | null>(
-    sortedAttachments[0] ?? null,
-  )
-
-  useEffect(() => {
-    if (sortedAttachments.length === 0) {
-      setSelectedFile(null)
-      return
-    }
-
-    setSelectedFile((current) => {
-      const firstAttachment = sortedAttachments[0] ?? null
-      if (!current) return firstAttachment
-      const stillExists = sortedAttachments.find((file) => file.id === current.id)
-      return stillExists ?? firstAttachment
-    })
-  }, [sortedAttachments])
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const selectedFile = sortedAttachments.find(file => file.id === selectedId) ?? sortedAttachments[0] ?? null
 
   if (sortedAttachments.length === 0) {
     return (
@@ -95,7 +80,7 @@ const AttachmentList = ({ attachments, className = '' }: AttachmentListProps) =>
               >
                 <button
                   type="button"
-                  onClick={() => setSelectedFile(file)}
+                  onClick={() => setSelectedId(file.id)}
                   className="w-full text-left"
                 >
                   <p className="truncate text-sm font-semibold text-gray-900">{file.name}</p>
@@ -153,4 +138,3 @@ const AttachmentList = ({ attachments, className = '' }: AttachmentListProps) =>
 }
 
 export default AttachmentList
-export { formatFileSize }

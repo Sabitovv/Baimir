@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import i18n from 'i18next'
+import type { AvailabilityInfo } from '@/utils/productAvailability'
 
 export type CollectionPlacementType =
   | 'HOME_PAGE'
@@ -24,7 +25,7 @@ export type ProductCollection = {
   endDate: string | null
 }
 
-export type CollectionProduct = {
+export type CollectionProduct = AvailabilityInfo & {
   id: number
   slug: string
   sku: string

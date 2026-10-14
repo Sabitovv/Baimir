@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { localizedBlocks } from '../../../../seo.mjs';
 
 import PageContainer from "@/components/ui/PageContainer";
 import CategoriesMenu from "@/components/common/CategoriesMenu";
@@ -156,6 +157,8 @@ const BlogProductsBlock = ({
                 price={product.price}
                 oldPrice={product.oldPrice}
                 inStock={product.inStock}
+                availability={product.availability}
+                deliveryDays={product.deliveryDays}
                 isNew={product.newProduct ?? product.new}
                 categoryId={product.category?.id}
                 categoryName={product.category?.name}
@@ -175,6 +178,8 @@ const BlogProductsBlock = ({
               price={product.price}
               oldPrice={product.oldPrice}
               inStock={product.inStock}
+              availability={product.availability}
+              deliveryDays={product.deliveryDays}
               isNew={product.newProduct ?? product.new}
               categoryId={product.category?.id}
               categoryName={product.category?.name}
@@ -650,7 +655,7 @@ const InnerBlog = () => {
 
           {data.contentBlocks && data.contentBlocks.length > 0 ? (
             <div>
-              {data.contentBlocks.map((block, index) =>
+              {localizedBlocks(data.contentBlocks as Parameters<typeof localizedBlocks>[0], i18n.language).map((block, index) =>
                 renderContentBlock(block, index),
               )}
             </div>

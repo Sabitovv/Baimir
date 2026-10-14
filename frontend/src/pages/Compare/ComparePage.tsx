@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
@@ -31,27 +31,7 @@ const ComparePage = () => {
     compareIds.length > 0 ? compareIds : skipToken,
   );
 
-  const groups = data ?? [];
-
-  useEffect(() => {
-    if (groups.length === 0) {
-      if (selectedCategoryId !== null) {
-        setSelectedCategoryId(null);
-      }
-      return;
-    }
-
-    const hasSelected =
-      selectedCategoryId !== null &&
-      groups.some((group) => group.categoryId === selectedCategoryId);
-
-    if (!hasSelected) {
-      const firstGroup = groups[0];
-      if (firstGroup) {
-        setSelectedCategoryId(firstGroup.categoryId);
-      }
-    }
-  }, [groups, selectedCategoryId]);
+  const groups = useMemo(() => data ?? [], [data]);
 
   const activeGroup = useMemo(
     () =>

@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import i18n from "i18next";
+import { mirrorSavedInquiry } from "@/utils/bitrixForm";
+import type { LaserOptions } from '@/utils/laserSelection';
 
 export type Category = {
   id: number | string;
@@ -16,7 +18,7 @@ export type Category = {
 
 export type ProductCategoryShort = { id: number; slug: string; name: string };
 
-export type Product = {
+export type Product = import('../utils/productAvailability').AvailabilityInfo & {
   id: number;
   slug: string;
   name: string;
@@ -93,12 +95,22 @@ export type InquiryRequest = {
   phone?: string | null;
   message?: string;
   productId?: number | null;
+  items?: { productId: number; quantity: number }[];
+  // Client-only snapshots for CRM; not part of the backend inquiry payload.
+  crmItems?: { productId: number; quantity: number; productNameSnapshot: string; priceSnapshot?: number | null }[];
   sourceUrl?: string;
 };
 
 export type InquiryResponse = {
   id?: number;
   message?: string;
+  items?: {
+    productId: number;
+    quantity: number;
+    productNameSnapshot?: string;
+    priceSnapshot?: number | null;
+    productUrl?: string;
+  }[];
 };
 
 export const categoriesApi = createApi({
@@ -114,6 +126,10 @@ export const categoriesApi = createApi({
   }),
   tagTypes: ["Category", "Product"],
   endpoints: (builder) => ({
+    getLaserOptions: builder.query<LaserOptions, { categoryId: number; lang: string }>({
+      query: ({ categoryId, lang }) => ({ url: `/products/category/${categoryId}/laser-options`, headers: { 'Accept-Language': lang } }),
+      providesTags: [{ type: 'Product', id: 'LIST' }, { type: 'Category', id: 'LIST' }],
+    }),
     getPressBrakeOptions: builder.query<PressBrakeOptions, number>({
       query: (categoryId) => `/products/category/${categoryId}/press-brake-options`,
       providesTags: [{ type: "Product", id: "LIST" }, { type: "Category", id: "LIST" }],
@@ -176,17 +192,21 @@ export const categoriesApi = createApi({
       providesTags: (_result, _error, id) => [{ type: "Product" as const, id }],
     }),
 
-    createInquiry: builder.mutation<InquiryResponse, InquiryRequest>({
-      query: (body) => ({
-        url: "/inquiries",
-        method: "POST",
-        body,
-      }),
+    createInquiry: builder.mutation<InquiryResponse | null, InquiryRequest>({
+      query: (request) => {
+        const body = { ...request };
+        delete body.crmItems;
+        return { url: "/inquiries", method: "POST", body };
+      },
+      onQueryStarted(request, { queryFulfilled, requestId }) {
+        void mirrorSavedInquiry(request, queryFulfilled, i18n.language || "ru", requestId);
+      },
     }),
   }),
 });
 
 export const {
+  useGetLaserOptionsQuery,
   useGetPressBrakeOptionsQuery,
   useGetCategoriesTreeQuery,
   useGetCategoriesRootQuery,

@@ -19,6 +19,7 @@ const CatalogDeepProductsPage = lazy(() => import('@/pages/Catalog/components/Ca
 const CategoryPage = lazy(() => import('@/pages/Catalog/CategoryPage'))
 const ProductPage = lazy(() => import('@/pages/Catalog/ProductPage'))
 const ComparePage = lazy(() => import('@/pages/Compare/ComparePage'))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 const PageLoader = () => (
     <div className="flex items-center justify-center h-[60vh]">
@@ -51,7 +52,8 @@ const AppRoutes = () => (
             <Route path="/catalog/deep-products" element={<CatalogDeepProductsPage />} />
             <Route path="/catalog/:categorySlug/deep-products" element={<CatalogDeepProductsPage />} />
             <Route path="/catalog/:categorySlug/deep-products/:categoryId" element={<CatalogDeepProductsPage />} />
-            <Route path="/catalog/*" element={<CatalogPage />} />
+            <Route path="/catalog" element={<CatalogPage />} />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     </Suspense>
 )

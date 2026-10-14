@@ -52,6 +52,8 @@ Current reality:
 - `npm run test:calculator` runs the focused bending calculation tests using the built-in Node test runner (Node 22.6+), without additional dependencies.
 - Single named case: `node --experimental-strip-types --test --test-name-pattern="reference example" scripts/test-press-brake-calculator.mjs`.
 - No general `npm test` command or UI test runner is configured.
+- `npm run test:seo` (from `frontend/`) checks HTTP SEO rendering, metadata, sitemap pagination and 404/503 responses using Node's test runner.
+- `npm run test:crm` (from `frontend/`, Node 22.6+) checks silent Bitrix copying after site save, including cart data, failures and duplicate prevention without submitting real enquiries.
 
 Validation commands you should run now:
 - `npm run lint`

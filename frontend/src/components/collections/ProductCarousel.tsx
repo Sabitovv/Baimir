@@ -2,13 +2,14 @@ import {
   useRef,
   useState,
   type FC,
+  type ComponentProps,
   type PointerEvent as ReactPointerEvent,
   type MouseEvent as ReactMouseEvent,
 } from 'react'
 import ProductCard from '@/components/common/ProductCard'
 
 type ProductCarouselProps = {
-  products: any[] 
+  products: (Omit<ComponentProps<typeof ProductCard>, 'keyFeatures'> & { newProduct?: boolean; new?: boolean; category?: { id?: number; name?: string } })[]
   className?: string
   itemClassName?: string
   cardVariant?: 'compact' | 'mini'
@@ -146,6 +147,8 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
               price={product.price}
               oldPrice={product.oldPrice}
               inStock={product.inStock}
+              availability={product.availability}
+              deliveryDays={product.deliveryDays}
               isNew={product.newProduct || product.new}
               keyFeatures={null}
               categoryId={product.categoryId ?? product?.category?.id}

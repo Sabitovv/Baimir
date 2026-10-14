@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import OpenButton from '@/assets/button1_for_sideBar.svg'
 import CloseButton from '@/assets/button2_for_sideBar.svg'
 import { useGetCategoriesTreeQuery, type Category } from '@/api/categoriesApi'
 import { useTranslation } from 'react-i18next'
 import { EditableImage } from '@/zustand/EditableImage'
+import { buildCatalogTree, catalogAncestors, flattenCatalogTree } from '@/utils/catalogTree'
 
 type TreeCategory = Category & {
     children: TreeCategory[]
@@ -12,97 +13,73 @@ type TreeCategory = Category & {
 
 const CategoriesMenu = () => {
     const { i18n } = useTranslation()
-    const { data: categories = [] } = useGetCategoriesTreeQuery({lang: i18n.language})
+    const { data: categories = [] } = useGetCategoriesTreeQuery({lang: i18n.language}, { refetchOnMountOrArgChange: true })
+    const flatCategories = useMemo(() => flattenCatalogTree(categories), [categories])
     const { categorySlug, categoryId } = useParams<{ categorySlug?: string; categoryId?: string }>()
     const activeId = useMemo(() => {
         const fromParam = Number(categoryId)
         if (Number.isFinite(fromParam) && fromParam > 0) return fromParam
-        const fromSlug = categories.find(c => c.slug === categorySlug)
+        const fromSlug = flatCategories.find(c => c.slug === categorySlug)
         const slugId = Number(fromSlug?.id)
         return Number.isFinite(slugId) && slugId > 0 ? slugId : null
-    }, [categoryId, categorySlug, categories])
+    }, [categoryId, categorySlug, flatCategories])
 
-    const [openCategories, setOpenCategories] = useState<Record<number, boolean>>({})
+    const [menuState, setMenuState] = useState<{ activeId: number | null; openCategories: Record<number, boolean> }>({ activeId: null, openCategories: {} })
 
     const rootCategories = useMemo(() => {
-        const map = new Map<number, TreeCategory>()
-        categories.forEach(c => map.set(Number(c.id), { ...c, children: [] } as TreeCategory))
-        const roots: TreeCategory[] = []
-        categories.forEach(c => {
-            const node = map.get(Number(c.id))
-            if (node) {
-                if (c.parentId) {
-                    const parent = map.get(Number(c.parentId))
-                    if (parent) {
-                        parent.children.push(node)
-                    }
-                } else {
-                    roots.push(node)
-                }
-            }
-        })
-        return roots
+        return buildCatalogTree(categories)
     }, [categories])
 
     const activeParentsChain = useMemo(() => {
-        if (!activeId || categories.length === 0) return new Set<number>()
-
+        if (!activeId || flatCategories.length === 0) return new Set<number>()
         const parentsChain = new Set<number>()
-        const hasChildren = categories.some(c => Number(c.parentId) === activeId)
-        if (hasChildren) {
-            parentsChain.add(activeId)
+        const active = flatCategories.find(c => Number(c.id) === activeId) ?? null
+        for (const ancestor of catalogAncestors(active, flatCategories)) {
+            if (flatCategories.some(c => Number(c.parentId) === Number(ancestor.id))) parentsChain.add(Number(ancestor.id))
         }
-
-        let curr = categories.find(c => Number(c.id) === activeId)
-        while (curr && curr.parentId) {
-            const pid = Number(curr.parentId)
-            parentsChain.add(pid)
-            curr = categories.find(c => Number(c.id) === pid)
-        }
-
         return parentsChain
-    }, [activeId, categories])
+    }, [activeId, flatCategories])
 
     const effectiveOpenCategories = useMemo(() => {
-        const derivedState = { ...openCategories }
-        activeParentsChain.forEach((id) => {
-            derivedState[id] = true
-        })
-        return derivedState
-    }, [activeParentsChain, openCategories])
+        const derivedState: Record<number, boolean> = {}
+        activeParentsChain.forEach(id => { derivedState[id] = true })
+        return { ...derivedState, ...(menuState.activeId === activeId ? menuState.openCategories : {}) }
+    }, [activeParentsChain, menuState, activeId])
 
-    const getAllDescendantIds = (parentId: number, allCats: Category[]) => {
+    const getAllDescendantIds = (parentId: number, allCats: Category[], visited = new Set<number>()): number[] => {
+        if (visited.has(parentId)) return []
+        visited.add(parentId)
         let ids: number[] = []
         const children = allCats.filter(c => Number(c.parentId) === parentId)
         children.forEach(child => {
             const childId = Number(child.id)
             ids.push(childId)
-            ids = ids.concat(getAllDescendantIds(childId, allCats))
+            ids = ids.concat(getAllDescendantIds(childId, allCats, visited))
         })
         return ids
     }
 
     const toggleCategory = (id: number, siblings: TreeCategory[]) => {
-        setOpenCategories(prev => {
-            const newState = { ...prev }
+        setMenuState(prev => {
+            const newState = { ...effectiveOpenCategories, ...(prev.activeId === activeId ? prev.openCategories : {}) }
             siblings.forEach(sibling => {
                 const sId = Number(sibling.id)
                 if (sId !== id) {
                     newState[sId] = false
-                    const siblingDescendants = getAllDescendantIds(sId, categories)
+                    const siblingDescendants = getAllDescendantIds(sId, flatCategories)
                     siblingDescendants.forEach(dId => newState[dId] = false)
                 }
             })
 
-            const willOpen = !prev[id]
+            const willOpen = !effectiveOpenCategories[id]
             newState[id] = willOpen
 
             if (!willOpen) {
-                const descendants = getAllDescendantIds(id, categories)
+                const descendants = getAllDescendantIds(id, flatCategories)
                 descendants.forEach(dId => newState[dId] = false)
             }
 
-            return newState
+            return { activeId, openCategories: newState }
         })
     }
 
@@ -110,101 +87,43 @@ const CategoriesMenu = () => {
         return `/catalog/${cat.slug}`
     }
 
+    const renderNodes = (nodes: TreeCategory[], depth = 0): ReactNode => nodes.map(cat => {
+        const isOpen = Boolean(effectiveOpenCategories[Number(cat.id)])
+        const isActive = Number(cat.id) === activeId
+        const hasChildren = cat.children.length > 0
+        const imageKey = depth === 0 ? 'categories_menu_toggle' : 'categories_menu_child_toggle'
+        return (
+            <div key={cat.id}>
+                <div className="flex items-center justify-between hover:bg-gray-50 rounded px-2 py-1">
+                    <Link
+                        to={getCategoryLink(cat)}
+                        onClick={() => { if (hasChildren) toggleCategory(Number(cat.id), nodes) }}
+                        className={`flex-1 transition ${depth === 0 ? 'font-semibold text-lg' : 'text-xs'} ${isActive ? 'text-[#F58322] font-bold' : depth === 0 ? 'text-gray-700' : 'hover:text-[#DB741F]'}`}
+                    >
+                        {cat.name}
+                    </Link>
+                    {hasChildren && <button
+                        onClick={() => toggleCategory(Number(cat.id), nodes)}
+                        aria-expanded={isOpen}
+                        aria-label={cat.name}
+                        className="p-1 shrink-0"
+                    >
+                        <EditableImage imageKey={`${imageKey}_${isOpen ? 'close' : 'open'}`} fallbackSrc={isOpen ? CloseButton : OpenButton} alt="" />
+                    </button>}
+                </div>
+                {isOpen && hasChildren && <div className="ml-3 pl-2 border-l border-gray-200 mt-1 space-y-1">
+                    {renderNodes(cat.children, depth + 1)}
+                </div>}
+            </div>
+        )
+    })
+
     if (!categories.length) return null
 
     return (
         <aside className="w-full bg-white rounded-lg shadow-sm border border-gray-100 p-4 ">
             <div className="space-y-1">
-                {rootCategories.map(cat => {
-                    const isOpen = effectiveOpenCategories[Number(cat.id)]
-                    const isActive = Number(cat.id) === activeId
-
-                    return (
-                        <div key={cat.id}>
-                            <div className="flex items-center justify-between hover:bg-gray-50 rounded px-2 py-1">
-                                <Link
-                                    to={getCategoryLink(cat)}
-                                    onClick={() => toggleCategory(Number(cat.id), rootCategories)}
-                                    className={`flex-1 font-semibold text-lg transition ${isActive ? 'text-[#F58322]' : 'text-gray-700'}`}
-                                >
-                                    {cat.name}
-                                </Link>
-
-                                {cat.children && cat.children.length > 0 && (
-                                    <button onClick={() => toggleCategory(Number(cat.id), rootCategories)} className="p-1">
-                                        <EditableImage
-                                          imageKey={isOpen ? 'categories_menu_toggle_close' : 'categories_menu_toggle_open'}
-                                          fallbackSrc={isOpen ? CloseButton : OpenButton}
-                                          alt="toggle"
-                                        />
-                                    </button>
-                                )}
-                            </div>
-
-                            {isOpen && cat.children && (
-                                <div className="ml-4 pl-2 border-l border-gray-200 mt-1 space-y-1">
-                                    {cat.children.map(child => {
-                                        const isChildActive = Number(child.id) === activeId
-                                        const isChildOpen = effectiveOpenCategories[Number(child.id)]
-                                        const hasGrandChildren = child.children && child.children.length > 0
-
-                                        return (
-                                            <div key={child.id} className="block">
-                                                <div className="flex items-center justify-between hover:bg-gray-50 rounded px-2 py-1">
-                                                    <Link
-                                                        to={getCategoryLink(child)}
-                                                        onClick={() => {
-                                                            if (hasGrandChildren) {
-                                                                toggleCategory(Number(child.id), cat.children)
-                                                            }
-                                                        }}
-                                                        className={`flex-1 text-xs transition ${isChildActive ? 'text-[#F58322] font-bold' : 'hover:text-[#DB741F]'}`}
-                                                    >
-                                                        {child.name}
-                                                    </Link>
-
-                                                    {hasGrandChildren && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                toggleCategory(Number(child.id), cat.children)
-                                                            }}
-                                                            className="p-1"
-                                                        >
-                                                            <EditableImage
-                                                              imageKey={isChildOpen ? 'categories_menu_child_toggle_close' : 'categories_menu_child_toggle_open'}
-                                                              fallbackSrc={isChildOpen ? CloseButton : OpenButton}
-                                                              alt="toggle"
-                                                            />
-                                                        </button>
-                                                    )}
-                                                </div>
-
-                                                {isChildOpen && child.children && child.children.length > 0 && (
-                                                    <div className="ml-4 pl-2 border-l border-gray-200 mt-1 space-y-1">
-                                                        {child.children.map(grandChild => {
-                                                            const isGrandChildActive = Number(grandChild.id) === activeId
-                                                            return (
-                                                                <div key={grandChild.id}>
-                                                                    <Link
-                                                                        to={getCategoryLink(grandChild)}
-                                                                        className={`block text-xs py-1 ${isGrandChildActive ? 'text-[#F05023] font-medium' : ' hover:text-[#F05023]'}`}
-                                                                    >
-                                                                        {grandChild.name}
-                                                                    </Link>
-                                                                </div>
-                                                            )
-                                                        })}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )}
-                        </div>
-                    )
-                })}
+                {renderNodes(rootCategories)}
             </div>
         </aside>
     )

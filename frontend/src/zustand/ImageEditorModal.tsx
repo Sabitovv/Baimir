@@ -1,26 +1,23 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useImageEditorStore } from './ImageEditorState';
 import { useImageUpload } from './useImageUploads';
 
 export const ImageEditorModal: React.FC = () => {
-  const { t } = useTranslation();
   const editingKey = useImageEditorStore((state) => state.editingKey);
   const currentData = useImageEditorStore((state) => editingKey ? state.images[editingKey] : null);
+  if (!editingKey) return null;
+  const initialAlt = currentData?.alt || '';
+  return <ImageEditorModalContent key={`${editingKey}:${initialAlt}`} editingKey={editingKey} initialAlt={initialAlt} />;
+};
+
+const ImageEditorModalContent = ({ editingKey, initialAlt }: { editingKey: string; initialAlt: string }) => {
+  const { t } = useTranslation();
   const closeEditor = useImageEditorStore((state) => state.closeEditor);
   
   const { uploadToMinio, updateOnlyAlt, isUploading } = useImageUpload();
-  const [altText, setAltText] = useState('');
+  const [altText, setAltText] = useState(initialAlt);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Синхронизируем локальный alt с данными из стора при открытии
-  useEffect(() => {
-    if (currentData) {
-      setAltText(currentData.alt || '');
-    }
-  }, [currentData, editingKey]);
-
-  if (!editingKey) return null;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

@@ -4,6 +4,7 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 import type { TolgeeInstance } from '@tolgee/web';
+import { languageRoute } from '../../seo.mjs';
 
 const TOLGEE_BASE_URL = 'https://tolgee.baytech.kz';
 
@@ -60,6 +61,7 @@ export const isEditMode = Boolean(savedApiKey && savedApiUrl);
 export let tolgee: TolgeeInstance | null = null;
 
 const CDN_URL = 'https://baytech.kz/minio/locales/814bc1c3f9019b399682693b66a4ffa5';
+const initialLanguage = languageRoute(window.location.pathname).language;
 
 const initI18next = async (useHttpBackend: boolean) => {
   if (useHttpBackend) {
@@ -76,7 +78,7 @@ const initI18next = async (useHttpBackend: boolean) => {
             crossDomain: true,
           }
         : undefined,
-      lng: 'ru',
+      lng: initialLanguage,
       fallbackLng: 'ru',
       defaultNS: 'translation',
       ns: ['translation'],
@@ -109,7 +111,7 @@ export const setupI18n = async () => {
         .init({
           apiUrl: savedApiUrl as string,
           apiKey: savedApiKey as string,
-          defaultLanguage: 'ru',
+          defaultLanguage: initialLanguage,
           defaultNs: 'translation',
         });
 

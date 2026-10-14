@@ -1,6 +1,7 @@
 import { useEffect, lazy, Suspense } from 'react';
 import Layout from '@/components/layout/Layout';
 import AppRoutes from '@/routes/AppRoutes';
+import SeoController from '@/components/common/SeoController';
 import { tolgee, isEditMode } from '@/i18n';
 
 import { useImageEditorStore } from './zustand/ImageEditorState';
@@ -27,6 +28,7 @@ const App = () => {
 
   return (
     <>
+      <SeoController />
       {isEditMode && (
         <Suspense fallback={null}>
           <ImageEditorModal />

@@ -99,6 +99,8 @@ export const PopularProduct = () => {
                   price={product.price}
                   oldPrice={product.oldPrice}
                   inStock={product.inStock}
+                  availability={product.availability}
+                  deliveryDays={product.deliveryDays}
                   isNew={product.newProduct ?? product.new}
                   keyFeatures={product.keyFeatures}
                   categoryId={product.category?.id}

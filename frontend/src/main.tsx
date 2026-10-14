@@ -5,7 +5,7 @@ import App from './App';
 import { setupI18n } from '@/i18n'; 
 
 import { Provider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
+import LanguageRouter from '@/routes/LanguageRouter'
 import { store } from '@/app/store'
 
 function bootstrap() {
@@ -16,9 +16,9 @@ function bootstrap() {
 
   createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
-      <BrowserRouter>
+      <LanguageRouter>
         <App />
-      </BrowserRouter>
+      </LanguageRouter>
     </Provider>
   )
 }

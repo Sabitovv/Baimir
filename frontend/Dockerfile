@@ -14,6 +14,7 @@ FROM node:alpine
 WORKDIR /app
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/server.mjs /app/server.mjs
+COPY --from=build /app/seo.mjs /app/seo.mjs
 ENV PORT=3000
 EXPOSE 3000
 

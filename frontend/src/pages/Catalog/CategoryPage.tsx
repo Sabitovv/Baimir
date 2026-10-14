@@ -4,6 +4,8 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
 
 import Breadcrumbs from "@/pages/Catalog/components/Breadcrumbs";
+import { catalogParameters, categoryCatalogParameters } from '../../../seo.mjs';
+import { catalogView } from '@/utils/catalogTree';
 import CategoriesMenu from "@/components/common/CategoriesMenu";
 import ProductCard from "@/components/common/ProductCard";
 import PageContainer from "@/components/ui/PageContainer";
@@ -26,9 +28,10 @@ import ScrollReveal from "@/components/animations/ScrollReveal";
 import CategoryCalculator from "./components/CategoryCalculator";
 import { EditableImage } from "@/zustand/EditableImage";
 import ProductCollectionRenderer from "@/components/collections/ProductCollectionRenderer";
-import CatalogDeepProductsPage from "./components/CatalogDeepProductsPage";
 import CategoryInlineCollectionsSection from "./components/CategoryInlineCollectionsSection";
 import { bendingSelectionParams, bendingMethodParams, BENDING_FILTER_PARAMS, BENDING_MACHINE_TYPES, CALCULATOR_PARAMS, readPressBrakeDraft, type PressBrakeDraft } from "@/utils/pressBrakeCalculator";
+import LaserMachineSelector from './components/LaserMachineSelector';
+import { LASER_PICK_PARAM, clearLaserSelection, laserCatalogRoot, laserSelectionParams, readLaserDraft, type LaserDraft } from '@/utils/laserSelection';
 
 type BreadcrumbItem = {
   id?: number | string;
@@ -52,10 +55,6 @@ type ProductForFilter = {
   specifications?: ProductSpecGroup[];
 };
 
-type CategoryImageProps = {
-  src?: string | null;
-  alt: string;
-};
 
 const resolveProductCount = (value: {
   productCount?: number | string;
@@ -67,44 +66,6 @@ const resolveProductCount = (value: {
   return Number.isFinite(parsed) ? parsed : null;
 };
 
-const CategoryImage = ({ src, alt }: CategoryImageProps) => {
-  const [resolvedSrc, setResolvedSrc] = useState(src || sampleImg);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setResolvedSrc(src || sampleImg);
-    setIsLoaded(false);
-  }, [src]);
-
-  return (
-    <div className="relative w-full h-[100px] sm:h-[130px] flex items-center justify-center overflow-hidden shrink-0">
-      <div
-        aria-hidden="true"
-        className={`absolute inset-0 bg-gray-100 transition-opacity duration-300 ${
-          isLoaded ? "opacity-0" : "opacity-100"
-        }`}
-      />
-      <img
-        src={resolvedSrc}
-        alt={alt}
-        loading="lazy"
-        width={130}
-        height={130}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => {
-          if (resolvedSrc !== sampleImg) {
-            setResolvedSrc(sampleImg);
-            return;
-          }
-          setIsLoaded(true);
-        }}
-        className={`w-full h-full object-contain transition-all duration-300 group-hover:scale-105 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
-      />
-    </div>
-  );
-};
 
 const isPriceRangeFilter = (filter: Filter): boolean => {
   const code = String(filter.code ?? "").toLowerCase();
@@ -146,11 +107,13 @@ const findCategoryBySlug = (
 const CategoryPage = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [isLaserOpen, setIsLaserOpen] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
 
   const toggleFilter = () => {
     setIsFilterOpen((prev) => !prev);
     setIsCalculatorOpen(false);
+    setIsLaserOpen(false);
   };
 
   const toggleCalculator = () => {
@@ -159,11 +122,13 @@ const CategoryPage = () => {
     }
     setIsCalculatorOpen((prev) => !prev);
     setIsFilterOpen(false);
+    setIsLaserOpen(false);
   };
 
   const closePanels = () => {
     setIsFilterOpen(false);
     setIsCalculatorOpen(false);
+    setIsLaserOpen(false);
   };
 
   const { t } = useTranslation();
@@ -178,11 +143,9 @@ const CategoryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const inStock = searchParams.get("is_stock") === "true";
-  const hasAppliedCalculation = searchParams.get("press_brake") === "true" || searchParams.get("panel_bender") === "true";
+  const requestedCalculation = searchParams.get("press_brake") === "true" || searchParams.get("panel_bender") === "true";
   const machineType = searchParams.get("bending_machine_type");
-  const isMethodSelection = !hasAppliedCalculation && (machineType === BENDING_MACHINE_TYPES.panel || machineType === BENDING_MACHINE_TYPES.press);
-  const isPanelSelection = searchParams.get("panel_bender") === "true" || (isMethodSelection && machineType === BENDING_MACHINE_TYPES.panel);
-  const isBendingSelection = hasAppliedCalculation || isMethodSelection;
+  const requestedMethod = !requestedCalculation && (machineType === BENDING_MACHINE_TYPES.panel || machineType === BENDING_MACHINE_TYPES.press);
 
   const toggleStock = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -199,7 +162,7 @@ const CategoryPage = () => {
     data: categories = [],
     isLoading: isLoadingCategories,
     isError: isErrorCategories,
-  } = useGetCategoriesTreeQuery({ lang: i18n.language });
+  } = useGetCategoriesTreeQuery({ lang: i18n.language }, { refetchOnMountOrArgChange: true });
 
   const queryCategoryId = searchParams.get("categoryId");
   const activeId = (() => {
@@ -221,22 +184,20 @@ const CategoryPage = () => {
     return findCategoryById(categories, activeId);
   }, [categories, activeId]);
 
-  const pageParam = Number(searchParams.get("page") ?? 1);
-  const page = Number.isFinite(pageParam) ? Math.max(1, pageParam) : 1;
-  const limit = 12;
-  const sortParam = searchParams.get("sort");
-  const effectiveSort =
-    sortParam && sortParam.trim().length > 0 ? sortParam : "price,ASC";
+  const view = catalogView(currentCategory, categories, requestedCalculation || requestedMethod);
+  const hasAppliedCalculation = view.calculatorAllowed && requestedCalculation;
+  const isMethodSelection = view.calculatorAllowed && requestedMethod;
+  const isPanelSelection = view.calculatorAllowed && (searchParams.get("panel_bender") === "true" || (isMethodSelection && machineType === BENDING_MACHINE_TYPES.panel));
+  const isBendingSelection = view.bendingSelection;
+  const laserRoot = laserCatalogRoot(currentCategory, categories);
+  const hasAppliedLaser = !!laserRoot && searchParams.get(LASER_PICK_PARAM) === 'true';
+  const laserDraft = readLaserDraft(searchParams);
 
-  const allParams = Object.fromEntries(searchParams.entries());
-  const filters = { ...allParams };
-  delete filters.page;
-  delete filters.categoryId;
-  for (const key of Object.values(CALCULATOR_PARAMS)) delete filters[key];
+  const { page } = catalogParameters(searchParams.toString());
   const calculatorDraft = readPressBrakeDraft(searchParams);
 
-  const queryArg = activeId
-    ? { categoryId: activeId, page, limit, ...filters, sort: effectiveSort }
+  const queryArg = activeId && !hasAppliedLaser
+    ? { categoryId: activeId, ...categoryCatalogParameters(currentCategory, categories, searchParams.toString()) }
     : skipToken;
 
   const { currentData: productsResponse, isFetching: isFetchingProducts, isError: isErrorProducts, refetch: refetchProducts } =
@@ -251,7 +212,7 @@ const CategoryPage = () => {
     isFetching: isLoadingPressOptions,
     isError: isErrorPressOptions,
     refetch: refetchPressOptions,
-  } = useGetPressBrakeOptionsQuery(activeId ?? skipToken, {
+  } = useGetPressBrakeOptionsQuery(view.calculatorAllowed && activeId ? activeId : skipToken, {
     refetchOnMountOrArgChange: true,
     pollingInterval: isBendingSelection ? 15000 : 0,
   });
@@ -268,6 +229,15 @@ const CategoryPage = () => {
     params.set("page", "1");
     setSearchParams(params);
     setIsCalculatorOpen(false);
+  };
+
+  const applyLaserSelection = (draft: LaserDraft) => {
+    const params = laserSelectionParams(searchParams, draft);
+    if (params) setSearchParams(params);
+  };
+  const resetLaserSelection = () => {
+    setSearchParams(clearLaserSelection(searchParams));
+    setIsLaserOpen(false);
   };
 
   const products = useMemo(
@@ -480,7 +450,6 @@ const CategoryPage = () => {
       </PageContainer>
     );
 
-  const hasSubcategories = childCategories.length > 0;
   const hasProducts = products.length > 0;
 
   return (
@@ -501,7 +470,57 @@ const CategoryPage = () => {
           </aside>
 
           <main>
-            {!isBendingSelection && !isErrorProducts && !isLoadingProducts && !hasProducts && hasSubcategories ? (
+            {laserRoot && <LaserMachineSelector
+              key={`laser-${activeId}-${searchParams.toString()}`}
+              rootId={Number(laserRoot.id)}
+              open={isLaserOpen}
+              applied={hasAppliedLaser}
+              initialDraft={laserDraft}
+              onToggle={() => { setIsLaserOpen(previous => !previous); setIsCalculatorOpen(false); setIsFilterOpen(false); }}
+              onApply={applyLaserSelection}
+              onReset={resetLaserSelection}
+            />}
+            {view.calculatorAllowed && (pressOptions?.available || isErrorPressOptions || isBendingSelection) && (
+              <div className="flex mb-4">
+                <button
+                  onClick={toggleCalculator}
+                  className={`cursor-pointer px-3 py-2 rounded-md text-sm transition flex items-center gap-2 ${isCalculatorOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
+                >
+                  {t("bendCalculator.title", { defaultValue: "Калькулятор гибки" })}
+                </button>
+              </div>
+            )}
+
+            {view.calculatorAllowed && isCalculatorOpen && (
+              <div className="mb-6 bg-white border border-gray-200 rounded-md shadow-sm p-6 relative transition-all duration-300">
+                <button
+                  onClick={closePanels}
+                  className="absolute top-4 right-4 p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 rounded-md transition-colors"
+                  aria-label={t('common.close', { defaultValue: 'Закрыть' })}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+                <h3 className="text-xl font-bold mb-6 text-gray-900">
+                  {t("bendCalculator.title", { defaultValue: "Калькулятор гибки" })}
+                </h3>
+                <CategoryCalculator
+                  key={`${activeId}-${JSON.stringify(calculatorDraft)}`}
+                  options={pressOptions}
+                  isLoading={isLoadingPressOptions}
+                  isError={isErrorPressOptions}
+                  initialDraft={calculatorDraft}
+                  hasAppliedCalculation={hasAppliedCalculation && searchParams.has(CALCULATOR_PARAMS.thickness)}
+                  onApply={applyBendingSelection}
+                  onMethodChange={(draft) => setSearchParams(bendingMethodParams(searchParams, draft))}
+                  onRetry={() => { void refetchPressOptions(); }}
+                />
+              </div>
+            )}
+
+            {!hasAppliedLaser && view.showSubcategories && (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                 {childCategories.map((sub: Category) => {
                   const productCountValue = resolveProductCount(sub);
@@ -526,8 +545,13 @@ const CategoryPage = () => {
                   );
                 })}
               </div>
-            ) : (
+            )}
+
+            {!hasAppliedLaser && (!view.showSubcategories || hasProducts) && (
               <>
+                {view.showSubcategories && <h2 className="mt-8 mb-4 text-xl font-semibold">
+                  {t("categoryPage.directProducts", { defaultValue: "Товары этого раздела" })}
+                </h2>}
                 {/* controls */}
                 <div className="bg-[#F2F4F7] p-2 sm:p-2.5 rounded-lg mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
@@ -563,14 +587,6 @@ const CategoryPage = () => {
                       </button>
                     </div>
 
-                    {(pressOptions?.available || isErrorPressOptions || isBendingSelection) && <div className="flex gap-2">
-                      <button
-                        onClick={toggleCalculator}
-                        className={`cursor-pointer px-3 py-2 rounded-md text-sm transition flex items-center gap-2 ${isCalculatorOpen ? "bg-[#F58322] text-white" : "bg-[#E4E7EC] hover:bg-gray-300 text-gray-700"}`}
-                      >
-                        {t("bendCalculator.title", { defaultValue: "Калькулятор гибки" })}
-                      </button>
-                    </div>}
                   </div>
                 </div>
 
@@ -604,44 +620,6 @@ const CategoryPage = () => {
                     />
                   </div>
                 </Drawer>
-
-                {isCalculatorOpen && (
-                  <div className="mb-6 bg-white border border-gray-200 rounded-md shadow-sm p-6 relative transition-all duration-300">
-                    <button
-                      onClick={closePanels}
-                      className="absolute top-4 right-4 p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 rounded-md transition-colors"
-                      aria-label={t('common.close', { defaultValue: 'Закрыть' })}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                    </button>
-                    <h3 className="text-xl font-bold mb-6 text-gray-900">
-                      {t("bendCalculator.title", { defaultValue: "Калькулятор гибки" })}
-                    </h3>
-                    <CategoryCalculator
-                      key={`${activeId}-${JSON.stringify(calculatorDraft)}`}
-                      options={pressOptions}
-                      isLoading={isLoadingPressOptions}
-                      isError={isErrorPressOptions}
-                      initialDraft={calculatorDraft}
-                      hasAppliedCalculation={hasAppliedCalculation && searchParams.has(CALCULATOR_PARAMS.thickness)}
-                      onApply={applyBendingSelection}
-                      onMethodChange={(draft) => setSearchParams(bendingMethodParams(searchParams, draft))}
-                      onRetry={() => { void refetchPressOptions(); }}
-                    />
-                  </div>
-                )}
 
                 {isBendingSelection && <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-md bg-orange-50 p-4">
                   <div>
@@ -713,6 +691,8 @@ const CategoryPage = () => {
                       price={product.price}
                       oldPrice={product.oldPrice}
                       inStock={product.inStock}
+                      availability={product.availability}
+                      deliveryDays={product.deliveryDays}
                       isNew={product.newProduct ?? product.new}
                       categoryId={product.category?.id ?? activeId}
                       categoryName={
@@ -760,23 +740,8 @@ const CategoryPage = () => {
           </main>
         </div>
 
-        {!isBendingSelection && hasProducts && (
+        {!isBendingSelection && !view.showSubcategories && hasProducts && (
           <CategoryInlineCollectionsSection sectionTitle={t('collections.title')} categoryId={activeId} />
-        )}
-
-        {!isBendingSelection && !hasProducts && (
-          <>
-            <div className="mt-12 sm:mt-16 mb-5 sm:mb-6 md:mb-6 lg:mb-7 px-1 sm:px-2">
-              <h2 className="font-manrope text-base sm:text-3xl md:text-[34px] lg:text-4xl xl:text-5xl font-bold uppercase text-gray-900">
-                {t("catalogPage.deepProductsTitle")}
-              </h2>
-              <div className="mt-2 h-1 w-20 sm:w-24 md:w-24 lg:w-28 rounded-full bg-[#F58322]" />
-            </div>
-
-            <CategoryInlineCollectionsSection categoryId={activeId} />
-
-            <CatalogDeepProductsPage embedded categoryId={activeId} />
-          </>
         )}
 
         {!isBendingSelection && <RecentlyViewedProducts />}
@@ -805,3 +770,4 @@ const CategoryPage = () => {
 };
 
 export default CategoryPage;
+import CategoryImage from "@/components/common/CategoryImage";

@@ -24,7 +24,6 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
     e.preventDefault()
     setError(null)
     setSuccess(false)
-    isModal
 
     const reviewData = {
       authorName: name,
@@ -48,9 +47,11 @@ const ReviewForm = ({ isModal = false, onSuccess }: ReviewFormProps) => {
       } else {
         setTimeout(() => setSuccess(false), 5000)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(t('reviewForm.submitErrorLog', { defaultValue: 'Error while sending review:' }), err)
-      setError(err?.data?.message || t('reviewForm.submitError', { defaultValue: 'An error occurred while sending your review' }))
+      const data = err && typeof err === 'object' && 'data' in err ? err.data : null
+      const message = data && typeof data === 'object' && 'message' in data && typeof data.message === 'string' ? data.message : null
+      setError(message || t('reviewForm.submitError', { defaultValue: 'An error occurred while sending your review' }))
     }
   }
 

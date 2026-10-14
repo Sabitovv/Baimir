@@ -1,0 +1,35 @@
+import type { ProductDetail } from './src/api/productsApi';
+import type { BlogDetail } from './src/api/blogsApi';
+export const SITE_ORIGIN: string;
+export const DEFAULT_DESCRIPTION: string;
+export const STATIC_PAGES: Record<string, { name: string; description: string }>;
+export function plainText(value: unknown): string;
+export function shortDescription(value: unknown, fallback: string): string;
+export function absoluteUrl(value: unknown, origin?: string): string;
+export function textFromBlocks(blocks?: ProductDetail['contentBlocks']): string;
+export function seoLanguage(language?: string): 'ru' | 'en' | 'kz';
+export function languageRoute(pathname?: string): { language: 'ru' | 'en' | 'kz'; pathname: string };
+export function languagePath(pathname?: string, language?: string): string;
+export function languageAlternates(url: string, origin?: string, languages?: readonly string[]): { hreflang: string; href: string }[];
+export function staticPage(pathname: string, language?: string): { name: string; description: string } | null;
+export function localizedText(value: unknown, language?: string): string;
+export function localizedBlocks(blocks: ProductDetail['contentBlocks'], language?: string): NonNullable<ProductDetail['contentBlocks']>;
+export function productSeo(product: ProductDetail, origin?: string, language?: string): {
+  name: string; title: string; description: string; url: string; images: string[]; schema: Record<string, unknown>; languages: string[]; indexable: boolean;
+};
+export function productBreadcrumbs(product: ProductDetail, origin?: string, language?: string): { name: string; item: string }[];
+export function breadcrumbSchema(url: string, items: { name: string; item: string }[]): Record<string, unknown>;
+export function categorySeo(category: { name: string; slug?: string; description?: string | null }, page?: number, origin?: string, language?: string): { title: string; description: string; url: string };
+export function blogSeo(blog: BlogDetail, origin?: string, language?: string): {
+  name: string; title: string; description: string; url: string; images: string[]; schema: Record<string, unknown>; languages: string[]; indexable: boolean;
+};
+export function blogBreadcrumbs(blog: BlogDetail, origin?: string, language?: string): { name: string; item: string }[];
+export function flattenCategories<T extends { children?: T[] }>(categories?: T[]): T[];
+type SeoCategory = { id: string | number; name: string; slug?: string; parentId?: number | string | null; description?: string | null };
+export function pageNumber(value: unknown): number;
+export function catalogParameters(search?: string): Record<string, string | number> & { page: number; limit: number; sort: string };
+export function catalogNoindex(search?: string): boolean;
+export function isBendingCatalogCategory(category: SeoCategory | null, categories: readonly SeoCategory[]): boolean;
+export function categoryCatalogParameters(category: SeoCategory | null, categories: readonly SeoCategory[], search?: string): Record<string, string | number> & { page: number; limit: number; sort: string; category_scope: 'direct' | 'subtree' };
+export function catalogGraph(categories: SeoCategory[], origin?: string, language?: string): Record<string, unknown>[];
+export function categoryGraph(category: SeoCategory, categories: SeoCategory[], products?: { name: string; slug: string }[], page?: number, origin?: string, language?: string): Record<string, unknown>[];

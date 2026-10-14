@@ -10,6 +10,10 @@ import {
 } from "@/features/cartSlice";
 import { useCartAnimation } from "@/components/animations/useCartAnimation";
 import { addRecentlyViewedProductId } from "@/utils/recentlyViewedStorage";
+import ProductAvailabilityBadge from '@/components/common/ProductAvailabilityBadge';
+import { canOrderProduct } from '@/utils/productAvailability';
+import type { AvailabilityInfo } from '@/utils/productAvailability';
+import productPlaceholder from '@/assets/catalog/productPlaceholder.svg';
 
 type RawFeatureObject = {
   label?: string | null;
@@ -26,7 +30,7 @@ type NormalizedFeature = {
   unit?: string;
 };
 
-type Product = {
+type Product = AvailabilityInfo & {
   id: number;
   slug: string;
   name: string;
@@ -39,7 +43,7 @@ type Product = {
   new?: boolean;
 };
 
-const PLACEHOLDER_IMG = "https://via.placeholder.com/400x300?text=No+image";
+const PLACEHOLDER_IMG = productPlaceholder;
 
 const normalizeFeature = (feature: Feature): NormalizedFeature | null => {
   if (feature == null) return null;
@@ -154,17 +158,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
       </h3>
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <span
-          className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-            product.inStock === false
-              ? "bg-gray-100 text-gray-600"
-              : "bg-green-50 text-green-700"
-          }`}
-        >
-          {product.inStock === false
-            ? t("commonCatalog.outOfStock")
-            : t("commonCatalog.inStock")}
-        </span>
+        <ProductAvailabilityBadge product={product} className="px-2.5 py-1 text-[11px]" />
       </div>
 
       {normalizedFeatures.length > 0 && (
@@ -239,7 +233,7 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
             onClick={(event) => {
               event.preventDefault();
 
-              if (product.inStock === false) return;
+              if (!canOrderProduct(product)) return;
 
               addAnimation(product.id, imgSrc, event);
 
@@ -256,13 +250,13 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
               );
             }}
             className={`w-full py-2 text-sm font-extrabold uppercase rounded-sm transition ${
-              product.inStock === false
+              !canOrderProduct(product)
                 ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                 : "bg-[#F58322] text-white hover:bg-[#DB741F]"
             }`}
-            disabled={product.inStock === false}
+            disabled={!canOrderProduct(product)}
           >
-            {product.inStock === false
+            {!canOrderProduct(product)
               ? t("commonCatalog.outOfStock")
               : t("commonCatalog.buy")}
           </button>

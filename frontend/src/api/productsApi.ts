@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import i18n from "i18next";
+import type { AvailabilityInfo } from '@/utils/productAvailability';
 
 export type ProductCategory = {
   id: number;
@@ -83,7 +84,7 @@ export interface HeadingBlock extends BaseBlock {
 
 export interface ParagraphBlock extends BaseBlock {
   type: "paragraph";
-  data: { text: string };
+  data: { text: string; translations?: Partial<Record<'ru' | 'en' | 'kz', { text: string }>> };
 }
 
 export interface ImageCardBlock extends BaseBlock {
@@ -159,9 +160,11 @@ export type ProductContentBlock =
   | CardGridBlock
   | ProductLinkBlock;
 
-export type ProductDetail = {
+export type ProductDetail = AvailabilityInfo & {
+  seoLanguages?: string[];
   id: number;
   slug: string;
+  canonicalSlug?: string | null;
   sku: string;
   name: string;
   coverImage?: string | null;
@@ -172,7 +175,7 @@ export type ProductDetail = {
   inStock: boolean;
   newProduct?: boolean;
   new?: boolean;
-  stockQuantity: number;
+  stockQuantity: number | null;
   media: ProductMedia[] | null;
   category: ProductCategory;
   breadcrumbs: Breadcrumb[];
@@ -182,7 +185,7 @@ export type ProductDetail = {
   attachments?: ProductAttachment[];
 };
 
-export type Product = {
+export type Product = AvailabilityInfo & {
   id: number;
   slug: string;
   name: string;
