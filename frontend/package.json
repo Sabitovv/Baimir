@@ -12,6 +12,7 @@
     "test:catalog": "node --experimental-strip-types --test scripts/test-catalog-tree.mjs",
     "test:filters": "node --experimental-strip-types --test scripts/test-catalog-filters.mjs",
     "test:availability": "node --experimental-strip-types --test scripts/test-product-availability.mjs",
+    "test:price": "node --test scripts/test-product-price.mjs",
     "test:seo": "node --test scripts/test-seo.mjs",
     "check:release": "node scripts/check-release.mjs",
     "test:crm": "node --experimental-strip-types --test scripts/test-bitrix-form.mjs",

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import ProductPrice from './ProductPrice'
 
 type CartCardProps = {
   image: string
@@ -36,11 +37,8 @@ const CartCard = ({
         <div className="min-w-0 flex-1">
           <h3 className="line-clamp-2 text-sm font-semibold text-gray-900">{title}</h3>
 
-          <div className="mt-2 flex items-center gap-2">
-            <span className="text-sm font-bold text-[#F58322]">{priceText}</span>
-            {showOldPrice && (
-              <span className="text-xs text-gray-400 line-through">{formatPrice(oldPrice, i18n.language)}</span>
-            )}
+          <div className="mt-2">
+            <ProductPrice price={priceText} oldPrice={showOldPrice ? formatPrice(oldPrice, i18n.language) : null} variant="cart" />
           </div>
 
           <div className="mt-3 flex items-center justify-between">

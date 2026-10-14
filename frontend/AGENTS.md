@@ -18,6 +18,8 @@ High-signal guidance for OpenCode sessions in this repo.
 
 ## Verification expectations
 
+- `npm run test:price` renders the real shared `ProductPrice` TSX with React SSR. Old/current amounts stay in separate left-aligned rows for catalog, default, compact, mini and cart cards; number + ₸ stay unbroken. It checks RU/EN/KZ formatting, large/decimal amounts and unknown-price labels. It is a markup regression check, not a browser-width/screenshot test. Price values/discount rules and API data must not change for layout fixes.
+
 - `npm run test:laser` checks the laser selector across all series: material-specific limits, sheet rotation, tube wall/section/length, separate roll data, review vs exclusion, real availability, decimal validation and shareable `calc_laser_*` parameters. Selection is confined to `lazernye-stanki` and its non-accessory descendants; it must never estimate thickness from watts or copy sheet limits to combined-machine tube walls. The read-only `/products/category/{id}/laser-options` endpoint resolves the laser root and returns active models from every series. Missing/conflicting data stays in a separate review group; ordinary category trees and the bending calculator remain unchanged.
 
 - `npm run test:calculator` runs the bending formula regression tests with the built-in Node test runner (Node 22.6+). No general UI test runner is configured.

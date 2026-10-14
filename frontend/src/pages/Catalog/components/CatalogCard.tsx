@@ -11,6 +11,7 @@ import {
 import { useCartAnimation } from "@/components/animations/useCartAnimation";
 import { addRecentlyViewedProductId } from "@/utils/recentlyViewedStorage";
 import ProductAvailabilityBadge from '@/components/common/ProductAvailabilityBadge';
+import ProductPrice from '@/components/common/ProductPrice';
 import { canOrderProduct } from '@/utils/productAvailability';
 import type { AvailabilityInfo } from '@/utils/productAvailability';
 import productPlaceholder from '@/assets/catalog/productPlaceholder.svg';
@@ -184,17 +185,8 @@ const CatalogCard: React.FC<{ product: Product }> = ({ product }) => {
       )}
 
       <div className="mt-auto">
-        <div className="mb-3 rounded-md bg-white px-3 py-2.5">
-          <div className="flex items-end justify-between gap-2">
-            <p className={`text-lg font-extrabold tracking-tight text-gray-900 tabular-nums`}>
-              {formattedPrice}
-            </p>
-            {formattedOldPrice && (
-              <p className="inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-white px-2 py-0.5 text-[13px] font-medium text-gray-500 line-through decoration-gray-400 decoration-2 tabular-nums">
-                {formattedOldPrice}
-              </p>
-            )}
-          </div>
+        <div className="mb-3 py-2.5">
+          <ProductPrice price={formattedPrice} oldPrice={formattedOldPrice} variant="catalog" />
         </div>
 
         {cartItem ? (
